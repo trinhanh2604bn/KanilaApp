@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="primary">#FFADBE</color>
+    <color name="secondary">#FFD6DE</color>
+    <color name="accent_dark">#6B1E2E</color>
+
+    <color name="button">#E83E72</color>
+
+    <color name="background_main">#FFFFFF</color>
+    <color name="background_sub">#FDF9FB</color>
+
+    <color name="text_main">#372B2B</color>
+    <color name="border_divider">#D9D9D9</color>
+
+    <color name="success">#2E9D62</color>
+    <color name="error">#D64545</color>
 </resources>

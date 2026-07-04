@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spacing -->
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_s">8dp</dimen>
+    <dimen name="spacing_m">12dp</dimen>
+    <dimen name="spacing_l">16dp</dimen>
+    <dimen name="spacing_xl">24dp</dimen>
+    <dimen name="spacing_xxl">32dp</dimen>
+
+    <!-- Radius -->
+    <dimen name="radius_s">8dp</dimen>
+    <dimen name="radius_m">12dp</dimen>
+    <dimen name="radius_l">16dp</dimen>
+    <dimen name="radius_pill">24dp</dimen>
+    <dimen name="radius_circle">999dp</dimen>
+
+    <!-- Components -->
+    <dimen name="input_height">48dp</dimen>
+    <dimen name="input_multiline_min_height">96dp</dimen>
+    <dimen name="button_height">48dp</dimen>
+    <dimen name="button_height_small">44dp</dimen>
+    <dimen name="chip_height">36dp</dimen>
+    <dimen name="icon_size">24dp</dimen>
+    <dimen name="icon_size_small">16dp</dimen>
+    <dimen name="touch_target_min">44dp</dimen>
+    <dimen name="form_field_spacing">16dp</dimen>
+    <dimen name="label_input_spacing">6dp</dimen>
+
+    <!-- KanilaButtonInputView Tokens -->
+    <dimen name="kbi_height">48dp</dimen>
+    <dimen name="kbi_multiline_min_height">96dp</dimen>
+    <dimen name="kbi_radius">12dp</dimen>
+    <dimen name="kbi_radius_pill">24dp</dimen>
+    <dimen name="kbi_padding_horizontal">16dp</dimen>
+    <dimen name="kbi_spacing_small">6dp</dimen>
+    <dimen name="kbi_spacing_medium">12dp</dimen>
+    <dimen name="kbi_spacing_large">16dp</dimen>
+    <dimen name="kbi_icon_size">24dp</dimen>
+    <dimen name="kbi_touch_target">44dp</dimen>
+</resources>

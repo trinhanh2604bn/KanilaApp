@@ -1,7 +1,3 @@
 <resources>
     <string name="app_name">frontend</string>
-    <string name="post_gallery">Post gallery</string>
-    <string name="post_image_1">Post image 1</string>
-    <string name="post_image_2">Post image 2</string>
-    <string name="post_image_3">Post image 3</string>
 </resources>

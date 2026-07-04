@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Vòng tròn ngoài -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M12,12m-9,0a9,9 0,1 1,18 0a9,9 0,1 1,-18 0" />
+    <!-- Vòng tròn nội tâm đại diện cho sắc tố da -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M12,12m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+    <!-- Các tia sáng ngắn thể hiện sự thiếu sức sống/xỉn màu (không tỏa sáng mạnh) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M12,5.5v1 M12,17.5v1 M5.5,12h1 M17.5,12h1" />
+</vector>

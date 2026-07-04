@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="android.widget.LinearLayout"
+    tools:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvKbiLabel"
+        style="@style/Text.Kanila.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/label_input_spacing"
+        android:textColor="@color/text_main"
+        android:textStyle="bold"
+        tools:text="Label" />
+
+    <LinearLayout
+        android:id="@+id/containerKbiInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/kbi_height"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/kbi_padding_horizontal">
+
+        <ImageView
+            android:id="@+id/ivKbiLeadingIcon"
+            android:layout_width="@dimen/kbi_icon_size"
+            android:layout_height="@dimen/kbi_icon_size"
+            android:layout_marginEnd="@dimen/kbi_spacing_small"
+            android:contentDescription="@null"
+            android:visibility="gone"
+            tools:src="@drawable/ic_search"
+            tools:visibility="visible" />
+
+        <EditText
+            android:id="@+id/etKbiInput"
+            style="@style/Text.Kanila.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="Hint text"
+            android:inputType="text"
+            android:minHeight="@dimen/kbi_touch_target"
+            android:paddingVertical="@dimen/kbi_spacing_medium" />
+
+        <ImageButton
+            android:id="@+id/ibKbiTrailingIcon"
+            android:layout_width="@dimen/kbi_touch_target"
+            android:layout_height="@dimen/kbi_touch_target"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@null"
+            android:scaleType="centerInside"
+            android:visibility="gone"
+            tools:src="@drawable/ic_eye"
+            tools:visibility="visible" />
+
+        <Button
+            android:id="@+id/btnKbiAction"
+            style="@style/Widget.Kanila.Button.Pill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/kbi_spacing_small"
+            android:visibility="gone"
+            tools:text="Action"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvKbiMessage"
+        style="@style/Text.Kanila.Micro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:visibility="gone"
+        tools:text="Error or helper message"
+        tools:visibility="visible" />
+
+</merge>

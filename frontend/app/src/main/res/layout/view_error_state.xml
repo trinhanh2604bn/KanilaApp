@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutErrorState"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_xl">
+
+    <ImageView
+        android:id="@+id/ivErrorIllustration"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="@dimen/spacing_xl"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_error_outline" />
+
+    <TextView
+        android:id="@+id/tvErrorTitle"
+        style="@style/Text.Kanila.H2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_s"
+        android:gravity="center"
+        android:text="Đã có lỗi xảy ra" />
+
+    <TextView
+        android:id="@+id/tvErrorDescription"
+        style="@style/Text.Kanila.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_xl"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/spacing_l"
+        android:text="Không thể tải nội dung. Vui lòng thử lại." />
+
+    <Button
+        android:id="@+id/btnErrorRetry"
+        style="@style/Widget.Kanila.Button.Primary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/spacing_xl"
+        android:text="Thử lại" />
+
+</LinearLayout>

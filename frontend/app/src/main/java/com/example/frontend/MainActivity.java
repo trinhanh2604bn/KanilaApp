@@ -81,6 +81,15 @@ public class MainActivity extends AppCompatActivity {
         btnNotification.setOnClickListener(v -> Toast.makeText(this, R.string.notification, Toast.LENGTH_SHORT).show());
         btnCart.setOnClickListener(v -> Toast.makeText(this, R.string.cart, Toast.LENGTH_SHORT).show());
         btnWishlist.setOnClickListener(v -> Toast.makeText(this, R.string.wishlist, Toast.LENGTH_SHORT).show());
+
+
+//        btnCart.setOnClickListener(v -> {
+            // Tạm thời thay thế bằng việc mở CheckoutFragment để xem giao diện
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.main, new ui.commerce.CheckoutFragment())
+//                    .addToBackStack(null)
+//                    .commit();
+//        });
     }
 
     private void showExpandedSearch() {

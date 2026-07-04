@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_sub"
+    android:orientation="vertical">
+
+    <!-- Header -->
+    <include
+        android:id="@+id/layoutTopBar"
+        layout="@layout/view_app_top_bar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/spacing_xl">
+
+            <!-- 1. Address Section -->
+            <include
+                android:id="@+id/layoutCheckoutAddress"
+                layout="@layout/view_checkout_option_card" />
+
+            <!-- 2. Shipping Section -->
+            <include
+                android:id="@+id/layoutCheckoutShipping"
+                layout="@layout/view_checkout_option_card" />
+
+            <!-- 3. Payment Section -->
+            <include
+                android:id="@+id/layoutCheckoutPayment"
+                layout="@layout/view_checkout_option_card" />
+
+            <!-- 4. Voucher Section -->
+            <include
+                android:id="@+id/layoutCheckoutVoucher"
+                layout="@layout/view_checkout_option_card" />
+
+            <!-- 5. Selected Products Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/spacing_s"
+                android:layout_marginVertical="@dimen/spacing_xs"
+                app:cardBackgroundColor="@color/background_main"
+                app:cardCornerRadius="@dimen/radius_m"
+                app:cardElevation="2dp"
+                app:cardPreventCornerOverlap="false"
+                app:strokeColor="@color/background_sub"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_m">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/spacing_s"
+                        android:fontFamily="@font/nunito_bold"
+                        android:text="@string/checkout_selected_items"
+                        android:textColor="@color/accent_dark"
+                        android:textSize="14sp" />
+
+                    <!-- Selected items list -->
+                    <LinearLayout
+                        android:id="@+id/layoutCheckoutItemsList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <include layout="@layout/item_cart_selected" />
+                        <!-- More items can be added dynamically -->
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 6. Ghi chú Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/layoutCheckoutNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/spacing_s"
+                android:layout_marginVertical="@dimen/spacing_xs"
+                app:cardBackgroundColor="@color/background_main"
+                app:cardCornerRadius="@dimen/radius_m"
+                app:cardElevation="2dp"
+                app:cardPreventCornerOverlap="false"
+                app:strokeColor="@color/background_sub"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_m">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_bold"
+                        android:text="@string/checkout_note_title"
+                        android:textColor="@color/accent_dark"
+                        android:textSize="14sp" />
+
+                    <EditText
+                        android:id="@+id/edtCheckoutNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_s"
+                        android:autofillHints="none"
+                        android:background="@drawable/bg_kanila_input_default"
+                        android:fontFamily="@font/nunito_regular"
+                        android:hint="@string/checkout_note_hint"
+                        android:inputType="text"
+                        android:minHeight="40dp"
+                        android:paddingHorizontal="@dimen/spacing_m"
+                        android:textColor="@color/text_main"
+                        android:textColorHint="@color/text_tertiary"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 7. Sử dụng xu Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/layoutCheckoutCoins"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/spacing_s"
+                android:layout_marginVertical="@dimen/spacing_xs"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/background_main"
+                app:cardCornerRadius="@dimen/radius_m"
+                app:cardElevation="2dp"
+                app:cardPreventCornerOverlap="false"
+                app:strokeColor="@color/background_sub"
+                app:strokeWidth="1dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/spacing_m">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:layout_toStartOf="@+id/ivCheckoutCoinsCheck"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvCheckoutCoinsTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="@string/checkout_coins_title"
+                            android:textColor="@color/accent_dark"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tvCheckoutCoinsAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_regular"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"
+                            tools:text="100đ" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/ivCheckoutCoinsCheck"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_check_circle"
+                        app:tint="@color/button" />
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 8. Price Summary -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_m"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/spacing_l">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_s">
+
+                    <TextView
+                        android:id="@+id/tvCheckoutPriceSubtotalLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@+id/tvCheckoutPriceSubtotalValue"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="@string/checkout_price_subtotal"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        tools:text="Tạm tính (4 sản phẩm)" />
+
+                    <TextView
+                        android:id="@+id/tvCheckoutPriceSubtotalValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:fontFamily="@font/nunito_regular"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        tools:text="970.000đ" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_s">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@+id/tvCheckoutPriceShippingValue"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="@string/checkout_price_shipping"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvCheckoutPriceShippingValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:fontFamily="@font/nunito_regular"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        tools:text="40.000đ" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_s">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@+id/tvCheckoutPriceDiscountValue"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="@string/checkout_price_discount"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvCheckoutPriceDiscountValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:fontFamily="@font/nunito_regular"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        tools:text="-100.000đ" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_s">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@+id/tvCheckoutPricePointsValue"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="@string/checkout_price_points"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvCheckoutPricePointsValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:fontFamily="@font/nunito_regular"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        tools:text="-10.000đ" />
+                </RelativeLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/spacing_s"
+                    app:dividerColor="@color/border_divider" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_l">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:layout_toStartOf="@+id/tvCheckoutTotalFinal"
+                        android:fontFamily="@font/nunito_bold"
+                        android:text="@string/checkout_total_label"
+                        android:textColor="@color/text_main"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvCheckoutTotalFinal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:fontFamily="@font/nunito_bold"
+                        android:textColor="@color/button"
+                        android:textSize="18sp"
+                        tools:text="800.000đ" />
+                </RelativeLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPlaceOrder"
+                    style="@style/Widget.Kanila.Button.Primary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/checkout_place_order" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

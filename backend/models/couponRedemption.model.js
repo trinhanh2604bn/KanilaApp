@@ -32,7 +32,7 @@ const couponRedemptionSchema = new mongoose.Schema(
       default: "used",
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "coupon_redemptions" }
 );
 
 module.exports = mongoose.model("CouponRedemption", couponRedemptionSchema);

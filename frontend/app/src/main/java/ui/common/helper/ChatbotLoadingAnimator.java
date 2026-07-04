@@ -1,4 +1,4 @@
-package com.kanila.app.common.helper;
+package ui.common.helper;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
-import com.kanila.app.R;
+import com.example.frontend.R;
 
 import java.util.ArrayList;
 import java.util.List;

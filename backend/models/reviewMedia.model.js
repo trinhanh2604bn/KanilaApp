@@ -7,7 +7,7 @@ const reviewMediaSchema = new mongoose.Schema(
     mediaUrl: { type: String, required: true },
     sortOrder: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "review_medias" }
 );
 
 reviewMediaSchema.index({ reviewId: 1, sortOrder: 1 });

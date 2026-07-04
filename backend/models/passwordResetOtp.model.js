@@ -1,17 +1,24 @@
-const mongoose = require("mongoose");
+/**
+ * @deprecated PasswordResetOtp is deprecated and removed from Kanila.
+ *
+ * The password reset flow no longer exists. Authentication is now passwordless
+ * via email OTP using the `EmailOtp` model (models/emailOtp.model.js).
+ *
+ * This file is a backward-compatibility shim only. It re-exports `EmailOtp`
+ * under the old name so that any legacy `require("./passwordResetOtp.model")`
+ * will not crash immediately. Update callers to use `EmailOtp` directly.
+ *
+ * COLLECTION CHANGE: The active collection is now `email_otps`.
+ * The old `password_reset_otps` collection is no longer written to.
+ */
 
-const passwordResetOtpSchema = new mongoose.Schema(
-  {
-    email: { type: String, required: true, index: true, lowercase: true, trim: true },
-    otp_hash: { type: String, required: true, index: true },
-    expires_at: { type: Date, required: true, index: true },
-    used_at: { type: Date, default: null, index: true },
-  },
-  { timestamps: true, collection: "password_reset_otps" }
+// eslint-disable-next-line no-console
+console.warn(
+  "[DEPRECATED] passwordResetOtp.model.js: This model is deprecated. " +
+    "Import EmailOtp from models/emailOtp.model.js instead. " +
+    "The password reset flow has been replaced by passwordless email OTP authentication."
 );
 
-// Keep only a single active OTP per email.
-passwordResetOtpSchema.index({ email: 1, used_at: 1, expires_at: 1 });
+const EmailOtp = require("./emailOtp.model");
 
-module.exports = mongoose.model("PasswordResetOtp", passwordResetOtpSchema);
-
+module.exports = EmailOtp;

@@ -25,7 +25,7 @@ const productCategorySchema = new mongoose.Schema(
       default: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "product_categories" }
 );
 
 productCategorySchema.index({ productId: 1, categoryId: 1 }, { unique: true });

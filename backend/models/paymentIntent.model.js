@@ -12,7 +12,7 @@ const paymentIntentSchema = new mongoose.Schema(
     currencyCode: { type: String, default: "VND" },
     intentStatus: { type: String, enum: ["pending", "authorized", "captured", "failed", "cancelled"], default: "pending" },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "payment_intents" }
 );
 
 module.exports = mongoose.model("PaymentIntent", paymentIntentSchema);

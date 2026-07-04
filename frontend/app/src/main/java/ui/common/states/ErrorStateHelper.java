@@ -37,10 +37,10 @@ public class ErrorStateHelper {
     }
     
     public static void showNoInternet(View root, View.OnClickListener retryListener) {
-        TextView tvTitle = root.findViewById(R.id.tvNoInternetTitle);
-        TextView tvDescription = root.findViewById(R.id.tvNoInternetDescription);
-        Button btnRetry = root.findViewById(R.id.btnNoInternetRetry);
-        ImageView ivIllustration = root.findViewById(R.id.ivNoInternetIllustration);
+        TextView tvTitle = root.findViewById(R.id.tvErrorTitle);
+        TextView tvDescription = root.findViewById(R.id.tvErrorDescription);
+        Button btnRetry = root.findViewById(R.id.btnErrorRetry);
+        ImageView ivIllustration = root.findViewById(R.id.ivErrorIllustration);
 
         if (tvTitle != null) tvTitle.setText("Không có kết nối mạng");
         if (tvDescription != null) tvDescription.setText("Vui lòng kiểm tra kết nối và thử lại.");

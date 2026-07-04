@@ -96,7 +96,7 @@
                     android:layout_marginHorizontal="8dp"
                     android:max="100"
                     android:progress="72"
-                    app:progressTint="@color/button"/>
+                    android:progressTint="@color/button"/>
                 <TextView
                     android:id="@+id/tvRating5Percent"
                     android:layout_width="wrap_content"
@@ -128,7 +128,7 @@
                     android:layout_marginHorizontal="8dp"
                     android:max="100"
                     android:progress="20"
-                    app:progressTint="@color/button"/>
+                    android:progressTint="@color/button"/>
                 <TextView
                     android:id="@+id/tvRating4Percent"
                     android:layout_width="wrap_content"
@@ -160,7 +160,7 @@
                     android:layout_marginHorizontal="8dp"
                     android:max="100"
                     android:progress="6"
-                    app:progressTint="@color/button"/>
+                    android:progressTint="@color/button"/>
                 <TextView
                     android:id="@+id/tvRating3Percent"
                     android:layout_width="wrap_content"
@@ -192,7 +192,7 @@
                     android:layout_marginHorizontal="8dp"
                     android:max="100"
                     android:progress="1"
-                    app:progressTint="@color/button"/>
+                    android:progressTint="@color/button"/>
                 <TextView
                     android:id="@+id/tvRating2Percent"
                     android:layout_width="wrap_content"
@@ -224,7 +224,7 @@
                     android:layout_marginHorizontal="8dp"
                     android:max="100"
                     android:progress="1"
-                    app:progressTint="@color/button"/>
+                    android:progressTint="@color/button"/>
                 <TextView
                     android:id="@+id/tvRating1Percent"
                     android:layout_width="wrap_content"

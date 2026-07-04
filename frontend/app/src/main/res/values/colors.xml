@@ -2,4 +2,41 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- ===== Brand / Pink ===== -->
+    <color name="pink_primary">#FA4D8E</color>    <!-- CTA, FAB, active, gửi -->
+    <color name="pink_light">#FFADBE</color>      <!-- accent nhẹ, badge selected -->
+    <color name="pink_secondary">#FFD6DE</color>  <!-- chip, tag, user chat bubble, voucher selected -->
+    <color name="burgundy">#6B1E2E</color>        <!-- heading, giá, text nhấn -->
+
+    <!-- ===== Background ===== -->
+    <color name="bg_primary">#FFFFFF</color>
+    <color name="bg_soft">#FDF9FB</color>         <!-- bot chat bubble, card nhẹ -->
+    <color name="bg_section">#FFF4F7</color>
+
+    <!-- ===== Text ===== -->
+    <color name="text_primary">#372B2B</color>
+    <color name="text_secondary">#6F6060</color>
+    <color name="text_tertiary">#9B8F8F</color>
+    <color name="text_inverse">#FFFFFF</color>
+
+    <!-- ===== Border ===== -->
+    <color name="border_default">#D9D9D9</color>
+    <color name="border_soft">#F0E3E7</color>
+
+    <!-- ===== Semantic (theo Module 0 - Color System) ===== -->
+    <color name="success">#2E9D62</color>
+    <color name="warning">#F5A623</color>
+    <color name="error">#D64545</color>
+    <color name="info">#4C8BF5</color>
+
+    <!-- Nền nhạt cho status chip -->
+    <color name="success_bg">#E6F4EC</color>
+    <color name="warning_bg">#FDF1E0</color>
+    <color name="error_bg">#FBE9E9</color>
+    <color name="info_bg">#E8F0FD</color>
+    <color name="pink_bg">#FFEAF1</color>
+
+
+    <color name="bg_disabled">#F2F2F2</color>
 </resources>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ===== Spacing (UI Kit mục 4) ===== -->
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_s">8dp</dimen>
+    <dimen name="spacing_m">12dp</dimen>
+    <dimen name="spacing_l">16dp</dimen>
+    <dimen name="spacing_xl">24dp</dimen>
+    <dimen name="spacing_xxl">32dp</dimen>
+
+    <!-- ===== Radius (UI Kit mục 4) ===== -->
+    <dimen name="radius_s">8dp</dimen>
+    <dimen name="radius_m">12dp</dimen>
+    <dimen name="radius_l">16dp</dimen>
+    <dimen name="radius_dialog">20dp</dimen>
+    <dimen name="radius_pill">24dp</dimen>
+    <dimen name="radius_circle">999dp</dimen>
+
+    <!-- ===== Kích thước component ===== -->
+    <dimen name="button_height">48dp</dimen>
+    <dimen name="input_height">48dp</dimen>
+    <dimen name="chip_height">32dp</dimen>
+    <dimen name="touch_target_min">44dp</dimen>
+    <dimen name="fab_size">56dp</dimen>            <!-- floating chatbot 56x56 -->
+    <dimen name="bottom_sheet_radius">24dp</dimen> <!-- bo góc trên bottom sheet -->
+
+    <!-- ===== Cỡ chữ (UI Kit mục 6) - tạm để đây, sau có thể tách ra typography ===== -->
+    <dimen name="text_h1">24sp</dimen>
+    <dimen name="text_h2">20sp</dimen>
+    <dimen name="text_h3">16sp</dimen>
+    <dimen name="text_body">14sp</dimen>
+    <dimen name="text_caption">12sp</dimen>
+    <dimen name="text_micro">10sp</dimen>
+</resources>

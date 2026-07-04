@@ -22,7 +22,7 @@
                 android:layout_height="20dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_ticket_placeholder"
-                app:tint="@color/pink_primary"
+                app:tint="@color/button"
                 android:contentDescription="Ticket" />
         </FrameLayout>
 
@@ -33,13 +33,13 @@
             android:layout_marginStart="12dp"
             android:text="#TK2505123456"
             android:textAppearance="@style/Body"
-            android:textColor="@color/text_primary" />
+            android:textColor="@color/text_main" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_chip_pill"
-            android:backgroundTint="@color/success_bg"
+            android:backgroundTint="@color/status_success_bg"
             android:paddingHorizontal="12dp"
             android:paddingVertical="5dp"
             android:text="Đang xử lý"
@@ -59,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="12dp"
-        android:background="@color/border_soft" />
+        android:background="@color/border_divider" />
 
     <LinearLayout
         android:layout_width="match_parent"

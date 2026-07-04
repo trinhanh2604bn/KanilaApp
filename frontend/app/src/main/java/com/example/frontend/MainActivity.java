@@ -35,6 +35,8 @@ import com.example.frontend.model.HomeShortcutItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import ui.category.ProductCategoryFragment;
+
 public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 vpHomeBanner;
@@ -54,9 +56,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -86,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
         tvChallengeProgress = findViewById(R.id.tvChallengeProgress);
         tvChallengeParticipants = findViewById(R.id.tvChallengeParticipants);
         tvChallengeReward = findViewById(R.id.tvChallengeReward);
+
+        edtExpandedSearchQuery = findViewById(R.id.edtExpandedSearchQuery);
+        btnExpandedSearchBack = findViewById(R.id.btnExpandedSearchBack);
     }
 
     private void setupSearchBehavior() {
@@ -100,6 +104,15 @@ public class MainActivity extends AppCompatActivity {
 
         setupHomeShortcuts();
         setupSocialSection();
+
+
+//        btnCart.setOnClickListener(v -> {
+            // Tạm thời thay thế bằng việc mở CheckoutFragment để xem giao diện
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.main, new ui.commerce.CheckoutFragment())
+//                    .addToBackStack(null)
+//                    .commit();
+//        });
     }
 
     private void setupSocialSection() {
@@ -109,6 +122,16 @@ public class MainActivity extends AppCompatActivity {
         // Construct YouTube thumbnail URLs
         String thumbOneUrl = "https://img.youtube.com/vi/JytbqPADyQc/0.jpg";
         String thumbTwoUrl = "https://img.youtube.com/vi/LwHA4UF3XQI/0.jpg";
+    private void showExpandedSearch() {
+        layoutSearchBar.setVisibility(View.GONE);
+        layoutSearchExpandedBar.setVisibility(View.VISIBLE);
+
+        edtExpandedSearchQuery.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.showSoftInput(edtExpandedSearchQuery, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
 
         // Load thumbnails using Glide
         Glide.with(this).load(thumbOneUrl).into(ivReelThumbOne);
@@ -118,6 +141,15 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Kanila Reels", Toast.LENGTH_SHORT).show();
             // TODO: Navigate to ReelsFeedFragment
         });
+    private void collapseExpandedSearch() {
+        layoutSearchExpandedBar.setVisibility(View.GONE);
+        layoutSearchBar.setVisibility(View.VISIBLE);
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(edtExpandedSearchQuery.getWindowToken(), 0);
+        }
+    }
 
         layoutReelThumbOne.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reelOneUrl));
@@ -179,11 +211,13 @@ public class MainActivity extends AppCompatActivity {
             float r = 1 - Math.abs(position);
             page.setScaleY(0.85f + r * 0.15f);
             page.setAlpha(0.5f + r * 0.5f);
-            
+
+
+            // Adjust translation to keep neighbors partially visible and neatly tucked
             float translationOffset = position * -getResources().getDimension(R.dimen.spacing_m) * 2;
             page.setTranslationX(translationOffset);
         });
-        
+
         vpHomeBanner.setPageTransformer(compositePageTransformer);
 
         List<HomeBannerItem> items = new ArrayList<>();
@@ -208,9 +242,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (vpHomeBanner == null) return;
+
                 int currentItem = vpHomeBanner.getCurrentItem();
                 int nextItem = currentItem + 1;
+
+                // Use custom smooth scroll for a more fluid movement
                 smoothScrollTo(nextItem, 800);
+
                 autoSlideHandler.postDelayed(this, 4000);
             }
         };
@@ -232,16 +270,25 @@ public class MainActivity extends AppCompatActivity {
 
         int currentItem = vpHomeBanner.getCurrentItem();
         int itemsToScroll = position - currentItem;
-        
+
+
+        // Handle wrap-around for a smoother loop feel (optional, but here we just follow position)
+        // If we want to always scroll forward even at the end, we'd need a different adapter setup.
+
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1f);
         final float[] previousStep = {0f};
+
+        // Calculate the total pixels to scroll
+        // In ViewPager2, one page scroll corresponds to its full width
         float totalPxToDrag = (float) vpHomeBanner.getWidth() * itemsToScroll;
 
         animator.addUpdateListener(animation -> {
             if (!vpHomeBanner.isFakeDragging()) return;
+
             float currentStep = (float) animation.getAnimatedValue();
             float deltaStep = currentStep - previousStep[0];
             float pixelsToDragNow = deltaStep * totalPxToDrag;
+
             try {
                 vpHomeBanner.fakeDragBy(-pixelsToDragNow);
             } catch (Exception e) {

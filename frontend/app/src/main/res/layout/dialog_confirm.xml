@@ -39,7 +39,7 @@
         android:gravity="center"
         android:text="Xóa sản phẩm này?"
         android:textAppearance="@style/H3"
-        android:textColor="@color/text_primary" />
+        android:textColor="@color/text_main" />
 
     <!-- Mô tả -->
     <TextView
@@ -68,7 +68,7 @@
             android:gravity="center"
             android:text="Hủy bỏ"
             android:textAppearance="@style/Body"
-            android:textColor="@color/text_primary" />
+            android:textColor="@color/text_main" />
 
         <TextView
             android:layout_width="0dp"
@@ -79,6 +79,6 @@
             android:gravity="center"
             android:text="Xóa"
             android:textAppearance="@style/Body"
-            android:textColor="@color/text_inverse" />
+            android:textColor="@color/background_main" />
     </LinearLayout>
 </LinearLayout>

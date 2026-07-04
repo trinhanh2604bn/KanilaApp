@@ -16,7 +16,7 @@
         android:layout_gravity="center"
         android:elevation="6dp"
         android:src="@drawable/ic_chat_placeholder"
-        app:tint="@color/white"
+        app:tint="@color/background_main"
         android:contentDescription="Mở chatbot" />
 
     <View

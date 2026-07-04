@@ -14,71 +14,68 @@
         android:layout_gravity="center_horizontal"
         android:background="@drawable/bg_drag_handle" />
 
-    <LinearLayout
+    <!-- Header -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
         android:paddingHorizontal="16dp"
         android:paddingTop="12dp"
         android:paddingBottom="8dp">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_gravity="center"
             android:text="Bộ lọc sản phẩm"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/H3"
+            android:textColor="@color/text_primary" />
 
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:layout_gravity="end|center_vertical"
             android:src="@drawable/ic_close"
             app:tint="@color/text_secondary"
             android:contentDescription="Đóng" />
-    </LinearLayout>
+    </FrameLayout>
 
     <!-- Nhóm: Danh mục -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingHorizontal="16dp"
-        android:paddingTop="8dp"
+        android:paddingTop="16dp"
         android:text="Danh mục"
-        android:textColor="@color/text_primary"
-        android:textSize="14sp"
-        android:textStyle="bold" />
+        android:textAppearance="@style/H3"
+        android:textColor="@color/text_primary" />
 
-    <LinearLayout
+    <com.google.android.material.chip.ChipGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:paddingHorizontal="16dp"
-        android:paddingTop="8dp">
+        android:paddingTop="8dp"
+        app:chipSpacingHorizontal="8dp"
+        app:chipSpacingVertical="8dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:background="@drawable/bg_chip_default"
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
             android:text="Skincare"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_secondary" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:background="@drawable/bg_chip_selected"
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
             android:text="Makeup"
-            android:textColor="@color/text_inverse"
-            android:textSize="13sp" />
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_inverse" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -87,65 +84,166 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
             android:text="Haircare"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
-    </LinearLayout>
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_secondary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_default"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Bodycare"
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_secondary" />
+    </com.google.android.material.chip.ChipGroup>
 
     <!-- Nhóm: Giá -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingHorizontal="16dp"
-        android:paddingTop="16dp"
+        android:paddingTop="24dp"
         android:text="Giá"
-        android:textColor="@color/text_primary"
-        android:textSize="14sp"
-        android:textStyle="bold" />
+        android:textAppearance="@style/H3"
+        android:textColor="@color/text_primary" />
 
-    <LinearLayout
+    <com.google.android.material.chip.ChipGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="8dp"
+        app:chipSpacingHorizontal="8dp"
+        app:chipSpacingVertical="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_default"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Dưới 200k"
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_secondary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_selected"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="200k – 500k"
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_inverse" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_default"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="500k – 1 triệu"
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_secondary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_default"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Trên 1 triệu"
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_secondary" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <!-- Nhóm: Thương hiệu -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="24dp"
+        android:text="Thương hiệu"
+        android:textAppearance="@style/H3"
+        android:textColor="@color/text_primary" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="8dp"
+        app:chipSpacingHorizontal="8dp"
+        app:chipSpacingVertical="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_selected"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Tất cả"
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_inverse" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_default"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Kanila"
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_secondary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_default"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="The Ordinary"
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_secondary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_default"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Laneige"
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_secondary" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingHorizontal="16dp"
         android:paddingTop="8dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/bg_chip_default"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="Dưới 200k"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
+            android:text="Xem thêm"
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_secondary" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/bg_chip_selected"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="200k – 500k"
-            android:textColor="@color/text_inverse"
-            android:textSize="13sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_default"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="Trên 500k"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_chevron_down"
+            app:tint="@color/text_secondary"
+            android:contentDescription="Mở rộng" />
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:background="@color/border_soft" />
 
     <!-- Action -->
@@ -164,8 +262,8 @@
             android:background="@drawable/bg_button_outline"
             android:gravity="center"
             android:text="Đặt lại"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp" />
+            android:textAppearance="@style/Body"
+            android:textColor="@color/text_primary" />
 
         <TextView
             android:layout_width="0dp"
@@ -175,8 +273,7 @@
             android:background="@drawable/bg_button_primary"
             android:gravity="center"
             android:text="Áp dụng (128)"
-            android:textColor="@color/text_inverse"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/Body"
+            android:textColor="@color/text_inverse" />
     </LinearLayout>
 </LinearLayout>

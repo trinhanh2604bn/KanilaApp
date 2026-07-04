@@ -11,31 +11,31 @@ public class ErrorStateHelper {
 
     public static void showGenericError(View root, View.OnClickListener retryListener) {
         updateErrorState(root,
-            "Đã có lỗi xảy ra",
-            "Không thể tải nội dung. Vui lòng thử lại.",
-            "Thử lại",
-            R.drawable.ic_error_outline,
-            retryListener);
+                "Đã có lỗi xảy ra",
+                "Không thể tải nội dung. Vui lòng thử lại.",
+                "Thử lại",
+                R.drawable.ic_error_outline,
+                retryListener);
     }
 
     public static void showServerError(View root, View.OnClickListener retryListener) {
         updateErrorState(root,
-            "Lỗi máy chủ",
-            "Hệ thống đang gặp sự cố tạm thời. Vui lòng quay lại sau.",
-            "Thử lại",
-            R.drawable.ic_error_outline,
-            retryListener);
+                "Lỗi máy chủ",
+                "Hệ thống đang gặp sự cố tạm thời. Vui lòng quay lại sau.",
+                "Thử lại",
+                R.drawable.ic_error_outline,
+                retryListener);
     }
 
     public static void showPermissionError(View root, View.OnClickListener retryListener) {
         updateErrorState(root,
-            "Thiếu quyền truy cập",
-            "Vui lòng cấp quyền để sử dụng tính năng này.",
-            "Cài đặt",
-            R.drawable.ic_error_outline,
-            retryListener);
+                "Thiếu quyền truy cập",
+                "Vui lòng cấp quyền để sử dụng tính năng này.",
+                "Cài đặt",
+                R.drawable.ic_error_outline,
+                retryListener);
     }
-    
+
     public static void showNoInternet(View root, View.OnClickListener retryListener) {
         TextView tvTitle = root.findViewById(R.id.tvErrorTitle);
         TextView tvDescription = root.findViewById(R.id.tvErrorDescription);

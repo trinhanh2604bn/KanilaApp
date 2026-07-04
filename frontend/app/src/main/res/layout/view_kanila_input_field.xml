@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="android.widget.LinearLayout"
+    tools:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvLabel"
+        style="@style/Text.Kanila.H3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/label_input_spacing"
+        android:textColor="@color/text_main"
+        android:visibility="gone"
+        tools:text="Label"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/containerInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_kanila_input_default"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/input_height"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/spacing_m">
+
+        <ImageView
+            android:id="@+id/ivLeadingIcon"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginEnd="@dimen/spacing_s"
+            android:contentDescription="@null"
+            android:visibility="gone"
+            app:tint="@color/text_main"
+            tools:src="@drawable/ic_search"
+            tools:visibility="visible" />
+
+        <EditText
+            android:id="@+id/etInput"
+            style="@style/Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="Hint"
+            android:inputType="text"
+            android:paddingVertical="@dimen/spacing_s"
+            android:textColor="@color/text_main"
+            android:textColorHint="@color/text_tertiary" />
+
+        <ImageView
+            android:id="@+id/ivTrailingIcon"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginStart="@dimen/spacing_s"
+            android:contentDescription="@null"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            app:tint="@color/text_main"
+            tools:src="@drawable/ic_eye"
+            tools:visibility="visible" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAction"
+            style="@style/Widget.Kanila.Button.Ghost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_s"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingHorizontal="@dimen/spacing_s"
+            android:visibility="gone"
+            tools:text="Action"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/containerMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/ivMessageIcon"
+            android:layout_width="@dimen/icon_size_small"
+            android:layout_height="@dimen/icon_size_small"
+            android:layout_marginEnd="@dimen/spacing_xs"
+            android:contentDescription="@null"
+            tools:src="@drawable/ic_error_outline" />
+
+        <TextView
+            android:id="@+id/tvMessage"
+            style="@style/Micro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/error"
+            tools:text="Error message" />
+
+    </LinearLayout>
+
+</merge>

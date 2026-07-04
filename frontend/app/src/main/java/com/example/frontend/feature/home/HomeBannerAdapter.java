@@ -44,36 +44,29 @@ public class HomeBannerAdapter extends RecyclerView.Adapter<HomeBannerAdapter.Ba
 
     @Override
     public void onBindViewHolder(@NonNull BannerViewHolder holder, int position) {
-        holder.bind(items.get(position), position + 1, items.size());
+        if (items.isEmpty()) return;
+        int realPosition = position % items.size();
+        holder.bind(items.get(realPosition), realPosition + 1, items.size());
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return items.isEmpty() ? 0 : Integer.MAX_VALUE;
     }
 
     class BannerViewHolder extends RecyclerView.ViewHolder {
         private final ImageView ivBackground;
-        private final TextView tvEyebrow;
-        private final TextView tvTitle;
-        private final TextView tvSubtitle;
         private final MaterialButton btnCTA;
         private final TextView tvCounter;
 
         public BannerViewHolder(@NonNull View itemView) {
             super(itemView);
             ivBackground = itemView.findViewById(R.id.ivBannerBackground);
-            tvEyebrow = itemView.findViewById(R.id.tvEyebrow);
-            tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvSubtitle = itemView.findViewById(R.id.tvSubtitle);
             btnCTA = itemView.findViewById(R.id.btnCTA);
             tvCounter = itemView.findViewById(R.id.tvCounter);
         }
 
         public void bind(HomeBannerItem item, int currentPos, int total) {
-            tvEyebrow.setText(item.getEyebrow());
-            tvTitle.setText(item.getTitle());
-            tvSubtitle.setText(item.getSubtitle());
             btnCTA.setText(item.getButtonText());
             tvCounter.setText(currentPos + "/" + total);
 

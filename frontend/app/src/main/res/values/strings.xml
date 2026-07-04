@@ -1,3 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">frontend</string>
+    <string name="post_gallery">Gallery</string>
+    <string name="post_image_1">Image 1</string>
+    <string name="post_image_2">Image 2</string>
+    <string name="post_image_3">Image 3</string>
+    <string name="error_required_field">Vui lòng điền thông tin này</string>
+    <string name="error_invalid_email">Email không hợp lệ</string>
+    <string name="error_invalid_phone">Số điện thoại không hợp lệ</string>
+    <string name="error_password_short">Mật khẩu phải có ít nhất 6 ký tự</string>
 </resources>

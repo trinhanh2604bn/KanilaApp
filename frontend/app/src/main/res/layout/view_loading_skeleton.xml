@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutSkeletonContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_l">
+
+    <!-- Repeating Skeleton Item 1 (e.g., Product Card) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_xl"
+        android:background="@drawable/bg_skeleton_placeholder"
+        android:backgroundTint="@color/background_sub"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_m">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:background="@drawable/bg_skeleton_placeholder"
+            android:backgroundTint="@color/border_divider" />
+
+        <View
+            android:layout_width="160dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:background="@drawable/bg_skeleton_placeholder"
+            android:backgroundTint="@color/border_divider" />
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="@dimen/spacing_s"
+            android:background="@drawable/bg_skeleton_placeholder"
+            android:backgroundTint="@color/border_divider" />
+    </LinearLayout>
+
+    <!-- Repeating Skeleton Item 2 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_xl"
+        android:background="@drawable/bg_skeleton_placeholder"
+        android:backgroundTint="@color/background_sub"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_m">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:background="@drawable/bg_skeleton_placeholder"
+            android:backgroundTint="@color/border_divider" />
+
+        <View
+            android:layout_width="160dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:background="@drawable/bg_skeleton_placeholder"
+            android:backgroundTint="@color/border_divider" />
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="@dimen/spacing_s"
+            android:background="@drawable/bg_skeleton_placeholder"
+            android:backgroundTint="@color/border_divider" />
+    </LinearLayout>
+
+</LinearLayout>

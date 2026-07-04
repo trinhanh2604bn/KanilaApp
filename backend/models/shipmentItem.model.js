@@ -9,7 +9,7 @@ const shipmentItemSchema = new mongoose.Schema(
     deliveredQty: { type: Number, default: 0 },
     returnedQty: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "shipment_items" }
 );
 
 module.exports = mongoose.model("ShipmentItem", shipmentItemSchema);

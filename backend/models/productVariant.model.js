@@ -41,7 +41,7 @@ const productVariantSchema = new mongoose.Schema(
       default: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "product_variants" }
 );
 
 productVariantSchema.index({ productId: 1, variantStatus: 1 });

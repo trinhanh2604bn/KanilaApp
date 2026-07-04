@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutCategoryDemand"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/category_demand_card_grid_height"
+    android:background="@drawable/bg_category_icon_card"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_xs">
+
+    <!-- Icon circle container -->
+    <FrameLayout
+        android:id="@+id/layoutCategoryIconCircle"
+        android:layout_width="@dimen/category_demand_icon_circle_grid_size"
+        android:layout_height="@dimen/category_demand_icon_circle_grid_size"
+        android:background="@drawable/bg_category_icon_circle">
+
+        <ImageView
+            android:id="@+id/ivDemandIcon"
+            android:layout_width="@dimen/category_demand_icon_grid_size"
+            android:layout_height="@dimen/category_demand_icon_grid_size"
+            android:layout_gravity="center"
+            android:contentDescription="@string/content_desc_category_icon"
+            android:scaleType="centerInside"
+            tools:src="@drawable/ic_face" />
+    </FrameLayout>
+
+    <!-- Category name -->
+    <TextView
+        android:id="@+id/tvDemandTitle"
+        style="@style/Text.Kanila.Micro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textColor="@color/text_main"
+        android:textSize="10sp"
+        tools:text="Concealing" />
+
+</LinearLayout>

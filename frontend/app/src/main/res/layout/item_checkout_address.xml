@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutAddressItemRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/spacing_l"
+    android:layout_marginVertical="@dimen/spacing_s"
+    android:background="@drawable/bg_address_card"
+    android:padding="@dimen/spacing_l">
+
+    <ImageView
+        android:id="@+id/ivAddressRadio"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/selector_address_radio"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvAddressName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_l"
+        android:layout_marginEnd="@dimen/spacing_s"
+        android:ellipsize="end"
+        android:fontFamily="@font/nunito_bold"
+        android:maxLines="1"
+        android:textColor="@color/text_main"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/layoutAddressDefaultTag"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/ivAddressRadio"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Nguyễn Thị Mai" />
+
+    <TextView
+        android:id="@+id/tvAddressPhone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:fontFamily="@font/nunito_regular"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/tvAddressName"
+        app:layout_constraintStart_toStartOf="@+id/tvAddressName"
+        app:layout_constraintTop_toBottomOf="@+id/tvAddressName"
+        tools:text="0987654321" />
+
+    <TextView
+        android:id="@+id/tvAddressDetail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:fontFamily="@font/nunito_regular"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/btnAddressEdit"
+        app:layout_constraintStart_toStartOf="@+id/tvAddressName"
+        app:layout_constraintTop_toBottomOf="@+id/tvAddressPhone"
+        tools:text="Thủ Đức, TP.Hồ Chí Minh" />
+
+    <LinearLayout
+        android:id="@+id/layoutAddressDefaultTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_address_default_tag"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/spacing_s"
+        android:paddingVertical="@dimen/spacing_xs"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/ivAddressDefaultIcon"
+            android:layout_width="@dimen/icon_size_small"
+            android:layout_height="@dimen/icon_size_small"
+            android:src="@drawable/ic_star"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/tvAddressDefaultText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_xs"
+            android:fontFamily="@font/nunito_medium"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            tools:text="Mặc định" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/btnAddressEdit"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="@dimen/spacing_s"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_edit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/accent_dark" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

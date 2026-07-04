@@ -13,7 +13,7 @@ const variantOptionValueSchema = new mongoose.Schema(
       required: [true, "Product option value ID is required"],
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "variant_option_values" }
 );
 
 variantOptionValueSchema.index({ variantId: 1, productOptionValueId: 1 }, { unique: true });

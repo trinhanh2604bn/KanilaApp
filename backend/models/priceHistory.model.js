@@ -46,7 +46,7 @@ const priceHistorySchema = new mongoose.Schema(
       default: Date.now,
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "price_histories" }
 );
 
 module.exports = mongoose.model("PriceHistory", priceHistorySchema);

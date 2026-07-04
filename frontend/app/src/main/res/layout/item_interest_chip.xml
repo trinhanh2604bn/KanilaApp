@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.chip.Chip xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/chipInterest"
+    style="@style/Widget.MaterialComponents.Chip.Filter"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Sở thích"
+    android:textAppearance="@style/Caption"
+    android:textColor="@color/accent_dark"
+    app:chipBackgroundColor="@color/pink_bg"
+    app:chipCornerRadius="24dp"
+    app:chipIcon="@drawable/ic_check"
+    app:chipIconEnabled="true"
+    app:chipIconSize="16dp"
+    app:chipIconTint="@color/accent_dark"
+    app:chipStrokeColor="@color/pink_bg"
+    app:chipStrokeWidth="0dp" />

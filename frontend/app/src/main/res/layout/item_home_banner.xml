@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginHorizontal="@dimen/spacing_m"
+    app:cardCornerRadius="@dimen/radius_m"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp">
+
+        <!-- Background Image -->
+
+        <!-- Gradient Overlay -->
+        <ImageView
+            android:id="@+id/ivBannerBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/bg_reward" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_banner_gradient" />
+
+        <!-- CTA Button at Bottom -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCTA"
+            style="@style/Widget.Kanila.Button.Pill"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_gravity="bottom|start"
+            android:layout_marginStart="@dimen/spacing_l"
+            android:layout_marginBottom="5dp"
+            android:minHeight="0dp"
+            android:paddingHorizontal="@dimen/spacing_m"
+            android:textSize="8sp"
+            app:icon="@drawable/ic_arrow_right"
+            app:iconGravity="end"
+            app:iconPadding="@dimen/spacing_xs"
+            app:iconSize="14dp"
+            app:iconTint="@color/background_main"
+            tools:text="Khám phá ngay" />
+
+        <!-- Counter -->
+        <TextView
+            android:id="@+id/tvCounter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/spacing_s"
+            android:background="@drawable/bg_banner_counter"
+            android:paddingHorizontal="@dimen/spacing_s"
+            android:paddingVertical="1dp"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            tools:ignore="SmallSp"
+            tools:text="1/4" />
+
+    </FrameLayout>
+</com.google.android.material.card.MaterialCardView>

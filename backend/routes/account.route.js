@@ -13,7 +13,6 @@ const {
   patchMyAddress,
   deleteMyAddress,
   patchMyDefaultAddress,
-  changeMyPassword,
   getMyProviders,
   getMySecurityStatus,
   unlinkMyProvider,
@@ -24,6 +23,8 @@ const {
 } = require("../controllers/account.controller");
 const { getMyReviews, patchMyReview, deleteMyReview } = require("../controllers/review.controller");
 
+// ─── Authenticated account routes ─────────────────────────────────────────────
+
 router.get("/profile-hub", authMiddleware, getProfileHub);
 router.patch("/profile", authMiddleware, patchMyProfile);
 router.get("/skin-profile", authMiddleware, getMySkinProfile);
@@ -33,15 +34,23 @@ router.get("/addresses", authMiddleware, getMyAddresses);
 router.patch("/addresses/:id/default", authMiddleware, patchMyDefaultAddress);
 router.patch("/addresses/:id", authMiddleware, patchMyAddress);
 router.delete("/addresses/:id", authMiddleware, deleteMyAddress);
-router.post("/change-password", authMiddleware, changeMyPassword);
+
+// Security & linked providers
 router.get("/providers", authMiddleware, getMyProviders);
 router.get("/security-status", authMiddleware, getMySecurityStatus);
 router.delete("/providers/:provider", authMiddleware, unlinkMyProvider);
 
-// Customer review management
+// NOTE: POST /change-password has been removed.
+// Kanila now uses passwordless email-OTP authentication.
+// Password management endpoints are no longer applicable.
+
+// ─── Customer review management ───────────────────────────────────────────────
+
 router.get("/reviews", authMiddleware, getMyReviews);
 router.patch("/reviews/:id", authMiddleware, patchMyReview);
 router.delete("/reviews/:id", authMiddleware, deleteMyReview);
+
+// ─── Admin / internal account CRUD ───────────────────────────────────────────
 
 router.get("/", getAllAccounts);
 router.post("/", createAccount);

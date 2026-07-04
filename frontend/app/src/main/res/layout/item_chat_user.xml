@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="end"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="6dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="280dp"
+        android:background="@drawable/bg_bubble_user"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="10dp"
+        android:lineSpacingExtra="2dp"
+        android:text="Đơn hàng của mình đang ở đâu rồi nhỉ?"
+        android:textAppearance="@style/Body"
+        android:textColor="@color/text_main" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="09:41"
+            android:textAppearance="@style/Micro"
+            android:textColor="@color/text_tertiary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="✓✓"
+            android:textAppearance="@style/Micro"
+            android:textColor="@color/button" />
+    </LinearLayout>
+</LinearLayout>

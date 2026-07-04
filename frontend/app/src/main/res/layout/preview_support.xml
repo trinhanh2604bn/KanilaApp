@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_main"
+    android:padding="16dp">
+
+    <include layout="@layout/view_support_status_chip" />
+    <View android:layout_width="match_parent" android:layout_height="16dp" />
+    <include layout="@layout/item_ticket" />
+    <View android:layout_width="match_parent" android:layout_height="16dp" />
+    <include layout="@layout/item_faq" />
+</LinearLayout>

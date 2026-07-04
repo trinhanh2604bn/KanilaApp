@@ -5,14 +5,15 @@
  *
  * Idempotent — safe to run multiple times.
  * If admin@kanila.com already exists, skips creation.
+ *
+ * NOTE: Passwordless system — no password_hash is created.
+ * Admins log in via email OTP (POST /api/auth/login → POST /api/auth/verify-otp).
  */
 require("dotenv").config();
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 const Account = require("./models/account.model");
 
 const ADMIN_EMAIL = "admin@kanila.com";
-const ADMIN_PASSWORD = "Admin@123456";
 
 async function seedAdmin() {
   try {
@@ -39,23 +40,23 @@ async function seedAdmin() {
         existing.account_status = "active";
         updated = true;
       }
+      if (!existing.email_verified_at) {
+        existing.email_verified_at = new Date();
+        updated = true;
+      }
       if (updated) {
         await existing.save();
-        console.log("\n  → Fixed account_type/status to admin/active");
+        console.log("\n  → Fixed account_type/status/email_verified_at");
       } else {
         console.log("\n  No changes needed.");
       }
     } else {
-      // Hash password using same method as auth.controller.js
-      const salt = await bcrypt.genSalt(10);
-      const password_hash = await bcrypt.hash(ADMIN_PASSWORD, salt);
-
       const account = await Account.create({
         email: ADMIN_EMAIL,
-        password_hash,
         account_type: "admin",
         account_status: "active",
         username: "Kanila Admin",
+        email_verified_at: new Date(),
       });
 
       console.log("Admin account created successfully!");
@@ -65,11 +66,12 @@ async function seedAdmin() {
       console.log("  status:       ", account.account_status);
     }
 
-    console.log("\n--- Login credentials ---");
-    console.log("  Email:    ", ADMIN_EMAIL);
-    console.log("  Password: ", ADMIN_PASSWORD);
-    console.log("  Endpoint:  POST /api/auth/login");
-    console.log("-------------------------\n");
+    console.log("\n--- Login instructions (passwordless) ---");
+    console.log("  Email:     ", ADMIN_EMAIL);
+    console.log("  Step 1:    POST /api/auth/login        { email }");
+    console.log("  Step 2:    POST /api/auth/verify-otp   { email, otp, purpose: \"login\" }");
+    console.log("  Dev OTP:   Set AUTH_DEBUG_OTP in .env for bypass");
+    console.log("-----------------------------------------\n");
   } catch (error) {
     console.error("Seed failed:", error.message);
     process.exit(1);

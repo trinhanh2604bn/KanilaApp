@@ -29,7 +29,7 @@ const productMediaSchema = new mongoose.Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "product_media" }
 );
 
 /** Speeds “first image per product” aggregation used by product listing. */

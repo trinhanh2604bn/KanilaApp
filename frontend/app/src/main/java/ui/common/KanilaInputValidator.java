@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Patterns;
 import com.example.frontend.R;
 
-public class InputValidationHelper {
+public class KanilaInputValidator {
 
     public static boolean isRequiredValid(String value) {
         return value != null && !value.trim().isEmpty();

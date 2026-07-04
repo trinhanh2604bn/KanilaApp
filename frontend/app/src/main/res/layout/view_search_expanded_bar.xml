@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutSearchExpandedBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_search_expanded_bar"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_s">
+
+    <!-- Top Row -->
+    <LinearLayout
+        android:id="@+id/layoutExpandedSearchTopRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnExpandedSearchBack"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_back"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_back"
+            app:tint="@color/button" />
+
+        <EditText
+            android:id="@+id/edtExpandedSearchQuery"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_m"
+            android:layout_weight="1"
+            android:autofillHints="none"
+            android:background="@android:color/transparent"
+            android:ellipsize="end"
+            android:fontFamily="@font/nunito_regular"
+            android:hint="@string/search_query_preview"
+            android:includeFontPadding="false"
+            android:inputType="text"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/text_main"
+            android:textColorHint="@color/text_tertiary"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Bottom Row -->
+    <LinearLayout
+        android:id="@+id/layoutExpandedSearchBottomRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnExpandedSearchCamera"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_camera_search"
+            android:padding="@dimen/spacing_s"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_camera"
+            app:tint="@color/text_tertiary" />
+
+        <ImageButton
+            android:id="@+id/btnExpandedSearchVoice"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="@dimen/spacing_s"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_voice_search"
+            android:padding="@dimen/spacing_s"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_mic"
+            app:tint="@color/text_tertiary" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/btnExpandedSearchSubmit"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:background="@drawable/bg_expanded_search_submit_button"
+            android:contentDescription="@string/content_desc_submit_search"
+            android:scaleType="center"
+            android:src="@drawable/ic_search_sparkle"
+            app:tint="@android:color/white" />
+
+    </LinearLayout>
+
+</LinearLayout>

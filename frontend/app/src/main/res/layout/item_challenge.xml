@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutChallengeItem"
+    android:layout_width="match_parent"
+    android:layout_height="132dp"
+    android:layout_margin="8dp"
+    android:background="@drawable/bg_challenge_card"
+    android:elevation="4dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="18dp"
+    android:paddingEnd="18dp"
+    android:paddingTop="14dp"
+    android:paddingBottom="14dp">
+
+    <!-- 1. Icon trophy bên trái -->
+    <ImageView
+        android:id="@+id/ivChallengeIcon"
+        android:layout_width="30dp"
+        android:layout_height="46dp"
+        android:layout_marginEnd="18dp"
+        android:contentDescription="Challenge icon"
+        android:src="@drawable/ic_trophy"
+        app:tint="@color/accent_dark" />
+
+    <!-- 2. Khối nội dung giữa -->
+    <LinearLayout
+        android:id="@+id/layoutChallengeContent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvChallengeTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/nunito_bold"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="Challenge: Da khỏe sáng xinh"
+            android:textColor="@color/accent_dark"
+            android:textSize="16sp"
+            tools:text="Challenge: Da khỏe sáng xinh" />
+
+        <TextView
+            android:id="@+id/tvChallengeDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/nunito_regular"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="Chia sẻ routine của bạn và nhận quà hấp dẫn!"
+            android:textColor="@color/text_main"
+            android:textSize="15sp"
+            tools:text="Chia sẻ routine của bạn và nhận quà hấp dẫn!" />
+
+        <!-- Dòng thời gian -->
+        <LinearLayout
+            android:id="@+id/layoutChallengeTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivChallengeTimeIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="Time icon"
+                android:src="@drawable/ic_clock"
+                app:tint="@color/button" />
+
+            <TextView
+                android:id="@+id/tvChallengeTimeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/nunito_regular"
+                android:includeFontPadding="false"
+                android:text="Thời gian còn lại:"
+                android:textColor="@color/text_main"
+                android:textSize="12sp"
+                tools:text="Thời gian còn lại:" />
+
+            <TextView
+                android:id="@+id/tvChallengeTimeValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/nunito_bold"
+                android:includeFontPadding="false"
+                android:text="3 ngày"
+                android:textColor="@color/accent_dark"
+                android:textSize="12sp"
+                tools:text="3 ngày" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 3. Khung ảnh sản phẩm bên phải -->
+    <FrameLayout
+        android:id="@+id/layoutChallengeProductImageContainer"
+        android:layout_width="62dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/bg_challenge_product_image_container">
+
+        <ImageView
+            android:id="@+id/ivChallengeProductImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="Challenge product image"
+            android:scaleType="centerInside"
+            tools:src="@drawable/cl_product" />
+
+    </FrameLayout>
+
+    <!-- 4. Nút mũi tên bên phải -->
+    <ImageButton
+        android:id="@+id/btnChallengeAction"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/bg_challenge_arrow_button"
+        android:contentDescription="Open challenge"
+        android:padding="12dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_arrow_right"
+        app:tint="@android:color/white" />
+
+</LinearLayout>

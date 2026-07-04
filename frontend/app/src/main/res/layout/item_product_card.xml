@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/background_main"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    android:layout_margin="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="250dp">
+
+            <ImageView
+                android:id="@+id/ivProductImage"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:scaleType="centerInside"
+                android:src="@android:drawable/ic_menu_report_image"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout
+                android:id="@+id/layoutProductStatusBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_product_badge"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp">
+
+                <TextView
+                    android:id="@+id/tvProductBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_bold"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:text="New"
+                    android:textColor="@color/accent_dark"
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:id="@+id/ivProductStatusIcon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:contentDescription="Product status"
+                    android:src="@drawable/ic_status_close"
+                    android:visibility="gone"
+                    app:tint="@color/button" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btnWishlist"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/selector_post_like"
+                app:tint="@color/selector_post_action_tint"
+                android:contentDescription="Add to wishlist"
+                android:padding="8dp"
+                android:scaleType="centerInside"
+                tools:ignore="TouchTargetSizeCheck" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/tvProductBrand"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_bold"
+                android:text="BeautyBlender"
+                android:textColor="@color/text_main"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvProductName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/nunito_regular"
+                android:maxLines="2"
+                android:text="Phấn phủ BOUNCE Soft Focus"
+                android:textColor="@color/text_main"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <RatingBar
+                    android:id="@+id/tvProductRating"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:numStars="5"
+                    android:progressTint="@color/button"
+                    android:rating="4.5" />
+
+                <TextView
+                    android:id="@+id/tvProductReviewCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="(1.2k)"
+                    android:textColor="@color/text_main"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvProductPrice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/nunito_bold"
+                    android:text="450.000đ"
+                    android:textColor="@color/button"
+                    android:textSize="15sp" />
+
+                <ImageButton
+                    android:id="@+id/btnAddToCart"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:contentDescription="Add to cart"
+                    android:padding="6dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_plus"
+                    tools:ignore="TouchTargetSizeCheck"
+                    app:tint="@color/selector_post_action_tint" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

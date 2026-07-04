@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="KanilaButtonInputView">
+        <attr name="kbiLabel" format="string" />
+        <attr name="kbiHint" format="string" />
+        <attr name="kbiHelperText" format="string" />
+        <attr name="kbiErrorText" format="string" />
+        <attr name="kbiSuccessText" format="string" />
+        <attr name="kbiActionText" format="string" />
+        <attr name="kbiMode" format="enum">
+            <enum name="normal" value="0" />
+            <enum name="password" value="1" />
+            <enum name="search" value="2" />
+            <enum name="action" value="3" />
+            <enum name="multiline" value="4" />
+        </attr>
+        <attr name="kbiRequired" format="boolean" />
+        <attr name="kbiEnabled" format="boolean" />
+        <attr name="kbiShowLabel" format="boolean" />
+        <attr name="kbiShowActionButton" format="boolean" />
+        <attr name="kbiShowLeadingIcon" format="boolean" />
+        <attr name="kbiShowTrailingIcon" format="boolean" />
+        <attr name="kbiMaxLines" format="integer" />
+        <attr name="kbiInputType" format="integer" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Typography -->
+    <style name="Text.Kanila.H1" parent="H1">
+        <item name="lineHeight">32dp</item>
+    </style>
+
+    <style name="Text.Kanila.H2" parent="H2">
+        <item name="lineHeight">28dp</item>
+    </style>
+
+    <style name="Text.Kanila.H3" parent="H3">
+        <item name="lineHeight">24dp</item>
+    </style>
+
+    <style name="Text.Kanila.Body" parent="Body">
+        <item name="lineHeight">22dp</item>
+    </style>
+
+    <style name="Text.Kanila.BodyMedium" parent="Body">
+        <item name="android:fontFamily">@font/nunito_medium</item>
+        <item name="lineHeight">22dp</item>
+    </style>
+
+    <style name="Text.Kanila.Caption" parent="Caption">
+        <item name="lineHeight">18dp</item>
+    </style>
+
+    <style name="Text.Kanila.Micro" parent="Micro">
+        <item name="lineHeight">14dp</item>
+    </style>
+
+    <!-- Buttons -->
+    <style name="Widget.Kanila.Button.Primary" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">@dimen/radius_pill</item>
+        <item name="backgroundTint">@color/button</item>
+        <item name="android:textColor">@color/background_main</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/nunito_semibold</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Widget.Kanila.Button.Secondary" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">@dimen/radius_m</item>
+        <item name="strokeColor">@color/button</item>
+        <item name="android:textColor">@color/button</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/nunito_semibold</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Widget.Kanila.Button.Ghost" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/accent_dark</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/nunito_semibold</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Widget.Kanila.Button.Pill" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_height">@dimen/chip_height</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">@dimen/radius_pill</item>
+        <item name="backgroundTint">@color/button</item>
+        <item name="android:textColor">@color/background_main</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/nunito_medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:paddingLeft">@dimen/spacing_l</item>
+        <item name="android:paddingRight">@dimen/spacing_l</item>
+    </style>
+
+    <style name="Widget.Kanila.Button.Icon" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:layout_width">@dimen/touch_target_min</item>
+        <item name="android:layout_height">@dimen/touch_target_min</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="iconSize">@dimen/icon_size</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconTint">@color/text_main</item>
+    </style>
+
+</resources>

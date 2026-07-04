@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutHomeSocialSection"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/spacing_m"
+    android:layout_marginTop="@dimen/spacing_m"
+    android:baselineAligned="false"
+    android:orientation="horizontal">
+
+    <!-- Kanila Reels Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/layoutKanilaReelsCard"
+        android:layout_width="0dp"
+        android:layout_height="210dp"
+        android:layout_marginEnd="@dimen/spacing_s"
+        android:layout_weight="1"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="@dimen/radius_m"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/border_soft"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_s">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_s">
+
+                <TextView
+                    android:id="@+id/tvKanilaReelsTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/nunito_bold"
+                    android:text="@string/home_social_reels_title"
+                    android:textColor="@color/text_main"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="@dimen/icon_size_small"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="@color/text_tertiary" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <!-- Reel 1 -->
+                <FrameLayout
+                    android:id="@+id/layoutReelThumbOne"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivReelThumbOne"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/img_blush"
+                        app:shapeAppearanceOverlay="@style/RoundedFour" />
+
+                    <ImageView
+                        android:id="@+id/badgeReelOne"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="top|start"
+                        android:layout_margin="4dp"
+                        android:src="@drawable/ic_reels"
+                        android:contentDescription="@string/content_desc_reels_icon"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:id="@+id/tvReelTitleOne"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_margin="4dp"
+                        android:ellipsize="end"
+                        android:fontFamily="@font/nunito_semibold"
+                        android:maxLines="2"
+                        android:text="@string/home_social_reel_1_title"
+                        android:textColor="@color/white"
+                        android:textSize="10sp" />
+                </FrameLayout>
+
+                <!-- Reel 2 -->
+                <FrameLayout
+                    android:id="@+id/layoutReelThumbTwo"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivReelThumbTwo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/img_brush"
+                        app:shapeAppearanceOverlay="@style/RoundedFour" />
+
+                    <ImageView
+                        android:id="@+id/badgeReelTwo"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="top|start"
+                        android:layout_margin="4dp"
+                        android:src="@drawable/ic_reels"
+                        android:contentDescription="@string/content_desc_reels_icon"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:id="@+id/tvReelTitleTwo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_margin="4dp"
+                        android:ellipsize="end"
+                        android:fontFamily="@font/nunito_semibold"
+                        android:maxLines="2"
+                        android:text="@string/home_social_reel_2_title"
+                        android:textColor="@color/white"
+                        android:textSize="10sp" />
+                </FrameLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Kanila Challenge Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/layoutKanilaChallengeCard"
+        android:layout_width="0dp"
+        android:layout_height="210dp"
+        android:layout_weight="1"
+        app:cardBackgroundColor="@color/background_sub"
+        app:cardCornerRadius="@dimen/radius_m"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/secondary"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_s">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_s">
+
+                <TextView
+                    android:id="@+id/tvKanilaChallengeTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/nunito_bold"
+                    android:text="@string/home_social_challenge_title"
+                    android:textColor="@color/accent_dark"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="@dimen/icon_size_small"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="@color/accent_dark" />
+            </RelativeLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginBottom="6dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivChallengeBanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/bg_reward"
+                    app:shapeAppearanceOverlay="@style/RoundedEight" />
+
+                <TextView
+                    android:id="@+id/tvChallengeBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_badge_hot"
+                    android:fontFamily="@font/nunito_bold"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="2dp"
+                    android:text="@string/home_social_challenge_hot"
+                    android:textColor="@color/white"
+                    android:textSize="8sp" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvChallengeName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/nunito_bold"
+                android:maxLines="1"
+                android:text="@string/home_social_challenge_name"
+                android:textColor="@color/text_main"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvChallengeSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/nunito_regular"
+                android:maxLines="1"
+                android:text="@string/home_social_challenge_subtitle"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp" />
+
+            <ProgressBar
+                android:id="@+id/progressChallenge"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginTop="4dp"
+                android:max="14"
+                android:progress="8"
+                android:progressDrawable="@drawable/bg_progress_bar" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp">
+
+                <TextView
+                    android:id="@+id/tvChallengeProgress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:fontFamily="@font/nunito_semibold"
+                    tools:text="8/14 ngày"
+                    android:textColor="@color/button"
+                    android:textSize="9sp" />
+
+                <TextView
+                    android:id="@+id/tvChallengeParticipants"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:fontFamily="@font/nunito_regular"
+                    tools:text="12.6K tham gia"
+                    android:textColor="@color/text_tertiary"
+                    android:textSize="9sp" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:baselineAligned="false"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:src="@drawable/ic_star"
+                    android:contentDescription="@string/content_desc_reward_icon"
+                    app:tint="@color/button" />
+
+                <TextView
+                    android:id="@+id/tvChallengeReward"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/nunito_bold"
+                    tools:text="200 điểm"
+                    android:textColor="@color/button"
+                    android:textSize="10sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnJoinChallenge"
+                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:backgroundTint="@color/button"
+                    android:fontFamily="@font/nunito_bold"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingHorizontal="8dp"
+                    android:text="@string/home_social_challenge_cta"
+                    android:textAllCaps="false"
+                    android:textSize="10sp"
+                    app:cornerRadius="12dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

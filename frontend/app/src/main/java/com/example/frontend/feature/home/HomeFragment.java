@@ -9,10 +9,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.frontend.R;
 import com.example.frontend.model.HomeBannerItem;
+import com.example.frontend.model.HomeShortcutItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,8 @@ public class HomeFragment extends Fragment {
 
     private ViewPager2 viewPagerBanner;
     private HomeBannerAdapter bannerAdapter;
+    private RecyclerView rvHomeShortcuts;
+    private HomeShortcutAdapter shortcutAdapter;
 
     @Nullable
     @Override
@@ -33,7 +37,10 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         
         viewPagerBanner = view.findViewById(R.id.viewPagerBanner);
+        rvHomeShortcuts = view.findViewById(R.id.rvHomeShortcuts);
+
         setupBannerSlider();
+        setupHomeShortcuts();
     }
 
     private void setupBannerSlider() {
@@ -92,5 +99,27 @@ public class HomeFragment extends Fragment {
         // ViewPager2 doesn't have a direct "counter" view inside it, 
         // but we handle it inside the item layout (item_home_banner.xml).
         // The adapter already handles updating the counter text in onBindViewHolder.
+    }
+
+    private void setupHomeShortcuts() {
+        shortcutAdapter = new HomeShortcutAdapter();
+        shortcutAdapter.setOnShortcutClickListener(item -> {
+            Toast.makeText(requireContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
+            // Handle navigation based on item.getDestinationType()
+        });
+
+        rvHomeShortcuts.setAdapter(shortcutAdapter);
+
+        List<HomeShortcutItem> shortcuts = new ArrayList<>();
+        shortcuts.add(new HomeShortcutItem("orders", "Đơn hàng", R.drawable.ic_shortcut_order, "orders", "", false, false));
+        shortcuts.add(new HomeShortcutItem("voucher", "Voucher", R.drawable.ic_shortcut_voucher, "voucher", "", false, true)); // Example badge
+        shortcuts.add(new HomeShortcutItem("ar", "AR", R.drawable.ic_shortcut_ar, "ar_try_on", "", false, false));
+        shortcuts.add(new HomeShortcutItem("kanila_beauty", "Kanila Beauty", R.drawable.ic_shortcut_kanila_beauty, "beauty", "", false, false));
+        shortcuts.add(new HomeShortcutItem("creator", "Creator", R.drawable.ic_shortcut_creator, "creator", "", false, false));
+        shortcuts.add(new HomeShortcutItem("royalty", "Royalty", R.drawable.ic_shortcut_royalty, "loyalty", "", false, false));
+        shortcuts.add(new HomeShortcutItem("help", "Trợ giúp", R.drawable.ic_shortcut_help, "support", "", false, false));
+        shortcuts.add(new HomeShortcutItem("policy", "Chính sách", R.drawable.ic_shortcut_policy, "policy", "", false, false));
+
+        shortcutAdapter.setItems(shortcuts);
     }
 }

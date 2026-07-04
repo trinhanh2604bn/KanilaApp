@@ -29,7 +29,7 @@
             android:layout_weight="1"
             android:text="Chọn màu sắc"
             android:textAppearance="@style/H3"
-            android:textColor="@color/text_primary" />
+            android:textColor="@color/text_main" />
 
         <ImageView
             android:layout_width="24dp"
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:text="Son Tint Lì Kanila Silky Matte"
                 android:textAppearance="@style/Body"
-                android:textColor="@color/text_primary" />
+                android:textColor="@color/text_main" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -73,7 +73,7 @@
                 android:layout_marginTop="4dp"
                 android:text="189.000đ"
                 android:textAppearance="@style/H3"
-                android:textColor="@color/burgundy" />
+                android:textColor="@color/accent_dark" />
         </LinearLayout>
     </LinearLayout>
 
@@ -129,7 +129,7 @@
             android:layout_weight="1"
             android:text="Số lượng"
             android:textAppearance="@style/Body"
-            android:textColor="@color/text_primary" />
+            android:textColor="@color/text_main" />
 
         <ImageView
             android:layout_width="36dp"
@@ -146,7 +146,7 @@
             android:gravity="center"
             android:text="1"
             android:textAppearance="@style/H3"
-            android:textColor="@color/text_primary" />
+            android:textColor="@color/text_main" />
 
         <ImageView
             android:layout_width="36dp"
@@ -154,7 +154,7 @@
             android:background="@drawable/bg_input"
             android:padding="8dp"
             android:src="@drawable/ic_plus"
-            app:tint="@color/pink_primary"
+            app:tint="@color/button"
             android:contentDescription="Tăng" />
     </LinearLayout>
 
@@ -174,7 +174,7 @@
             android:gravity="center"
             android:text="Hủy"
             android:textAppearance="@style/Body"
-            android:textColor="@color/text_primary" />
+            android:textColor="@color/text_main" />
 
         <TextView
             android:layout_width="0dp"
@@ -185,6 +185,6 @@
             android:gravity="center"
             android:text="Xác nhận"
             android:textAppearance="@style/Body"
-            android:textColor="@color/text_inverse" />
+            android:textColor="@color/background_main" />
     </LinearLayout>
 </LinearLayout>

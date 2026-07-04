@@ -17,7 +17,7 @@
         android:lineSpacingExtra="2dp"
         android:text="Đơn hàng của mình đang ở đâu rồi nhỉ?"
         android:textAppearance="@style/Body"
-        android:textColor="@color/text_primary" />
+        android:textColor="@color/text_main" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -39,6 +39,6 @@
             android:layout_marginStart="4dp"
             android:text="✓✓"
             android:textAppearance="@style/Micro"
-            android:textColor="@color/pink_primary" />
+            android:textColor="@color/button" />
     </LinearLayout>
 </LinearLayout>

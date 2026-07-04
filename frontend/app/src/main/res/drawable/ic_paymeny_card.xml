@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+
+    <!-- Khung thẻ thanh toán bo góc -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="
+            M104,96
+            H408
+            C438.93,96 464,121.07 464,152
+            V360
+            C464,390.93 438.93,416 408,416
+            H104
+            C73.07,416 48,390.93 48,360
+            V152
+            C48,121.07 73.07,96 104,96
+            Z"
+        android:strokeColor="#000000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="32" />
+
+    <!-- Đường ngang và chi tiết trên thẻ -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="
+            M48,192
+            H464
+            M128,300
+            H176
+            V320
+            H128
+            Z"
+        android:strokeColor="#000000"
+        android:strokeLineJoin="round"
+        android:strokeWidth="60" />
+
+</vector>

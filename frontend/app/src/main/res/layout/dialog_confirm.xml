@@ -38,9 +38,8 @@
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="Xóa sản phẩm này?"
-        android:textColor="@color/text_primary"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textAppearance="@style/H3"
+        android:textColor="@color/text_primary" />
 
     <!-- Mô tả -->
     <TextView
@@ -50,8 +49,8 @@
         android:gravity="center"
         android:lineSpacingExtra="2dp"
         android:text="Sản phẩm sẽ bị xóa khỏi giỏ hàng và không thể hoàn tác."
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp" />
+        android:textAppearance="@style/Body"
+        android:textColor="@color/text_secondary" />
 
     <!-- Action -->
     <LinearLayout
@@ -68,8 +67,8 @@
             android:background="@drawable/bg_button_outline"
             android:gravity="center"
             android:text="Hủy bỏ"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp" />
+            android:textAppearance="@style/Body"
+            android:textColor="@color/text_primary" />
 
         <TextView
             android:layout_width="0dp"
@@ -79,8 +78,7 @@
             android:background="@drawable/bg_button_error"
             android:gravity="center"
             android:text="Xóa"
-            android:textColor="@color/text_inverse"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/Body"
+            android:textColor="@color/text_inverse" />
     </LinearLayout>
 </LinearLayout>

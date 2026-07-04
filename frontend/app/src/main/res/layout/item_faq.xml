@@ -18,9 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Thời gian giao hàng mất bao lâu?"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/Body"
+            android:textColor="@color/text_primary" />
 
         <ImageView
             android:id="@+id/faq_arrow"
@@ -38,8 +37,8 @@
         android:paddingBottom="14dp"
         android:lineSpacingExtra="2dp"
         android:text="Thông thường đơn hàng sẽ được giao trong 1–3 ngày làm việc tùy khu vực. Bạn sẽ nhận được thông báo và theo dõi trạng thái đơn hàng trong ứng dụng."
+        android:textAppearance="@style/Body"
         android:textColor="@color/text_secondary"
-        android:textSize="14sp"
         android:visibility="gone" />
 
     <View

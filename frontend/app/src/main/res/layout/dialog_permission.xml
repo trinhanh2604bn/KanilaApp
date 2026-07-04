@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_dialog"
+    android:padding="20dp">
+
+    <ImageView android:layout_width="22dp" android:layout_height="22dp"
+        android:layout_gravity="end" android:src="@drawable/ic_close"
+        app:tint="@color/text_tertiary" android:contentDescription="Đóng" />
+
+    <FrameLayout android:layout_width="64dp" android:layout_height="64dp"
+        android:layout_gravity="center_horizontal" android:layout_marginTop="4dp"
+        android:background="@drawable/bg_icon_circle_pink">
+        <ImageView android:layout_width="30dp" android:layout_height="30dp"
+            android:layout_gravity="center" android:src="@drawable/ic_camera"
+            android:contentDescription="Camera" />
+    </FrameLayout>
+
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" android:gravity="center"
+        android:textAppearance="@style/H3" android:text="Cho phép sử dụng camera" />
+
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" android:gravity="center" android:lineSpacingExtra="2dp"
+        android:textAppearance="@style/Body" android:textColor="@color/text_secondary"
+        android:text="Để trải nghiệm AR Try-On, Kanila cần quyền truy cập camera của thiết bị." />
+
+    <TextView android:layout_width="match_parent" android:layout_height="48dp"
+        android:layout_marginTop="20dp" android:background="@drawable/bg_button_primary"
+        android:gravity="center" android:textAppearance="@style/Body"
+        android:textColor="@color/text_inverse" android:text="Cho phép" />
+
+    <TextView android:layout_width="match_parent" android:layout_height="44dp"
+        android:layout_marginTop="4dp" android:gravity="center"
+        android:textAppearance="@style/Body" android:textColor="@color/text_secondary"
+        android:text="Từ chối" />
+</LinearLayout>

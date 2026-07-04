@@ -9,4 +9,25 @@
     <string name="error_invalid_email">Email không hợp lệ</string>
     <string name="error_invalid_phone">Số điện thoại không hợp lệ</string>
     <string name="error_password_short">Mật khẩu phải có ít nhất 6 ký tự</string>
+    <string name="top_bar_category_title">Danh Mục</string>
+    <string name="content_desc_back">Quay lại</string>
+    <string name="content_desc_search">Tìm kiếm</string>
+    <string name="search_hint_product_brand">Tìm sản phẩm, thương hiệu&#8230;</string>
+    <string name="search_query_preview">Nước Xả Vải Comfort</string>
+    <string name="content_desc_camera_search">Tìm kiếm bằng hình ảnh</string>
+    <string name="content_desc_voice_search">Tìm kiếm bằng giọng nói</string>
+    <string name="content_desc_submit_search">Tìm kiếm</string>
+    <string name="category_face">Face</string>
+    <string name="content_desc_category_icon">Biểu tượng danh mục</string>
+    <string name="content_desc_category_product_image">Ảnh sản phẩm danh mục</string>
+    <string name="category_concealing">Concealing</string>
+    <string name="variant_title">Chọn phân loại</string>
+    <string name="variant_color_title">Màu son</string>
+    <string name="variant_size_title">Dung tích</string>
+    <string name="variant_quantity_title">Số lượng</string>
+    <string name="variant_apply">Áp dụng</string>
+    <string name="variant_stock_format">Còn %d sản phẩm</string>
+    <string name="content_desc_close">Đóng</string>
+    <string name="content_desc_increase">Tăng</string>
+    <string name="content_desc_decrease">Giảm</string>
 </resources>

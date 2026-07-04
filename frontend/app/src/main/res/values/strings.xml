@@ -13,7 +13,7 @@
     <string name="content_desc_back">Quay lại</string>
     <string name="content_desc_search">Tìm kiếm</string>
     <string name="search_hint_product_brand">Tìm sản phẩm, thương hiệu&#8230;</string>
-    <string name="search_query_preview">Nước Xả Vải Comfort</string>
+    <string name="search_query_preview">Kem nền Carslan</string>
     <string name="content_desc_camera_search">Tìm kiếm bằng hình ảnh</string>
     <string name="content_desc_voice_search">Tìm kiếm bằng giọng nói</string>
     <string name="content_desc_submit_search">Tìm kiếm</string>
@@ -60,4 +60,7 @@
     <string name="checkout_sample_address_2">123 Trần Hưng Đạo, Phường Bến Thành, Hồ Chí Minh</string>
     <string name="checkout_sample_shipping_2">Giao hàng tiêu chuẩn</string>
     <string name="checkout_sample_delivery_date_2">Nhận hàng: Ngày 09/7</string>
+    <string name="notification">Thông báo</string>
+    <string name="cart">Giỏ hàng</string>
+    <string name="wishlist">Yêu thích</string>
 </resources>

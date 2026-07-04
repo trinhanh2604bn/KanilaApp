@@ -9,7 +9,7 @@ const loyaltyTierSchema = new mongoose.Schema(
     priorityRank: { type: Number, default: 0 },
     tierStatus: { type: String, enum: ["active", "inactive"], default: "active" },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "loyalty_tiers" }
 );
 
 module.exports = mongoose.model("LoyaltyTier", loyaltyTierSchema);

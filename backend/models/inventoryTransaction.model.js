@@ -42,7 +42,7 @@ const inventoryTransactionSchema = new mongoose.Schema(
       default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "inventory_transactions" }
 );
 
 module.exports = mongoose.model("InventoryTransaction", inventoryTransactionSchema);

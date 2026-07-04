@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/spacing_l"
+    app:cardCornerRadius="@dimen/radius_m"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="160dp">
+
+        <!-- Background Image -->
+        <ImageView
+            android:id="@+id/ivBannerBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/bg_reward" />
+
+        <!-- Gradient Overlay -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_banner_gradient" />
+
+        <!-- Text Content Block -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_l">
+
+            <TextView
+                android:id="@+id/tvEyebrow"
+                style="@style/Text.Kanila.Micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                tools:text="Khám phá vẻ đẹp cùng Kanila" />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                style="@style/Text.Kanila.H2"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@color/burgundy"
+                tools:text="Gợi ý chuẩn da Rạng ngời mỗi ngày" />
+
+            <TextView
+                android:id="@+id/tvSubtitle"
+                style="@style/Text.Kanila.Caption"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/text_tertiary"
+                tools:text="Sản phẩm chính hãng • Gợi ý cá nhân hóa" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCTA"
+                style="@style/Widget.Kanila.Button.Pill"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/chip_height"
+                android:layout_marginTop="@dimen/spacing_m"
+                android:minHeight="0dp"
+                android:paddingHorizontal="@dimen/spacing_m"
+                app:icon="@drawable/ic_arrow_right"
+                app:iconGravity="end"
+                app:iconPadding="@dimen/spacing_s"
+                app:iconSize="@dimen/icon_size_small"
+                app:iconTint="@color/background_main"
+                tools:text="Khám phá ngay" />
+
+        </LinearLayout>
+
+        <!-- Page Counter -->
+        <TextView
+            android:id="@+id/tvCounter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/spacing_s"
+            android:background="@drawable/bg_banner_counter"
+            android:paddingHorizontal="@dimen/spacing_s"
+            android:paddingVertical="2dp"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            tools:text="1/4" />
+
+    </FrameLayout>
+</com.google.android.material.card.MaterialCardView>

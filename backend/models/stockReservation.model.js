@@ -46,7 +46,7 @@ const stockReservationSchema = new mongoose.Schema(
       default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "stock_reservations" }
 );
 
 module.exports = mongoose.model("StockReservation", stockReservationSchema);

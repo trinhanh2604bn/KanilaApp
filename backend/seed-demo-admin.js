@@ -1,5 +1,12 @@
+/**
+ * seed-demo-admin.js
+ *
+ * Creates or updates a demo admin account for local development.
+ *
+ * NOTE: Passwordless system — no password is stored.
+ * Use AUTH_DEBUG_OTP in .env or configure SMTP for email OTP delivery.
+ */
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 const path = require("path");
 
 require("dotenv").config({ path: path.join(__dirname, ".env") });
@@ -12,28 +19,30 @@ async function seedAdmin() {
     console.log("Connected to MongoDB for admin seeding");
 
     const email = "admin@gmail.com";
-    const password = "admin1234";
 
     let account = await Account.findOne({ email });
-    const salt = await bcrypt.genSalt(10);
-    const password_hash = await bcrypt.hash(password, salt);
 
     if (account) {
-      account.password_hash = password_hash;
       account.account_type = "admin";
       account.account_status = "active";
+      if (!account.email_verified_at) {
+        account.email_verified_at = new Date();
+      }
       await account.save();
-      console.log("Admin account updated.");
+      console.log("Admin account updated (passwordless).");
     } else {
       account = await Account.create({
         email,
-        password_hash,
         account_type: "admin",
         account_status: "active",
         username: "Kanila Admin",
+        email_verified_at: new Date(),
       });
-      console.log("Admin account created.");
+      console.log("Admin account created (passwordless).");
     }
+
+    console.log("  Email:", account.email);
+    console.log("  Login: POST /api/auth/login → POST /api/auth/verify-otp");
   } catch (error) {
     console.error("Error seeding admin:", error);
   } finally {

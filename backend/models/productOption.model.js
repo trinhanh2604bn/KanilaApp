@@ -17,7 +17,7 @@ const productOptionSchema = new mongoose.Schema(
       default: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "product_options" }
 );
 
 productOptionSchema.index({ productId: 1, displayOrder: 1 });

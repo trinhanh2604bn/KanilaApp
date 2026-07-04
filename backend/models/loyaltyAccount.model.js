@@ -9,7 +9,7 @@ const loyaltyAccountSchema = new mongoose.Schema(
     lifetimePointsRedeemed: { type: Number, default: 0 },
     loyaltyStatus: { type: String, enum: ["active", "inactive", "suspended"], default: "active" },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "loyalty_accounts" }
 );
 
 module.exports = mongoose.model("LoyaltyAccount", loyaltyAccountSchema);

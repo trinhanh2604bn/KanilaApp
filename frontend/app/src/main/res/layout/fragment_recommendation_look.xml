@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_sub">
+
+    <!-- Custom Toolbar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbarRecommendation"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btnBackRec"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_back"
+            android:padding="2dp"
+            android:contentDescription="Back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/accent_dark" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Look trang điểm đề xuất"
+            android:textColor="@color/accent_dark"
+            android:textSize="18sp"
+            android:fontFamily="@font/nunito_bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_pink"
+            android:backgroundTint="#FFD6DE"
+            android:gravity="center"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_goal_sparkle"
+                app:tint="@color/button" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="AI"
+                android:textColor="@color/button"
+                android:textSize="12sp"
+                android:fontFamily="@font/nunito_bold" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toTopOf="@+id/layoutActionsRec"
+        app:layout_constraintTop_toBottomOf="@id/toolbarRecommendation">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Hero Banner - Optimized for readability and uniform background -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                app:cardBackgroundColor="#FFF1F3"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <!-- Image aligned to the right - Removed Guidelines to clear editor aids -->
+                    <ImageView
+                        android:id="@+id/ivHeroImage"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/hinh_nen"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintWidth_percent="0.6" />
+
+                    <!-- Seamless Gradient Overlay (Matches Card Background) -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_makeup_hero_overlay" />
+
+                    <!-- AI Suggestion Badge (Top Left Corner) -->
+                    <TextView
+                        android:id="@+id/badgeAI"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/bg_circle"
+                        android:backgroundTint="@android:color/white"
+                        android:drawablePadding="6dp"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="6dp"
+                        android:text="Gợi ý từ AI cho bạn"
+                        android:textColor="@color/button"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/nunito_bold"
+                        app:drawableStartCompat="@drawable/ic_goal_sparkle"
+                        app:drawableTint="@color/button"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- Text content constrained directly without visual guidelines -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/badgeAI"
+                        app:layout_constraintVertical_bias="0.2"
+                        app:layout_constraintWidth_percent="0.65">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Look trong veo cho da dầu mụn"
+                            android:textColor="@color/accent_dark"
+                            android:textSize="22sp"
+                            android:fontFamily="@font/nunito_bold"
+                            android:lineSpacingExtra="2dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:alpha="0.8"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:text="Tự nhiên - Kiểm soát dầu - Hài hòa - Đi làm"
+                            android:textColor="@color/text_main"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Steps Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_goal_sparkle"
+                    app:tint="@color/button" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Các bước trang điểm"
+                    android:textColor="@color/accent_dark"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/nunito_bold" />
+            </LinearLayout>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:scrollbars="none"
+                android:clipToPadding="false"
+                android:paddingHorizontal="4dp">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <include layout="@layout/item_makeup_step" />
+                    <ImageView android:layout_width="12dp" android:layout_height="12dp" android:layout_marginEnd="12dp" android:src="@drawable/ic_arrow_right" app:tint="@color/secondary" />
+                    <include layout="@layout/item_makeup_step" />
+                    <ImageView android:layout_width="12dp" android:layout_height="12dp" android:layout_marginEnd="12dp" android:src="@drawable/ic_arrow_right" app:tint="@color/secondary" />
+                    <include layout="@layout/item_makeup_step" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Footer Actions -->
+    <LinearLayout
+        android:id="@+id/layoutActionsRec"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@color/background_sub"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBuyAllRec"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="@color/button"
+            android:text="Mua trọn bộ"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:fontFamily="@font/nunito_bold"
+            app:cornerRadius="16dp"
+            app:icon="@drawable/ic_cart"
+            app:iconGravity="textStart" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSaveLookRec"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:text="Lưu look"
+            android:textAllCaps="false"
+            android:textColor="@color/button"
+            android:textSize="16sp"
+            android:fontFamily="@font/nunito_bold"
+            app:cornerRadius="16dp"
+            app:icon="@drawable/ic_bookmark"
+            app:iconGravity="textStart"
+            app:iconTint="@color/button"
+            app:strokeColor="@color/button" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

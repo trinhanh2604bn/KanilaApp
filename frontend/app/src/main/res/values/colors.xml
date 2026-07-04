@@ -60,23 +60,7 @@
     <color name="info_bg">@color/status_preparing_bg</color>
     <color name="info">@color/status_preparing_text</color>
 
-    <color name="text_primary">@color/text_main</color>
-    <color name="text_inverse">#FFFFFF</color>
-    <color name="pink_primary">@color/button</color>
-    <color name="pink_light">@color/primary</color>
-    <color name="pink_secondary">@color/secondary</color>
-    <color name="burgundy">@color/accent_dark</color>
-    <color name="bg_primary">@color/background_main</color>
-    <color name="bg_soft">@color/background_sub</color>
-    <color name="bg_section">#FFF4F7</color>
-    <color name="bg_disabled">@color/status_cancelled_bg</color>
-    <color name="border_default">@color/border_divider</color>
-    <color name="border_soft">@color/border_divider</color>
-    <color name="success_bg">@color/status_success_bg</color>
-    <color name="error_bg">@color/status_payment_failed_bg</color>
-    <color name="warning_bg">@color/status_pending_bg</color>
-    <color name="info_bg">@color/status_preparing_bg</color>
-    <color name="info">@color/status_preparing_text</color>
+
 
 
 

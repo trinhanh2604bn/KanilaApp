@@ -32,4 +32,12 @@
     <color name="status_exchange_text">#9C27B0</color>
     <color name="status_payment_failed_bg">#FFEBEE</color>
     <color name="status_payment_failed_text">#D64545</color>
+
+    <!-- Icon Background Colors (Faded) -->
+    <color name="icon_bg_pink">#FFF0F3</color>
+    <color name="icon_bg_green">#E8F5E9</color>
+    <color name="icon_bg_blue">#E1F5FE</color>
+    <color name="icon_bg_yellow">#FFFDE7</color>
+    <color name="icon_bg_purple">#F3E5F5</color>
+    <color name="icon_bg_grey">#F5F5F5</color>
 </resources>

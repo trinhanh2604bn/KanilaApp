@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    app:cardBackgroundColor="@color/background_main"
+    app:cardCornerRadius="@dimen/radius_l"
+    app:cardElevation="2dp"
+    app:cardPreventCornerOverlap="false"
+    app:strokeColor="@color/background_sub"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivSelectedCartProductImage"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginEnd="12dp"
+            android:contentDescription="@string/product_image_desc"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/RoundedProductImage"
+            tools:src="@android:drawable/ic_menu_report_image" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvSelectedCartProductName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/nunito_bold"
+                android:maxLines="1"
+                android:textColor="@color/text_main"
+                android:textSize="14sp"
+                tools:text="Kanila Sweet Lip For You" />
+
+            <TextView
+                android:id="@+id/tvSelectedCartVariant"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/nunito_regular"
+                android:textColor="@color/text_tertiary"
+                android:textSize="12sp"
+                tools:text="#001 Rose" />
+
+            <TextView
+                android:id="@+id/tvSelectedCartQuantity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/nunito_regular"
+                android:textColor="@color/text_tertiary"
+                android:textSize="12sp"
+                tools:text="Số lượng: 1" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvSelectedCartPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:fontFamily="@font/nunito_bold"
+            android:textColor="@color/button"
+            android:textSize="15sp"
+            tools:text="245.000đ" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

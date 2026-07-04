@@ -17,4 +17,6 @@
     <string name="content_desc_close">Đóng</string>
     <string name="content_desc_increase">Tăng</string>
     <string name="content_desc_decrease">Giảm</string>
+    <string name="cart_selected_quantity_label">Số lượng: %1$d</string>
+    <string name="product_image_desc">Ảnh sản phẩm</string>
 </resources>

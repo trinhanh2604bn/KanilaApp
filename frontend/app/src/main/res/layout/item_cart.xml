@@ -37,7 +37,7 @@
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:layout_marginEnd="10dp"
-            android:contentDescription="Product image"
+            android:contentDescription="@string/product_image_desc"
             android:scaleType="centerCrop"
             app:shapeAppearanceOverlay="@style/RoundedProductImage"
             tools:src="@android:drawable/ic_menu_report_image" />

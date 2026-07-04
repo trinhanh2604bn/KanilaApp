@@ -28,9 +28,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Chọn voucher"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/H3"
+            android:textColor="@color/text_primary" />
 
         <ImageView
             android:layout_width="24dp"
@@ -70,9 +69,8 @@
             android:gravity="center"
             android:paddingHorizontal="20dp"
             android:text="Áp dụng"
-            android:textColor="@color/text_inverse"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/Body"
+            android:textColor="@color/text_inverse" />
     </LinearLayout>
 
     <!-- Voucher 1 (đang chọn) -->
@@ -96,17 +94,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="GIAM100K"
-                android:textColor="@color/burgundy"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textAppearance="@style/Body"
+                android:textColor="@color/burgundy" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Giảm 100.000đ · Đơn từ 500.000đ"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+                android:textAppearance="@style/Caption"
+                android:textColor="@color/text_secondary" />
         </LinearLayout>
 
         <ImageView
@@ -137,17 +134,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="FREESHIP"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textAppearance="@style/Body"
+                android:textColor="@color/text_primary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Freeship toàn quốc · Đơn từ 0đ"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+                android:textAppearance="@style/Caption"
+                android:textColor="@color/text_secondary" />
         </LinearLayout>
 
         <ImageView
@@ -172,8 +168,8 @@
             android:background="@drawable/bg_button_outline"
             android:gravity="center"
             android:text="Hủy"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp" />
+            android:textAppearance="@style/Body"
+            android:textColor="@color/text_primary" />
 
         <TextView
             android:layout_width="0dp"
@@ -183,8 +179,7 @@
             android:background="@drawable/bg_button_primary"
             android:gravity="center"
             android:text="Áp dụng"
-            android:textColor="@color/text_inverse"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/Body"
+            android:textColor="@color/text_inverse" />
     </LinearLayout>
 </LinearLayout>

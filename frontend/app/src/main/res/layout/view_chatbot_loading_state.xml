@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutChatbotLoading"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_chatbot_loading_screen"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_xl">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_chatbot_loading_card"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:elevation="@dimen/chatbot_loading_card_elevation"
+        android:paddingStart="@dimen/chatbot_loading_card_padding_horizontal"
+        android:paddingTop="@dimen/chatbot_loading_card_padding_vertical"
+        android:paddingEnd="@dimen/chatbot_loading_card_padding_horizontal"
+        android:paddingBottom="@dimen/chatbot_loading_card_padding_vertical">
+
+        <!-- Decorative soft glow -->
+        <View
+            android:layout_width="@dimen/chatbot_loading_glow_small"
+            android:layout_height="@dimen/chatbot_loading_glow_small"
+            android:layout_gravity="top|end"
+            android:alpha="0.35"
+            android:background="@drawable/bg_chatbot_soft_dot" />
+
+        <View
+            android:layout_width="@dimen/chatbot_loading_glow_large"
+            android:layout_height="@dimen/chatbot_loading_glow_large"
+            android:layout_gravity="bottom|start"
+            android:alpha="0.22"
+            android:background="@drawable/bg_chatbot_soft_dot" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <!-- Premium status pill -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chatbot_status_pill"
+                android:fontFamily="@font/nunito_semibold"
+                android:includeFontPadding="false"
+                android:letterSpacing="0.06"
+                android:paddingStart="@dimen/chatbot_loading_status_padding_horizontal"
+                android:paddingTop="@dimen/chatbot_loading_status_padding_vertical"
+                android:paddingEnd="@dimen/chatbot_loading_status_padding_horizontal"
+                android:paddingBottom="@dimen/chatbot_loading_status_padding_vertical"
+                android:text="KANILA AI BEAUTY"
+                android:textAllCaps="true"
+                android:textColor="@color/button"
+                android:textSize="@dimen/chatbot_loading_status_text_size" />
+
+            <!-- Robot + halo + typing bubble -->
+            <FrameLayout
+                android:layout_width="@dimen/chatbot_loading_visual_size"
+                android:layout_height="@dimen/chatbot_loading_visual_size"
+                android:layout_marginTop="@dimen/chatbot_loading_visual_margin_top"
+                android:layout_marginBottom="@dimen/chatbot_loading_visual_margin_bottom"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <View
+                    android:layout_width="@dimen/chatbot_loading_halo_size"
+                    android:layout_height="@dimen/chatbot_loading_halo_size"
+                    android:layout_gravity="center"
+                    android:alpha="0.70"
+                    android:background="@drawable/bg_chatbot_halo" />
+
+                <View
+                    android:layout_width="@dimen/chatbot_loading_inner_halo_size"
+                    android:layout_height="@dimen/chatbot_loading_inner_halo_size"
+                    android:layout_gravity="center"
+                    android:alpha="0.92"
+                    android:background="@drawable/bg_chatbot_inner_circle" />
+
+                <!-- Robot Illustration -->
+                <ImageView
+                    android:id="@+id/ivLoadingRobot"
+                    android:layout_width="@dimen/chatbot_loading_robot_size"
+                    android:layout_height="@dimen/chatbot_loading_robot_size"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/wait_chatting" />
+
+                <!-- Typing Bubble positioned relative to robot -->
+                <FrameLayout
+                    android:id="@+id/containerTypingBubble"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="@dimen/chatbot_loading_bubble_margin_top"
+                    android:layout_marginEnd="@dimen/chatbot_loading_bubble_margin_end"
+                    android:background="@drawable/bg_chatbot_typing_bubble"
+                    android:elevation="@dimen/chatbot_loading_bubble_elevation"
+                    android:paddingStart="@dimen/chatbot_loading_bubble_padding_horizontal"
+                    android:paddingTop="@dimen/chatbot_loading_bubble_padding_vertical"
+                    android:paddingEnd="@dimen/chatbot_loading_bubble_padding_horizontal"
+                    android:paddingBottom="@dimen/chatbot_loading_bubble_padding_vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:id="@+id/typingDot1"
+                            android:layout_width="@dimen/chatbot_loading_dot_size"
+                            android:layout_height="@dimen/chatbot_loading_dot_size"
+                            android:layout_marginEnd="@dimen/chatbot_loading_dot_gap"
+                            android:background="@drawable/bg_kanila_button_pill"
+                            android:backgroundTint="@color/button" />
+
+                        <View
+                            android:id="@+id/typingDot2"
+                            android:layout_width="@dimen/chatbot_loading_dot_size"
+                            android:layout_height="@dimen/chatbot_loading_dot_size"
+                            android:layout_marginEnd="@dimen/chatbot_loading_dot_gap"
+                            android:background="@drawable/bg_kanila_button_pill"
+                            android:backgroundTint="@color/button" />
+
+                        <View
+                            android:id="@+id/typingDot3"
+                            android:layout_width="@dimen/chatbot_loading_dot_size"
+                            android:layout_height="@dimen/chatbot_loading_dot_size"
+                            android:background="@drawable/bg_kanila_button_pill"
+                            android:backgroundTint="@color/button" />
+                    </LinearLayout>
+                </FrameLayout>
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvChatbotTitle"
+                style="@style/Text.Kanila.H2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="Kanila đang trả lời bạn"
+                android:textAlignment="center"
+                android:textColor="@color/accent_dark" />
+
+            <TextView
+                android:id="@+id/tvChatbotSubtitle"
+                style="@style/Text.Kanila.Body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                android:alpha="0.72"
+                android:gravity="center"
+                android:maxWidth="@dimen/chatbot_loading_subtitle_max_width"
+                android:text="Kanila AI đang phân tích câu hỏi để đưa ra phản hồi phù hợp nhất"
+                android:textAlignment="center"
+                android:textColor="@color/text_main" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/chatbot_loading_response_margin_top"
+                android:background="@drawable/bg_chatbot_response_pill"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/chatbot_loading_response_padding_horizontal"
+                android:paddingTop="@dimen/chatbot_loading_response_padding_vertical"
+                android:paddingEnd="@dimen/chatbot_loading_response_padding_horizontal"
+                android:paddingBottom="@dimen/chatbot_loading_response_padding_vertical">
+
+                <View
+                    android:layout_width="@dimen/chatbot_loading_response_dot"
+                    android:layout_height="@dimen/chatbot_loading_response_dot"
+                    android:layout_marginEnd="@dimen/chatbot_loading_dot_gap"
+                    android:alpha="0.85"
+                    android:background="@drawable/bg_kanila_button_pill"
+                    android:backgroundTint="@color/primary" />
+
+                <TextView
+                    style="@style/Text.Kanila.Body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.78"
+                    android:includeFontPadding="false"
+                    android:text="Đang soạn phản hồi thông minh..."
+                    android:textColor="@color/text_main" />
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>

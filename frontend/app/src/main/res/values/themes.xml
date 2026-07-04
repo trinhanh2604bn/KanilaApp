@@ -1,9 +1,51 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.Frontend" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="android:colorBackground">@color/background_main</item>
+        <item name="colorError">@color/error</item>
     </style>
 
     <style name="Theme.Frontend" parent="Base.Theme.Frontend" />
+
+    <style name="H1" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="fontFamily">@font/nunito_bold</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/text_main</item>
+    </style>
+
+    <style name="H2" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="fontFamily">@font/nunito_bold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/text_main</item>
+    </style>
+
+    <style name="H3" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="fontFamily">@font/nunito_semibold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/text_main</item>
+    </style>
+
+    <style name="Body" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/nunito_regular</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_main</item>
+    </style>
+
+    <style name="Caption" parent="TextAppearance.Material3.BodyMedium">
+        <item name="fontFamily">@font/nunito_regular</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_main</item>
+    </style>
+
+    <style name="Micro" parent="TextAppearance.Material3.BodySmall">
+        <item name="fontFamily">@font/nunito_medium</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/text_main</item>
+    </style>
+
+    <style name="RoundedProductImage" parent="">
+        <item name="cornerSize">12dp</item>
+    </style>
+
 </resources>

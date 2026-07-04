@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutSearchBar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/input_height"
+    android:background="@drawable/bg_search_bar"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/spacing_l"
+    android:paddingEnd="@dimen/spacing_l">
+
+    <ImageView
+        android:id="@+id/ivSearchIcon"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
+        android:contentDescription="@string/content_desc_search"
+        android:src="@drawable/ic_search"
+        app:tint="@color/text_tertiary" />
+
+    <TextView
+        android:id="@+id/tvSearchHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_s"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:fontFamily="@font/nunito_regular"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:text="@string/search_hint_product_brand"
+        android:textColor="@color/text_tertiary"
+        android:textSize="14sp"
+        tools:text="Tìm sản phẩm, thương hiệu&#8230;" />
+    <ImageButton
+        android:id="@+id/btnExpandedSearchCamera"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/content_desc_camera_search"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_camera"
+        app:tint="@color/text_tertiary" />
+
+</LinearLayout>

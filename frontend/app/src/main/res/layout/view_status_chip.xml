@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutStatusChip"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minHeight="32dp"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp"
+    android:paddingTop="7dp"
+    android:paddingBottom="7dp"
+    android:background="@drawable/bg_status_chip_default"
+    android:clickable="false"
+    android:focusable="false">
+
+    <ImageView
+        android:id="@+id/ivStatusIcon"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginEnd="4dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:src="@android:drawable/ic_menu_info_details"
+        android:contentDescription="@null" />
+
+    <TextView
+        android:id="@+id/tvStatusChip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:fontFamily="@font/nunito_semibold"
+        android:textColor="@color/status_pending_text"
+        android:includeFontPadding="false"
+        android:gravity="center"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Chờ xác nhận" />
+
+</LinearLayout>

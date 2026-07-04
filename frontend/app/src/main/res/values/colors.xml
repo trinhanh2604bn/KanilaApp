@@ -14,4 +14,22 @@
 
     <color name="success">#2E9D62</color>
     <color name="error">#D64545</color>
+
+    <!-- Status Colors -->
+    <color name="status_pending_bg">#FFF4E5</color>
+    <color name="status_pending_text">#FF9800</color>
+    <color name="status_preparing_bg">#E3F2FD</color>
+    <color name="status_preparing_text">#2196F3</color>
+    <color name="status_shipping_bg">#E8F5E9</color>
+    <color name="status_shipping_text">#4CAF50</color>
+    <color name="status_success_bg">#E8F5E9</color>
+    <color name="status_success_text">#2E9D62</color>
+    <color name="status_cancelled_bg">#F5F5F5</color>
+    <color name="status_cancelled_text">#9E9E9E</color>
+    <color name="status_return_bg">#FDF9FB</color>
+    <color name="status_return_text">#E83E72</color>
+    <color name="status_exchange_bg">#F3E5F5</color>
+    <color name="status_exchange_text">#9C27B0</color>
+    <color name="status_payment_failed_bg">#FFEBEE</color>
+    <color name="status_payment_failed_text">#D64545</color>
 </resources>

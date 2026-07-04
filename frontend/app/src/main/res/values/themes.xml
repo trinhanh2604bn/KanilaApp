@@ -44,4 +44,8 @@
         <item name="android:textColor">@color/text_main</item>
     </style>
 
+    <style name="RoundedProductImage" parent="">
+        <item name="cornerSize">12dp</item>
+    </style>
+
 </resources>

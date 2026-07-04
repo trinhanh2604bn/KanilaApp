@@ -20,7 +20,7 @@
         android:layout_marginEnd="8dp"
         android:buttonTint="@color/button"
         tools:ignore="TouchTargetSizeCheck"
-        android:checked="true" />
+        android:checked="false" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/ivCartProductImage"
@@ -81,32 +81,6 @@
                 android:textColor="@color/button"
                 android:textSize="13sp" />
 
-            <TextView
-                android:id="@+id/tvCartOldPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:fontFamily="@font/nunito_regular"
-                android:includeFontPadding="false"
-                android:text="560.000đ"
-                android:textColor="@color/border_divider"
-                android:textSize="11sp" />
-
-            <TextView
-                android:id="@+id/tvCartDiscount"
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_cart_discount_badge"
-                android:fontFamily="@font/nunito_semibold"
-                android:gravity="center"
-                android:includeFontPadding="false"
-                android:minWidth="34dp"
-                android:paddingHorizontal="7dp"
-                android:singleLine="true"
-                android:text="-20%"
-                android:textColor="@color/button"
-                android:textSize="10sp" />
         </LinearLayout>
     </LinearLayout>
 

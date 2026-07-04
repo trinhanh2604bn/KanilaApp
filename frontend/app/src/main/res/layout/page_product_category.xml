@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutProductCategoryPage"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical">
+
+    <!-- A. Fixed top area -->
+    <include
+        android:id="@+id/includeTopBar"
+        layout="@layout/view_app_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Search expanded container placeholder -->
+    <FrameLayout
+        android:id="@+id/containerSearchExpanded"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <include layout="@layout/view_search_expanded_bar" />
+    </FrameLayout>
+
+    <!-- B. Scrollable content area -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollProductCategoryContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/layoutProductCategoryContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_l"
+            android:paddingBottom="@dimen/spacing_l">
+
+            <!-- 1. Hero banner -->
+            <FrameLayout
+                android:id="@+id/layoutCategoryHeroBanner"
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                android:layout_marginTop="@dimen/spacing_m"
+                android:background="@drawable/bg_category_hero_banner">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_m">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvHeroSmallTitle"
+                            style="@style/Text.Kanila.Micro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/category_hero_small_title"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tvHeroTitle"
+                            style="@style/Text.Kanila.H3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:text="@string/category_hero_title"
+                            android:textColor="@color/accent_dark" />
+
+                        <TextView
+                            android:id="@+id/tvHeroDescription"
+                            style="@style/Text.Kanila.Micro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:text="@string/category_hero_description"
+                            android:textColor="@color/text_secondary" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/ivHeroProductImage"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/img_gift" />
+                </LinearLayout>
+
+                <!-- Indicator dots placeholder -->
+                <LinearLayout
+                    android:id="@+id/layoutHeroIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginBottom="@dimen/spacing_s"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:background="@drawable/bg_circle"
+                        android:backgroundTint="@color/accent_dark" />
+
+                    <View
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:background="@drawable/bg_circle"
+                        android:backgroundTint="@color/border_divider" />
+
+                    <View
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:background="@drawable/bg_circle"
+                        android:backgroundTint="@color/border_divider" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <!-- 2. Main category grid -->
+            <LinearLayout
+                android:id="@+id/layoutCategoryGrid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_m"
+                android:orientation="vertical">
+
+                <!-- Row 1 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/cardCategoryFace"
+                        layout="@layout/view_category_visual_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="@dimen/spacing_xs"
+                        android:layout_height="match_parent" />
+
+                    <include
+                        android:id="@+id/cardCategoryLips"
+                        layout="@layout/view_category_visual_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="@dimen/spacing_xs"
+                        android:layout_height="match_parent" />
+
+                    <include
+                        android:id="@+id/cardCategoryEyes"
+                        layout="@layout/view_category_visual_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <!-- Row 2 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/cardCategoryCheeks"
+                        layout="@layout/view_category_visual_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="@dimen/spacing_xs"
+                        android:layout_height="match_parent" />
+
+                    <include
+                        android:id="@+id/cardCategoryGift"
+                        layout="@layout/view_category_visual_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="@dimen/spacing_xs"
+                        android:layout_height="match_parent" />
+
+                    <include
+                        android:id="@+id/cardCategoryNew"
+                        layout="@layout/view_category_visual_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <!-- Row 3 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/cardCategoryHot"
+                        layout="@layout/view_category_visual_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="@dimen/spacing_xs"
+                        android:layout_height="match_parent" />
+
+                    <include
+                        android:id="@+id/cardCategoryBrushes"
+                        layout="@layout/view_category_visual_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="@dimen/spacing_xs"
+                        android:layout_height="match_parent" />
+
+                    <include
+                        android:id="@+id/cardCategoryAR"
+                        layout="@layout/view_category_visual_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 3. Section “Mua theo nhu cầu” -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_l"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/category_section_demand" />
+
+                <TextView
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_see_all"
+                    android:textColor="@color/text_tertiary" />
+            </LinearLayout>
+
+            <HorizontalScrollView
+                android:id="@+id/hsvDemandCategories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_m"
+                android:fillViewport="true"
+                android:overScrollMode="never"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/layoutDemandCategories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:weightSum="5">
+
+                    <include
+                        android:id="@+id/cardDemandConcealing"
+                        layout="@layout/view_category_demand"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/category_demand_card_grid_height"
+                        android:layout_weight="1" />
+
+                    <include
+                        android:id="@+id/cardDemandMoisturizing"
+                        layout="@layout/view_category_demand"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/category_demand_card_grid_height"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:layout_weight="1" />
+
+                    <include
+                        android:id="@+id/cardDemandSunproof"
+                        layout="@layout/view_category_demand"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/category_demand_card_grid_height"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:layout_weight="1" />
+
+                    <include
+                        android:id="@+id/cardDemandToneUp"
+                        layout="@layout/view_category_demand"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/category_demand_card_grid_height"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:layout_weight="1" />
+
+                    <include
+                        android:id="@+id/cardDemandWaterproof"
+                        layout="@layout/view_category_demand"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/category_demand_card_grid_height"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:layout_weight="1" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- 4. Section “Thương hiệu nổi bật” -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_l"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/category_section_brand" />
+
+                <TextView
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_see_all"
+                    android:textColor="@color/text_tertiary" />
+            </LinearLayout>
+
+            <HorizontalScrollView
+                android:id="@+id/hsvFeaturedBrands"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_m"
+                android:fillViewport="true"
+                android:overScrollMode="never"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/layoutFeaturedBrands"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/brand_logo_card_grid_height"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:weightSum="5">
+
+                    <include
+                        android:id="@+id/cardBrandMaybelline"
+                        layout="@layout/view_brand_logo_card"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <include
+                        android:id="@+id/cardBrandHuda"
+                        layout="@layout/view_brand_logo_card"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:layout_weight="1" />
+
+                    <include
+                        android:id="@+id/cardBrandFwee"
+                        layout="@layout/view_brand_logo_card"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:layout_weight="1" />
+
+                    <include
+                        android:id="@+id/cardBrandJudydoll"
+                        layout="@layout/view_brand_logo_card"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:layout_weight="1" />
+
+                    <include
+                        android:id="@+id/cardBrandAnastasia"
+                        layout="@layout/view_brand_logo_card"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:layout_weight="1" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- C. Fixed bottom area -->
+    <include
+        android:id="@+id/includeBottomNavigation"
+        layout="@layout/view_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

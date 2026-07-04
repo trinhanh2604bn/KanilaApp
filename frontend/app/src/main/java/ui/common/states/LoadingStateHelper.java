@@ -101,7 +101,7 @@ public class LoadingStateHelper {
     public static void showLoading(View loadingView, View contentView) {
         if (loadingView != null) {
             loadingView.setVisibility(View.VISIBLE);
-            
+
             if (loadingView.findViewById(R.id.containerDotSpinner) != null) {
                 startDotSpinner(loadingView);
             }

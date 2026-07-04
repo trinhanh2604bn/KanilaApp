@@ -20,7 +20,7 @@ const promotionTargetSchema = new mongoose.Schema(
       default: "",
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "promotion_targets" }
 );
 
 module.exports = mongoose.model("PromotionTarget", promotionTargetSchema);

@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.frontend.R;
-import com.kanila.app.common.helper.ChatbotLoadingAnimator;
+import ui.common.helper.ChatbotLoadingAnimator;
 
 public class ChatSupportFragment extends Fragment {
 

@@ -25,7 +25,7 @@ const variantMediaSchema = new mongoose.Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "variant_medias" }
 );
 
 module.exports = mongoose.model("VariantMedia", variantMediaSchema);

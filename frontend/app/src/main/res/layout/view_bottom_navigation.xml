@@ -221,8 +221,8 @@
 
                 <ImageView
                     android:id="@+id/ivCommunity"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_community"
                     app:tint="@color/text_main" />

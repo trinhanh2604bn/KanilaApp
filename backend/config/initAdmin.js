@@ -1,32 +1,46 @@
 /**
  * Auto-initializer: ensures a default admin account exists.
  * Called once at server startup. Idempotent — skips if account already exists.
+ *
+ * NOTE: Passwordless system — no password_hash is created or stored.
+ * Admins log in via email OTP (POST /api/auth/login → POST /api/auth/verify-otp).
  */
-const bcrypt = require("bcryptjs");
 const Account = require("../models/account.model");
 
 const ADMIN_EMAIL = "ngan@gmail.com";
-const ADMIN_PASSWORD = "123456789";
 
 const ensureAdminAccount = async () => {
   try {
-    const salt = await bcrypt.genSalt(10);
-    const password_hash = await bcrypt.hash(ADMIN_PASSWORD, salt);
-
     let existing = await Account.findOne({ email: ADMIN_EMAIL });
     if (existing) {
-      existing.password_hash = password_hash;
-      await existing.save();
-      console.log(`[init] Admin account updated with latest password: ${existing.email}`);
+      let updated = false;
+      if (existing.account_type !== "admin") {
+        existing.account_type = "admin";
+        updated = true;
+      }
+      if (existing.account_status !== "active") {
+        existing.account_status = "active";
+        updated = true;
+      }
+      if (!existing.email_verified_at) {
+        existing.email_verified_at = new Date();
+        updated = true;
+      }
+      if (updated) {
+        await existing.save();
+        console.log(`[init] Admin account updated: ${existing.email}`);
+      } else {
+        console.log(`[init] Admin account already exists: ${existing.email}`);
+      }
       return;
     }
 
     await Account.create({
       email: ADMIN_EMAIL,
-      password_hash,
       account_type: "admin",
       account_status: "active",
       username: "Kanila Admin",
+      email_verified_at: new Date(),
     });
 
     console.log(`[init] Admin account created: ${ADMIN_EMAIL}`);

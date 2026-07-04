@@ -28,7 +28,7 @@ const promotionRuleSchema = new mongoose.Schema(
       default: "",
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "promotion_rules" }
 );
 
 module.exports = mongoose.model("PromotionRule", promotionRuleSchema);

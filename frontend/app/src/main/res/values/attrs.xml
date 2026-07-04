@@ -23,4 +23,14 @@
         <attr name="kbiMaxLines" format="integer" />
         <attr name="kbiInputType" format="integer" />
     </declare-styleable>
+
+    <declare-styleable name="KanilaInputField">
+        <attr name="kanilaLabel" format="string" />
+        <attr name="kanilaHint" format="string" />
+        <attr name="kanilaMode" format="integer" />
+        <attr name="kanilaEnabled" format="boolean" />
+        <attr name="kanilaActionText" format="string" />
+        <attr name="kanilaShowActionButton" format="boolean" />
+        <attr name="kanilaShowLeadingIcon" format="boolean" />
+    </declare-styleable>
 </resources>

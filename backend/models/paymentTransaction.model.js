@@ -12,7 +12,7 @@ const paymentTransactionSchema = new mongoose.Schema(
     processedAt: { type: Date, default: Date.now },
     rawResponseJson: { type: String, default: "" },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "payment_transactions" }
 );
 
 module.exports = mongoose.model("PaymentTransaction", paymentTransactionSchema);

@@ -1,0 +1,1115 @@
+{
+  "databaseName": "kanila",
+  "totalCollectionsInDB": 109,
+  "totalModelFiles": 74,
+  "collectionData": [
+    {
+      "name": "account_auth_providers",
+      "count": 20
+    },
+    {
+      "name": "account_roles",
+      "count": 31
+    },
+    {
+      "name": "accounts",
+      "count": 31
+    },
+    {
+      "name": "addresses",
+      "count": 10
+    },
+    {
+      "name": "admin_profiles",
+      "count": 8
+    },
+    {
+      "name": "audit_logs",
+      "count": 0
+    },
+    {
+      "name": "beauty_references",
+      "count": 104
+    },
+    {
+      "name": "brands",
+      "count": 24
+    },
+    {
+      "name": "cart_items",
+      "count": 0
+    },
+    {
+      "name": "cartitems",
+      "count": 0
+    },
+    {
+      "name": "carts",
+      "count": 30
+    },
+    {
+      "name": "categories",
+      "count": 41
+    },
+    {
+      "name": "checkout_addresses",
+      "count": 0
+    },
+    {
+      "name": "checkout_sessions",
+      "count": 0
+    },
+    {
+      "name": "checkout_shipping_methods",
+      "count": 0
+    },
+    {
+      "name": "checkoutaddresses",
+      "count": 0
+    },
+    {
+      "name": "checkoutsessions",
+      "count": 0
+    },
+    {
+      "name": "checkoutshippingmethods",
+      "count": 0
+    },
+    {
+      "name": "coupon_redemptions",
+      "count": 5
+    },
+    {
+      "name": "couponredemptions",
+      "count": 20
+    },
+    {
+      "name": "coupons",
+      "count": 25
+    },
+    {
+      "name": "customer_addresses",
+      "count": 46
+    },
+    {
+      "name": "customer_beauty_profiles",
+      "count": 23
+    },
+    {
+      "name": "customer_consents",
+      "count": 69
+    },
+    {
+      "name": "customer_coupons",
+      "count": 23
+    },
+    {
+      "name": "customer_preferences",
+      "count": 115
+    },
+    {
+      "name": "customer_profiles",
+      "count": 23
+    },
+    {
+      "name": "customer_recommendation_snapshots",
+      "count": 0
+    },
+    {
+      "name": "customers",
+      "count": 15
+    },
+    {
+      "name": "email_otps",
+      "count": 0
+    },
+    {
+      "name": "guest_sessions",
+      "count": 20
+    },
+    {
+      "name": "inventory_balances",
+      "count": 239
+    },
+    {
+      "name": "inventory_transactions",
+      "count": 80
+    },
+    {
+      "name": "inventorybalances",
+      "count": 0
+    },
+    {
+      "name": "inventorytransactions",
+      "count": 0
+    },
+    {
+      "name": "loyalty_accounts",
+      "count": 8
+    },
+    {
+      "name": "loyalty_point_ledger",
+      "count": 14
+    },
+    {
+      "name": "loyalty_tiers",
+      "count": 8
+    },
+    {
+      "name": "loyaltyaccounts",
+      "count": 0
+    },
+    {
+      "name": "loyaltypointledgers",
+      "count": 0
+    },
+    {
+      "name": "loyaltytiers",
+      "count": 0
+    },
+    {
+      "name": "order_addresses",
+      "count": 0
+    },
+    {
+      "name": "order_items",
+      "count": 0
+    },
+    {
+      "name": "order_status_history",
+      "count": 0
+    },
+    {
+      "name": "order_totals",
+      "count": 0
+    },
+    {
+      "name": "orders",
+      "count": 0
+    },
+    {
+      "name": "password_reset_otps",
+      "count": 2
+    },
+    {
+      "name": "payment_intents",
+      "count": 8
+    },
+    {
+      "name": "payment_methods",
+      "count": 0
+    },
+    {
+      "name": "payment_transactions",
+      "count": 13
+    },
+    {
+      "name": "paymentintents",
+      "count": 0
+    },
+    {
+      "name": "paymentmethods",
+      "count": 0
+    },
+    {
+      "name": "paymenttransactions",
+      "count": 0
+    },
+    {
+      "name": "permissions",
+      "count": 24
+    },
+    {
+      "name": "price_book_entries",
+      "count": 386
+    },
+    {
+      "name": "price_books",
+      "count": 5
+    },
+    {
+      "name": "price_histories",
+      "count": 5
+    },
+    {
+      "name": "pricebookentries",
+      "count": 0
+    },
+    {
+      "name": "pricebooks",
+      "count": 3
+    },
+    {
+      "name": "pricehistories",
+      "count": 0
+    },
+    {
+      "name": "product_attributes",
+      "count": 5
+    },
+    {
+      "name": "product_beauty_profiles",
+      "count": 0
+    },
+    {
+      "name": "product_categories",
+      "count": 40
+    },
+    {
+      "name": "product_media",
+      "count": 238
+    },
+    {
+      "name": "product_option_values",
+      "count": 7
+    },
+    {
+      "name": "product_options",
+      "count": 3
+    },
+    {
+      "name": "product_variants",
+      "count": 229
+    },
+    {
+      "name": "productattributes",
+      "count": 0
+    },
+    {
+      "name": "productcategories",
+      "count": 0
+    },
+    {
+      "name": "productmedias",
+      "count": 0
+    },
+    {
+      "name": "productoptions",
+      "count": 0
+    },
+    {
+      "name": "productoptionvalues",
+      "count": 0
+    },
+    {
+      "name": "products",
+      "count": 0
+    },
+    {
+      "name": "productvariants",
+      "count": 0
+    },
+    {
+      "name": "promotion_rules",
+      "count": 50
+    },
+    {
+      "name": "promotion_targets",
+      "count": 50
+    },
+    {
+      "name": "promotionrules",
+      "count": 0
+    },
+    {
+      "name": "promotions",
+      "count": 20
+    },
+    {
+      "name": "promotiontargets",
+      "count": 20
+    },
+    {
+      "name": "recommendation_logs",
+      "count": 0
+    },
+    {
+      "name": "refunds",
+      "count": 0
+    },
+    {
+      "name": "returnitems",
+      "count": 0
+    },
+    {
+      "name": "returns",
+      "count": 0
+    },
+    {
+      "name": "review_medias",
+      "count": 3
+    },
+    {
+      "name": "review_summary",
+      "count": 6
+    },
+    {
+      "name": "review_votes",
+      "count": 3
+    },
+    {
+      "name": "reviewmedias",
+      "count": 0
+    },
+    {
+      "name": "reviews",
+      "count": 0
+    },
+    {
+      "name": "reviewsummaries",
+      "count": 0
+    },
+    {
+      "name": "reviewvotes",
+      "count": 0
+    },
+    {
+      "name": "role_permissions",
+      "count": 24
+    },
+    {
+      "name": "roles",
+      "count": 5
+    },
+    {
+      "name": "shipment_events",
+      "count": 18
+    },
+    {
+      "name": "shipment_items",
+      "count": 3
+    },
+    {
+      "name": "shipmentevents",
+      "count": 0
+    },
+    {
+      "name": "shipmentitems",
+      "count": 0
+    },
+    {
+      "name": "shipments",
+      "count": 0
+    },
+    {
+      "name": "shipping_methods",
+      "count": 0
+    },
+    {
+      "name": "shippingmethods",
+      "count": 0
+    },
+    {
+      "name": "stock_reservations",
+      "count": 50
+    },
+    {
+      "name": "stockreservations",
+      "count": 0
+    },
+    {
+      "name": "variant_medias",
+      "count": 4
+    },
+    {
+      "name": "variant_option_values",
+      "count": 5
+    },
+    {
+      "name": "variantmedias",
+      "count": 0
+    },
+    {
+      "name": "variantoptionvalues",
+      "count": 0
+    },
+    {
+      "name": "warehouses",
+      "count": 0
+    },
+    {
+      "name": "wishlist_items",
+      "count": 8
+    },
+    {
+      "name": "wishlistitems",
+      "count": 0
+    },
+    {
+      "name": "wishlists",
+      "count": 0
+    }
+  ],
+  "modelEntries": [
+    {
+      "file": "account.model.js",
+      "modelName": "Account",
+      "explicitCollection": "accounts",
+      "canonicalCollection": "accounts",
+      "mongooseCollection": "accounts"
+    },
+    {
+      "file": "accountAuthProvider.model.js",
+      "modelName": "AccountAuthProvider",
+      "explicitCollection": "account_auth_providers",
+      "canonicalCollection": "account_auth_providers",
+      "mongooseCollection": "account_auth_providers"
+    },
+    {
+      "file": "accountRole.model.js",
+      "modelName": "AccountRole",
+      "explicitCollection": "account_roles",
+      "canonicalCollection": "account_roles",
+      "mongooseCollection": "account_roles"
+    },
+    {
+      "file": "address.model.js",
+      "modelName": "Address",
+      "explicitCollection": "customer_addresses",
+      "canonicalCollection": "customer_addresses",
+      "mongooseCollection": "customer_addresses"
+    },
+    {
+      "file": "adminProfile.model.js",
+      "modelName": "AdminProfile",
+      "explicitCollection": "admin_profiles",
+      "canonicalCollection": "admin_profiles",
+      "mongooseCollection": "admin_profiles"
+    },
+    {
+      "file": "auditLog.model.js",
+      "modelName": "AuditLog",
+      "explicitCollection": "audit_logs",
+      "canonicalCollection": "audit_logs",
+      "mongooseCollection": "audit_logs"
+    },
+    {
+      "file": "beautyReference.model.js",
+      "modelName": "BeautyReference",
+      "explicitCollection": "beauty_references",
+      "canonicalCollection": "beauty_references",
+      "mongooseCollection": "beauty_references"
+    },
+    {
+      "file": "brand.model.js",
+      "modelName": "Brand",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "brands"
+    },
+    {
+      "file": "cart.model.js",
+      "modelName": "Cart",
+      "explicitCollection": "carts",
+      "canonicalCollection": "carts",
+      "mongooseCollection": "carts"
+    },
+    {
+      "file": "cartItem.model.js",
+      "modelName": "CartItem",
+      "explicitCollection": "cart_items",
+      "canonicalCollection": "cart_items",
+      "mongooseCollection": "cart_items"
+    },
+    {
+      "file": "cartSummary.model.js",
+      "modelName": null,
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": null,
+      "error": "No model name found"
+    },
+    {
+      "file": "category.model.js",
+      "modelName": "Category",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "categories"
+    },
+    {
+      "file": "checkoutAddress.model.js",
+      "modelName": "CheckoutAddress",
+      "explicitCollection": "checkout_addresses",
+      "canonicalCollection": "checkout_addresses",
+      "mongooseCollection": "checkout_addresses"
+    },
+    {
+      "file": "checkoutSession.model.js",
+      "modelName": "CheckoutSession",
+      "explicitCollection": "checkout_sessions",
+      "canonicalCollection": "checkout_sessions",
+      "mongooseCollection": "checkout_sessions"
+    },
+    {
+      "file": "checkoutShippingMethod.model.js",
+      "modelName": "CheckoutShippingMethod",
+      "explicitCollection": "checkout_shipping_methods",
+      "canonicalCollection": "checkout_shipping_methods",
+      "mongooseCollection": "checkout_shipping_methods"
+    },
+    {
+      "file": "coupon.model.js",
+      "modelName": "Coupon",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "coupons"
+    },
+    {
+      "file": "couponRedemption.model.js",
+      "modelName": "CouponRedemption",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "couponredemptions"
+    },
+    {
+      "file": "customer.model.js",
+      "modelName": "Customer",
+      "explicitCollection": "customer_profiles",
+      "canonicalCollection": "customer_profiles",
+      "mongooseCollection": "customer_profiles"
+    },
+    {
+      "file": "customerBeautyProfile.model.js",
+      "modelName": "CustomerBeautyProfile",
+      "explicitCollection": "customer_beauty_profiles",
+      "canonicalCollection": "customer_beauty_profiles",
+      "mongooseCollection": "customer_beauty_profiles"
+    },
+    {
+      "file": "customerConsent.model.js",
+      "modelName": "CustomerConsent",
+      "explicitCollection": "customer_consents",
+      "canonicalCollection": "customer_consents",
+      "mongooseCollection": "customer_consents"
+    },
+    {
+      "file": "customerCoupon.model.js",
+      "modelName": "CustomerCoupon",
+      "explicitCollection": "customer_coupons",
+      "canonicalCollection": "customer_coupons",
+      "mongooseCollection": "customer_coupons"
+    },
+    {
+      "file": "customerPreference.model.js",
+      "modelName": "CustomerPreference",
+      "explicitCollection": "customer_preferences",
+      "canonicalCollection": "customer_preferences",
+      "mongooseCollection": "customer_preferences"
+    },
+    {
+      "file": "customerRecommendationSnapshot.model.js",
+      "modelName": "CustomerRecommendationSnapshot",
+      "explicitCollection": "customer_recommendation_snapshots",
+      "canonicalCollection": "customer_recommendation_snapshots",
+      "mongooseCollection": "customer_recommendation_snapshots"
+    },
+    {
+      "file": "emailOtp.model.js",
+      "modelName": "EmailOtp",
+      "explicitCollection": "email_otps",
+      "canonicalCollection": "email_otps",
+      "mongooseCollection": "email_otps"
+    },
+    {
+      "file": "guestSession.model.js",
+      "modelName": "GuestSession",
+      "explicitCollection": "guest_sessions",
+      "canonicalCollection": "guest_sessions",
+      "mongooseCollection": "guest_sessions"
+    },
+    {
+      "file": "inventoryBalance.model.js",
+      "modelName": "InventoryBalance",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "inventorybalances"
+    },
+    {
+      "file": "inventoryTransaction.model.js",
+      "modelName": "InventoryTransaction",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "inventorytransactions"
+    },
+    {
+      "file": "loyaltyAccount.model.js",
+      "modelName": "LoyaltyAccount",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "loyaltyaccounts"
+    },
+    {
+      "file": "loyaltyPointLedger.model.js",
+      "modelName": "LoyaltyPointLedger",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "loyaltypointledgers"
+    },
+    {
+      "file": "loyaltyTier.model.js",
+      "modelName": "LoyaltyTier",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "loyaltytiers"
+    },
+    {
+      "file": "order.model.js",
+      "modelName": "Order",
+      "explicitCollection": "orders",
+      "canonicalCollection": "orders",
+      "mongooseCollection": "orders"
+    },
+    {
+      "file": "orderAddress.model.js",
+      "modelName": "OrderAddress",
+      "explicitCollection": "order_addresses",
+      "canonicalCollection": "order_addresses",
+      "mongooseCollection": "order_addresses"
+    },
+    {
+      "file": "orderItem.model.js",
+      "modelName": "OrderItem",
+      "explicitCollection": "order_items",
+      "canonicalCollection": "order_items",
+      "mongooseCollection": "order_items"
+    },
+    {
+      "file": "orderStatusHistory.model.js",
+      "modelName": "OrderStatusHistory",
+      "explicitCollection": "order_status_history",
+      "canonicalCollection": "order_status_history",
+      "mongooseCollection": "order_status_history"
+    },
+    {
+      "file": "orderTotal.model.js",
+      "modelName": "OrderTotal",
+      "explicitCollection": "order_totals",
+      "canonicalCollection": "order_totals",
+      "mongooseCollection": "order_totals"
+    },
+    {
+      "file": "passwordResetOtp.model.js",
+      "modelName": null,
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": null,
+      "error": "No model name found"
+    },
+    {
+      "file": "paymentIntent.model.js",
+      "modelName": "PaymentIntent",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "paymentintents"
+    },
+    {
+      "file": "paymentMethod.model.js",
+      "modelName": "PaymentMethod",
+      "explicitCollection": "payment_methods",
+      "canonicalCollection": "payment_methods",
+      "mongooseCollection": "payment_methods"
+    },
+    {
+      "file": "paymentTransaction.model.js",
+      "modelName": "PaymentTransaction",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "paymenttransactions"
+    },
+    {
+      "file": "permission.model.js",
+      "modelName": "Permission",
+      "explicitCollection": "permissions",
+      "canonicalCollection": "permissions",
+      "mongooseCollection": "permissions"
+    },
+    {
+      "file": "priceBook.model.js",
+      "modelName": "PriceBook",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "pricebooks"
+    },
+    {
+      "file": "priceBookEntry.model.js",
+      "modelName": "PriceBookEntry",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "pricebookentries"
+    },
+    {
+      "file": "priceHistory.model.js",
+      "modelName": "PriceHistory",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "pricehistories"
+    },
+    {
+      "file": "product.model.js",
+      "modelName": "Product",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "products"
+    },
+    {
+      "file": "productAttribute.model.js",
+      "modelName": "ProductAttribute",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "productattributes"
+    },
+    {
+      "file": "productBeautyProfile.model.js",
+      "modelName": "ProductBeautyProfile",
+      "explicitCollection": "product_beauty_profiles",
+      "canonicalCollection": "product_beauty_profiles",
+      "mongooseCollection": "product_beauty_profiles"
+    },
+    {
+      "file": "productCategory.model.js",
+      "modelName": "ProductCategory",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "productcategories"
+    },
+    {
+      "file": "productMedia.model.js",
+      "modelName": "ProductMedia",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "productmedias"
+    },
+    {
+      "file": "productOption.model.js",
+      "modelName": "ProductOption",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "productoptions"
+    },
+    {
+      "file": "productOptionValue.model.js",
+      "modelName": "ProductOptionValue",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "productoptionvalues"
+    },
+    {
+      "file": "productVariant.model.js",
+      "modelName": "ProductVariant",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "productvariants"
+    },
+    {
+      "file": "promotion.model.js",
+      "modelName": "Promotion",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "promotions"
+    },
+    {
+      "file": "promotionRule.model.js",
+      "modelName": "PromotionRule",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "promotionrules"
+    },
+    {
+      "file": "promotionTarget.model.js",
+      "modelName": "PromotionTarget",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "promotiontargets"
+    },
+    {
+      "file": "recommendation-log.model.js",
+      "modelName": "RecommendationLog",
+      "explicitCollection": "recommendation_logs",
+      "canonicalCollection": "recommendation_logs",
+      "mongooseCollection": "recommendation_logs"
+    },
+    {
+      "file": "refund.model.js",
+      "modelName": "Refund",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "refunds"
+    },
+    {
+      "file": "return.model.js",
+      "modelName": "Return",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "returns"
+    },
+    {
+      "file": "returnItem.model.js",
+      "modelName": "ReturnItem",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "returnitems"
+    },
+    {
+      "file": "review.model.js",
+      "modelName": "Review",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "reviews"
+    },
+    {
+      "file": "reviewMedia.model.js",
+      "modelName": "ReviewMedia",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "reviewmedias"
+    },
+    {
+      "file": "reviewSummary.model.js",
+      "modelName": "ReviewSummary",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "reviewsummaries"
+    },
+    {
+      "file": "reviewVote.model.js",
+      "modelName": "ReviewVote",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "reviewvotes"
+    },
+    {
+      "file": "role.model.js",
+      "modelName": "Role",
+      "explicitCollection": "roles",
+      "canonicalCollection": "roles",
+      "mongooseCollection": "roles"
+    },
+    {
+      "file": "rolePermission.model.js",
+      "modelName": "RolePermission",
+      "explicitCollection": "role_permissions",
+      "canonicalCollection": "role_permissions",
+      "mongooseCollection": "role_permissions"
+    },
+    {
+      "file": "shipment.model.js",
+      "modelName": "Shipment",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "shipments"
+    },
+    {
+      "file": "shipmentEvent.model.js",
+      "modelName": "ShipmentEvent",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "shipmentevents"
+    },
+    {
+      "file": "shipmentItem.model.js",
+      "modelName": "ShipmentItem",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "shipmentitems"
+    },
+    {
+      "file": "shippingMethod.model.js",
+      "modelName": "ShippingMethod",
+      "explicitCollection": "shipping_methods",
+      "canonicalCollection": "shipping_methods",
+      "mongooseCollection": "shipping_methods"
+    },
+    {
+      "file": "stockReservation.model.js",
+      "modelName": "StockReservation",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "stockreservations"
+    },
+    {
+      "file": "variantMedia.model.js",
+      "modelName": "VariantMedia",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "variantmedias"
+    },
+    {
+      "file": "variantOptionValue.model.js",
+      "modelName": "VariantOptionValue",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "variantoptionvalues"
+    },
+    {
+      "file": "warehouse.model.js",
+      "modelName": "Warehouse",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "warehouses"
+    },
+    {
+      "file": "wishlist.model.js",
+      "modelName": "Wishlist",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "wishlists"
+    },
+    {
+      "file": "wishlistItem.model.js",
+      "modelName": "WishlistItem",
+      "explicitCollection": null,
+      "canonicalCollection": null,
+      "mongooseCollection": "wishlistitems"
+    }
+  ],
+  "orphanCollections": [
+    {
+      "name": "addresses",
+      "count": 10
+    },
+    {
+      "name": "cartitems",
+      "count": 0
+    },
+    {
+      "name": "checkoutaddresses",
+      "count": 0
+    },
+    {
+      "name": "checkoutsessions",
+      "count": 0
+    },
+    {
+      "name": "checkoutshippingmethods",
+      "count": 0
+    },
+    {
+      "name": "coupon_redemptions",
+      "count": 5
+    },
+    {
+      "name": "customers",
+      "count": 15
+    },
+    {
+      "name": "inventory_balances",
+      "count": 239
+    },
+    {
+      "name": "inventory_transactions",
+      "count": 80
+    },
+    {
+      "name": "loyalty_accounts",
+      "count": 8
+    },
+    {
+      "name": "loyalty_point_ledger",
+      "count": 14
+    },
+    {
+      "name": "loyalty_tiers",
+      "count": 8
+    },
+    {
+      "name": "password_reset_otps",
+      "count": 2
+    },
+    {
+      "name": "payment_intents",
+      "count": 8
+    },
+    {
+      "name": "payment_transactions",
+      "count": 13
+    },
+    {
+      "name": "paymentmethods",
+      "count": 0
+    },
+    {
+      "name": "price_book_entries",
+      "count": 386
+    },
+    {
+      "name": "price_books",
+      "count": 5
+    },
+    {
+      "name": "price_histories",
+      "count": 5
+    },
+    {
+      "name": "product_attributes",
+      "count": 5
+    },
+    {
+      "name": "product_categories",
+      "count": 40
+    },
+    {
+      "name": "product_media",
+      "count": 238
+    },
+    {
+      "name": "product_option_values",
+      "count": 7
+    },
+    {
+      "name": "product_options",
+      "count": 3
+    },
+    {
+      "name": "product_variants",
+      "count": 229
+    },
+    {
+      "name": "promotion_rules",
+      "count": 50
+    },
+    {
+      "name": "promotion_targets",
+      "count": 50
+    },
+    {
+      "name": "review_medias",
+      "count": 3
+    },
+    {
+      "name": "review_summary",
+      "count": 6
+    },
+    {
+      "name": "review_votes",
+      "count": 3
+    },
+    {
+      "name": "shipment_events",
+      "count": 18
+    },
+    {
+      "name": "shipment_items",
+      "count": 3
+    },
+    {
+      "name": "shippingmethods",
+      "count": 0
+    },
+    {
+      "name": "stock_reservations",
+      "count": 50
+    },
+    {
+      "name": "variant_medias",
+      "count": 4
+    },
+    {
+      "name": "variant_option_values",
+      "count": 5
+    },
+    {
+      "name": "wishlist_items",
+      "count": 8
+    }
+  ]
+}

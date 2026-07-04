@@ -7,6 +7,7 @@
     <color name="button">#E83E72</color>
 
     <color name="background_main">#FFFFFF</color>
+    <color name="white">#FFFFFF</color>
     <color name="background_sub">#FDF9FB</color>
 
     <color name="text_main">#372B2B</color>
@@ -14,6 +15,9 @@
 
     <color name="success">#2E9D62</color>
     <color name="error">#D64545</color>
+
+
+    <!-- Ngân bổ sung -->
 
     <color name="status_pending_bg">#FFF4E5</color>
     <color name="status_pending_text">#FF9800</color>
@@ -32,7 +36,34 @@
     <color name="status_payment_failed_bg">#FFEBEE</color>
     <color name="status_payment_failed_text">#D64545</color>
 
+
+    <!-- Bảo bổ sung -->
+
     <color name="text_secondary">#6F6060</color>
     <color name="text_tertiary">#9B8F8F</color>
     <color name="pink_bg">#FFEAF1</color>
+    <color name="text_primary">@color/text_main</color>
+    <color name="text_inverse">#FFFFFF</color>
+    <color name="pink_primary">@color/button</color>
+    <color name="pink_light">@color/primary</color>
+    <color name="pink_secondary">@color/secondary</color>
+    <color name="burgundy">@color/accent_dark</color>
+    <color name="bg_primary">@color/background_main</color>
+    <color name="bg_soft">@color/background_sub</color>
+    <color name="bg_section">#FFF4F7</color>
+    <color name="bg_disabled">@color/status_cancelled_bg</color>
+    <color name="border_default">@color/border_divider</color>
+    <color name="border_soft">@color/border_divider</color>
+    <color name="success_bg">@color/status_success_bg</color>
+    <color name="error_bg">@color/status_payment_failed_bg</color>
+    <color name="warning_bg">@color/status_pending_bg</color>
+    <color name="info_bg">@color/status_preparing_bg</color>
+    <color name="info">@color/status_preparing_text</color>
+
+
+
+
+
+
+
 </resources>

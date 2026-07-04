@@ -11,36 +11,36 @@ public class ErrorStateHelper {
 
     public static void showGenericError(View root, View.OnClickListener retryListener) {
         updateErrorState(root,
-            "Đã có lỗi xảy ra",
-            "Không thể tải nội dung. Vui lòng thử lại.",
-            "Thử lại",
-            R.drawable.ic_error_outline,
-            retryListener);
+                "Đã có lỗi xảy ra",
+                "Không thể tải nội dung. Vui lòng thử lại.",
+                "Thử lại",
+                R.drawable.ic_error_outline,
+                retryListener);
     }
 
     public static void showServerError(View root, View.OnClickListener retryListener) {
         updateErrorState(root,
-            "Lỗi máy chủ",
-            "Hệ thống đang gặp sự cố tạm thời. Vui lòng quay lại sau.",
-            "Thử lại",
-            R.drawable.ic_error_outline,
-            retryListener);
+                "Lỗi máy chủ",
+                "Hệ thống đang gặp sự cố tạm thời. Vui lòng quay lại sau.",
+                "Thử lại",
+                R.drawable.ic_error_outline,
+                retryListener);
     }
 
     public static void showPermissionError(View root, View.OnClickListener retryListener) {
         updateErrorState(root,
-            "Thiếu quyền truy cập",
-            "Vui lòng cấp quyền để sử dụng tính năng này.",
-            "Cài đặt",
-            R.drawable.ic_error_outline,
-            retryListener);
+                "Thiếu quyền truy cập",
+                "Vui lòng cấp quyền để sử dụng tính năng này.",
+                "Cài đặt",
+                R.drawable.ic_error_outline,
+                retryListener);
     }
-    
+
     public static void showNoInternet(View root, View.OnClickListener retryListener) {
-        TextView tvTitle = root.findViewById(R.id.tvNoInternetTitle);
-        TextView tvDescription = root.findViewById(R.id.tvNoInternetDescription);
-        Button btnRetry = root.findViewById(R.id.btnNoInternetRetry);
-        ImageView ivIllustration = root.findViewById(R.id.ivNoInternetIllustration);
+        TextView tvTitle = root.findViewById(R.id.tvErrorTitle);
+        TextView tvDescription = root.findViewById(R.id.tvErrorDescription);
+        Button btnRetry = root.findViewById(R.id.btnErrorRetry);
+        ImageView ivIllustration = root.findViewById(R.id.ivErrorIllustration);
 
         if (tvTitle != null) tvTitle.setText("Không có kết nối mạng");
         if (tvDescription != null) tvDescription.setText("Vui lòng kiểm tra kết nối và thử lại.");

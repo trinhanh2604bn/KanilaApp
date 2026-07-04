@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="36dp"
+    android:viewportWidth="512"
+    android:viewportHeight="384">
+
+    <!-- Thùng xe -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M84,305 V137 C84,90 121,53 168,53 H359 C370,53 378,61 378,72 V305"
+        android:strokeColor="@color/background_main"
+        android:strokeWidth="20"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Cabin xe -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M378,119 H426 L480,200 V305 H447 M378,119 V305"
+        android:strokeColor="@color/background_main"
+        android:strokeWidth="20"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Kính / đường ngang cabin -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M378,180 H455"
+        android:strokeColor="@color/background_main"
+        android:strokeWidth="20"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Gầm xe -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M84,305 H120 M210,305 H356 M446,305 H480"
+        android:strokeColor="@color/background_main"
+        android:strokeWidth="20"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Bánh sau -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M165,350 A45,45 0,1 0,165,260 A45,45 0,1 0,165,350"
+        android:strokeColor="@color/background_main"
+        android:strokeWidth="20"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Bánh trước -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M401,350 A45,45 0,1 0,401,260 A45,45 0,1 0,401,350"
+        android:strokeColor="@color/background_main"
+        android:strokeWidth="20"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+</vector>

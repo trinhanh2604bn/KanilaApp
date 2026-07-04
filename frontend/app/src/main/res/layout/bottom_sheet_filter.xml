@@ -28,7 +28,7 @@
             android:layout_gravity="center"
             android:text="Bộ lọc sản phẩm"
             android:textAppearance="@style/H3"
-            android:textColor="@color/text_primary" />
+            android:textColor="@color/text_main" />
 
         <ImageView
             android:layout_width="24dp"
@@ -47,7 +47,7 @@
         android:paddingTop="16dp"
         android:text="Danh mục"
         android:textAppearance="@style/H3"
-        android:textColor="@color/text_primary" />
+        android:textColor="@color/text_main" />
 
     <com.google.android.material.chip.ChipGroup
         android:layout_width="match_parent"
@@ -75,7 +75,7 @@
             android:paddingVertical="8dp"
             android:text="Makeup"
             android:textAppearance="@style/Caption"
-            android:textColor="@color/text_inverse" />
+            android:textColor="@color/background_main" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -106,7 +106,7 @@
         android:paddingTop="24dp"
         android:text="Giá"
         android:textAppearance="@style/H3"
-        android:textColor="@color/text_primary" />
+        android:textColor="@color/text_main" />
 
     <com.google.android.material.chip.ChipGroup
         android:layout_width="match_parent"
@@ -134,7 +134,7 @@
             android:paddingVertical="8dp"
             android:text="200k – 500k"
             android:textAppearance="@style/Caption"
-            android:textColor="@color/text_inverse" />
+            android:textColor="@color/background_main" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -165,7 +165,7 @@
         android:paddingTop="24dp"
         android:text="Thương hiệu"
         android:textAppearance="@style/H3"
-        android:textColor="@color/text_primary" />
+        android:textColor="@color/text_main" />
 
     <com.google.android.material.chip.ChipGroup
         android:layout_width="match_parent"
@@ -183,7 +183,7 @@
             android:paddingVertical="8dp"
             android:text="Tất cả"
             android:textAppearance="@style/Caption"
-            android:textColor="@color/text_inverse" />
+            android:textColor="@color/background_main" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -244,7 +244,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="24dp"
-        android:background="@color/border_soft" />
+        android:background="@color/border_divider" />
 
     <!-- Action -->
     <LinearLayout
@@ -263,7 +263,7 @@
             android:gravity="center"
             android:text="Đặt lại"
             android:textAppearance="@style/Body"
-            android:textColor="@color/text_primary" />
+            android:textColor="@color/text_main" />
 
         <TextView
             android:layout_width="0dp"
@@ -274,6 +274,6 @@
             android:gravity="center"
             android:text="Áp dụng (128)"
             android:textAppearance="@style/Body"
-            android:textColor="@color/text_inverse" />
+            android:textColor="@color/background_main" />
     </LinearLayout>
 </LinearLayout>

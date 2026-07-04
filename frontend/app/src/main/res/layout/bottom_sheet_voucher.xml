@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -29,7 +30,7 @@
             android:layout_weight="1"
             android:text="Chọn voucher"
             android:textAppearance="@style/H3"
-            android:textColor="@color/text_primary" />
+            android:textColor="@color/text_main" />
 
         <ImageView
             android:layout_width="24dp"
@@ -57,7 +58,7 @@
             android:paddingHorizontal="16dp"
             android:hint="Nhập mã voucher"
             android:textColorHint="@color/text_tertiary"
-            android:textColor="@color/text_primary"
+            android:textColor="@color/text_main"
             android:textSize="14sp"
             android:inputType="text"
             android:importantForAutofill="no" />
@@ -70,88 +71,20 @@
             android:paddingHorizontal="20dp"
             android:text="Áp dụng"
             android:textAppearance="@style/Body"
-            android:textColor="@color/text_inverse" />
+            android:textColor="@color/background_main" />
     </LinearLayout>
 
-    <!-- Voucher 1 (đang chọn) -->
-    <LinearLayout
+    <!-- Danh sách voucher (đổ từ backend) -->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvVoucherList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/bg_voucher_selected"
-        android:padding="12dp">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="GIAM100K"
-                android:textAppearance="@style/Body"
-                android:textColor="@color/burgundy" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Giảm 100.000đ · Đơn từ 500.000đ"
-                android:textAppearance="@style/Caption"
-                android:textColor="@color/text_secondary" />
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_radio_on"
-            android:contentDescription="Đã chọn" />
-    </LinearLayout>
-
-    <!-- Voucher 2 (chưa chọn) -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/bg_voucher_default"
-        android:padding="12dp">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FREESHIP"
-                android:textAppearance="@style/Body"
-                android:textColor="@color/text_primary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Freeship toàn quốc · Đơn từ 0đ"
-                android:textAppearance="@style/Caption"
-                android:textColor="@color/text_secondary" />
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-                android:src="@drawable/ic_radio_off"
-            android:contentDescription="Chưa chọn" />
-    </LinearLayout>
+        android:clipToPadding="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="2"
+        tools:listitem="@layout/item_voucher_select" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -169,7 +102,7 @@
             android:gravity="center"
             android:text="Hủy"
             android:textAppearance="@style/Body"
-            android:textColor="@color/text_primary" />
+            android:textColor="@color/text_main" />
 
         <TextView
             android:layout_width="0dp"
@@ -180,6 +113,6 @@
             android:gravity="center"
             android:text="Áp dụng"
             android:textAppearance="@style/Body"
-            android:textColor="@color/text_inverse" />
+            android:textColor="@color/background_main" />
     </LinearLayout>
 </LinearLayout>

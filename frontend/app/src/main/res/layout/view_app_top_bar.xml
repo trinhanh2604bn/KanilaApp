@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutAppTopBar"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="@color/background_main"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/spacing_l"
+    android:paddingEnd="@dimen/spacing_l">
+
+    <!-- Left action container -->
+    <FrameLayout
+        android:id="@+id/layoutTopBarLeftAction"
+        android:layout_width="@dimen/touch_target_min"
+        android:layout_height="match_parent">
+
+        <ImageButton
+            android:id="@+id/btnTopBarBack"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:layout_gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_back"
+            android:padding="@dimen/spacing_s"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_back"
+            app:tint="@color/accent_dark" />
+    </FrameLayout>
+
+    <!-- Center title -->
+    <TextView
+        android:id="@+id/tvTopBarTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:fontFamily="@font/nunito_bold"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:text="@string/top_bar_category_title"
+        android:textColor="@color/accent_dark"
+        android:textSize="18sp"
+        tools:text="Danh Mục" />
+
+    <!-- Right action container -->
+    <FrameLayout
+        android:id="@+id/layoutTopBarRightAction"
+        android:layout_width="@dimen/touch_target_min"
+        android:layout_height="match_parent">
+
+        <ImageButton
+            android:id="@+id/btnTopBarSearch"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:layout_gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_search"
+            android:padding="@dimen/spacing_s"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_search"
+            app:tint="@color/accent_dark" />
+    </FrameLayout>
+
+</LinearLayout>

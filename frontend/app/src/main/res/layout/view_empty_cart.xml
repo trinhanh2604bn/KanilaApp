@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutEmptyState"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main"
@@ -9,34 +8,17 @@
     android:orientation="vertical"
     android:padding="@dimen/spacing_xl">
 
-    <!-- Top Header State Indicator (as per image) -->
-    <LinearLayout
-        android:id="@+id/layoutEmptyHeader"
+    <!-- Header State -->
+    <TextView
+        android:id="@+id/tvEmptyHeaderText"
+        style="@style/Text.Kanila.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:layout_marginBottom="40dp">
-
-        <ImageView
-            android:id="@+id/ivEmptyHeaderIcon"
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:layout_marginEnd="@dimen/spacing_xs"
-            android:src="@drawable/ic_check_circle"
-            android:tint="@color/accent_dark"
-            tools:ignore="UseAppTint" />
-
-        <TextView
-            android:id="@+id/tvEmptyHeaderText"
-            style="@style/Text.Kanila.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_main"
-            android:textStyle="bold"
-            android:textSize="14sp"
-            tools:text="Empty Wishlist" />
-    </LinearLayout>
+        android:layout_marginBottom="40dp"
+        android:text="Empty Cart"
+        android:textColor="@color/text_main"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/ivEmptyIllustration"
@@ -45,7 +27,7 @@
         android:layout_marginBottom="@dimen/spacing_xl"
         android:contentDescription="@null"
         android:scaleType="fitCenter"
-        android:src="@drawable/empty_wishlist" />
+        android:src="@drawable/empty_cart" />
 
     <TextView
         android:id="@+id/tvEmptyTitle"
@@ -54,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/spacing_s"
         android:gravity="center"
-        android:text="Chưa có dữ liệu" />
+        android:text="Giỏ hàng trống" />
 
     <TextView
         android:id="@+id/tvEmptyDescription"
@@ -64,7 +46,7 @@
         android:layout_marginBottom="@dimen/spacing_xl"
         android:gravity="center"
         android:paddingHorizontal="@dimen/spacing_l"
-        android:text="Nội dung sẽ hiển thị tại đây khi có thông tin mới." />
+        android:text="Thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm nhé" />
 
     <Button
         android:id="@+id/btnEmptyAction"
@@ -72,6 +54,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/spacing_xl"
-        android:text="Khám phá ngay" />
+        android:text="Mua sắm ngay" />
 
 </LinearLayout>

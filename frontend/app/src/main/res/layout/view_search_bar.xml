@@ -35,5 +35,14 @@
         android:textColor="@color/text_tertiary"
         android:textSize="14sp"
         tools:text="Tìm sản phẩm, thương hiệu&#8230;" />
+    <ImageButton
+        android:id="@+id/btnExpandedSearchCamera"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/content_desc_camera_search"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_camera"
+        app:tint="@color/text_tertiary" />
 
 </LinearLayout>

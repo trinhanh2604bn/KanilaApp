@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">frontend</string>
+    <string name="top_bar_category_title">Danh Mục</string>
+    <string name="content_desc_back">Quay lại</string>
+    <string name="content_desc_search">Tìm kiếm</string>
+    <string name="search_hint_product_brand">Tìm sản phẩm, thương hiệu&#8230;</string>
+    <string name="search_query_preview">Nước Xả Vải Comfort</string>
+    <string name="content_desc_camera_search">Tìm kiếm bằng hình ảnh</string>
+    <string name="content_desc_voice_search">Tìm kiếm bằng giọng nói</string>
+    <string name="content_desc_submit_search">Tìm kiếm</string>
 </resources>

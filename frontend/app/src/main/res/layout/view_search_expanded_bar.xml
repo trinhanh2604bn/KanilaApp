@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutSearchExpandedBar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,7 +8,7 @@
     android:clickable="true"
     android:focusable="true"
     android:orientation="vertical"
-    android:padding="@dimen/spacing_l">
+    android:padding="@dimen/spacing_s">
 
     <!-- Top Row -->
     <LinearLayout
@@ -21,8 +20,8 @@
 
         <ImageButton
             android:id="@+id/btnExpandedSearchBack"
-            android:layout_width="@dimen/touch_target_min"
-            android:layout_height="@dimen/touch_target_min"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/content_desc_back"
             android:scaleType="centerInside"
@@ -35,6 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/spacing_m"
             android:layout_weight="1"
+            android:autofillHints="none"
             android:background="@android:color/transparent"
             android:ellipsize="end"
             android:fontFamily="@font/nunito_regular"
@@ -45,7 +45,7 @@
             android:singleLine="true"
             android:textColor="@color/text_main"
             android:textColorHint="@color/text_tertiary"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 
     <!-- Bottom Row -->
@@ -53,14 +53,14 @@
         android:id="@+id/layoutExpandedSearchBottomRow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_m"
+        android:layout_marginTop="5dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/btnExpandedSearchCamera"
-            android:layout_width="@dimen/touch_target_min"
-            android:layout_height="@dimen/touch_target_min"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/content_desc_camera_search"
             android:padding="@dimen/spacing_s"
@@ -70,8 +70,8 @@
 
         <ImageButton
             android:id="@+id/btnExpandedSearchVoice"
-            android:layout_width="@dimen/touch_target_min"
-            android:layout_height="@dimen/touch_target_min"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginStart="@dimen/spacing_s"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/content_desc_voice_search"
@@ -87,8 +87,8 @@
 
         <ImageButton
             android:id="@+id/btnExpandedSearchSubmit"
-            android:layout_width="80dp"
-            android:layout_height="@dimen/button_height_small"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
             android:background="@drawable/bg_expanded_search_submit_button"
             android:contentDescription="@string/content_desc_submit_search"
             android:scaleType="center"

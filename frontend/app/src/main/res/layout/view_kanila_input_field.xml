@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -8,13 +9,14 @@
 
     <TextView
         android:id="@+id/tvLabel"
-        style="@style/Text.Kanila.Caption"
+        style="@style/Text.Kanila.H3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/label_input_spacing"
         android:textColor="@color/text_main"
-        android:textStyle="bold"
-        tools:text="Label" />
+        android:visibility="gone"
+        tools:text="Label"
+        tools:visibility="visible" />
 
     <LinearLayout
         android:id="@+id/containerInput"
@@ -24,7 +26,7 @@
         android:gravity="center_vertical"
         android:minHeight="@dimen/input_height"
         android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/spacing_l">
+        android:paddingHorizontal="@dimen/spacing_m">
 
         <ImageView
             android:id="@+id/ivLeadingIcon"
@@ -33,39 +35,45 @@
             android:layout_marginEnd="@dimen/spacing_s"
             android:contentDescription="@null"
             android:visibility="gone"
+            app:tint="@color/text_main"
             tools:src="@drawable/ic_search"
             tools:visibility="visible" />
 
         <EditText
             android:id="@+id/etInput"
-            style="@style/Text.Kanila.Body"
+            style="@style/Body"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:autofillHints="none"
             android:background="@null"
-            android:hint="@string/search_hint_product_brand"
+            android:hint="Hint"
             android:inputType="text"
-            android:minHeight="@dimen/touch_target_min"
-            android:paddingVertical="@dimen/spacing_m" />
+            android:paddingVertical="@dimen/spacing_s"
+            android:textColor="@color/text_main"
+            android:textColorHint="@color/text_tertiary" />
 
         <ImageView
             android:id="@+id/ivTrailingIcon"
-            android:layout_width="@dimen/touch_target_min"
-            android:layout_height="@dimen/touch_target_min"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginStart="@dimen/spacing_s"
             android:contentDescription="@null"
-            android:scaleType="centerInside"
+            android:clickable="true"
+            android:focusable="true"
             android:visibility="gone"
+            app:tint="@color/text_main"
             tools:src="@drawable/ic_eye"
             tools:visibility="visible" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAction"
-            style="@style/Widget.Kanila.Button.Pill"
+            style="@style/Widget.Kanila.Button.Ghost"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/spacing_s"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingHorizontal="@dimen/spacing_s"
             android:visibility="gone"
             tools:text="Action"
             tools:visibility="visible" />
@@ -84,18 +92,20 @@
 
         <ImageView
             android:id="@+id/ivMessageIcon"
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:layout_marginEnd="4dp"
+            android:layout_width="@dimen/icon_size_small"
+            android:layout_height="@dimen/icon_size_small"
+            android:layout_marginEnd="@dimen/spacing_xs"
             android:contentDescription="@null"
             tools:src="@drawable/ic_error_outline" />
 
         <TextView
             android:id="@+id/tvMessage"
-            style="@style/Text.Kanila.Micro"
+            style="@style/Micro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="Error or helper message" />
+            android:textColor="@color/error"
+            tools:text="Error message" />
+
     </LinearLayout>
 
 </merge>

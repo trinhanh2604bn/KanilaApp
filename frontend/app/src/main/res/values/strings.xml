@@ -1,10 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">frontend</string>
+    <string name="post_gallery">Gallery</string>
+    <string name="post_image_1">Image 1</string>
+    <string name="post_image_2">Image 2</string>
+    <string name="post_image_3">Image 3</string>
+    <string name="error_required_field">Vui lòng điền thông tin này</string>
+    <string name="error_invalid_email">Email không hợp lệ</string>
+    <string name="error_invalid_phone">Số điện thoại không hợp lệ</string>
+    <string name="error_password_short">Mật khẩu phải có ít nhất 6 ký tự</string>
     <string name="top_bar_category_title">Danh Mục</string>
     <string name="content_desc_back">Quay lại</string>
     <string name="content_desc_search">Tìm kiếm</string>
     <string name="search_hint_product_brand">Tìm sản phẩm, thương hiệu&#8230;</string>
-    <string name="search_query_preview">Nước Xả Vải Comfort</string>
+    <string name="search_query_preview">Kem nền Carslan</string>
     <string name="content_desc_camera_search">Tìm kiếm bằng hình ảnh</string>
     <string name="content_desc_voice_search">Tìm kiếm bằng giọng nói</string>
     <string name="content_desc_submit_search">Tìm kiếm</string>
@@ -40,12 +49,7 @@
     <string name="category_sunproof">Sunproof</string>
     <string name="category_tone_up">Nâng tone</string>
     <string name="category_waterproof">Waterproof</string>
-    <string name="post_gallery">Gallery ảnh bài viết</string>
-    <string name="post_image_1">Ảnh bài viết 1</string>
-    <string name="post_image_2">Ảnh bài viết 2</string>
-    <string name="post_image_3">Ảnh bài viết 3</string>
-    <string name="error_required_field">Trường này là bắt buộc</string>
-    <string name="error_invalid_email">Email không hợp lệ</string>
-    <string name="error_invalid_phone">Số điện thoại không hợp lệ</string>
-    <string name="error_password_short">Mật khẩu quá ngắn</string>
+    <string name="notification">Thông báo</string>
+    <string name="cart">Giỏ hàng</string>
+    <string name="wishlist">Yêu thích</string>
 </resources>

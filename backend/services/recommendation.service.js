@@ -1,17 +1,22 @@
 const Product = require("../models/product.model");
 const Customer = require("../models/customer.model");
 const CustomerPreference = require("../models/customerPreference.model");
+const CustomerBeautyProfile = require("../models/customerBeautyProfile.model");
+const ProductBeautyProfile = require("../models/productBeautyProfile.model");
 const Wishlist = require("../models/wishlist.model");
 const WishlistItem = require("../models/wishlistItem.model");
 const Order = require("../models/order.model");
 const OrderItem = require("../models/orderItem.model");
-const ALGORITHM_VERSION = "rule_v1";
+const ALGORITHM_VERSION = "rule_v2";
 
 const WEIGHTS = {
   exactSkinType: 25,
   acceptableSkinType: 15,
   concernMatch: 12,
   ingredientPrefMatch: 8,
+  goalMatch: 10,
+  textureMatch: 5,
+  finishMatch: 5,
   favoriteBrand: 10,
   ratingReview: 8,
   bestSeller: 6,
@@ -19,7 +24,8 @@ const WEIGHTS = {
   behaviorAffinity: 7,
   sensitiveMismatch: -25,
   hardSkinMismatch: -30,
-  ingredientConflict: -40,
+  avoidIngredientConflict: -40,
+  dislikedBrandPenalty: -30,
 };
 
 const toArray = (v) => {
@@ -39,6 +45,31 @@ const toLowerSet = (arr) => new Set(toArray(arr).map((x) => x.toLowerCase()));
 async function getCustomerAndSkinProfile(accountId) {
   const customer = await Customer.findOne({ account_id: accountId }).select("_id");
   if (!customer) return { customer: null, profile: null };
+
+  // Try fetching the new CustomerBeautyProfile
+  const beautyProfile = await CustomerBeautyProfile.findOne({ customer_id: customer._id }).lean();
+  if (beautyProfile) {
+    return {
+      customer,
+      profile: {
+        is_new_profile: true,
+        skin_types: beautyProfile.skin_type && beautyProfile.skin_type !== "unknown" ? [beautyProfile.skin_type] : [],
+        skin_tone: beautyProfile.skin_tone,
+        concerns: beautyProfile.skin_concerns || [],
+        sensitivity_level: beautyProfile.sensitivity_level,
+        beauty_goals: beautyProfile.beauty_goals || [],
+        preferred_ingredients: beautyProfile.preferred_ingredients || [],
+        avoid_ingredients: beautyProfile.avoid_ingredients || [],
+        preferred_brands: beautyProfile.preferred_brands || [],
+        disliked_brands: beautyProfile.disliked_brands || [],
+        texture_preference: beautyProfile.texture_preference || [],
+        finish_preference: beautyProfile.finish_preference || [],
+        budget_range: beautyProfile.budget_range,
+      },
+    };
+  }
+
+  // Fallback to legacy CustomerPreference if new one doesn't exist
   const prefs = await CustomerPreference.find({
     customer_id: customer._id,
     preference_key: {
@@ -56,14 +87,17 @@ async function getCustomerAndSkinProfile(accountId) {
   }).lean();
   const map = new Map(prefs.map((p) => [p.preference_key, p.preference_value]));
   const profile = {
+    is_new_profile: false,
     skin_types: toArray(map.get("skin_type")),
     skin_tone: String((toArray(map.get("skin_tone"))[0] || "")).trim(),
-    eye_color: String((toArray(map.get("eye_color"))[0] || "")).trim(),
     concerns: toArray(map.get("concerns")),
-    ingredient_preferences: toArray(map.get("ingredient_preferences")),
+    preferred_ingredients: toArray(map.get("ingredient_preferences")),
+    avoid_ingredients: [],
     favorite_brands: toArray(map.get("favorite_brands")),
-    price_range_preference: String((toArray(map.get("price_range_preference"))[0] || "")).trim(),
-    routine_goal: String((toArray(map.get("routine_goal"))[0] || "")).trim(),
+    budget_range: String((toArray(map.get("price_range_preference"))[0] || "")).trim(),
+    beauty_goals: toArray(map.get("routine_goal")),
+    texture_preference: [],
+    finish_preference: [],
   };
   return { customer, profile };
 }
@@ -90,77 +124,149 @@ function buildReason(text, reasons) {
   if (reasons.length < 3 && !reasons.includes(text)) reasons.push(text);
 }
 
-function scoreProduct(product, profile, behavior) {
+function scoreProduct(product, productProfile, profile, behavior) {
   let score = 0;
   const reasons = [];
+  const caution_reasons = [];
   const reason_codes = [];
+  const matched_attributes = [];
   const score_breakdown = {
     skin_type: 0,
     concerns: 0,
+    goals: 0,
     ingredient_preferences: 0,
-    favorite_brand: 0,
+    brand_affinity: 0,
     popularity: 0,
     behavior: 0,
     business_boost: 0,
     diversity_penalty: 0,
+    texture: 0,
+    finish: 0,
   };
 
-  if (product.productStatus === "inactive" || product.isActive === false) return { eligible: false, score: -999, reasons, reason_codes, score_breakdown };
-  if (Number(product.stock || 0) <= 0) return { eligible: false, score: -999, reasons, reason_codes, score_breakdown };
+  if (product.productStatus === "inactive" || product.isActive === false) return { eligible: false, score: -999, reasons, caution_reasons, reason_codes, matched_attributes, score_breakdown };
+  
+  // Use productBeautyProfile if available, otherwise fallback to existing attributes on product
+  const pSkinTypes = productProfile ? productProfile.suitable_skin_types : product.skin_types_supported;
+  const pConcerns = productProfile ? productProfile.suitable_skin_concerns : product.concerns_targeted;
+  const pIngredients = productProfile ? productProfile.key_ingredients : product.ingredient_flags;
+  const pAvoidIngredients = productProfile ? productProfile.avoid_for_ingredients : [];
+  const pGoals = productProfile ? productProfile.supported_beauty_goals : [];
+  const pTexture = productProfile ? productProfile.texture : "";
+  const pFinish = productProfile ? productProfile.finish : "";
+  const brandName = String(product.brandId?.brandName || "").toLowerCase();
+  const brandId = String(product.brandId?._id || "");
 
+  // Skin Type Match
   const userSkin = toLowerSet(profile.skin_types);
-  const productSkin = toLowerSet(product.skin_types_supported);
+  const productSkin = toLowerSet(pSkinTypes);
   if (userSkin.size && productSkin.size) {
     const overlap = [...userSkin].filter((x) => productSkin.has(x));
     if (overlap.length) {
       score += WEIGHTS.exactSkinType;
       score_breakdown.skin_type += WEIGHTS.exactSkinType;
       reason_codes.push("SKIN_TYPE_MATCH");
-      buildReason(`Phù hợp với ${profile.skin_types[0] || "làn da của bạn"}`, reasons);
+      buildReason(`Phù hợp với tình trạng ${profile.skin_types[0] || "da"} của bạn`, reasons);
+      matched_attributes.push("skin_type");
     } else {
       score += WEIGHTS.hardSkinMismatch;
       score_breakdown.skin_type += WEIGHTS.hardSkinMismatch;
+      caution_reasons.push("Không chuyên biệt cho loại da của bạn");
     }
   }
 
+  // Concern Match
   const concerns = toLowerSet(profile.concerns);
-  const targeted = toLowerSet(product.concerns_targeted);
+  const targeted = toLowerSet(pConcerns);
   let concernMatches = 0;
   for (const c of concerns) if (targeted.has(c)) concernMatches += 1;
   if (concernMatches > 0) {
     const concernScore = concernMatches * WEIGHTS.concernMatch;
     score += concernScore;
     score_breakdown.concerns += concernScore;
-    const firstConcernCode = String(profile.concerns[0] || "")
-      .toUpperCase()
-      .replace(/[^\p{L}\p{N}]+/gu, "_");
-    if (firstConcernCode) reason_codes.push(`CONCERN_${firstConcernCode}`);
-    buildReason(`Hỗ trợ tình trạng ${profile.concerns[0] || "da"} của bạn`, reasons);
+    reason_codes.push("CONCERN_MATCH");
+    buildReason(`Hỗ trợ cải thiện vấn đề da của bạn`, reasons);
+    matched_attributes.push("skin_concern");
   }
 
-  const prefIngredients = toLowerSet(profile.ingredient_preferences);
-  const productFlags = toLowerSet(product.ingredient_flags);
+  // Beauty Goal Match
+  const goals = toLowerSet(profile.beauty_goals);
+  const pSupportedGoals = toLowerSet(pGoals);
+  let goalMatches = 0;
+  for (const g of goals) if (pSupportedGoals.has(g)) goalMatches += 1;
+  if (goalMatches > 0) {
+    const goalScore = goalMatches * WEIGHTS.goalMatch;
+    score += goalScore;
+    score_breakdown.goals += goalScore;
+    reason_codes.push("GOAL_MATCH");
+    buildReason("Hỗ trợ mục tiêu làm đẹp của bạn", reasons);
+    matched_attributes.push("beauty_goal");
+  }
+
+  // Preferred Ingredients Match
+  const prefIngredients = toLowerSet(profile.preferred_ingredients);
+  const productKeyIngredients = toLowerSet(pIngredients);
   let prefMatches = 0;
-  for (const p of prefIngredients) if (productFlags.has(p)) prefMatches += 1;
+  for (const p of prefIngredients) if (productKeyIngredients.has(p)) prefMatches += 1;
   if (prefMatches > 0) {
     const ingredientScore = prefMatches * WEIGHTS.ingredientPrefMatch;
     score += ingredientScore;
     score_breakdown.ingredient_preferences += ingredientScore;
-    if (prefIngredients.has("fragrance-free") && productFlags.has("fragrance-free")) buildReason("Không chứa hương liệu", reasons);
-    for (const pref of profile.ingredient_preferences || []) {
-      const code = String(pref).toUpperCase().replace(/[^\p{L}\p{N}]+/gu, "_");
-      if (code) reason_codes.push(`INGREDIENT_PREF_${code}`);
+    reason_codes.push("PREF_INGREDIENT_MATCH");
+    buildReason("Có thành phần bạn ưa thích", reasons);
+    matched_attributes.push("preferred_ingredient");
+  }
+
+  // Avoid Ingredients Conflict
+  const avoidIngredients = toLowerSet(profile.avoid_ingredients);
+  let avoidConflict = false;
+  for (const a of avoidIngredients) {
+    if (productKeyIngredients.has(a)) {
+      avoidConflict = true;
+      break;
     }
   }
-
-  const brandName = String(product.brandId?.brandName || "").toLowerCase();
-  if (toLowerSet(profile.favorite_brands).has(brandName)) {
-    score += WEIGHTS.favoriteBrand;
-    score_breakdown.favorite_brand += WEIGHTS.favoriteBrand;
-    reason_codes.push("FAVORITE_BRAND_MATCH");
-    buildReason("Đến từ thương hiệu bạn yêu thích", reasons);
+  if (avoidConflict) {
+    score += WEIGHTS.avoidIngredientConflict;
+    score_breakdown.ingredient_preferences += WEIGHTS.avoidIngredientConflict;
+    reason_codes.push("AVOID_INGREDIENT_CONFLICT");
+    caution_reasons.push("Có thành phần bạn muốn tránh");
   }
 
+  // Brand Preference
+  const prefBrands = new Set((profile.preferred_brands || []).map(b => String(b)));
+  const legacyPrefBrands = toLowerSet(profile.favorite_brands || []);
+  if (prefBrands.has(brandId) || legacyPrefBrands.has(brandName)) {
+    score += WEIGHTS.favoriteBrand;
+    score_breakdown.brand_affinity += WEIGHTS.favoriteBrand;
+    reason_codes.push("FAVORITE_BRAND_MATCH");
+    buildReason("Thương hiệu yêu thích của bạn", reasons);
+    matched_attributes.push("preferred_brand");
+  }
+
+  const dislikedBrands = new Set((profile.disliked_brands || []).map(b => String(b)));
+  if (dislikedBrands.has(brandId)) {
+    score += WEIGHTS.dislikedBrandPenalty;
+    score_breakdown.brand_affinity += WEIGHTS.dislikedBrandPenalty;
+    reason_codes.push("DISLIKED_BRAND_PENALTY");
+    caution_reasons.push("Thuộc thương hiệu bạn không ưu tiên");
+  }
+
+  // Texture and Finish
+  const texturePrefs = toLowerSet(profile.texture_preference);
+  if (pTexture && texturePrefs.has(pTexture.toLowerCase())) {
+    score += WEIGHTS.textureMatch;
+    score_breakdown.texture += WEIGHTS.textureMatch;
+    matched_attributes.push("texture_preference");
+  }
+  const finishPrefs = toLowerSet(profile.finish_preference);
+  if (pFinish && finishPrefs.has(pFinish.toLowerCase())) {
+    score += WEIGHTS.finishMatch;
+    score_breakdown.finish += WEIGHTS.finishMatch;
+    matched_attributes.push("finish_preference");
+  }
+
+  // Ratings & Popularity
   const rating = Number(product.averageRating || 0);
   if (rating >= 4.2) {
     score += WEIGHTS.ratingReview;
@@ -171,9 +277,10 @@ function scoreProduct(product, profile, behavior) {
     score += WEIGHTS.bestSeller;
     score_breakdown.business_boost += WEIGHTS.bestSeller;
     reason_codes.push("BEST_SELLER_BOOST");
-    buildReason("Best Seller", reasons);
+    buildReason("Sản phẩm bán chạy", reasons);
   }
 
+  // Behavior Matches
   if (behavior.wishlistProductIds.has(String(product._id))) {
     score += WEIGHTS.behaviorAffinity;
     score_breakdown.behavior += WEIGHTS.behaviorAffinity;
@@ -185,17 +292,22 @@ function scoreProduct(product, profile, behavior) {
     reason_codes.push("BEHAVIOR_ORDER_HISTORY_MATCH");
   }
 
-  if (product.is_sensitive_friendly === false && toLowerSet(profile.concerns).has("đỏ rát")) {
-    score += WEIGHTS.sensitiveMismatch;
-    score_breakdown.skin_type += WEIGHTS.sensitiveMismatch;
+  // Sensitivity Check
+  const sensitivity = profile.sensitivity_level;
+  if (sensitivity === "high" || sensitivity === "reactive") {
+    const isSensitiveFriendly = productProfile ? (productProfile.suitable_sensitivity_levels || []).includes(sensitivity) : product.is_sensitive_friendly;
+    if (!isSensitiveFriendly) {
+      score += WEIGHTS.sensitiveMismatch;
+      score_breakdown.skin_type += WEIGHTS.sensitiveMismatch;
+      caution_reasons.push("Có thể không phù hợp với mức độ nhạy cảm của da bạn");
+    }
   }
 
   const badges = [];
-  if (score >= 25) badges.push("Phù hợp với bạn");
+  if (score >= 25 && caution_reasons.length === 0) badges.push("Phù hợp với bạn");
   if (product.is_best_seller || Number(product.sales_count || product.bought || 0) > 200) badges.push("Best Seller");
-  if (productFlags.has("fragrance-free")) badges.push("Không hương liệu");
 
-  return { eligible: true, score, reasons, reason_codes: [...new Set(reason_codes)], badges, score_breakdown };
+  return { eligible: true, score, reasons, caution_reasons, reason_codes: [...new Set(reason_codes)], matched_attributes: [...new Set(matched_attributes)], badges, score_breakdown };
 }
 
 function diversify(sorted, max = 12) {
@@ -224,10 +336,12 @@ function diversify(sorted, max = 12) {
 
 async function recommendForProfile(profile, opts = {}) {
   const category = String(opts.category || "").trim().toLowerCase();
+  
   let products = await Product.find({
     productStatus: { $ne: "inactive" },
     isActive: { $ne: false },
   }).populate("brandId", "brandName").populate("categoryId", "categoryName").lean();
+  
   if (category) {
     products = products.filter((p) =>
       String(p.categoryId?.categoryName || "").toLowerCase().includes(category) ||
@@ -236,11 +350,17 @@ async function recommendForProfile(profile, opts = {}) {
     );
   }
 
+  // Load product beauty profiles
+  const productIds = products.map(p => p._id);
+  const pProfiles = await ProductBeautyProfile.find({ product_id: { $in: productIds }, is_active: true }).lean();
+  const pProfileMap = new Map(pProfiles.map(p => [String(p.product_id), p]));
+
   const behavior = opts.behavior || { orderedProductIds: new Set(), wishlistProductIds: new Set(), wishlistBrandIds: new Set() };
 
   const scored = products
     .map((p) => {
-      const result = scoreProduct(p, profile, behavior);
+      const pProfile = pProfileMap.get(String(p._id));
+      const result = scoreProduct(p, pProfile, profile, behavior);
       return { product: p, ...result };
     })
     .filter((x) => x.eligible)
@@ -251,6 +371,8 @@ async function recommendForProfile(profile, opts = {}) {
     productId: String(x.product._id),
     score: x.score,
     reasons: x.reasons.slice(0, 3),
+    caution_reasons: x.caution_reasons || [],
+    matched_attributes: x.matched_attributes || [],
     reason_codes: x.reason_codes || [],
     badges: x.badges || [],
     score_breakdown: x.score_breakdown || {},

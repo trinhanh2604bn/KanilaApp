@@ -5,7 +5,7 @@
  */
 require("dotenv").config();
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+// bcrypt removed — system is now passwordless (no password_hash stored)
 
 // Models
 const Brand = require("./models/brand.model");
@@ -128,6 +128,9 @@ const customerAccountsData = [
   { email: "tranthitrang@gmail.com", username: "trangtran", phone: "0634567890", account_type: "customer", account_status: "active" },
   { email: "phamthihoa@gmail.com", username: "hoapham", phone: "0645678901", account_type: "customer", account_status: "active" },
   { email: "nguyenthiquynh@gmail.com", username: "quynhnguyen", phone: "0656789012", account_type: "customer", account_status: "active" },
+  // Accounts without phone — demonstrates multiple null-phone accounts are allowed
+  { email: "nophoneuser1@gmail.com", username: "nophone1", phone: null, account_type: "customer", account_status: "active" },
+  { email: "nophoneuser2@gmail.com", username: "nophone2", phone: null, account_type: "customer", account_status: "active" },
 ];
 
 // ─── CUSTOMERS (full name + profile) ─────────────────────
@@ -162,6 +165,9 @@ const customersTemplate = [
   { first_name: "Trần", last_name: "Thị Trang", full_name: "Trần Thị Trang", customer_code: "KNL-C0028", gender: "female", date_of_birth: new Date("1997-04-17") },
   { first_name: "Phạm", last_name: "Thị Hoa", full_name: "Phạm Thị Hoa", customer_code: "KNL-C0029", gender: "female", date_of_birth: new Date("1992-08-29") },
   { first_name: "Nguyễn", last_name: "Thị Quỳnh", full_name: "Nguyễn Thị Quỳnh", customer_code: "KNL-C0030", gender: "female", date_of_birth: new Date("1994-12-20") },
+  // No-phone customers
+  { first_name: "Trần", last_name: "Văn An", full_name: "Trần Văn An", customer_code: "KNL-C0031", gender: "male", date_of_birth: new Date("1993-05-10") },
+  { first_name: "Lê", last_name: "Thị Bảo", full_name: "Lê Thị Bảo", customer_code: "KNL-C0032", gender: "female", date_of_birth: new Date("1996-09-18") },
 ];
 
 // ─── PROMOTIONS ───────────────────────────────────────────
@@ -306,7 +312,7 @@ async function seed() {
     console.log(`✅ Inserted ${productMediaPayload.length} product media rows and synced imageUrl`);
 
     // 4. STAFF/ADMIN ACCOUNTS (skip duplicates)
-    const password_hash = await bcrypt.hash("kanila2026", 10);
+    // NOTE: No password_hash — system uses passwordless email-OTP authentication.
     const staffAccounts = [];
     for (const a of accountsData) {
       const existing = await Account.findOne({ email: a.email });
@@ -319,7 +325,6 @@ async function seed() {
           phone: a.phone,
           account_type: a.account_type,
           account_status: a.account_status,
-          password_hash,
           email_verified_at: new Date(),
           last_login_at: new Date(Date.now() - Math.random() * 7 * 86400000),
         });
@@ -329,7 +334,7 @@ async function seed() {
     console.log(`✅ Created/found ${staffAccounts.length} staff accounts`);
 
     // 5. CUSTOMER ACCOUNTS
-    const cust_password_hash = await bcrypt.hash("khachhang123", 10);
+    // NOTE: No password_hash — system uses passwordless email-OTP authentication.
     const custAccounts = [];
     for (const a of customerAccountsData) {
       const existing = await Account.findOne({ email: a.email });
@@ -342,7 +347,6 @@ async function seed() {
           phone: a.phone,
           account_type: a.account_type,
           account_status: a.account_status,
-          password_hash: cust_password_hash,
           email_verified_at: new Date(),
           last_login_at: new Date(Date.now() - Math.random() * 30 * 86400000),
         });

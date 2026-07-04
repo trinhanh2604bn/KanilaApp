@@ -11,7 +11,7 @@ const reviewSummarySchema = new mongoose.Schema(
     rating4Count: { type: Number, default: 0 },
     rating5Count: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "review_summary" }
 );
 
 module.exports = mongoose.model("ReviewSummary", reviewSummarySchema);

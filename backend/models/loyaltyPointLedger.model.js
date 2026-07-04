@@ -14,7 +14,7 @@ const loyaltyPointLedgerSchema = new mongoose.Schema(
     referenceId: { type: String, default: "" },
     note: { type: String, default: "" },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "loyalty_point_ledger" }
 );
 
 module.exports = mongoose.model("LoyaltyPointLedger", loyaltyPointLedgerSchema);

@@ -7,6 +7,7 @@
     <color name="button">#E83E72</color>
 
     <color name="background_main">#FFFFFF</color>
+    <color name="white">#FFFFFF</color>
     <color name="background_sub">#FDF9FB</color>
 
     <color name="text_main">#372B2B</color>
@@ -16,6 +17,7 @@
     <color name="error">#D64545</color>
 
 
+    <!-- Ngân bổ sung -->
 
     <color name="status_pending_bg">#FFF4E5</color>
     <color name="status_pending_text">#FF9800</color>
@@ -35,6 +37,7 @@
     <color name="status_payment_failed_text">#D64545</color>
 
 
+    <!-- Bảo bổ sung -->
 
     <color name="text_secondary">#6F6060</color>
     <color name="text_tertiary">#9B8F8F</color>
@@ -56,6 +59,9 @@
     <color name="warning_bg">@color/status_pending_bg</color>
     <color name="info_bg">@color/status_preparing_bg</color>
     <color name="info">@color/status_preparing_text</color>
+
+
+
 
 
 

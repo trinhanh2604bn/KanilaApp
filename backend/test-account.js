@@ -2,11 +2,10 @@ const axios = require('axios');
 
 const API_BASE_URL = 'http://localhost:3000/api/accounts';
 
-// Test data
+// Test data — passwordless system, no password field
 const testAccounts = [
   {
     email: 'testuser1@example.com',
-    password: 'Password123!',
     username: 'testuser1',
     phone: '1234567890',
     account_type: 'customer',
@@ -14,7 +13,6 @@ const testAccounts = [
   },
   {
     email: 'testuser2@example.com',
-    password: 'Password456!',
     username: 'testuser2',
     phone: '0987654321',
     account_type: 'admin',
@@ -37,7 +35,6 @@ async function testAccountCreation() {
     console.log('\n🔵 Test 2: Getting all accounts...');
     const allAccounts = await axios.get(API_BASE_URL);
     console.log('✅ Success - Total accounts:', allAccounts.data.count);
-    console.log('Accounts:', JSON.stringify(allAccounts.data.data, null, 2));
     
     // Test 3: Get account by ID
     console.log('\n🔵 Test 3: Getting account by ID...');
@@ -94,14 +91,49 @@ async function testAccountCreation() {
         throw error;
       }
     }
+
+    // Test 9: Create account with duplicate phone (should fail)
+    console.log('\n🔵 Test 9: Duplicate Account.phone → rejected...');
+    try {
+      // account1 already has phone '1234567890' (or it was updated to '5555555555')
+      await axios.post(API_BASE_URL, {
+        email: 'dupphone@example.com',
+        phone: '5555555555', // same as updated account1
+        account_type: 'customer',
+      });
+      console.log('❌ ERROR: Should have rejected duplicate phone!');
+    } catch (error) {
+      if (error.response && (error.response.status === 409 || error.response.status === 400)) {
+        console.log('✅ Correctly rejected duplicate phone:', error.response.data.message);
+      } else {
+        throw error;
+      }
+    }
+
+    // Test 10: Create two accounts without phone (should succeed)
+    console.log('\n🔵 Test 10: Multiple accounts without phone → allowed...');
+    const noPhone1 = await axios.post(API_BASE_URL, {
+      email: 'nophone1@example.com',
+      account_type: 'customer',
+    });
+    const noPhone2 = await axios.post(API_BASE_URL, {
+      email: 'nophone2@example.com',
+      account_type: 'customer',
+    });
+    if (noPhone1.status === 201 && noPhone2.status === 201) {
+      console.log('✅ Both accounts created without phone');
+    } else {
+      console.log('❌ ERROR: Unexpected status codes');
+    }
+
+    // Cleanup
+    console.log('\n🔵 Cleanup: Deleting test accounts...');
+    await axios.delete(`${API_BASE_URL}/${accountId1}`);
+    await axios.delete(`${API_BASE_URL}/${noPhone1.data.data._id}`);
+    await axios.delete(`${API_BASE_URL}/${noPhone2.data.data._id}`);
     
-    // Test 9: Delete account
-    console.log('\n🔵 Test 9: Deleting account...');
-    const deletedAccount = await axios.delete(`${API_BASE_URL}/${accountId1}`);
-    console.log('✅ Success:', deletedAccount.data);
-    
-    // Test 10: Verify account was deleted
-    console.log('\n🔵 Test 10: Verifying account was deleted (should fail)...');
+    // Test 11: Verify account was deleted
+    console.log('\n🔵 Test 11: Verifying account was deleted (should fail)...');
     try {
       const response = await axios.get(`${API_BASE_URL}/${accountId1}`);
       console.log('❌ ERROR: Account should have been deleted!');

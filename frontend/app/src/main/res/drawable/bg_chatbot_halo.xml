@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <gradient
+        android:type="radial"
+        android:centerColor="@color/secondary"
+        android:endColor="@color/background_main"
+        android:gradientRadius="@dimen/chatbot_loading_halo_gradient_radius" />
+</shape>

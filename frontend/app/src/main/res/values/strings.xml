@@ -8,4 +8,8 @@
     <string name="content_desc_camera_search">Tìm kiếm bằng hình ảnh</string>
     <string name="content_desc_voice_search">Tìm kiếm bằng giọng nói</string>
     <string name="content_desc_submit_search">Tìm kiếm</string>
+    <string name="category_face">Face</string>
+    <string name="content_desc_category_icon">Biểu tượng danh mục</string>
+    <string name="content_desc_category_product_image">Ảnh sản phẩm danh mục</string>
+    <string name="category_concealing">Concealing</string>
 </resources>

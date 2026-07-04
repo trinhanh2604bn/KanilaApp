@@ -23,4 +23,20 @@
         <attr name="kbiMaxLines" format="integer" />
         <attr name="kbiInputType" format="integer" />
     </declare-styleable>
+
+    <declare-styleable name="KanilaInputField">
+        <attr name="kanilaLabel" format="string" />
+        <attr name="kanilaHint" format="string" />
+        <attr name="kanilaMode" format="enum">
+            <enum name="text" value="0" />
+            <enum name="password" value="1" />
+            <enum name="multiline" value="2" />
+            <enum name="search" value="3" />
+            <enum name="actionButton" value="4" />
+        </attr>
+        <attr name="kanilaEnabled" format="boolean" />
+        <attr name="kanilaActionText" format="string" />
+        <attr name="kanilaShowActionButton" format="boolean" />
+        <attr name="kanilaShowLeadingIcon" format="boolean" />
+    </declare-styleable>
 </resources>

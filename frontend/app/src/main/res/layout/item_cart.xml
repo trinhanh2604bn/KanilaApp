@@ -10,7 +10,6 @@
     app:cardCornerRadius="@dimen/radius_l"
     app:cardElevation="6dp"
     app:cardPreventCornerOverlap="false"
-    app:shadowColor="@color/secondary"
     app:strokeColor="@color/background_sub"
     app:strokeWidth="1dp">
 

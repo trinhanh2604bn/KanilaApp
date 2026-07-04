@@ -29,8 +29,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:text="AI Assistant"
-            android:textColor="@color/text_tertiary"
-            android:textSize="12sp" />
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_tertiary" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -41,15 +41,15 @@
             android:paddingVertical="10dp"
             android:lineSpacingExtra="2dp"
             android:text="Chào bạn! Mình là Kanila AI Assistant. Mình có thể giúp gì cho bạn hôm nay?"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp" />
+            android:textAppearance="@style/Body"
+            android:textColor="@color/text_primary" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="09:41"
-            android:textColor="@color/text_tertiary"
-            android:textSize="11sp" />
+            android:textAppearance="@style/Micro"
+            android:textColor="@color/text_tertiary" />
     </LinearLayout>
 </LinearLayout>

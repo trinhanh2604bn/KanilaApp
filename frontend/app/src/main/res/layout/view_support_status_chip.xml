@@ -7,5 +7,5 @@
     android:paddingHorizontal="12dp"
     android:paddingVertical="5dp"
     android:text="Đang xử lý"
-    android:textColor="@color/info"
-    android:textSize="12sp" />
+    android:textAppearance="@style/Caption"
+    android:textColor="@color/info" />

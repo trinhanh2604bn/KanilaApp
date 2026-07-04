@@ -7,9 +7,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -27,6 +32,12 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 vpHomeBanner;
+    private View layoutSearchBar;
+    private View layoutSearchExpandedBar;
+    private ImageButton btnNotification, btnCart, btnWishlist;
+    private EditText edtExpandedSearchQuery;
+    private ImageButton btnExpandedSearchBack;
+
     private HomeBannerAdapter bannerAdapter;
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
@@ -44,11 +55,70 @@ public class MainActivity extends AppCompatActivity {
         });
 
         initViews();
+        setupSearchBehavior();
         setupBannerSlider();
+        setupBackPressedHandling();
     }
 
     private void initViews() {
         vpHomeBanner = findViewById(R.id.vpHomeBanner);
+        layoutSearchBar = findViewById(R.id.layoutSearchBar);
+        layoutSearchExpandedBar = findViewById(R.id.layoutSearchExpandedBar);
+        btnNotification = findViewById(R.id.btnNotification);
+        btnCart = findViewById(R.id.btnCart);
+        btnWishlist = findViewById(R.id.btnWishlist);
+        
+        edtExpandedSearchQuery = findViewById(R.id.edtExpandedSearchQuery);
+        btnExpandedSearchBack = findViewById(R.id.btnExpandedSearchBack);
+    }
+
+    private void setupSearchBehavior() {
+        layoutSearchBar.setOnClickListener(v -> showExpandedSearch());
+
+        btnExpandedSearchBack.setOnClickListener(v -> collapseExpandedSearch());
+
+        btnNotification.setOnClickListener(v -> Toast.makeText(this, R.string.notification, Toast.LENGTH_SHORT).show());
+        btnCart.setOnClickListener(v -> Toast.makeText(this, R.string.cart, Toast.LENGTH_SHORT).show());
+        btnWishlist.setOnClickListener(v -> Toast.makeText(this, R.string.wishlist, Toast.LENGTH_SHORT).show());
+    }
+
+    private void showExpandedSearch() {
+        layoutSearchBar.setVisibility(View.GONE);
+        layoutSearchExpandedBar.setVisibility(View.VISIBLE);
+        
+        edtExpandedSearchQuery.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.showSoftInput(edtExpandedSearchQuery, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
+    private void collapseExpandedSearch() {
+        layoutSearchExpandedBar.setVisibility(View.GONE);
+        layoutSearchBar.setVisibility(View.VISIBLE);
+        
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(edtExpandedSearchQuery.getWindowToken(), 0);
+        }
+    }
+
+    private boolean isSearchExpanded() {
+        return layoutSearchExpandedBar.getVisibility() == View.VISIBLE;
+    }
+
+    private void setupBackPressedHandling() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (isSearchExpanded()) {
+                    collapseExpandedSearch();
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        });
     }
 
     private void setupBannerSlider() {

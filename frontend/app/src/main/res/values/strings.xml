@@ -8,4 +8,13 @@
     <string name="content_desc_camera_search">Tìm kiếm bằng hình ảnh</string>
     <string name="content_desc_voice_search">Tìm kiếm bằng giọng nói</string>
     <string name="content_desc_submit_search">Tìm kiếm</string>
+    <string name="variant_title">Chọn phân loại</string>
+    <string name="variant_color_title">Màu son</string>
+    <string name="variant_size_title">Dung tích</string>
+    <string name="variant_quantity_title">Số lượng</string>
+    <string name="variant_apply">Áp dụng</string>
+    <string name="variant_stock_format">Còn %d sản phẩm</string>
+    <string name="content_desc_close">Đóng</string>
+    <string name="content_desc_increase">Tăng</string>
+    <string name="content_desc_decrease">Giảm</string>
 </resources>

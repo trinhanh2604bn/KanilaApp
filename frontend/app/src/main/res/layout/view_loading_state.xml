@@ -1,60 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutLoadingState"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main"
-    android:fillViewport="true">
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_xl">
 
-    <LinearLayout
-        android:id="@+id/layoutLoadingSkeleton"
-        android:layout_width="match_parent"
+    <!-- Custom Dot Spinner Container -->
+    <FrameLayout
+        android:id="@+id/containerDotSpinner"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="@dimen/spacing_xl">
+
+        <!-- 8 Dots positioned in a circle -->
+        <View
+            android:id="@+id/dot1"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_gravity="top|center_horizontal"
+            android:background="@drawable/bg_kanila_button_pill"
+            android:backgroundTint="@color/button" />
+
+        <View
+            android:id="@+id/dot2"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_kanila_button_pill"
+            android:backgroundTint="@color/secondary" />
+
+        <View
+            android:id="@+id/dot3"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_gravity="center_vertical|end"
+            android:background="@drawable/bg_kanila_button_pill"
+            android:backgroundTint="@color/secondary" />
+
+        <View
+            android:id="@+id/dot4"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="6dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_kanila_button_pill"
+            android:backgroundTint="@color/secondary" />
+
+        <View
+            android:id="@+id/dot5"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@drawable/bg_kanila_button_pill"
+            android:backgroundTint="@color/secondary" />
+
+        <View
+            android:id="@+id/dot6"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_gravity="bottom|start"
+            android:layout_marginBottom="6dp"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/bg_kanila_button_pill"
+            android:backgroundTint="@color/secondary" />
+
+        <View
+            android:id="@+id/dot7"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_gravity="center_vertical|start"
+            android:background="@drawable/bg_kanila_button_pill"
+            android:backgroundTint="@color/secondary" />
+
+        <View
+            android:id="@+id/dot8"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_gravity="top|start"
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/bg_kanila_button_pill"
+            android:backgroundTint="@color/secondary" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tvLoadingTitle"
+        style="@style/Text.Kanila.H2"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/spacing_l">
+        android:layout_marginBottom="@dimen/spacing_s"
+        android:text="Đang tải..."
+        android:textColor="@color/text_main" />
 
-        <!-- Skeleton Item 1 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_xl"
-            android:orientation="vertical">
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@drawable/bg_skeleton_placeholder" />
-            <View
-                android:layout_width="150dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="@dimen/spacing_m"
-                android:background="@drawable/bg_skeleton_placeholder" />
-            <View
-                android:layout_width="100dp"
-                android:layout_height="16dp"
-                android:layout_marginTop="@dimen/spacing_s"
-                android:background="@drawable/bg_skeleton_placeholder" />
-        </LinearLayout>
+    <TextView
+        android:id="@+id/tvLoadingSubtitle"
+        style="@style/Text.Kanila.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.7"
+        android:text="Vui lòng chờ trong giây lát"
+        android:textColor="@color/text_main" />
 
-        <!-- Skeleton Item 2 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_xl"
-            android:orientation="vertical">
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@drawable/bg_skeleton_placeholder" />
-            <View
-                android:layout_width="150dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="@dimen/spacing_m"
-                android:background="@drawable/bg_skeleton_placeholder" />
-            <View
-                android:layout_width="100dp"
-                android:layout_height="16dp"
-                android:layout_marginTop="@dimen/spacing_s"
-                android:background="@drawable/bg_skeleton_placeholder" />
-        </LinearLayout>
-
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>

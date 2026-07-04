@@ -35,8 +35,9 @@ const customerRecommendationSnapshotSchema = new mongoose.Schema(
       type: [
         {
           product_id: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-          score: { type: Number, default: 0 },
           reasons: { type: [String], default: [] },
+          caution_reasons: { type: [String], default: [] },
+          matched_attributes: { type: [String], default: [] },
           reason_codes: { type: [String], default: [] },
           badges: { type: [String], default: [] },
           score_breakdown: { type: mongoose.Schema.Types.Mixed, default: {} },

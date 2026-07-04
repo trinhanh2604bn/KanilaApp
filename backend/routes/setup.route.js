@@ -1,52 +1,65 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
 const Account = require("../models/account.model");
 
 /**
  * GET /api/setup/admin
  * Creates the default admin account. Idempotent.
  * Visit http://localhost:5000/api/setup/admin in your browser.
+ *
+ * NOTE: Passwordless system — no password is created or stored.
+ * Admins log in via email OTP (POST /api/auth/login → POST /api/auth/verify-otp).
  */
 router.get("/admin", async (req, res) => {
   try {
     const email = "admin@kanila.com";
-    const password = "Admin@123456";
 
     const existing = await Account.findOne({ email });
     if (existing) {
       // Ensure it's admin + active
-      existing.account_type = "admin";
-      existing.account_status = "active";
-      await existing.save();
+      let updated = false;
+      if (existing.account_type !== "admin") {
+        existing.account_type = "admin";
+        updated = true;
+      }
+      if (existing.account_status !== "active") {
+        existing.account_status = "active";
+        updated = true;
+      }
+      if (!existing.email_verified_at) {
+        existing.email_verified_at = new Date();
+        updated = true;
+      }
+      if (updated) await existing.save();
 
       return res.json({
         success: true,
         message: "Admin account already exists (verified admin + active)",
-        data: { email, password, account_type: "admin" },
+        data: {
+          email,
+          account_type: "admin",
+          login: "Use POST /api/auth/login with this email, then verify OTP",
+        },
       });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const password_hash = await bcrypt.hash(password, salt);
-
     const account = await Account.create({
       email,
-      password_hash,
       account_type: "admin",
       account_status: "active",
       username: "Kanila Admin",
+      email_verified_at: new Date(),
     });
 
     res.json({
       success: true,
-      message: "Admin account created!",
+      message: "Admin account created! Login via email OTP.",
       data: {
         _id: account._id,
         email,
-        password,
         account_type: "admin",
-        loginEndpoint: "POST /api/auth/login",
+        loginStep1: "POST /api/auth/login { email }",
+        loginStep2: "POST /api/auth/verify-otp { email, otp, purpose: 'login' }",
       },
     });
   } catch (error) {

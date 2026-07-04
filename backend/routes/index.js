@@ -15,6 +15,8 @@ const customerRoutes = require("./customer.route");
 const addressRoutes = require("./address.route");
 const customerConsentRoutes = require("./customerConsent.route");
 const customerPreferenceRoutes = require("./customerPreference.route");
+const beautyReferenceRoutes = require("./beautyReference.routes");
+const customerBeautyProfileRoutes = require("./customerBeautyProfile.routes");
 
 // Phase 3 routes
 const productMediaRoutes = require("./productMedia.route");
@@ -92,6 +94,8 @@ router.use("/customer", customerRoutes);
 router.use("/addresses", addressRoutes);
 router.use("/customer-consents", customerConsentRoutes);
 router.use("/customer-preferences", customerPreferenceRoutes);
+router.use("/beauty-references", beautyReferenceRoutes);
+router.use("/customers/:customer_id/beauty-profile", customerBeautyProfileRoutes);
 
 router.use("/product-media", productMediaRoutes);
 router.use("/product-attributes", productAttributeRoutes);

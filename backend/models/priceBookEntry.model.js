@@ -35,7 +35,7 @@ const priceBookEntrySchema = new mongoose.Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "price_book_entries" }
 );
 
 module.exports = mongoose.model("PriceBookEntry", priceBookEntrySchema);

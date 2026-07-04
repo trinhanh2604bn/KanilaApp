@@ -11,15 +11,18 @@ const CouponRedemption = require("../models/couponRedemption.model");
 const Coupon = require("../models/coupon.model");
 const AccountAuthProvider = require("../models/accountAuthProvider.model");
 const validateObjectId = require("../utils/validateObjectId");
-const bcrypt = require("bcryptjs");
 const { pickAccountType, pickAccountStatus } = require("../utils/accountBody");
 const {
   SNAPSHOT_RECOMMENDATION_TYPE,
   generateSnapshotByAccountId,
 } = require("../services/recommendationSnapshot.service");
 
-// Some legacy/migrated accounts have date fields persisted as `{}` objects.
-// Mongoose will then fail `cast`/`validate` on `account.save()` during login.
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/**
+ * Some legacy/migrated accounts have date fields persisted as `{}` objects.
+ * Mongoose will then fail `cast`/`validate` on `account.save()`.
+ */
 const normalizeDateField = (value) => {
   if (value === null || value === undefined) return null;
   if (value instanceof Date) return value;
@@ -32,17 +35,9 @@ const normalizeDateField = (value) => {
 
 const sanitizeAccountDatesForSave = (account) => {
   account.email_verified_at = normalizeDateField(account.email_verified_at);
-  account.phone_verified_at = normalizeDateField(account.phone_verified_at);
   account.last_login_at = normalizeDateField(account.last_login_at);
   account.created_at = normalizeDateField(account.created_at);
   account.updated_at = normalizeDateField(account.updated_at);
-};
-
-const validatePassword = (password) => {
-  if (!password || password.length < 6) {
-    return "Password must be at least 6 characters long";
-  }
-  return null;
 };
 
 const validateEmail = (email) => {
@@ -56,7 +51,39 @@ const validatePhone = (phone) => {
   return phoneRegex.test(phone) ? null : "Invalid phone format";
 };
 
-const PUBLIC_FIELDS = "-password_hash";
+/**
+ * Normalize phone value for Account.phone.
+ * Returns null for empty/whitespace-only input so the partial unique index is not triggered.
+ */
+const normalizeAccountPhone = (raw) => {
+  if (raw === null || raw === undefined) return null;
+  const trimmed = String(raw).trim();
+  return trimmed === "" ? null : trimmed;
+};
+
+/**
+ * Convert a Mongo duplicate-key error (code 11000) into a user-friendly message.
+ * Returns { status, message } or null if not a 11000 error.
+ */
+const handleDuplicateKeyError = (error) => {
+  if (error.code !== 11000) return null;
+  const field = Object.keys(error?.keyPattern || error?.keyValue || {})[0] || "";
+  if (field === "email") {
+    return { status: 400, message: "Email already registered" };
+  }
+  if (field === "phone") {
+    return {
+      status: 409,
+      message:
+        "This phone number is already linked to another account. " +
+        "Please use another number or contact support if this number belongs to you.",
+    };
+  }
+  if (field === "username") {
+    return { status: 400, message: "Username already exists" };
+  }
+  return { status: 400, message: `Duplicate value for field: ${field || "unknown"}` };
+};
 
 const generateCustomerCode = async () => {
   const base = await Customer.countDocuments();
@@ -157,19 +184,6 @@ const normalizeAccountAddressBody = (body, { partial = false } = {}) => {
   };
 };
 
-const validateNewPasswordStrength = (password) => {
-  if (!password || password.length < 8) {
-    return "Mật khẩu mới phải có ít nhất 8 ký tự.";
-  }
-  if (!/[A-Za-zÀ-ỹ]/.test(password)) {
-    return "Mật khẩu mới phải có ít nhất một chữ cái.";
-  }
-  if (!/[0-9]/.test(password)) {
-    return "Mật khẩu mới phải có ít nhất một chữ số (gồm chữ và số).";
-  }
-  return null;
-};
-
 const parsePreferenceValue = (value) => {
   if (value == null) return null;
   const raw = String(value).trim();
@@ -203,6 +217,8 @@ const savePreference = async (customerId, key, value) => {
     { upsert: true, new: true }
   );
 };
+
+// ─── Profile Hub ──────────────────────────────────────────────────────────────
 
 // GET /api/account/profile-hub
 const getProfileHub = async (req, res) => {
@@ -356,7 +372,8 @@ const getProfileHub = async (req, res) => {
           sensitivityLevel: toStringPreference(prefMap.get("skin_sensitivity")),
         },
         security: {
-          hasPassword: !!account.password_hash,
+          /** Email-verified status replaces the old hasPassword field. */
+          emailVerified: !!account.email_verified_at,
           linkedProviders: providers.map((p) => ({
             provider: p.provider_code,
             email: p.provider_email || "",
@@ -370,6 +387,8 @@ const getProfileHub = async (req, res) => {
   }
 };
 
+// ─── Profile ──────────────────────────────────────────────────────────────────
+
 // PATCH /api/account/profile
 const patchMyProfile = async (req, res) => {
   try {
@@ -381,16 +400,39 @@ const patchMyProfile = async (req, res) => {
     if (req.body.gender !== undefined) updatesCustomer.gender = String(req.body.gender || "").trim();
     if (req.body.birthday !== undefined) updatesCustomer.date_of_birth = req.body.birthday || null;
     if (req.body.avatarUrl !== undefined) updatesCustomer.avatar_url = String(req.body.avatarUrl || "").trim();
-    if (req.body.phone !== undefined) updatesAccount.phone = String(req.body.phone || "").trim();
+    if (req.body.phone !== undefined) {
+      const normalized = normalizeAccountPhone(req.body.phone);
+      // Check phone uniqueness only when a non-empty phone is provided
+      if (normalized) {
+        const phoneError = validatePhone(normalized);
+        if (phoneError) {
+          return res.status(400).json({ success: false, message: phoneError });
+        }
+        const phoneTaken = await Account.findOne({ phone: normalized, _id: { $ne: account._id } });
+        if (phoneTaken) {
+          return res.status(409).json({
+            success: false,
+            message:
+              "This phone number is already linked to another account. " +
+              "Please use another number or contact support if this number belongs to you.",
+          });
+        }
+      }
+      updatesAccount.phone = normalized;
+    }
     await Promise.all([
       Object.keys(updatesCustomer).length ? Customer.findByIdAndUpdate(customer._id, updatesCustomer, { new: true }) : null,
       Object.keys(updatesAccount).length ? Account.findByIdAndUpdate(account._id, updatesAccount, { new: true }) : null,
     ]);
     return res.status(200).json({ success: true, message: "Profile updated successfully" });
   } catch (error) {
+    const dupErr = handleDuplicateKeyError(error);
+    if (dupErr) return res.status(dupErr.status).json({ success: false, message: dupErr.message });
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// ─── Skin Profile ─────────────────────────────────────────────────────────────
 
 // GET /api/account/skin-profile
 const getMySkinProfile = async (req, res) => {
@@ -452,11 +494,8 @@ const patchMySkinProfile = async (req, res) => {
 
     await Promise.all(tasks);
 
-    // Persist recommendation snapshot immediately after skin profile update.
-    // This prevents homepage from recomputing personalized recommendations on every login/load.
     const accountId = req.user?.account_id || req.user?.accountId || account?._id;
     if (accountId) {
-      // Synchronous regen keeps homepage consistent with the updated profile.
       await generateSnapshotByAccountId({
         accountId,
         recommendationType: SNAPSHOT_RECOMMENDATION_TYPE,
@@ -470,6 +509,8 @@ const patchMySkinProfile = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// ─── Addresses ────────────────────────────────────────────────────────────────
 
 // GET /api/account/addresses
 const getMyAddresses = async (req, res) => {
@@ -605,7 +646,6 @@ const patchMyAddress = async (req, res) => {
     }
 
     await existing.save();
-
     return res.status(200).json({ success: true, message: "Address updated successfully", data: existing });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -639,56 +679,7 @@ const deleteMyAddress = async (req, res) => {
   }
 };
 
-// POST /api/account/change-password
-const changeMyPassword = async (req, res) => {
-  try {
-    const { account } = await resolveAuthAccountAndCustomer(req);
-    if (!account) return res.status(404).json({ success: false, message: "Không tìm thấy tài khoản." });
-
-    const hash = account.password_hash;
-    if (!hash || String(hash).length < 20) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Tài khoản chưa thiết lập mật khẩu đăng nhập. Vui lòng dùng liên kết mạng xã hội hoặc chức năng quên mật khẩu.",
-      });
-    }
-
-    const currentPassword = String(req.body.currentPassword || "");
-    const newPassword = String(req.body.newPassword || "");
-    const confirmPassword = String(req.body.confirmPassword || "");
-
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "Vui lòng nhập đầy đủ mật khẩu hiện tại, mật khẩu mới và xác nhận.",
-      });
-    }
-    if (confirmPassword !== newPassword) {
-      return res.status(400).json({ success: false, message: "Mật khẩu xác nhận không khớp." });
-    }
-    if (newPassword === currentPassword) {
-      return res.status(400).json({ success: false, message: "Mật khẩu mới phải khác mật khẩu hiện tại." });
-    }
-
-    const strengthErr = validateNewPasswordStrength(newPassword);
-    if (strengthErr) return res.status(400).json({ success: false, message: strengthErr });
-
-    const ok = await bcrypt.compare(currentPassword, String(hash));
-    if (!ok) {
-      return res.status(400).json({ success: false, message: "Mật khẩu hiện tại không đúng." });
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    account.password_hash = await bcrypt.hash(newPassword, salt);
-    sanitizeAccountDatesForSave(account);
-    await account.save();
-
-    return res.status(200).json({ success: true, message: "Đã cập nhật mật khẩu thành công." });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
-  }
-};
+// ─── Security / Providers ─────────────────────────────────────────────────────
 
 // GET /api/account/providers
 const getMyProviders = async (req, res) => {
@@ -720,7 +711,9 @@ const getMySecurityStatus = async (req, res) => {
       success: true,
       message: "Get security status successfully",
       data: {
-        hasPassword: !!account.password_hash,
+        /** email_verified_at replaces the former hasPassword field. */
+        emailVerified: !!account.email_verified_at,
+        email_verified_at: account.email_verified_at || null,
         linkedProviders: providers.map((p) => ({
           provider: p.provider_code,
           email: p.provider_email || "",
@@ -745,11 +738,13 @@ const unlinkMyProvider = async (req, res) => {
     if (!existing) return res.status(404).json({ success: false, message: "Linked provider not found" });
 
     const remainingCount = await AccountAuthProvider.countDocuments({ account_id: account._id, _id: { $ne: existing._id } });
-    const hasPassword = !!account.password_hash;
-    if (!hasPassword && remainingCount === 0) {
+
+    // In passwordless mode, the account's verified email is always the fallback auth method.
+    // Block removal only if this is the last linked provider AND email is not verified.
+    if (remainingCount === 0 && !account.email_verified_at) {
       return res.status(400).json({
         success: false,
-        message: "Không thể gỡ phương thức đăng nhập cuối cùng của tài khoản.",
+        message: "Không thể gỡ phương thức đăng nhập cuối cùng. Vui lòng xác thực email trước.",
       });
     }
 
@@ -760,10 +755,12 @@ const unlinkMyProvider = async (req, res) => {
   }
 };
 
+// ─── Admin CRUD ───────────────────────────────────────────────────────────────
+
 // GET /api/accounts
 const getAllAccounts = async (req, res) => {
   try {
-    const accounts = await Account.find().select(PUBLIC_FIELDS).sort({ created_at: -1 });
+    const accounts = await Account.find().sort({ created_at: -1 });
 
     res.status(200).json({
       success: true,
@@ -785,7 +782,7 @@ const getAccountById = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid account ID" });
     }
 
-    const account = await Account.findById(id).select(PUBLIC_FIELDS);
+    const account = await Account.findById(id);
 
     if (!account) {
       return res.status(404).json({ success: false, message: "Account not found" });
@@ -804,14 +801,14 @@ const getAccountById = async (req, res) => {
 // POST /api/accounts
 const createAccount = async (req, res) => {
   try {
-    const { email, password, username, phone } = req.body;
+    const { email, username, phone } = req.body;
     const account_type = pickAccountType(req.body) || "customer";
     const account_status = pickAccountStatus(req.body) || "active";
 
-    if (!email || !password) {
+    if (!email) {
       return res.status(400).json({
         success: false,
-        message: "email and password are required",
+        message: "email is required",
       });
     }
 
@@ -820,15 +817,20 @@ const createAccount = async (req, res) => {
       return res.status(400).json({ success: false, message: emailError });
     }
 
-    const passwordError = validatePassword(password);
-    if (passwordError) {
-      return res.status(400).json({ success: false, message: passwordError });
-    }
-
     if (phone) {
       const phoneError = validatePhone(phone);
       if (phoneError) {
         return res.status(400).json({ success: false, message: phoneError });
+      }
+      // Check phone uniqueness before create
+      const phoneTaken = await Account.findOne({ phone: phone.trim() });
+      if (phoneTaken) {
+        return res.status(409).json({
+          success: false,
+          message:
+            "This phone number is already linked to another account. " +
+            "Please use another number or contact support if this number belongs to you.",
+        });
       }
     }
 
@@ -868,34 +870,24 @@ const createAccount = async (req, res) => {
       }
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const password_hash = await bcrypt.hash(password, salt);
-
     const account = await Account.create({
       email: emailLower,
-      password_hash,
       account_type,
-      username: username ? username.trim() : "",
-      phone: phone ? phone.trim() : "",
+      username: username ? username.trim() : undefined,
+      phone: normalizeAccountPhone(phone),
       account_status,
+      // Admin-created accounts are treated as email-verified
+      email_verified_at: new Date(),
     });
-
-    const result = account.toObject();
-    delete result.password_hash;
 
     res.status(201).json({
       success: true,
       message: "Account created successfully",
-      data: result,
+      data: account,
     });
   } catch (error) {
-    if (error.code === 11000) {
-      const field = Object.keys(error.keyPattern)[0];
-      return res.status(400).json({
-        success: false,
-        message: `${field} already exists`,
-      });
-    }
+    const dupErr = handleDuplicateKeyError(error);
+    if (dupErr) return res.status(dupErr.status).json({ success: false, message: dupErr.message });
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -909,6 +901,7 @@ const updateAccount = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid account ID" });
     }
 
+    // Defensive: ensure no password fields can ever be injected
     delete req.body.password_hash;
     delete req.body.passwordHash;
     delete req.body.password;
@@ -916,7 +909,7 @@ const updateAccount = async (req, res) => {
     const account = await Account.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
-    }).select(PUBLIC_FIELDS);
+    });
 
     if (!account) {
       return res.status(404).json({ success: false, message: "Account not found" });
@@ -928,12 +921,8 @@ const updateAccount = async (req, res) => {
       data: account,
     });
   } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        message: "Email already exists",
-      });
-    }
+    const dupErr = handleDuplicateKeyError(error);
+    if (dupErr) return res.status(dupErr.status).json({ success: false, message: dupErr.message });
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -953,13 +942,10 @@ const deleteAccount = async (req, res) => {
       return res.status(404).json({ success: false, message: "Account not found" });
     }
 
-    const result = account.toObject();
-    delete result.password_hash;
-
     res.status(200).json({
       success: true,
       message: "Account deleted successfully",
-      data: result,
+      data: account,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -1003,6 +989,19 @@ const patchAccount = async (req, res) => {
           if (phoneError) {
             return res.status(400).json({ success: false, message: phoneError });
           }
+          // Check phone uniqueness
+          const phoneTaken = await Account.findOne({
+            phone: req.body[key].trim(),
+            _id: { $ne: id },
+          });
+          if (phoneTaken) {
+            return res.status(409).json({
+              success: false,
+              message:
+                "This phone number is already linked to another account. " +
+                "Please use another number or contact support if this number belongs to you.",
+            });
+          }
         }
         if (key === "username" && req.body[key]) {
           const existingUsername = await Account.findOne({
@@ -1016,7 +1015,7 @@ const patchAccount = async (req, res) => {
             });
           }
         }
-        updates[key] = req.body[key];
+        updates[key] = key === "phone" ? normalizeAccountPhone(req.body[key]) : req.body[key];
       }
     }
 
@@ -1051,6 +1050,19 @@ const patchAccount = async (req, res) => {
           if (phoneError) {
             return res.status(400).json({ success: false, message: phoneError });
           }
+          // Check phone uniqueness
+          const phoneTaken = await Account.findOne({
+            phone: req.body[key].trim(),
+            _id: { $ne: id },
+          });
+          if (phoneTaken) {
+            return res.status(409).json({
+              success: false,
+              message:
+                "This phone number is already linked to another account. " +
+                "Please use another number or contact support if this number belongs to you.",
+            });
+          }
         }
         if (key === "username" && req.body[key]) {
           const existingUsername = await Account.findOne({
@@ -1064,7 +1076,7 @@ const patchAccount = async (req, res) => {
             });
           }
         }
-        updates[snakeKey] = req.body[key];
+        updates[snakeKey] = key === "phone" ? normalizeAccountPhone(req.body[key]) : req.body[key];
       }
     }
 
@@ -1075,7 +1087,7 @@ const patchAccount = async (req, res) => {
     const account = await Account.findByIdAndUpdate(id, updates, {
       new: true,
       runValidators: true,
-    }).select(PUBLIC_FIELDS);
+    });
 
     if (!account) {
       return res.status(404).json({ success: false, message: "Account not found" });
@@ -1087,9 +1099,13 @@ const patchAccount = async (req, res) => {
       data: account,
     });
   } catch (error) {
+    const dupErr = handleDuplicateKeyError(error);
+    if (dupErr) return res.status(dupErr.status).json({ success: false, message: dupErr.message });
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// ─── Exports ──────────────────────────────────────────────────────────────────
 
 module.exports = {
   getAllAccounts,
@@ -1103,7 +1119,6 @@ module.exports = {
   patchMyAddress,
   deleteMyAddress,
   patchMyDefaultAddress,
-  changeMyPassword,
   getMyProviders,
   getMySecurityStatus,
   unlinkMyProvider,

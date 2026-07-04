@@ -6,7 +6,7 @@ const reviewVoteSchema = new mongoose.Schema(
     customer_id: { type: mongoose.Schema.Types.ObjectId, ref: "Customer", required: true },
     voteType: { type: String, enum: ["helpful", "not_helpful"], required: true },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "review_votes" }
 );
 
 module.exports = mongoose.model("ReviewVote", reviewVoteSchema);

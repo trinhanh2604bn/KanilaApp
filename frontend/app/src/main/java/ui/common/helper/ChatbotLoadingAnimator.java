@@ -1,4 +1,4 @@
-package com.example.frontend.common.helper;
+package ui.common.helper;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;

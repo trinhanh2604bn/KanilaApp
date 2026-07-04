@@ -13,6 +13,7 @@
     <dimen name="radius_m">12dp</dimen>
     <dimen name="radius_l">16dp</dimen>
     <dimen name="radius_pill">24dp</dimen>
+    <dimen name="radius_xl">32dp</dimen>
     <dimen name="radius_circle">999dp</dimen>
 
     <!-- Components -->
@@ -82,6 +83,16 @@
     <dimen name="chatbot_loading_response_padding_horizontal">14dp</dimen>
     <dimen name="chatbot_loading_response_padding_vertical">8dp</dimen>
     <dimen name="chatbot_loading_response_dot">7dp</dimen>
+
+    <!-- Category Visual Card -->
+    <dimen name="category_card_height">150dp</dimen>
+    <dimen name="category_card_icon_size">64dp</dimen>
+    <dimen name="category_card_product_image_width">110dp</dimen>
+
+    <!-- Category Demand Card -->
+    <dimen name="category_demand_card_height">160dp</dimen>
+    <dimen name="category_demand_icon_circle_size">80dp</dimen>
+    <dimen name="category_demand_icon_size">48dp</dimen>
 
     <!-- Checkout -->
     <dimen name="checkout_content_indent">32dp</dimen>

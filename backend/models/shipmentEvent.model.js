@@ -10,7 +10,7 @@ const shipmentEventSchema = new mongoose.Schema(
     locationText: { type: String, default: "" },
     rawPayloadJson: { type: String, default: "" },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "shipment_events" }
 );
 
 module.exports = mongoose.model("ShipmentEvent", shipmentEventSchema);

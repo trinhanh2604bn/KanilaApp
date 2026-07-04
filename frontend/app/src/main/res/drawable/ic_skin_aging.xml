@@ -4,35 +4,31 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <!-- Bình xịt serum/toner -->
+    <!-- Vòng tròn bao quanh đồng bộ với các icon vấn đề da khác -->
     <path
         android:fillColor="#00000000"
         android:strokeColor="#FF000000"
         android:strokeWidth="2"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M5,11v9a2,2 0,0 0,2 2h4a2,2 0,0 0,2-2v-9 M7,11V8a2,2 0,0 1,2-2h0a2,2 0,0 1,2,2v3" />
+        android:pathData="M12,12m-9,0a9,9 0,1 1,18 0a9,9 0,1 1,-18 0" />
+    <!-- Các đường gợn sóng mô phỏng nếp nhăn và sự chùng nhão của da -->
     <path
         android:fillColor="#00000000"
         android:strokeColor="#FF000000"
         android:strokeWidth="2"
         android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M9,6V3c0,-1 1,-1 2,-1" />
-
-    <!-- Hũ kem nhỏ bên cạnh -->
+        android:pathData="M8,9c2,1 6,1 8,0" />
     <path
         android:fillColor="#00000000"
         android:strokeColor="#FF000000"
         android:strokeWidth="2"
         android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M15,16h6v4a2,2 0,0 1-2,2h-2a2,2 0,0 1-2-2z" />
+        android:pathData="M7,13c3,1.5 7,1.5 10,0" />
     <path
         android:fillColor="#00000000"
         android:strokeColor="#FF000000"
         android:strokeWidth="2"
         android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M14,14h8v2h-8z" />
+        android:pathData="M9,17c2,1 4,1 6,0" />
 </vector>

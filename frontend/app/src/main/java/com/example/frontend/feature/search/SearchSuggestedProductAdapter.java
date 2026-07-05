@@ -15,6 +15,8 @@ import com.example.frontend.model.Product;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bumptech.glide.Glide;
+
 public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSuggestedProductAdapter.ViewHolder> {
 
     private List<Product> productList = new ArrayList<>();
@@ -47,7 +49,16 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
         holder.tvProductBrand.setText(product.getBrand());
         holder.tvProductPrice.setText(product.getPrice());
         holder.tvProductReviewCount.setText("(" + product.getReviewCount() + ")");
-        holder.ivProductImage.setImageResource(product.getImageResource());
+        
+        if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
+            Glide.with(holder.ivProductImage.getContext())
+                    .load(product.getImageUrl())
+                    .placeholder(R.drawable.ic_product)
+                    .error(R.drawable.ic_product)
+                    .into(holder.ivProductImage);
+        } else {
+            holder.ivProductImage.setImageResource(product.getImageResource() != 0 ? product.getImageResource() : R.drawable.ic_product);
+        }
         
         if (product.getBadgeText() != null && !product.getBadgeText().isEmpty()) {
             holder.tvProductBadge.setText(product.getBadgeText());

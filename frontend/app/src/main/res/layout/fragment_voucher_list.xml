@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/layoutTopBar"
+        layout="@layout/view_app_top_bar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvVouchers"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/spacing_m"
+        android:paddingBottom="@dimen/spacing_xl"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_voucher" />
+
+    <include
+        android:id="@+id/layoutVoucherLoading"
+        layout="@layout/view_loading_state"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/layoutVoucherEmpty"
+        layout="@layout/view_empty_state"
+        android:visibility="gone" />
+
+</LinearLayout>

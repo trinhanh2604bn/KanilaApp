@@ -1,0 +1,145 @@
+package ui.account;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.bumptech.glide.Glide;
+import com.example.frontend.R;
+import com.example.frontend.data.model.account.ProfileHubDto;
+import com.example.frontend.feature.account.AccountViewModel;
+
+import java.util.Locale;
+
+import ui.common.BottomNavigationHelper;
+
+public class AccountFragment extends Fragment {
+
+    private AccountViewModel viewModel;
+    
+    private ImageView ivAvatar;
+    private TextView tvName, tvRankName, tvPointsHeader, tvPointsVal, tvOrderCount, tvVoucherCount, tvSavedCount;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.page_account_home, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        
+        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        
+        initViews(view);
+        setupBottomNavigation(view);
+        observeViewModel();
+        
+        viewModel.loadProfileHub();
+    }
+
+    private void initViews(View view) {
+        ivAvatar = view.findViewById(R.id.ivAvatar);
+        tvName = view.findViewById(R.id.tvName);
+        tvRankName = view.findViewById(R.id.tvRankName);
+        tvPointsHeader = view.findViewById(R.id.tvPointsHeader);
+        tvPointsVal = view.findViewById(R.id.tvPointsVal);
+        
+        tvOrderCount = view.findViewById(R.id.tvOrderCount);
+        tvVoucherCount = view.findViewById(R.id.tvVoucherCount);
+        tvSavedCount = view.findViewById(R.id.tvSavedCount);
+        
+        view.findViewById(R.id.btnEdit).setOnClickListener(v -> {
+            // Navigate to Edit Profile
+        });
+        
+        // Menu item clicks
+        View menuBeautyProfile = view.findViewById(R.id.ivMenu1).getParent() instanceof View ? (View) view.findViewById(R.id.ivMenu1).getParent() : view.findViewById(R.id.ivMenu1);
+        menuBeautyProfile.setOnClickListener(v -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, new BeautyProfileOverviewFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        view.findViewById(R.id.btnAccountOrders).setOnClickListener(v -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.order.OrderListFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        view.findViewById(R.id.btnAccountVouchers).setOnClickListener(v -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.voucher.VoucherListFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        view.findViewById(R.id.btnAccountSaved).setOnClickListener(v -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+    }
+
+    private void setupBottomNavigation(View view) {
+        BottomNavigationHelper.setup(view, tabIndex -> {
+            if (tabIndex == BottomNavigationHelper.TAB_HOME) {
+                if (getActivity() != null) getActivity().onBackPressed();
+            }
+        });
+        BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_ACCOUNT);
+    }
+
+    private void observeViewModel() {
+        viewModel.getProfileHubResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case SUCCESS:
+                    bindData(result.data);
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
+    }
+
+    private void bindData(ProfileHubDto data) {
+        if (data == null) return;
+
+        if (data.getAccount() != null) {
+            tvName.setText(data.getAccount().getFullName());
+            Glide.with(this)
+                    .load(data.getAccount().getAvatarUrl())
+                    .placeholder(R.drawable.ic_account)
+                    .error(R.drawable.ic_account)
+                    .into(ivAvatar);
+        }
+
+        if (data.getLoyalty() != null) {
+            String points = String.format(Locale.US, "%,d", data.getLoyalty().getPoints());
+            tvPointsHeader.setText(points);
+            tvPointsVal.setText(points);
+            tvRankName.setText(data.getLoyalty().getTierName());
+        }
+
+        if (data.getStats() != null) {
+            tvOrderCount.setText(String.valueOf(data.getStats().getOrderCount()));
+            tvVoucherCount.setText(String.valueOf(data.getStats().getVoucherCount()));
+            tvSavedCount.setText(String.valueOf(data.getStats().getWishlistCount()));
+        }
+    }
+}

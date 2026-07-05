@@ -1,108 +1,83 @@
 package ui.account;
 
 import android.app.Dialog;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.frontend.R;
+import com.example.frontend.data.model.beauty.CustomerBeautyProfileDto;
+import com.example.frontend.feature.beauty.BeautyProfileViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class BeautyProfileOverviewFragment extends Fragment {
 
-    private static final String STATE_SELECTED_GOALS = "state_selected_goals";
-    private static final String STATE_SELECTED_INDICATORS = "state_selected_indicators";
-
     private final List<GoalItem> goalItems = new ArrayList<>();
-    private final List<IndicatorItem> indicatorItems = new ArrayList<>();
+    private final Map<String, IndicatorItem> indicatorMap = new HashMap<>();
+    private final Map<String, GoalItem> goalMap = new HashMap<>();
 
     private final Set<String> selectedGoalKeys = new LinkedHashSet<>();
     private final Set<String> selectedIndicatorKeys = new LinkedHashSet<>();
 
     private LinearLayout layoutSelectedGoalsSummary;
+    private BeautyProfileViewModel viewModel;
 
     public BeautyProfileOverviewFragment() {
         super(R.layout.fragment_beauty_profile_overview);
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        selectedGoalKeys.clear();
-        selectedIndicatorKeys.clear();
-
-        if (savedInstanceState != null) {
-            ArrayList<String> savedGoals = savedInstanceState.getStringArrayList(STATE_SELECTED_GOALS);
-            if (savedGoals != null) selectedGoalKeys.addAll(savedGoals);
-
-            ArrayList<String> savedIndicators = savedInstanceState.getStringArrayList(STATE_SELECTED_INDICATORS);
-            if (savedIndicators != null) selectedIndicatorKeys.addAll(savedIndicators);
-        } else {
-            // Mặc định chọn một số mục
-            selectedGoalKeys.add("acne");
-            selectedGoalKeys.add("brightening");
-            selectedGoalKeys.add("hydrating");
-            selectedIndicatorKeys.add("oily");
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putStringArrayList(STATE_SELECTED_GOALS, new ArrayList<>(selectedGoalKeys));
-        outState.putStringArrayList(STATE_SELECTED_INDICATORS, new ArrayList<>(selectedIndicatorKeys));
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        
+        viewModel = new ViewModelProvider(this).get(BeautyProfileViewModel.class);
+        
         setupViews(view);
         setupEvents(view);
-        updateAllStates();
+        observeViewModel();
+        
+        // In a real app, we would get the customer ID from Auth state or use a /me endpoint
+        viewModel.loadProfile("me"); 
     }
 
     private void setupViews(@NonNull View view) {
         goalItems.clear();
-        indicatorItems.clear();
+        indicatorMap.clear();
+        goalMap.clear();
 
         layoutSelectedGoalsSummary = view.findViewById(R.id.layoutSelectedGoalsSummary);
 
-        // Khởi tạo các thẻ Chỉ số làn da
-        addIndicatorItem(view, R.id.indicatorOily, "oily", R.drawable.ic_drops, 72, "Độ dầu", "Khá cao");
-        addIndicatorItem(view, R.id.indicatorDry, "dry", R.drawable.ic_drops_filled, 58, "Độ ẩm", "Cần cải thiện");
-        addIndicatorItem(view, R.id.indicatorCombination, "combination", R.drawable.ic_skin_acne, 64, "Tình trạng mụn", "Trung bình");
-        addIndicatorItem(view, R.id.indicatorNormal, "barrier", R.drawable.ic_goal_recovery, 70, "Hàng rào da", "Khá tốt");
-        addIndicatorItem(view, R.id.indicatorSensitive, "sensitive", R.drawable.ic_skin_sensitive, 55, "Độ nhạy cảm", "Cần theo dõi");
-        addIndicatorItem(view, R.id.indicatorUnknown, "even_tone", R.drawable.ic_skin_spots, 60, "Độ đều màu", "Trung bình");
+        // Map UI IDs to API codes
+        addIndicatorItem(view, R.id.indicatorOily, "oily", R.drawable.ic_drops, "Độ dầu");
+        addIndicatorItem(view, R.id.indicatorDry, "dry", R.drawable.ic_drops_filled, "Độ ẩm");
+        addIndicatorItem(view, R.id.indicatorCombination, "acne", R.drawable.ic_skin_acne, "Tình trạng mụn");
+        addIndicatorItem(view, R.id.indicatorNormal, "barrier", R.drawable.ic_goal_recovery, "Hàng rào da");
+        addIndicatorItem(view, R.id.indicatorSensitive, "sensitive", R.drawable.ic_skin_sensitive, "Độ nhạy cảm");
+        addIndicatorItem(view, R.id.indicatorUnknown, "even_tone", R.drawable.ic_skin_spots, "Độ đều màu");
 
-        // Khởi tạo các thẻ Mục tiêu làm đẹp
         addGoalItem(view, R.id.goalAcne, "acne", "Giảm mụn", R.drawable.ic_goal_target);
         addGoalItem(view, R.id.goalBrightening, "brightening", "Mờ thâm", R.drawable.ic_goal_sparkle);
         addGoalItem(view, R.id.goalHydrating, "hydrating", "Dưỡng ẩm", R.drawable.ic_drops_filled);
@@ -115,7 +90,7 @@ public class BeautyProfileOverviewFragment extends Fragment {
         addGoalItem(view, R.id.goalEvenTone, "even_tone", "Đều màu da", R.drawable.ic_skin_spots);
     }
 
-    private void addIndicatorItem(@NonNull View root, int containerId, @NonNull String key, int iconResource, int score, @NonNull String name, @NonNull String status) {
+    private void addIndicatorItem(@NonNull View root, int containerId, @NonNull String key, int iconResource, @NonNull String name) {
         View itemRoot = root.findViewById(containerId);
         if (!(itemRoot instanceof MaterialCardView)) return;
         MaterialCardView card = (MaterialCardView) itemRoot;
@@ -129,11 +104,10 @@ public class BeautyProfileOverviewFragment extends Fragment {
         if (icon == null || scoreText == null || nameText == null || statusText == null || tick == null) return;
 
         icon.setImageResource(iconResource);
-        scoreText.setText(score + "/100");
         nameText.setText(name);
-        statusText.setText(status);
 
-        indicatorItems.add(new IndicatorItem(card, icon, scoreText, nameText, statusText, tick, key, name, selectedIndicatorKeys.contains(key)));
+        IndicatorItem item = new IndicatorItem(card, icon, scoreText, nameText, statusText, tick, key, name, false);
+        indicatorMap.put(key, item);
     }
 
     private void addGoalItem(@NonNull View root, int containerId, @NonNull String key, @NonNull String name, int iconResource) {
@@ -150,76 +124,84 @@ public class BeautyProfileOverviewFragment extends Fragment {
         icon.setImageResource(iconResource);
         label.setText(name);
 
-        goalItems.add(new GoalItem(card, icon, label, tick, key, name, selectedGoalKeys.contains(key)));
+        GoalItem item = new GoalItem(card, icon, label, tick, key, name, false);
+        goalItems.add(item);
+        goalMap.put(key, item);
+    }
+
+    private void observeViewModel() {
+        viewModel.getProfileResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case SUCCESS:
+                    bindProfileData(result.data);
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
+    }
+
+    private void bindProfileData(CustomerBeautyProfileDto profile) {
+        if (profile == null) return;
+
+        // Update Indicators
+        if (profile.getSkinIndicators() != null) {
+            for (CustomerBeautyProfileDto.SkinIndicatorDto indicator : profile.getSkinIndicators()) {
+                IndicatorItem uiItem = indicatorMap.get(indicator.getCode());
+                if (uiItem != null) {
+                    uiItem.score.setText(indicator.getScore() + "/100");
+                    uiItem.status.setText(indicator.getStatus());
+                    uiItem.selected = true; // For now assuming if it has a score it's active
+                    updateIndicatorView(uiItem);
+                }
+            }
+        }
+
+        // Update Goals
+        selectedGoalKeys.clear();
+        if (profile.getBeautyGoals() != null) {
+            selectedGoalKeys.addAll(profile.getBeautyGoals());
+            for (String goalCode : profile.getBeautyGoals()) {
+                GoalItem uiItem = goalMap.get(goalCode);
+                if (uiItem != null) {
+                    uiItem.selected = true;
+                    updateGoalView(uiItem);
+                }
+            }
+        }
+        
+        updateSelectedGoalsSummary();
     }
 
     private void setupEvents(@NonNull View view) {
         View btnBack = view.findViewById(R.id.btnBack);
-        if (btnBack != null) {
-            // MaterialCardView đã có ripple mặc định qua app:rippleColor trong XML
-            // Không gán background mới để tránh làm mất icon/style của Card
-            btnBack.setOnClickListener(v -> handleBackNavigation());
-        }
+        if (btnBack != null) btnBack.setOnClickListener(v -> handleBackNavigation());
 
         View btnEdit = view.findViewById(R.id.btnEdit);
-        if (btnEdit != null) {
-            applyRipple(btnEdit);
-            btnEdit.setOnClickListener(v -> showUpdateConfirmDialog());
-        }
+        if (btnEdit != null) btnEdit.setOnClickListener(v -> showUpdateConfirmDialog());
 
         MaterialButton btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
-        if (btnUpdateProfile != null) {
-            btnUpdateProfile.setOnClickListener(v -> showUpdateConfirmDialog());
-        }
+        if (btnUpdateProfile != null) btnUpdateProfile.setOnClickListener(v -> showUpdateConfirmDialog());
 
         MaterialButton btnViewRoutine = view.findViewById(R.id.btnViewRoutine);
         if (btnViewRoutine != null) {
-            btnViewRoutine.setOnClickListener(v -> openRecommendationLook());
-        }
-
-        setupGoalClickEvents();
-        setupIndicatorClickEvents();
-    }
-
-    private void setupGoalClickEvents() {
-        for (GoalItem item : goalItems) {
-            item.card.setOnClickListener(v -> {
-                item.selected = !item.selected;
-                if (item.selected) selectedGoalKeys.add(item.key);
-                else selectedGoalKeys.remove(item.key);
-                updateGoalView(item);
-                updateSelectedGoalsSummary();
+            btnViewRoutine.setOnClickListener(v -> {
+                // Navigate to RecommendationLookFragment
             });
         }
-    }
-
-    private void setupIndicatorClickEvents() {
-        for (IndicatorItem item : indicatorItems) {
-            item.card.setOnClickListener(v -> {
-                item.selected = !item.selected;
-                if (item.selected) selectedIndicatorKeys.add(item.key);
-                else selectedIndicatorKeys.remove(item.key);
-                updateIndicatorView(item);
-            });
-        }
-    }
-
-    private void updateAllStates() {
-        for (GoalItem item : goalItems) updateGoalView(item);
-        for (IndicatorItem item : indicatorItems) updateIndicatorView(item);
-        updateSelectedGoalsSummary();
     }
 
     private void updateGoalView(@NonNull GoalItem item) {
         int pink = ContextCompat.getColor(requireContext(), R.color.button);
-        int lightPinkStroke = ContextCompat.getColor(requireContext(), R.color.primary);
         int lightPinkBg = ContextCompat.getColor(requireContext(), R.color.background_sub);
         int dark = ContextCompat.getColor(requireContext(), R.color.accent_dark);
 
         if (item.selected) {
             item.card.setStrokeColor(pink);
-            item.card.setStrokeWidth(dpToPx(1)); // Giảm độ dày viền
-            item.card.setCardBackgroundColor(lightPinkBg); // Sử dụng nền cực nhạt
+            item.card.setStrokeWidth(dpToPx(1));
+            item.card.setCardBackgroundColor(lightPinkBg);
             item.label.setTextColor(pink);
             item.tick.setVisibility(View.VISIBLE);
         } else {
@@ -237,8 +219,8 @@ public class BeautyProfileOverviewFragment extends Fragment {
 
         if (item.selected) {
             item.card.setStrokeColor(pink);
-            item.card.setStrokeWidth(dpToPx(1)); // Giảm độ dày viền
-            item.card.setCardBackgroundColor(lightPinkBg); // Sử dụng nền cực nhạt
+            item.card.setStrokeWidth(dpToPx(1));
+            item.card.setCardBackgroundColor(lightPinkBg);
             item.tick.setVisibility(View.VISIBLE);
         } else {
             item.card.setStrokeColor(ContextCompat.getColor(requireContext(), R.color.border_divider));
@@ -275,12 +257,6 @@ public class BeautyProfileOverviewFragment extends Fragment {
         layoutSelectedGoalsSummary.addView(chip);
     }
 
-    private void applyRipple(View view) {
-        TypedValue v = new TypedValue();
-        requireContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, v, true);
-        view.setBackgroundResource(v.resourceId);
-    }
-
     private void handleBackNavigation() {
         if (getParentFragmentManager().getBackStackEntryCount() > 0) getParentFragmentManager().popBackStack();
         else requireActivity().getOnBackPressedDispatcher().onBackPressed();
@@ -299,15 +275,9 @@ public class BeautyProfileOverviewFragment extends Fragment {
         Dialog d = new Dialog(requireContext());
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
         d.setContentView(R.layout.overview_popup);
-        d.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        if (d.getWindow() != null) d.getWindow().setBackgroundDrawable(new ColorDrawable(0));
         d.findViewById(R.id.btnPopupOk).setOnClickListener(v -> d.dismiss());
         d.show();
-    }
-
-    private void openRecommendationLook() {
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.main, new RecommendationLookFragment())
-                .addToBackStack(null).commit();
     }
 
     private int dpToPx(int dp) {

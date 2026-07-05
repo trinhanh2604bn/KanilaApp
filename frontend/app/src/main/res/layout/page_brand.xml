@@ -174,17 +174,33 @@
                 </LinearLayout>
             </HorizontalScrollView>
 
-            <!-- 3. Brand grid -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvBrandGrid"
+
+            <!-- 3. Brand grid, Loading and Empty state -->
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_m"
-                android:nestedScrollingEnabled="false"
-                tools:itemCount="30"
-                tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                tools:listitem="@layout/item_brand_card"
-                tools:spanCount="3" />
+                android:layout_marginTop="@dimen/spacing_m">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvBrandGrid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    tools:itemCount="30"
+                    tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    tools:listitem="@layout/item_brand_card"
+                    tools:spanCount="3" />
+
+                <include
+                    android:id="@+id/viewBrandLoading"
+                    layout="@layout/view_loading_state"
+                    android:visibility="gone" />
+
+                <include
+                    android:id="@+id/viewBrandEmpty"
+                    layout="@layout/view_empty_state"
+                    android:visibility="gone" />
+            </FrameLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

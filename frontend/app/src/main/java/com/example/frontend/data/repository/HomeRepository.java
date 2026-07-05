@@ -21,7 +21,7 @@ public class HomeRepository {
 
     public void getProducts(String query, MutableLiveData<NetworkResult<List<Product>>> result) {
         result.setValue(NetworkResult.loading());
-        apiService.getProducts(query).enqueue(new Callback<ApiResponse<List<Product>>>() {
+        apiService.getProducts(query, null, null).enqueue(new Callback<ApiResponse<List<Product>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<Product>>> call, Response<ApiResponse<List<Product>>> response) {
                 if (response.isSuccessful() && response.body() != null) {

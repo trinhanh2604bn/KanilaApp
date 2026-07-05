@@ -11,33 +11,36 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.frontend.R;
-import com.example.frontend.model.CartItem;
+import com.example.frontend.data.model.cart.CartItemDto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
 
-    private List<CartItem> items = new ArrayList<>();
+    private List<CartItemDto> items = new ArrayList<>();
     private OnCartItemChangeListener listener;
 
     public interface OnCartItemChangeListener {
-        void onItemSelectedChanged();
-        void onQuantityChanged();
-        void onVariantClick(CartItem item, int position);
+        void onItemSelectedChanged(CartItemDto item, boolean isSelected);
+        void onQuantityChanged(CartItemDto item, int newQuantity);
+        void onVariantClick(CartItemDto item, int position);
+        void onDeleteClick(CartItemDto item, int position);
     }
 
     public void setOnCartItemChangeListener(OnCartItemChangeListener listener) {
         this.listener = listener;
     }
 
-    public void setItems(List<CartItem> items) {
+    public void setItems(List<CartItemDto> items) {
         this.items = items;
         notifyDataSetChanged();
     }
 
-    public List<CartItem> getItems() {
+    public List<CartItemDto> getItems() {
         return items;
     }
 
@@ -50,7 +53,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
-        CartItem item = items.get(position);
+        CartItemDto item = items.get(position);
         holder.bind(item);
     }
 
@@ -87,42 +90,39 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             tvActionDelete = layoutAction.findViewById(R.id.tvActionDelete);
         }
 
-        public void bind(CartItem item) {
-            tvName.setText(item.getProduct().getName());
-            tvVariant.setText(item.getVariant());
-            tvPrice.setText(item.getProduct().getPrice());
+        public void bind(CartItemDto item) {
+            tvName.setText(item.getProductNameSnapshot());
+            tvVariant.setText(item.getVariantNameSnapshot());
+            tvPrice.setText(formatPrice(item.getFinalUnitPriceAmount()));
             tvQuantity.setText(String.valueOf(item.getQuantity()));
-            ivProduct.setImageResource(item.getProduct().getImageResource());
-            btnWishlist.setSelected(item.isWishlisted());
             
-            // Reset translation in case view is reused
+            Glide.with(ivProduct.getContext())
+                    .load(item.getImageUrlSnapshot())
+                    .placeholder(R.drawable.ic_product)
+                    .error(R.drawable.ic_product)
+                    .into(ivProduct);
+            
+            // Note: Wishlist status might need separate API call or be part of item DTO if backend supports it
+            btnWishlist.setSelected(false); 
+            
             layoutFront.setTranslationX(0f);
             
             cbSelected.setOnCheckedChangeListener(null);
             cbSelected.setChecked(item.isSelected());
             cbSelected.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                item.setSelected(isChecked);
-                if (listener != null) listener.onItemSelectedChanged();
+                if (listener != null) listener.onItemSelectedChanged(item, isChecked);
             });
 
             btnDecrease.setOnClickListener(v -> {
-                if (item.getQuantity() > 1) {
-                    item.setQuantity(item.getQuantity() - 1);
-                    tvQuantity.setText(String.valueOf(item.getQuantity()));
-                    if (listener != null) listener.onQuantityChanged();
+                if (item.getQuantity() > 1 && listener != null) {
+                    listener.onQuantityChanged(item, item.getQuantity() - 1);
                 }
             });
 
             btnIncrease.setOnClickListener(v -> {
-                item.setQuantity(item.getQuantity() + 1);
-                tvQuantity.setText(String.valueOf(item.getQuantity()));
-                if (listener != null) listener.onQuantityChanged();
-            });
-
-            btnWishlist.setOnClickListener(v -> {
-                boolean newState = !item.isWishlisted();
-                item.setWishlisted(newState);
-                btnWishlist.setSelected(newState);
+                if (listener != null) {
+                    listener.onQuantityChanged(item, item.getQuantity() + 1);
+                }
             });
 
             if (layoutVariant != null) {
@@ -136,16 +136,19 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
             tvActionDelete.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) {
-                    items.remove(pos);
-                    notifyItemRemoved(pos);
-                    if (listener != null) listener.onItemSelectedChanged();
+                if (pos != RecyclerView.NO_POSITION && listener != null) {
+                    listener.onDeleteClick(item, pos);
                 }
             });
 
             tvActionSimilar.setOnClickListener(v -> {
                 // Feature logic for similar products
             });
+        }
+
+        private String formatPrice(double price) {
+            if (price == 0) return "Liên hệ";
+            return String.format(Locale.US, "%,.0fđ", price).replace(",", ".");
         }
     }
 }

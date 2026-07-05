@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/layoutTopBar"
+        layout="@layout/view_app_top_bar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvWishlist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:padding="@dimen/spacing_m"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"
+        tools:listitem="@layout/item_product_card" />
+
+    <include
+        android:id="@+id/layoutWishlistLoading"
+        layout="@layout/view_loading_state"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/layoutWishlistEmpty"
+        layout="@layout/view_empty_wishlist"
+        android:visibility="gone" />
+
+</LinearLayout>

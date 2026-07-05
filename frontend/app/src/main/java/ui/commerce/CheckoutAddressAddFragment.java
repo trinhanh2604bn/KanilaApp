@@ -19,6 +19,12 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class CheckoutAddressAddFragment extends Fragment {
 
     private EditText edtFullName, edtPhone, edtDetail;
@@ -26,6 +32,10 @@ public class CheckoutAddressAddFragment extends Fragment {
     private ChipGroup chipGroupTag;
     private SwitchMaterial switchDefault;
     private View btnSave;
+
+    private String selectedProvince;
+    private String selectedWard;
+    private Map<String, List<String>> provinceWardMap;
 
     @Nullable
     @Override
@@ -37,10 +47,25 @@ public class CheckoutAddressAddFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        initData();
         initViews(view);
         setupHeader(view);
         setupTexts(view);
         setupListeners(view);
+    }
+
+    private void initData() {
+        provinceWardMap = new HashMap<>();
+        provinceWardMap.put("TP. Hồ Chí Minh", Arrays.asList("Phường Bến Thành", "Phường Sài Gòn", "Phường Tân Định", "Phường Thủ Đức", "Phường Bình Thạnh"));
+        provinceWardMap.put("Hà Nội", Arrays.asList("Phường Hoàn Kiếm", "Phường Ba Đình", "Phường Cầu Giấy", "Phường Đống Đa", "Phường Tây Hồ"));
+        provinceWardMap.put("Đà Nẵng", Arrays.asList("Phường Hải Châu", "Phường Thanh Khê", "Phường Sơn Trà", "Phường Ngũ Hành Sơn"));
+        provinceWardMap.put("Cần Thơ", Arrays.asList("Phường Ninh Kiều", "Phường Bình Thủy", "Phường Cái Răng", "Phường Thốt Nốt"));
+        provinceWardMap.put("Hải Phòng", Arrays.asList("Phường Hồng Bàng", "Phường Lê Chân", "Phường Ngô Quyền", "Phường Kiến An"));
+        provinceWardMap.put("Gia Lai", Arrays.asList("Phường Pleiku", "Phường Hội Phú", "Xã An Lương", "Xã Phù Mỹ Bắc"));
+        provinceWardMap.put("Bình Dương", Arrays.asList("Phường Thủ Dầu Một", "Phường Thuận An", "Phường Dĩ An"));
+        provinceWardMap.put("Đồng Nai", Arrays.asList("Phường Biên Hòa", "Phường Long Khánh", "Huyện Long Thành"));
+        provinceWardMap.put("Khánh Hòa", Arrays.asList("Phường Nha Trang", "Phường Cam Ranh", "Huyện Diên Khánh"));
+        provinceWardMap.put("Lâm Đồng", Arrays.asList("Phường Đà Lạt", "Phường Bảo Lộc", "Huyện Đức Trọng"));
     }
 
     private void initViews(View view) {
@@ -145,14 +170,32 @@ public class CheckoutAddressAddFragment extends Fragment {
         View layoutProvince = view.findViewById(R.id.layoutAddressProvince);
         if (layoutProvince != null) {
             layoutProvince.setOnClickListener(v -> {
-                // TODO: Open province selector
+                List<String> provinces = new ArrayList<>(provinceWardMap.keySet());
+                AddressPickerBottomSheet picker = new AddressPickerBottomSheet(getContext(), "Chọn tỉnh/thành phố", provinces, item -> {
+                    selectedProvince = item;
+                    selectedWard = null;
+                    if (tvProvince != null) tvProvince.setText(selectedProvince);
+                    if (tvWard != null) tvWard.setText("Chọn phường/xã");
+                });
+                picker.show();
             });
         }
 
         View layoutWard = view.findViewById(R.id.layoutAddressWard);
         if (layoutWard != null) {
             layoutWard.setOnClickListener(v -> {
-                // TODO: Open ward selector
+                if (selectedProvince == null) {
+                    showError("Vui lòng chọn tỉnh/thành phố trước");
+                    return;
+                }
+                List<String> wards = provinceWardMap.get(selectedProvince);
+                if (wards != null) {
+                    AddressPickerBottomSheet picker = new AddressPickerBottomSheet(getContext(), "Chọn phường/xã", wards, item -> {
+                        selectedWard = item;
+                        if (tvWard != null) tvWard.setText(selectedWard);
+                    });
+                    picker.show();
+                }
             });
         }
 
@@ -181,11 +224,11 @@ public class CheckoutAddressAddFragment extends Fragment {
             showError("Vui lòng nhập số điện thoại");
             return false;
         }
-        if (tvProvince == null || tvProvince.getText().toString().equals("Chọn tỉnh/thành phố")) {
+        if (selectedProvince == null || selectedProvince.isEmpty()) {
             showError("Vui lòng chọn tỉnh/thành phố");
             return false;
         }
-        if (tvWard == null || tvWard.getText().toString().equals("Chọn phường/xã")) {
+        if (selectedWard == null || selectedWard.isEmpty()) {
             showError("Vui lòng chọn phường/xã");
             return false;
         }

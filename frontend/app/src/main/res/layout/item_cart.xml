@@ -27,7 +27,6 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="8dp"
-            android:buttonTint="@color/button"
             android:checked="true"
             tools:ignore="TouchTargetSizeCheck" />
 
@@ -154,7 +153,7 @@
                 android:contentDescription="Wishlist"
                 android:padding="5dp"
                 android:scaleType="centerInside"
-                android:src="@drawable/selector_post_like"
+                android:src="@drawable/selector_wishlist_heart"
                 app:tint="@color/selector_post_action_tint"
                 tools:ignore="TouchTargetSizeCheck" />
 

@@ -15,7 +15,8 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="5dp"
         android:paddingTop="@dimen/spacing_m"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="0dp">
 
         <FrameLayout
             android:id="@+id/containerSearchArea"
@@ -44,8 +45,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnCart"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="TouchTargetSizeCheck"
-            app:tint="@color/button" />
+            app:tint="@color/button"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <ImageButton
             android:id="@+id/btnCart"
@@ -57,8 +58,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnWishlist"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="TouchTargetSizeCheck"
-            app:tint="@color/button" />
+            app:tint="@color/button"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <ImageButton
             android:id="@+id/btnWishlist"
@@ -70,16 +71,16 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="TouchTargetSizeCheck"
+            app:tint="@color/button"
 
-            app:tint="@color/button" />
+            tools:ignore="TouchTargetSizeCheck" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/includeBottomNavigation"
+        app:layout_constraintBottom_toTopOf="@id/layoutBottomNavigation"
         app:layout_constraintTop_toBottomOf="@id/layoutHomeSearchHeader">
 
         <LinearLayout
@@ -104,7 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/spacing_m"
-                android:layout_marginTop="@dimen/spacing_m"
+                android:layout_marginTop="6dp"
                 android:orientation="vertical"
                 android:paddingVertical="@dimen/spacing_s">
 
@@ -114,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
                     android:orientation="horizontal"
-                    android:padding="@dimen/spacing_s"
+                    android:padding="0dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_home_shortcut" />
 
@@ -122,48 +123,103 @@
 
             <include layout="@layout/view_home_social_section" />
 
-            <!-- Product Section Header -->
-            <RelativeLayout
+            <!-- Personalized Recommendation Section -->
+            <LinearLayout
+                android:id="@+id/layoutHomeRecommendation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/spacing_m"
                 android:layout_marginTop="@dimen/spacing_l"
-                android:layout_marginBottom="@dimen/spacing_s">
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvProductSectionTitle"
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:fontFamily="@font/nunito_bold"
-                    android:text="Gợi ý riêng cho bạn"
-                    android:textColor="@color/text_main"
-                    android:textSize="18sp" />
+                    android:layout_marginHorizontal="@dimen/spacing_m">
 
-                <TextView
-                    android:id="@+id/btnViewAllProducts"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:fontFamily="@font/nunito_medium"
-                    android:text="Xem tất cả"
-                    android:textColor="@color/pink_primary"
-                    android:textSize="14sp" />
+                    <TextView
+                        android:id="@+id/tvRecommendationTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:fontFamily="@font/nunito_bold"
+                        android:text="Gợi ý riêng cho bạn"
+                        android:textColor="@color/text_main"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/btnViewAllRecommended"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignTop="@id/tvRecommendationTitle"
+                        android:layout_alignBottom="@id/tvRecommendationTitle"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:fontFamily="@font/nunito_medium"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="4dp"
+                        android:text="Xem tất cả"
+                        android:textColor="@color/pink_primary"
+                        android:textSize="14sp"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                    <TextView
+                        android:id="@+id/tvRecommendationSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tvRecommendationTitle"
+                        android:layout_marginTop="2dp"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="Dựa trên hồ sơ làm đẹp và sở thích của bạn"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+                </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvRecommendedProducts"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_s"
                     android:clipToPadding="false"
                     android:orientation="horizontal"
                     android:paddingHorizontal="@dimen/spacing_m"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_product_card" />
-            </RelativeLayout>
 
-            <!-- Recommended Products RecyclerView -->
+            </LinearLayout>
+
+
+            <!-- Shop Catalog Section -->
+            <LinearLayout
+                android:id="@+id/layoutHomeCatalog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_l"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTacasanpham"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:fontFamily="@font/nunito_bold"
+                    android:text="Tất cả sản phẩm"
+                    android:textColor="@color/text_main"
+                    android:textSize="18sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvAllProducts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_s"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"
+                    tools:listitem="@layout/item_product_card" />
+
+            </LinearLayout>
+
 
             <!-- Loading / Error States -->
             <FrameLayout
@@ -186,11 +242,12 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- Bottom Navigation -->
     <include
-        android:id="@+id/includeBottomNavigation"
+        android:id="@+id/layoutBottomNavigation"
         layout="@layout/view_bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="64dp"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

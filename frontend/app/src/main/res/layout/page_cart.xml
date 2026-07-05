@@ -14,18 +14,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Cart Items List -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvCartItems"
+    <!-- Content Wrapper -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutCartContent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingBottom="250dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutTopBar"
-        tools:listitem="@layout/item_cart_swipeable" />
+        app:layout_constraintBottom_toTopOf="@id/layoutCartCheckoutSummary"
+        app:layout_constraintTop_toBottomOf="@id/layoutTopBar">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCartItems"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/spacing_xl"
+            tools:listitem="@layout/item_cart_swipeable" />
+
+        <include
+            android:id="@+id/viewCartLoading"
+            layout="@layout/view_loading_state"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/viewCartEmpty"
+            layout="@layout/view_empty_state"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Bottom Anchored Checkout Summary Panel -->
     <include

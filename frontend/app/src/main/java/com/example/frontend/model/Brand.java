@@ -24,20 +24,17 @@ public class Brand {
     @SerializedName("isActive")
     private boolean isActive;
 
-    // Các thuộc tính bổ sung phục vụ logic UI hiện tại (chưa có trong Backend)
-    private boolean isFavorite;
+    @SerializedName("createdAt")
+    private String createdAt;
+
+    @SerializedName("updatedAt")
+    private String updatedAt;
+
     private int logoRes;
+    private boolean isFavorite;
     private String region;
 
     public Brand() {}
-
-    // Constructor 4 tham số để fix lỗi trong BrandPageFragment
-    public Brand(String brandName, int logoRes, boolean isFavorite, String region) {
-        this.brandName = brandName;
-        this.logoRes = logoRes;
-        this.isFavorite = isFavorite;
-        this.region = region;
-    }
 
     public String getId() { return id; }
     public String getBrandName() { return brandName; }
@@ -46,10 +43,13 @@ public class Brand {
     public String getLogoUrl() { return logoUrl; }
     public String getBrandStatus() { return brandStatus; }
     public boolean isActive() { return isActive; }
-    
-    // Getter/Setter cho logic UI
+    public String getCreatedAt() { return createdAt; }
+    public String getUpdatedAt() { return updatedAt; }
+
+    public int getLogoRes() { return logoRes; }
+    public void setLogoRes(int logoRes) { this.logoRes = logoRes; }
     public boolean isFavorite() { return isFavorite; }
     public void setFavorite(boolean favorite) { isFavorite = favorite; }
-    public int getLogoRes() { return logoRes; }
     public String getRegion() { return region; }
+    public void setRegion(String region) { this.region = region; }
 }

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutFacePage"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical">
+
+    <!-- A. Fixed header area (Sticky Header) -->
+    <LinearLayout
+        android:id="@+id/layoutFaceStickyHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/background_main"
+        android:elevation="2dp">
+
+        <!-- Top row: Back + Search + Actions -->
+        <LinearLayout
+            android:id="@+id/layoutFaceTopBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/spacing_s"
+            android:paddingVertical="@dimen/spacing_s">
+
+            <ImageButton
+                android:id="@+id/btnFaceBack"
+                android:layout_width="@dimen/touch_target_min"
+                android:layout_height="@dimen/touch_target_min"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/content_desc_back"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_back"
+                app:tint="@color/accent_dark"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <include
+                android:id="@+id/layoutFaceSearchBar"
+                layout="@layout/view_search_bar"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginHorizontal="@dimen/spacing_xs"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:id="@+id/layoutFilterAction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/spacing_xs"
+                android:background="?attr/selectableItemBackground"
+                tools:ignore="TouchTargetSizeCheck">
+
+                <ImageView
+                    android:id="@+id/ivFilterIcon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@string/filter_label"
+                    android:src="@drawable/ic_filter"
+                    app:tint="@color/button" />
+
+                <TextView
+                    android:id="@+id/tvFilterLabel"
+                    style="@style/Text.Kanila.Micro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_label"
+                    android:textColor="@color/accent_dark" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutSortAction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/spacing_xs"
+                android:background="?attr/selectableItemBackground"
+                tools:ignore="TouchTargetSizeCheck">
+
+                <ImageView
+                    android:id="@+id/ivSortIcon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@string/sort_label"
+                    android:src="@drawable/ic_sort"
+                    app:tint="@color/button" />
+
+                <TextView
+                    android:id="@+id/tvSortLabel"
+                    style="@style/Text.Kanila.Micro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sort_label"
+                    android:textColor="@color/accent_dark" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Filter chips row -->
+        <HorizontalScrollView
+            android:id="@+id/hsvFaceFilterChips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_s"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/layoutFaceFilterChips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/spacing_l">
+
+                <TextView
+                    android:id="@+id/chipAllFace"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_chip_selected"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:text="@string/chip_all"
+                    android:textColor="@color/background_main"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <TextView
+                    android:id="@+id/chipFoundation"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="@dimen/spacing_s"
+                    android:background="@drawable/bg_chip_outline"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:text="@string/chip_foundation"
+                    android:textColor="@color/primary"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <TextView
+                    android:id="@+id/chipConcealer"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="@dimen/spacing_s"
+                    android:background="@drawable/bg_chip_outline"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:text="@string/chip_concealer"
+                    android:textColor="@color/primary"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <TextView
+                    android:id="@+id/chipPrimer"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="@dimen/spacing_s"
+                    android:background="@drawable/bg_chip_outline"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:text="@string/chip_primer"
+                    android:textColor="@color/primary"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <TextView
+                    android:id="@+id/chipPowder"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="@dimen/spacing_s"
+                    android:background="@drawable/bg_chip_outline"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:text="@string/chip_powder"
+                    android:textColor="@color/primary"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <TextView
+                    android:id="@+id/chipSettingSpray"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="@dimen/spacing_s"
+                    android:background="@drawable/bg_chip_outline"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:text="@string/chip_setting_spray"
+                    android:textColor="@color/primary"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <TextView
+                    android:id="@+id/chipBbCcCream"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="@dimen/spacing_s"
+                    android:background="@drawable/bg_chip_outline"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:text="@string/chip_bb_cc_cream"
+                    android:textColor="@color/primary"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <TextView
+                    android:id="@+id/chipTintedMoisturizer"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="@dimen/spacing_s"
+                    android:background="@drawable/bg_chip_outline"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:text="@string/chip_tinted_moisturizer"
+                    android:textColor="@color/primary"
+                    tools:ignore="TouchTargetSizeCheck" />
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <!-- B. Scrollable content area -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvFaceProducts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/spacing_l"
+            android:paddingTop="@dimen/spacing_s"
+            android:paddingBottom="@dimen/spacing_m"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2"
+            tools:listitem="@layout/item_product_card" />
+
+        <FrameLayout
+            android:id="@+id/containerSearchNoResult"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <include layout="@layout/view_search_no_result" />
+        </FrameLayout>
+
+        <include
+            android:id="@+id/viewFaceLoading"
+            layout="@layout/view_loading_state"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- C. Fixed bottom area -->
+    <include
+        android:id="@+id/includeFaceBottomNavigation"
+        layout="@layout/view_bottom_navigation" />
+
+</LinearLayout>

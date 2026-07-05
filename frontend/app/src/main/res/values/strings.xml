@@ -82,4 +82,8 @@
     <string name="notification">Thông báo</string>
     <string name="cart">Giỏ hàng</string>
     <string name="wishlist">Yêu thích</string>
+    <string name="address_book_title">Địa chỉ giao hàng</string>
+    <string name="address_book_list_header">Danh sách địa chỉ</string>
+    <string name="address_book_add_new">Thêm địa chỉ mới</string>
+    <string name="address_book_default">Mặc định</string>
 </resources>

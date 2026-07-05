@@ -229,4 +229,20 @@
     <string name="chip_setting_spray">Setting Spray</string>
     <string name="chip_bb_cc_cream">BB &amp; CC Cream</string>
     <string name="chip_tinted_moisturizer">Tinted Moisturizer</string>
+
+
+
+    <string name="notification_title">Thông báo</string>
+    <string name="notification_filter_all">Tất cả</string>
+    <string name="notification_filter_orders">Đơn hàng</string>
+    <string name="notification_filter_offers">Ưu đãi</string>
+    <string name="notification_filter_community">Cộng đồng</string>
+    <string name="notification_filter_personal">Cá nhân</string>
+    <string name="notification_new_tag">Mới</string>
+    <string name="notification_empty">Không có thông báo nào</string>
+    <string name="address_book_title">Địa chỉ giao hàng</string>
+    <string name="address_book_list_header">Danh sách địa chỉ</string>
+    <string name="address_book_add_new">Thêm địa chỉ mới</string>
+
+
 </resources>

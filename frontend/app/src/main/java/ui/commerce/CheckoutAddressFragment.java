@@ -95,7 +95,10 @@ public class CheckoutAddressFragment extends Fragment {
         if (btnAdd != null) {
             btnAdd.setText("Thêm địa chỉ mới");
             btnAdd.setOnClickListener(v -> {
-                // TODO: Open existing add address flow if available
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new CheckoutAddressAddFragment())
+                        .addToBackStack(null)
+                        .commit();
             });
         }
     }

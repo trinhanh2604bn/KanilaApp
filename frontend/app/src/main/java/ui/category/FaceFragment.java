@@ -26,11 +26,19 @@ public class FaceFragment extends Fragment {
 
     private RecyclerView rvFaceProducts;
     private ProductAdapter adapter;
-    private List<Product> fullProductList = new ArrayList<>();
-    private List<Product> currentFilteredList = new ArrayList<>();
+    private List<Product> allFaceProducts = new ArrayList<>();
     private View containerSearchNoResult;
     private LinearLayout layoutFaceFilterChips;
     private TextView selectedChipView;
+
+    private TextView chipAllFace;
+    private TextView chipFoundation;
+    private TextView chipConcealer;
+    private TextView chipPrimer;
+    private TextView chipPowder;
+    private TextView chipSettingSpray;
+    private TextView chipBbCcCream;
+    private TextView chipTintedMoisturizer;
 
     @Nullable
     @Override
@@ -44,7 +52,7 @@ public class FaceFragment extends Fragment {
 
         initViews(view);
         setupSearch(view);
-        setupFilterChips(view);
+        setupFilterChips();
         setupProductList();
         setupActions(view);
 
@@ -58,6 +66,15 @@ public class FaceFragment extends Fragment {
         rvFaceProducts = root.findViewById(R.id.rvFaceProducts);
         containerSearchNoResult = root.findViewById(R.id.containerSearchNoResult);
         layoutFaceFilterChips = root.findViewById(R.id.layoutFaceFilterChips);
+
+        chipAllFace = root.findViewById(R.id.chipAllFace);
+        chipFoundation = root.findViewById(R.id.chipFoundation);
+        chipConcealer = root.findViewById(R.id.chipConcealer);
+        chipPrimer = root.findViewById(R.id.chipPrimer);
+        chipPowder = root.findViewById(R.id.chipPowder);
+        chipSettingSpray = root.findViewById(R.id.chipSettingSpray);
+        chipBbCcCream = root.findViewById(R.id.chipBbCcCream);
+        chipTintedMoisturizer = root.findViewById(R.id.chipTintedMoisturizer);
         
         ImageButton btnBack = root.findViewById(R.id.btnFaceBack);
         if (btnBack != null) {
@@ -84,38 +101,68 @@ public class FaceFragment extends Fragment {
         }
     }
 
-    private void setupFilterChips(View root) {
+    private void setupFilterChips() {
         if (layoutFaceFilterChips == null) return;
         
-        // Initial selection: Foundation
-        selectedChipView = root.findViewById(R.id.chipFoundation);
-        
-        setupChip(root.findViewById(R.id.chipFoundation), "Foundation");
-        setupChip(root.findViewById(R.id.chipConcealer), "Concealer");
-        setupChip(root.findViewById(R.id.chipPrimer), "Primer");
-        setupChip(root.findViewById(R.id.chipPowder), "Powder");
-        setupChip(root.findViewById(R.id.chipSettingSpray), "Setting Spray");
-        setupChip(root.findViewById(R.id.chipBbCcCream), "BB & CC Cream");
-        setupChip(root.findViewById(R.id.chipTintedMoisturizer), "Tinted Moisturizer");
+        chipAllFace.setOnClickListener(v -> {
+            selectChip(chipAllFace);
+            showProducts(allFaceProducts);
+        });
+
+        setupChip(chipFoundation, "Foundation");
+        setupChip(chipConcealer, "Concealer");
+        setupChip(chipPrimer, "Primer");
+        setupChip(chipPowder, "Powder");
+        setupChip(chipSettingSpray, "Setting Spray");
+        setupChip(chipBbCcCream, "BB & CC Cream");
+        setupChip(chipTintedMoisturizer, "Tinted Moisturizer");
     }
 
     private void setupChip(TextView chip, String subcategory) {
         if (chip == null) return;
-        chip.setOnClickListener(v -> {
-            updateChipSelection(chip);
-            filterProductsBySubcategory(subcategory);
-        });
+        chip.setOnClickListener(v -> filterBySubcategory(chip, subcategory));
     }
 
-    private void updateChipSelection(TextView newSelected) {
-        if (selectedChipView != null) {
-            selectedChipView.setBackgroundResource(R.drawable.bg_chip_outline);
-            selectedChipView.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary));
+    private void filterBySubcategory(TextView selectedChip, String subcategory) {
+        selectChip(selectedChip);
+
+        List<Product> filtered = new ArrayList<>();
+        for (Product product : allFaceProducts) {
+            if (subcategory.equalsIgnoreCase(product.getSubcategory())) {
+                filtered.add(product);
+            }
         }
-        
-        selectedChipView = newSelected;
-        selectedChipView.setBackgroundResource(R.drawable.bg_chip_selected);
-        selectedChipView.setTextColor(ContextCompat.getColor(requireContext(), R.color.background_main));
+
+        showProducts(filtered);
+    }
+
+    private void selectChip(TextView selectedChip) {
+        resetAllFaceChips();
+
+        selectedChip.setSelected(true);
+        selectedChip.setBackgroundResource(R.drawable.bg_chip_selected);
+        selectedChip.setTextColor(ContextCompat.getColor(requireContext(), R.color.background_main));
+        selectedChipView = selectedChip;
+    }
+
+    private void resetAllFaceChips() {
+        TextView[] chips = {
+            chipAllFace,
+            chipFoundation,
+            chipConcealer,
+            chipPrimer,
+            chipPowder,
+            chipSettingSpray,
+            chipBbCcCream,
+            chipTintedMoisturizer
+        };
+
+        for (TextView chip : chips) {
+            if (chip == null) continue;
+            chip.setSelected(false);
+            chip.setBackgroundResource(R.drawable.bg_chip_outline);
+            chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary));
+        }
     }
 
     private void setupProductList() {
@@ -124,44 +171,61 @@ public class FaceFragment extends Fragment {
         rvFaceProducts.setAdapter(adapter);
 
         loadMockData();
-        // Initial filter by first subcategory
-        filterProductsBySubcategory("Foundation");
+        
+        // Initial state: "Tất cả" selected and all products shown
+        selectChip(chipAllFace);
+        showProducts(allFaceProducts);
     }
 
     private void loadMockData() {
-        fullProductList.clear();
+        allFaceProducts.clear();
         
         // Foundation
-        fullProductList.add(new Product("f1", "BeautyBlender", "Bounce Liquid Foundation", "450000", "4.5", "1.2k", R.drawable.img_foudation, "New", "Foundation"));
-        fullProductList.add(new Product("f2", "Maybelline", "Fit Me Matte + Poreless", "250000", "4.8", "5.1k", R.drawable.img_brand_1, "Best Seller", "Foundation"));
+        Product p1 = new Product("f1", "BeautyBlender", "Bounce Liquid Foundation", "450000", "4.5", "1.2k", R.drawable.img_foudation, "New", "Foundation");
+        p1.setHasAr(true);
+        allFaceProducts.add(p1);
+
+        Product p2 = new Product("f2", "Maybelline", "Fit Me Matte + Poreless", "250000", "4.8", "5.1k", R.drawable.img_brand_1, "Best Seller", "Foundation");
+        p2.setHasAr(false);
+        allFaceProducts.add(p2);
         
         // Powder
-        fullProductList.add(new Product("f3", "BeautyBlender", "Phấn phủ BOUNCE Soft Focus", "450000", "4.2", "800", R.drawable.img_foudation, "", "Powder"));
-        fullProductList.add(new Product("f4", "Huda Beauty", "Easy Bake Loose Powder", "950000", "4.9", "12k", R.drawable.img_brand_2, "Hot", "Powder"));
+        Product p3 = new Product("f3", "BeautyBlender", "Phấn phủ BOUNCE Soft Focus", "450000", "4.2", "800", R.drawable.img_foudation, "", "Powder");
+        p3.setHasAr(true);
+        allFaceProducts.add(p3);
+
+        Product p4 = new Product("f4", "Huda Beauty", "Easy Bake Loose Powder", "950000", "4.9", "12k", R.drawable.img_brand_2, "Hot", "Powder");
+        p4.setHasAr(false);
+        allFaceProducts.add(p4);
         
         // Concealer
-        fullProductList.add(new Product("f5", "Nars", "Radiant Creamy Concealer", "850000", "4.8", "3.2k", R.drawable.brand_nars, "Essential", "Concealer"));
+        Product p5 = new Product("f5", "Nars", "Radiant Creamy Concealer", "850000", "4.8", "3.2k", R.drawable.brand_nars, "Essential", "Concealer");
+        p5.setHasAr(true);
+        allFaceProducts.add(p5);
         
         // Primer
-        fullProductList.add(new Product("f6", "Benefit", "The POREfessional Face Primer", "750000", "4.7", "2.1k", R.drawable.img_brand_3, "", "Primer"));
-    }
+        Product p6 = new Product("f6", "Benefit", "The POREfessional Face Primer", "750000", "4.7", "2.1k", R.drawable.img_brand_3, "", "Primer");
+        p6.setHasAr(false);
+        allFaceProducts.add(p6);
 
-    private void filterProductsBySubcategory(String subcategory) {
-        currentFilteredList.clear();
-        for (Product product : fullProductList) {
-            if (product.getSubcategory().equalsIgnoreCase(subcategory)) {
-                currentFilteredList.add(product);
-            }
-        }
-        
-        adapter.setProducts(new ArrayList<>(currentFilteredList));
-        showNoResult(currentFilteredList.isEmpty());
+        // Setting Spray (Mock)
+        Product p7 = new Product("f7", "MAC", "Prep + Prime Fix+", "650000", "4.6", "4.5k", R.drawable.ic_product, "", "Setting Spray");
+        p7.setHasAr(false);
+        allFaceProducts.add(p7);
     }
 
     private void setupActions(View root) {
         View layoutFilter = root.findViewById(R.id.layoutFilterAction);
         if (layoutFilter != null) {
-            layoutFilter.setOnClickListener(v -> Toast.makeText(getContext(), "Mở bộ lọc", Toast.LENGTH_SHORT).show());
+            layoutFilter.setOnClickListener(v -> {
+                FilterBottomSheetDialog dialog = new FilterBottomSheetDialog();
+                dialog.setOnFilterAppliedListener(filterState -> {
+                    // Logic lọc demo
+                    Toast.makeText(getContext(), "Đã áp dụng bộ lọc", Toast.LENGTH_SHORT).show();
+                    // In a real app, we would use filterState to filter the list
+                });
+                dialog.show(getChildFragmentManager(), "FilterBottomSheet");
+            });
         }
 
         View layoutSort = root.findViewById(R.id.layoutSortAction);
@@ -170,8 +234,16 @@ public class FaceFragment extends Fragment {
         }
     }
 
-    private void showNoResult(boolean show) {
-        rvFaceProducts.setVisibility(show ? View.GONE : View.VISIBLE);
-        containerSearchNoResult.setVisibility(show ? View.VISIBLE : View.GONE);
+    private void showProducts(List<Product> products) {
+        if (products == null || products.isEmpty()) {
+            rvFaceProducts.setVisibility(View.GONE);
+            containerSearchNoResult.setVisibility(View.VISIBLE);
+            adapter.setProducts(new ArrayList<>());
+            return;
+        }
+
+        containerSearchNoResult.setVisibility(View.GONE);
+        rvFaceProducts.setVisibility(View.VISIBLE);
+        adapter.setProducts(new ArrayList<>(products));
     }
 }

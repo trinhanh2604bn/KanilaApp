@@ -25,6 +25,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     public interface OnCartItemChangeListener {
         void onItemSelectedChanged();
         void onQuantityChanged();
+        void onVariantClick(CartItem item, int position);
     }
 
     public void setOnCartItemChangeListener(OnCartItemChangeListener listener) {
@@ -63,7 +64,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         ImageView ivProduct;
         TextView tvName, tvVariant, tvPrice, tvQuantity;
         ImageButton btnDecrease, btnIncrease, btnWishlist;
-        View layoutFront, layoutAction;
+        View layoutFront, layoutAction, layoutVariant;
         View tvActionSimilar, tvActionDelete;
 
         public CartViewHolder(@NonNull View itemView) {
@@ -80,6 +81,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             btnDecrease = layoutFront.findViewById(R.id.btnDecreaseQuantity);
             btnIncrease = layoutFront.findViewById(R.id.btnIncreaseQuantity);
             btnWishlist = layoutFront.findViewById(R.id.btnCartWishlist);
+            layoutVariant = layoutFront.findViewById(R.id.layoutCartVariant);
 
             tvActionSimilar = layoutAction.findViewById(R.id.tvActionSimilar);
             tvActionDelete = layoutAction.findViewById(R.id.tvActionDelete);
@@ -122,6 +124,15 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 item.setWishlisted(newState);
                 btnWishlist.setSelected(newState);
             });
+
+            if (layoutVariant != null) {
+                layoutVariant.setOnClickListener(v -> {
+                    int pos = getAdapterPosition();
+                    if (pos != RecyclerView.NO_POSITION && listener != null) {
+                        listener.onVariantClick(item, pos);
+                    }
+                });
+            }
 
             tvActionDelete.setOnClickListener(v -> {
                 int pos = getAdapterPosition();

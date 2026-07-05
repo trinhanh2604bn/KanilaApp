@@ -41,9 +41,22 @@ public class ProductCategoryFragment extends Fragment {
 
         // 5. Setup Bottom Navigation
         BottomNavigationHelper.setup(view, tabIndex -> {
-            // Navigation handled by BottomNavigationHelper
+            // Navigation handled by BottomNavigationHelper UI state
         });
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
+
+        // 6. Navigation to Brand Page
+        TextView tvSeeAllBrands = view.findViewById(R.id.tvSeeAllBrands);
+        if (tvSeeAllBrands != null) {
+            tvSeeAllBrands.setOnClickListener(v -> {
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new BrandPageFragment())
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
+        }
     }
 
     private void setupTopBar(View root) {
@@ -54,14 +67,7 @@ public class ProductCategoryFragment extends Fragment {
         if (tvTitle != null) tvTitle.setText(R.string.top_bar_category_title);
 
         ImageButton btnSearch = topBar.findViewById(R.id.btnTopBarSearch);
-        View containerSearchExpanded = root.findViewById(R.id.containerSearchExpanded);
 
-        if (btnSearch != null && containerSearchExpanded != null) {
-            btnSearch.setOnClickListener(v -> {
-                int visibility = containerSearchExpanded.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE;
-                containerSearchExpanded.setVisibility(visibility);
-            });
-        }
     }
 
     private void bindCategoryCards(View root) {
@@ -109,11 +115,11 @@ public class ProductCategoryFragment extends Fragment {
     }
 
     private void bindBrandCards(View root) {
-        bindBrandCard(root.findViewById(R.id.cardBrandMaybelline), R.drawable.img_foudation, R.color.text_main);
-        bindBrandCard(root.findViewById(R.id.cardBrandHuda), R.drawable.img_lipstick, R.color.button);
+        bindBrandCard(root.findViewById(R.id.cardBrandMaybelline), R.drawable.brand_mbl, R.color.text_main);
+        bindBrandCard(root.findViewById(R.id.cardBrandHuda), R.drawable.brand_hdbt, R.color.button);
         bindBrandCard(root.findViewById(R.id.cardBrandFwee), R.drawable.brand_fee, R.color.info);
-        bindBrandCard(root.findViewById(R.id.cardBrandJudydoll), R.drawable.img_blush, R.color.primary);
-        bindBrandCard(root.findViewById(R.id.cardBrandAnastasia), R.drawable.img_eyeshadow, R.color.background_main);
+        bindBrandCard(root.findViewById(R.id.cardBrandJudydoll), R.drawable.brand_jd, R.color.primary);
+        bindBrandCard(root.findViewById(R.id.cardBrandAnastasia), R.drawable.brand_nars, R.color.background_main);
     }
 
     private void bindBrandCard(View card, int logoRes, int bgColorRes) {

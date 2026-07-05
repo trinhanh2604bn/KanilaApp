@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/suitableIngredientsRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main"
@@ -14,19 +17,34 @@
         android:background="@color/background_main"
         android:elevation="4dp">
 
-        <ImageView
+        <!-- Nút Back hình tròn, có bóng -->
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/btnBack"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginStart="16dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_back"
-            android:contentDescription="@string/suitable_ingredients_title"
-            app:tint="@color/accent_dark"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@color/background_main"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:strokeColor="@color/border_divider"
+            app:strokeWidth="1dp">
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Quay lại"
+                android:padding="10dp"
+                android:src="@drawable/ic_back"
+                app:tint="@color/accent_dark" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Tiêu đề -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="0dp"
@@ -38,31 +56,37 @@
             android:text="@string/suitable_ingredients_title"
             android:textColor="@color/accent_dark"
             android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Nút lưu phía trên -->
         <ImageView
             android:id="@+id/btnEdit"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="16dp"
+            android:clickable="true"
+            android:contentDescription="Lưu thiết lập"
+            android:focusable="true"
             android:padding="8dp"
             android:src="@drawable/ic_tick"
-            android:contentDescription="@string/suitable_ingredients_title"
-            app:tint="@color/accent_dark"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:tint="@color/accent_dark" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Nội dung cuộn -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollSuitableIngredients"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
+        android:fillViewport="true"
         android:paddingTop="8dp">
 
         <LinearLayout
@@ -71,6 +95,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- Mô tả -->
             <TextView
                 style="@style/Text.Kanila.Caption"
                 android:layout_width="wrap_content"
@@ -79,14 +104,15 @@
                 android:text="@string/suitable_ingredients_subtitle"
                 android:textColor="@color/text_main" />
 
-            <!-- Quick Setup Section -->
+            <!-- Thiết lập nhanh -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                app:cardBackgroundColor="@color/background_main"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#F5F5F5"
+                app:strokeColor="@color/border_divider"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -99,7 +125,8 @@
                         style="@style/Text.Kanila.H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/quick_setup" />
+                        android:text="@string/quick_setup"
+                        android:textColor="@color/accent_dark" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -107,7 +134,7 @@
                         android:layout_marginTop="12dp"
                         android:orientation="horizontal">
 
-                        <!-- Priority Card -->
+                        <!-- Thống kê thành phần ưu tiên -->
                         <com.google.android.material.card.MaterialCardView
                             style="@style/QuickSetupCard">
 
@@ -148,33 +175,29 @@
                                             android:textStyle="bold" />
 
                                         <TextView
+                                            android:id="@+id/tvPriorityCount"
                                             style="@style/Text.Kanila.Micro"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text="@string/priority_count"
-                                            android:textSize="11sp" />
+                                            tools:text="3 thành phần" />
 
                                     </LinearLayout>
 
                                 </LinearLayout>
 
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="0dp"
-                                    android:layout_weight="1" />
-
                                 <TextView
+                                    android:id="@+id/tvPriorityList"
                                     style="@style/Text.Kanila.Micro"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/priority_list"
-                                    android:textSize="11sp" />
+                                    android:layout_marginTop="12dp"
+                                    tools:text="Niacinamide, Ceramide, Hyaluronic Acid" />
 
                             </LinearLayout>
 
                         </com.google.android.material.card.MaterialCardView>
 
-                        <!-- Avoid Card -->
+                        <!-- Thống kê thành phần cần tránh -->
                         <com.google.android.material.card.MaterialCardView
                             style="@style/QuickSetupCard">
 
@@ -194,7 +217,7 @@
                                         android:layout_width="32dp"
                                         android:layout_height="32dp"
                                         android:background="@drawable/bg_circle"
-                                        android:backgroundTint="#FFEBEE"
+                                        android:backgroundTint="@color/icon_bg_pink"
                                         android:contentDescription="@string/avoid"
                                         android:padding="6dp"
                                         android:src="@drawable/ic_error_outline"
@@ -215,27 +238,23 @@
                                             android:textStyle="bold" />
 
                                         <TextView
+                                            android:id="@+id/tvAvoidCount"
                                             style="@style/Text.Kanila.Micro"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text="@string/avoid_count"
-                                            android:textSize="11sp" />
+                                            tools:text="2 thành phần" />
 
                                     </LinearLayout>
 
                                 </LinearLayout>
 
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="0dp"
-                                    android:layout_weight="1" />
-
                                 <TextView
+                                    android:id="@+id/tvAvoidList"
                                     style="@style/Text.Kanila.Micro"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/avoid_list"
-                                    android:textSize="11sp" />
+                                    android:layout_marginTop="12dp"
+                                    tools:text="Cồn khô, Hương liệu" />
 
                             </LinearLayout>
 
@@ -247,14 +266,16 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Priority Ingredients Grid -->
+            <!-- Tiêu đề ưu tiên -->
             <TextView
                 style="@style/Text.Kanila.H3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="@string/priority_ingredients" />
+                android:text="@string/priority_ingredients"
+                android:textColor="@color/accent_dark" />
 
+            <!-- Danh sách thành phần ưu tiên -->
             <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -263,7 +284,10 @@
 
                 <!-- Niacinamide -->
                 <com.google.android.material.card.MaterialCardView
-                    style="@style/IngredientChip.Selected">
+                    android:id="@+id/cardNiacinamide"
+                    style="@style/IngredientChip"
+                    android:clickable="true"
+                    android:focusable="true">
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -273,16 +297,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center_vertical"
+                            android:orientation="horizontal"
                             android:paddingHorizontal="8dp">
 
                             <ImageView
+                                android:id="@+id/iconNiacinamide"
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
-                                android:src="@drawable/ic_drops"
-                                app:tint="@color/button" />
+                                android:src="@drawable/ic_drops" />
 
                             <TextView
-                                style="@style/IngredientChipLabel.Selected"
+                                android:id="@+id/tvNiacinamide"
+                                style="@style/IngredientChipLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
@@ -290,7 +316,16 @@
 
                         </LinearLayout>
 
-                        <ImageView style="@style/GridItemTick" />
+                        <ImageView
+                            android:id="@+id/tickNiacinamide"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="2dp"
+                            android:contentDescription="Đã chọn"
+                            android:src="@drawable/ic_check_circle"
+                            android:visibility="gone"
+                            app:tint="@color/button" />
 
                     </FrameLayout>
 
@@ -298,7 +333,10 @@
 
                 <!-- Ceramide -->
                 <com.google.android.material.card.MaterialCardView
-                    style="@style/IngredientChip.Selected">
+                    android:id="@+id/cardCeramide"
+                    style="@style/IngredientChip"
+                    android:clickable="true"
+                    android:focusable="true">
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -308,16 +346,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center_vertical"
+                            android:orientation="horizontal"
                             android:paddingHorizontal="8dp">
 
                             <ImageView
+                                android:id="@+id/iconCeramide"
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
-                                android:src="@drawable/ic_shield_star"
-                                app:tint="@color/button" />
+                                android:src="@drawable/ic_shield_star" />
 
                             <TextView
-                                style="@style/IngredientChipLabel.Selected"
+                                android:id="@+id/tvCeramide"
+                                style="@style/IngredientChipLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
@@ -325,7 +365,16 @@
 
                         </LinearLayout>
 
-                        <ImageView style="@style/GridItemTick" />
+                        <ImageView
+                            android:id="@+id/tickCeramide"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="2dp"
+                            android:contentDescription="Đã chọn"
+                            android:src="@drawable/ic_check_circle"
+                            android:visibility="gone"
+                            app:tint="@color/button" />
 
                     </FrameLayout>
 
@@ -333,7 +382,10 @@
 
                 <!-- Hyaluronic Acid -->
                 <com.google.android.material.card.MaterialCardView
-                    style="@style/IngredientChip.Selected">
+                    android:id="@+id/cardHyaluronicAcid"
+                    style="@style/IngredientChip"
+                    android:clickable="true"
+                    android:focusable="true">
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -343,16 +395,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center_vertical"
+                            android:orientation="horizontal"
                             android:paddingHorizontal="8dp">
 
                             <ImageView
+                                android:id="@+id/iconHyaluronicAcid"
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
-                                android:src="@drawable/ic_drops_filled"
-                                app:tint="@color/button" />
+                                android:src="@drawable/ic_drops_filled" />
 
                             <TextView
-                                style="@style/IngredientChipLabel.Selected"
+                                android:id="@+id/tvHyaluronicAcid"
+                                style="@style/IngredientChipLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
@@ -360,7 +414,16 @@
 
                         </LinearLayout>
 
-                        <ImageView style="@style/GridItemTick" />
+                        <ImageView
+                            android:id="@+id/tickHyaluronicAcid"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="2dp"
+                            android:contentDescription="Đã chọn"
+                            android:src="@drawable/ic_check_circle"
+                            android:visibility="gone"
+                            app:tint="@color/button" />
 
                     </FrameLayout>
 
@@ -368,104 +431,10 @@
 
                 <!-- BHA -->
                 <com.google.android.material.card.MaterialCardView
-                    style="@style/IngredientChip">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="8dp">
-
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_beaker"
-                            app:tint="@color/text_main" />
-
-                        <TextView
-                            style="@style/IngredientChipLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:text="@string/ing_bha" />
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Vitamin C -->
-                <com.google.android.material.card.MaterialCardView
-                    style="@style/IngredientChip">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="8dp">
-
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_goal_sparkle"
-                            app:tint="@color/text_main" />
-
-                        <TextView
-                            style="@style/IngredientChipLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:text="@string/ing_vitamin_c" />
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Peptide -->
-                <com.google.android.material.card.MaterialCardView
-                    style="@style/IngredientChip">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="8dp">
-
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_skincare"
-                            app:tint="@color/text_main" />
-
-                        <TextView
-                            style="@style/IngredientChipLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:text="@string/ing_peptide" />
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-            </GridLayout>
-
-            <!-- Avoid Ingredients Grid -->
-            <TextView
-                style="@style/Text.Kanila.H3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/avoid_ingredients" />
-
-            <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:columnCount="3">
-
-                <!-- Alcohol -->
-                <com.google.android.material.card.MaterialCardView
-                    style="@style/IngredientChip.Selected">
+                    android:id="@+id/cardBha"
+                    style="@style/IngredientChip"
+                    android:clickable="true"
+                    android:focusable="true">
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -475,16 +444,183 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center_vertical"
+                            android:orientation="horizontal"
                             android:paddingHorizontal="8dp">
 
                             <ImageView
+                                android:id="@+id/iconBha"
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
-                                android:src="@drawable/ic_beaker"
-                                app:tint="@color/button" />
+                                android:src="@drawable/ic_beaker" />
 
                             <TextView
-                                style="@style/IngredientChipLabel.Selected"
+                                android:id="@+id/tvBha"
+                                style="@style/IngredientChipLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:text="@string/ing_bha" />
+
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/tickBha"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="2dp"
+                            android:contentDescription="Đã chọn"
+                            android:src="@drawable/ic_check_circle"
+                            android:visibility="gone"
+                            app:tint="@color/button" />
+
+                    </FrameLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Vitamin C -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardVitaminC"
+                    style="@style/IngredientChip"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="8dp">
+
+                            <ImageView
+                                android:id="@+id/iconVitaminC"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_goal_sparkle" />
+
+                            <TextView
+                                android:id="@+id/tvVitaminC"
+                                style="@style/IngredientChipLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:text="@string/ing_vitamin_c" />
+
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/tickVitaminC"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="2dp"
+                            android:contentDescription="Đã chọn"
+                            android:src="@drawable/ic_check_circle"
+                            android:visibility="gone"
+                            app:tint="@color/button" />
+
+                    </FrameLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Peptide -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardPeptide"
+                    style="@style/IngredientChip"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="8dp">
+
+                            <ImageView
+                                android:id="@+id/iconPeptide"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_skincare" />
+
+                            <TextView
+                                android:id="@+id/tvPeptide"
+                                style="@style/IngredientChipLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:text="@string/ing_peptide" />
+
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/tickPeptide"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="2dp"
+                            android:contentDescription="Đã chọn"
+                            android:src="@drawable/ic_check_circle"
+                            android:visibility="gone"
+                            app:tint="@color/button" />
+
+                    </FrameLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </GridLayout>
+
+            <!-- Tiêu đề cần tránh -->
+            <TextView
+                style="@style/Text.Kanila.H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/avoid_ingredients"
+                android:textColor="@color/accent_dark" />
+
+            <!-- Danh sách thành phần cần tránh -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:columnCount="3">
+
+                <!-- Cồn khô -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardAlcohol"
+                    style="@style/IngredientChip"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="8dp">
+
+                            <ImageView
+                                android:id="@+id/iconAlcohol"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_beaker" />
+
+                            <TextView
+                                android:id="@+id/tvAlcohol"
+                                style="@style/IngredientChipLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
@@ -492,15 +628,27 @@
 
                         </LinearLayout>
 
-                        <ImageView style="@style/GridItemTick" />
+                        <ImageView
+                            android:id="@+id/tickAlcohol"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="2dp"
+                            android:contentDescription="Đã chọn"
+                            android:src="@drawable/ic_check_circle"
+                            android:visibility="gone"
+                            app:tint="@color/button" />
 
                     </FrameLayout>
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Fragrance -->
+                <!-- Hương liệu -->
                 <com.google.android.material.card.MaterialCardView
-                    style="@style/IngredientChip.Selected">
+                    android:id="@+id/cardFragrance"
+                    style="@style/IngredientChip"
+                    android:clickable="true"
+                    android:focusable="true">
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -510,16 +658,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center_vertical"
+                            android:orientation="horizontal"
                             android:paddingHorizontal="8dp">
 
                             <ImageView
+                                android:id="@+id/iconFragrance"
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
-                                android:src="@drawable/ic_cream"
-                                app:tint="@color/button" />
+                                android:src="@drawable/ic_cream" />
 
                             <TextView
-                                style="@style/IngredientChipLabel.Selected"
+                                android:id="@+id/tvFragrance"
+                                style="@style/IngredientChipLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
@@ -527,7 +677,16 @@
 
                         </LinearLayout>
 
-                        <ImageView style="@style/GridItemTick" />
+                        <ImageView
+                            android:id="@+id/tickFragrance"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="2dp"
+                            android:contentDescription="Đã chọn"
+                            android:src="@drawable/ic_check_circle"
+                            android:visibility="gone"
+                            app:tint="@color/button" />
 
                     </FrameLayout>
 
@@ -535,115 +694,193 @@
 
                 <!-- Paraben -->
                 <com.google.android.material.card.MaterialCardView
-                    style="@style/IngredientChip">
+                    android:id="@+id/cardParaben"
+                    style="@style/IngredientChip"
+                    android:clickable="true"
+                    android:focusable="true">
 
-                    <LinearLayout
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="8dp">
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="8dp">
+
+                            <ImageView
+                                android:id="@+id/iconParaben"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_shield_star" />
+
+                            <TextView
+                                android:id="@+id/tvParaben"
+                                style="@style/IngredientChipLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:text="@string/ing_paraben" />
+
+                        </LinearLayout>
 
                         <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_shield_star"
-                            app:tint="@color/text_main" />
+                            android:id="@+id/tickParaben"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="2dp"
+                            android:contentDescription="Đã chọn"
+                            android:src="@drawable/ic_check_circle"
+                            android:visibility="gone"
+                            app:tint="@color/button" />
 
-                        <TextView
-                            style="@style/IngredientChipLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:text="@string/ing_paraben" />
-
-                    </LinearLayout>
+                    </FrameLayout>
 
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Retinol -->
                 <com.google.android.material.card.MaterialCardView
-                    style="@style/IngredientChip">
+                    android:id="@+id/cardRetinol"
+                    style="@style/IngredientChip"
+                    android:clickable="true"
+                    android:focusable="true">
 
-                    <LinearLayout
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="8dp">
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="8dp">
+
+                            <ImageView
+                                android:id="@+id/iconRetinol"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_goal_sparkle" />
+
+                            <TextView
+                                android:id="@+id/tvRetinol"
+                                style="@style/IngredientChipLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:text="@string/ing_retinol" />
+
+                        </LinearLayout>
 
                         <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_goal_sparkle"
-                            app:tint="@color/text_main" />
+                            android:id="@+id/tickRetinol"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="2dp"
+                            android:contentDescription="Đã chọn"
+                            android:src="@drawable/ic_check_circle"
+                            android:visibility="gone"
+                            app:tint="@color/button" />
 
-                        <TextView
-                            style="@style/IngredientChipLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:text="@string/ing_retinol" />
-
-                    </LinearLayout>
+                    </FrameLayout>
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Essential Oil -->
+                <!-- Tinh dầu -->
                 <com.google.android.material.card.MaterialCardView
-                    style="@style/IngredientChip">
+                    android:id="@+id/cardEssentialOil"
+                    style="@style/IngredientChip"
+                    android:clickable="true"
+                    android:focusable="true">
 
-                    <LinearLayout
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="8dp">
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="8dp">
+
+                            <ImageView
+                                android:id="@+id/iconEssentialOil"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_skincare" />
+
+                            <TextView
+                                android:id="@+id/tvEssentialOil"
+                                style="@style/IngredientChipLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:text="@string/ing_essential_oil" />
+
+                        </LinearLayout>
 
                         <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_skincare"
-                            app:tint="@color/text_main" />
+                            android:id="@+id/tickEssentialOil"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="2dp"
+                            android:contentDescription="Đã chọn"
+                            android:src="@drawable/ic_check_circle"
+                            android:visibility="gone"
+                            app:tint="@color/button" />
 
-                        <TextView
-                            style="@style/IngredientChipLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:text="@string/ing_essential_oil" />
-
-                    </LinearLayout>
+                    </FrameLayout>
 
                 </com.google.android.material.card.MaterialCardView>
 
             </GridLayout>
 
-            <!-- Treatment Sensitivity Switch -->
-            <LinearLayout
+            <!-- Công tắc điều trị da nhạy cảm -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/layoutSensitiveTreatment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:background="@drawable/bg_selection_selected"
-                android:backgroundTint="#FDF9FB"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/icon_bg_pink"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/button"
+                app:strokeWidth="1dp">
 
-                <TextView
-                    style="@style/Text.Kanila.BodyMedium"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/sensitive_skin_treatment" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    app:thumbTint="@color/button"
-                    app:trackTint="@color/secondary" />
+                    <TextView
+                        style="@style/Text.Kanila.BodyMedium"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/sensitive_skin_treatment"
+                        android:textColor="@color/text_main" />
 
-            </LinearLayout>
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchSensitiveTreatment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true" />
 
-            <!-- Priority Formula Message -->
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Thông báo gợi ý -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -664,7 +901,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:background="@drawable/bg_circle"
-                        android:backgroundTint="@android:color/white"
+                        android:backgroundTint="@color/background_main"
                         android:contentDescription="@string/priority"
                         android:padding="8dp"
                         android:src="@drawable/ic_verified"
@@ -687,13 +924,16 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Sticky Save Button -->
+    <!-- Nút lưu cố định phía dưới -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSave"
         style="@style/Widget.Kanila.Button.Primary"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/btn_save_setup"
         app:icon="@drawable/ic_checklist"
         app:iconGravity="textStart" />

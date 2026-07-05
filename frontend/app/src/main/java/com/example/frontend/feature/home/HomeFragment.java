@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -31,7 +32,9 @@ public class HomeFragment extends Fragment {
     private RecyclerView rvHomeShortcuts;
     private HomeShortcutAdapter shortcutAdapter;
     private RecyclerView rvRecommendedProducts;
-    private HomeProductAdapter productAdapter;
+    private RecyclerView rvAllProducts;
+    private HomeProductAdapter recommendedProductAdapter;
+    private HomeProductAdapter allProductAdapter;
     private HomeViewModel viewModel;
     
     private View layoutHomeStateContainer;
@@ -41,6 +44,7 @@ public class HomeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Note: fragment_home.xml might also need updating if HomeFragment is used.
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
@@ -53,28 +57,48 @@ public class HomeFragment extends Fragment {
         viewPagerBanner = view.findViewById(R.id.viewPagerBanner);
         rvHomeShortcuts = view.findViewById(R.id.rvHomeShortcuts);
         rvRecommendedProducts = view.findViewById(R.id.rvRecommendedProducts);
+        rvAllProducts = view.findViewById(R.id.rvAllProducts);
         layoutHomeStateContainer = view.findViewById(R.id.layoutHomeStateContainer);
         viewHomeLoading = view.findViewById(R.id.viewHomeLoading);
         viewHomeError = view.findViewById(R.id.viewHomeError);
 
         setupBannerSlider();
         setupHomeShortcuts();
-        setupProductList();
+        setupProductLists();
         
         observeViewModel();
         
         viewModel.loadHomeData();
     }
 
-    private void setupProductList() {
-        productAdapter = new HomeProductAdapter();
-        productAdapter.setOnProductClickListener(product -> {
+    private void setupProductLists() {
+        // Recommended Products
+        recommendedProductAdapter = new HomeProductAdapter();
+        // Set item width for horizontal scroll
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        recommendedProductAdapter.setItemWidth((int) (screenWidth * 0.46));
+        
+        recommendedProductAdapter.setOnProductClickListener(product -> {
             // Navigate to Product Detail
             Toast.makeText(requireContext(), "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
         });
         
-        rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        rvRecommendedProducts.setAdapter(productAdapter);
+        if (rvRecommendedProducts != null) {
+            rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+            rvRecommendedProducts.setAdapter(recommendedProductAdapter);
+        }
+
+        // All Products
+        allProductAdapter = new HomeProductAdapter();
+        allProductAdapter.setOnProductClickListener(product -> {
+            Toast.makeText(requireContext(), "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
+        });
+
+        if (rvAllProducts != null) {
+            rvAllProducts.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+            rvAllProducts.setAdapter(allProductAdapter);
+            rvAllProducts.setNestedScrollingEnabled(false);
+        }
     }
 
     private void observeViewModel() {
@@ -85,9 +109,14 @@ public class HomeFragment extends Fragment {
                 showLoading();
             } else if (state.error != null) {
                 showError(state.error);
-            } else if (state.products != null) {
+            } else {
                 showContent();
-                productAdapter.setProducts(state.products);
+                if (state.recommendedProducts != null) {
+                    recommendedProductAdapter.setProducts(state.recommendedProducts);
+                }
+                if (state.allProducts != null) {
+                    allProductAdapter.setProducts(state.allProducts);
+                }
             }
         });
     }
@@ -96,19 +125,22 @@ public class HomeFragment extends Fragment {
         layoutHomeStateContainer.setVisibility(View.VISIBLE);
         viewHomeLoading.setVisibility(View.VISIBLE);
         viewHomeError.setVisibility(View.GONE);
-        rvRecommendedProducts.setVisibility(View.GONE);
+        if (rvRecommendedProducts != null) rvRecommendedProducts.setVisibility(View.GONE);
+        if (rvAllProducts != null) rvAllProducts.setVisibility(View.GONE);
     }
 
     private void showContent() {
         layoutHomeStateContainer.setVisibility(View.GONE);
-        rvRecommendedProducts.setVisibility(View.VISIBLE);
+        if (rvRecommendedProducts != null) rvRecommendedProducts.setVisibility(View.VISIBLE);
+        if (rvAllProducts != null) rvAllProducts.setVisibility(View.VISIBLE);
     }
 
     private void showError(String message) {
         layoutHomeStateContainer.setVisibility(View.VISIBLE);
         viewHomeLoading.setVisibility(View.GONE);
         viewHomeError.setVisibility(View.VISIBLE);
-        rvRecommendedProducts.setVisibility(View.GONE);
+        if (rvRecommendedProducts != null) rvRecommendedProducts.setVisibility(View.GONE);
+        if (rvAllProducts != null) rvAllProducts.setVisibility(View.GONE);
         
         TextView tvError = viewHomeError.findViewById(R.id.tvErrorTitle);
         if (tvError != null) tvError.setText(message);
@@ -123,7 +155,9 @@ public class HomeFragment extends Fragment {
             // Handle deeplink navigation here
         });
 
-        viewPagerBanner.setAdapter(bannerAdapter);
+        if (viewPagerBanner != null) {
+            viewPagerBanner.setAdapter(bannerAdapter);
+        }
 
         // Banners could be moved to ViewModel and loaded via API if supported
         List<HomeBannerItem> banners = new ArrayList<>();
@@ -139,7 +173,9 @@ public class HomeFragment extends Fragment {
             // Handle navigation based on item.getDestinationType()
         });
 
-        rvHomeShortcuts.setAdapter(shortcutAdapter);
+        if (rvHomeShortcuts != null) {
+            rvHomeShortcuts.setAdapter(shortcutAdapter);
+        }
 
         List<HomeShortcutItem> shortcuts = new ArrayList<>();
         shortcuts.add(new HomeShortcutItem("orders", "Đơn hàng", R.drawable.ic_shortcut_order, "orders", "", false, false));

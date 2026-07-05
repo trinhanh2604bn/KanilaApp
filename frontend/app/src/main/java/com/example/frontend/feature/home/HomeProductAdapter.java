@@ -17,6 +17,7 @@ import java.util.List;
 public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.ViewHolder> {
     private List<Product> products = new ArrayList<>();
     private OnProductClickListener listener;
+    private int itemWidth = -1;
 
     public interface OnProductClickListener {
         void onProductClick(Product product);
@@ -31,10 +32,21 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         notifyDataSetChanged();
     }
 
+    public void setItemWidth(int width) {
+        this.itemWidth = width;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product_card, parent, false);
+        if (itemWidth > 0) {
+            ViewGroup.LayoutParams lp = view.getLayoutParams();
+            if (lp != null) {
+                lp.width = itemWidth;
+                view.setLayoutParams(lp);
+            }
+        }
         return new ViewHolder(view);
     }
 

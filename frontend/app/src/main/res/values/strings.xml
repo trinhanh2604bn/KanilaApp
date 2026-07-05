@@ -27,12 +27,6 @@
     <string name="variant_quantity_title">Số lượng</string>
     <string name="variant_apply">Áp dụng</string>
     <string name="variant_stock_format">Còn %d sản phẩm</string>
-    <string name="content_desc_close">Đóng</string>
-    <string name="content_desc_brand_logo">Logo thương hiệu</string>
-    <string name="content_desc_increase">Tăng</string>
-    <string name="content_desc_decrease">Giảm</string>
-    <string name="cart_selected_quantity_label">Số lượng: %1$d</string>
-    <string name="product_image_desc">Ảnh sản phẩm</string>
     <string name="checkout_edit">Sửa</string>
     <string name="checkout_address_title">Địa chỉ nhận hàng</string>
     <string name="checkout_shipping_title">Phương thức vận chuyển</string>
@@ -61,12 +55,19 @@
     <string name="checkout_sample_address_2">123 Trần Hưng Đạo, Phường Bến Thành, Hồ Chí Minh</string>
     <string name="checkout_sample_shipping_2">Giao hàng tiêu chuẩn</string>
     <string name="checkout_sample_delivery_date_2">Nhận hàng: Ngày 09/7</string>
+    <string name="content_desc_close">Đóng</string>
+    <string name="content_desc_brand_logo">Logo thương hiệu</string>
+    <string name="content_desc_increase">Tăng</string>
+    <string name="content_desc_decrease">Giảm</string>
+    <string name="cart_selected_quantity_label">Số lượng: %1$d</string>
+    <string name="product_image_desc">Ảnh sản phẩm</string>
     <string name="category_hero_small_title">Khám phá sản phẩm</string>
     <string name="category_hero_title">Làm sạch dịu nhẹ cho làn da khỏe đẹp</string>
     <string name="category_hero_description">Bắt đầu chu trình dưỡng da khoa học với bước làm sạch chuẩn</string>
     <string name="category_section_demand">Mua theo nhu cầu</string>
     <string name="category_section_brand">Thương hiệu nổi bật</string>
     <string name="action_see_all">Xem tất cả ></string>
+    <string name="action_view_all">Xem tất cả</string>
     <string name="category_lips">Lips</string>
     <string name="category_eyes">Eyes</string>
     <string name="category_cheeks">Cheeks</string>
@@ -88,6 +89,17 @@
     <string name="clear_history_content_desc">Xóa lịch sử</string>
     <string name="search_no_result_title">Không tìm thấy sản phẩm phù hợp</string>
     <string name="search_no_result_cta">Hỏi Kanila AI tìm giúp</string>
+
+    <string name="search_recommend_title">Đề xuất dành cho bạn</string>
+    <string name="search_quick_discovery_title">Khám phá nhanh</string>
+    <string name="discovery_oily_skin_title">Da dầu mụn</string>
+    <string name="discovery_oily_skin_desc">Giải pháp kiềm dầu, giảm mụn</string>
+    <string name="discovery_daily_makeup_title">Makeup hằng ngày</string>
+    <string name="discovery_daily_makeup_desc">Tự nhiên, tươi tắn mỗi ngày</string>
+    <string name="discovery_under_300k_title">Under 300K</string>
+    <string name="discovery_under_300k_desc">Sản phẩm chất lượng giá tốt</string>
+    <string name="discovery_new_arrivals_title">Hàng mới về</string>
+    <string name="discovery_new_arrivals_desc">Cập nhật sản phẩm mới mỗi tuần</string>
 
     <string name="home_social_reels_title">Kanila Reels</string>
     <string name="home_social_challenge_title">Kanila Challenge</string>
@@ -129,6 +141,8 @@
     <string name="sensitive_skin_treatment">Da đang trong quá trình treatment</string>
     <string name="priority_formula_msg">Kanila sẽ ưu tiên các sản phẩm có công thức sạch và dịu nhẹ cho bạn</string>
     <string name="btn_save_setup">Lưu thiết lập</string>
+
+
 
     <string name="goal_skin_acne_spots">Mục tiêu: Giảm mụn &amp; thâm</string>
     <string name="week_2_4">Tuần 2/4</string>

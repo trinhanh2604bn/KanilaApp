@@ -103,13 +103,92 @@
                     tools:listitem="@layout/item_search_suggestion_chip" />
             </LinearLayout>
 
-            <!-- Suggested Products -->
+            <!-- Recommended for you -->
+            <LinearLayout
+                android:id="@+id/sectionRecommendProducts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_m">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@id/tvSeeAllRecommend"
+                        android:layout_marginEnd="@dimen/spacing_s"
+                        android:layout_centerVertical="true"
+                        android:fontFamily="@font/nunito_bold"
+                        android:text="@string/search_recommend_title"
+                        android:textColor="@color/text_main"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvSeeAllRecommend"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="@string/action_view_all"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        app:drawableEndCompat="@drawable/ic_chevron_right"
+                        app:drawableTint="@color/text_secondary"
+                        android:drawablePadding="4dp" />
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvRecommendProducts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"
+                    tools:listitem="@layout/item_product_card" />
+            </LinearLayout>
+
+            <!-- Quick Discovery -->
+            <LinearLayout
+                android:id="@+id/sectionQuickDiscovery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_m"
+                    android:fontFamily="@font/nunito_bold"
+                    android:text="@string/search_quick_discovery_title"
+                    android:textColor="@color/text_main"
+                    android:textSize="16sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvQuickDiscovery"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_search_quick_discovery" />
+            </LinearLayout>
+
+            <!-- Suggested Products (Keep but could be hidden or repurposed) -->
             <LinearLayout
                 android:id="@+id/sectionSuggestedProducts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_xl"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="visible">
 
                 <TextView
                     android:layout_width="wrap_content"

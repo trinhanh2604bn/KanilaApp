@@ -27,10 +27,14 @@ public class SearchActivity extends AppCompatActivity {
     
     private RecyclerView rvSearchHistory;
     private RecyclerView rvSearchSuggestions;
+    private RecyclerView rvRecommendProducts;
+    private RecyclerView rvQuickDiscovery;
     private RecyclerView rvSuggestedProducts;
     
     private SearchHistoryAdapter historyAdapter;
     private SearchSuggestionAdapter suggestionAdapter;
+    private SearchRecommendProductAdapter recommendAdapter;
+    private SearchQuickDiscoveryAdapter discoveryAdapter;
     private SearchSuggestedProductAdapter productAdapter;
 
     @Override
@@ -42,6 +46,8 @@ public class SearchActivity extends AppCompatActivity {
         setupSearchHeader();
         setupHistory();
         setupSuggestions();
+        setupRecommendProducts();
+        setupQuickDiscovery();
         setupSuggestedProducts();
         
         focusSearchInput();
@@ -56,6 +62,8 @@ public class SearchActivity extends AppCompatActivity {
         
         rvSearchHistory = findViewById(R.id.rvSearchHistory);
         rvSearchSuggestions = findViewById(R.id.rvSearchSuggestions);
+        rvRecommendProducts = findViewById(R.id.rvRecommendProducts);
+        rvQuickDiscovery = findViewById(R.id.rvQuickDiscovery);
         rvSuggestedProducts = findViewById(R.id.rvSuggestedProducts);
     }
 
@@ -107,6 +115,38 @@ public class SearchActivity extends AppCompatActivity {
         
         suggestionAdapter.setItems(suggestionItems);
         suggestionAdapter.setOnSuggestionClickListener(this::performSearch);
+    }
+
+    private void setupRecommendProducts() {
+        recommendAdapter = new SearchRecommendProductAdapter();
+        rvRecommendProducts.setAdapter(recommendAdapter);
+
+        List<Product> recommendItems = new ArrayList<>();
+        recommendItems.add(new Product("rec_1", "Anua", "Niacinamide 10% + TXA 4% Serum", "295.000đ", "4.8", "500", R.drawable.ic_product, "New"));
+        recommendItems.add(new Product("rec_2", "The Ordinary", "Niacinamide 10% + Zinc 1%", "255.000đ", "4.7", "1.2k", R.drawable.ic_product, ""));
+        recommendItems.add(new Product("rec_3", "La Roche-Posay", "Mela B3 Serum Anti-Dark Spots", "790.000đ", "4.9", "300", R.drawable.ic_product, "Best"));
+        recommendItems.add(new Product("rec_4", "Skin1004", "Madagascar Centella Tone Brightening Ampoule", "365.000đ", "4.6", "800", R.drawable.ic_product, ""));
+
+        recommendAdapter.setItems(recommendItems);
+        recommendAdapter.setOnProductClickListener(product -> {
+            Toast.makeText(this, "Sản phẩm: " + product.getName(), Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void setupQuickDiscovery() {
+        discoveryAdapter = new SearchQuickDiscoveryAdapter();
+        rvQuickDiscovery.setAdapter(discoveryAdapter);
+
+        List<SearchQuickDiscovery> discoveryItems = new ArrayList<>();
+        discoveryItems.add(new SearchQuickDiscovery(getString(R.string.discovery_oily_skin_title), getString(R.string.discovery_oily_skin_desc), R.drawable.kpn_1));
+        discoveryItems.add(new SearchQuickDiscovery(getString(R.string.discovery_daily_makeup_title), getString(R.string.discovery_daily_makeup_desc), R.drawable.kpn_2));
+        discoveryItems.add(new SearchQuickDiscovery(getString(R.string.discovery_under_300k_title), getString(R.string.discovery_under_300k_desc), R.drawable.kpn_3));
+        discoveryItems.add(new SearchQuickDiscovery(getString(R.string.discovery_new_arrivals_title), getString(R.string.discovery_new_arrivals_desc), R.drawable.kpn_4));
+
+        discoveryAdapter.setItems(discoveryItems);
+        discoveryAdapter.setOnItemClickListener(item -> {
+            performSearch(item.getTitle());
+        });
     }
 
     private void setupSuggestedProducts() {

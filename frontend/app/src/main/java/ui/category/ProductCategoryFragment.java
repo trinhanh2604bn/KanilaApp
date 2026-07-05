@@ -2,20 +2,36 @@ package ui.category;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.example.frontend.R;
+import com.example.frontend.model.HomeBannerItem;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import ui.common.BottomNavigationHelper;
 
 public class ProductCategoryFragment extends Fragment {
+
+    private ViewPager2 vpCategoryBanner;
+    private CategoryBannerAdapter bannerAdapter;
+    private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
+    private Runnable autoSlideRunnable;
+    private final List<View> indicators = new ArrayList<>();
 
     @Nullable
     @Override
@@ -33,19 +49,22 @@ public class ProductCategoryFragment extends Fragment {
         // 2. Bind Category Grid
         bindCategoryCards(view);
 
-        // 3. Bind Demand Section
+        // 3. Setup Hero Slider
+        setupHeroSlider(view);
+
+        // 4. Bind Demand Section
         bindDemandCards(view);
 
-        // 4. Bind Brand Section
+        // 5. Bind Brand Section
         bindBrandCards(view);
 
-        // 5. Setup Bottom Navigation
+        // 6. Setup Bottom Navigation
         BottomNavigationHelper.setup(view, tabIndex -> {
             // Navigation handled by BottomNavigationHelper UI state
         });
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
 
-        // 6. Navigation to Brand Page
+        // 7. Navigation to Brand Page
         TextView tvSeeAllBrands = view.findViewById(R.id.tvSeeAllBrands);
         if (tvSeeAllBrands != null) {
             tvSeeAllBrands.setOnClickListener(v -> {
@@ -67,7 +86,82 @@ public class ProductCategoryFragment extends Fragment {
         if (tvTitle != null) tvTitle.setText(R.string.top_bar_category_title);
 
         ImageButton btnSearch = topBar.findViewById(R.id.btnTopBarSearch);
+    }
 
+    private void setupHeroSlider(View root) {
+        vpCategoryBanner = root.findViewById(R.id.vpCategoryBanner);
+        if (vpCategoryBanner == null) return;
+
+        indicators.clear();
+        indicators.add(root.findViewById(R.id.indicator0));
+        indicators.add(root.findViewById(R.id.indicator1));
+        indicators.add(root.findViewById(R.id.indicator2));
+
+        bannerAdapter = new CategoryBannerAdapter();
+        vpCategoryBanner.setAdapter(bannerAdapter);
+
+        List<HomeBannerItem> items = new ArrayList<>();
+        // Using existing slide images that likely match the prompt's content
+        items.add(new HomeBannerItem("1", "", "", "", "Mua ngay", null, R.drawable.img_cate_list_1, "promotion", "1", true, 1));
+        items.add(new HomeBannerItem("2", "", "", "", "Khám phá", null, R.drawable.img_cate_list_2, "promotion", "2", true, 2));
+        items.add(new HomeBannerItem("3", "", "", "", "Xem thêm", null, R.drawable.img_cate_list_3, "promotion", "3", true, 3));
+
+        bannerAdapter.setItems(items);
+
+        int startPosition = (Integer.MAX_VALUE / 2) - ((Integer.MAX_VALUE / 2) % items.size());
+        vpCategoryBanner.setCurrentItem(startPosition, false);
+        updateIndicators(startPosition % items.size());
+
+        setupAutoSlide(items.size());
+
+        vpCategoryBanner.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                int realPos = position % items.size();
+                updateIndicators(realPos);
+                
+                autoSlideHandler.removeCallbacks(autoSlideRunnable);
+                if (autoSlideRunnable != null) {
+                    autoSlideHandler.postDelayed(autoSlideRunnable, 4000);
+                }
+            }
+        });
+    }
+
+    private void updateIndicators(int position) {
+        for (int i = 0; i < indicators.size(); i++) {
+            View indicator = indicators.get(i);
+            if (indicator != null) {
+                if (i == position) {
+                    indicator.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.accent_dark)));
+                } else {
+                    indicator.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.border_divider)));
+                }
+            }
+        }
+    }
+
+    private void setupAutoSlide(int size) {
+        if (size <= 1) return;
+
+        autoSlideRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (vpCategoryBanner == null) return;
+                int currentItem = vpCategoryBanner.getCurrentItem();
+                vpCategoryBanner.setCurrentItem(currentItem + 1, true);
+                autoSlideHandler.postDelayed(this, 4000);
+            }
+        };
+
+        autoSlideHandler.postDelayed(autoSlideRunnable, 4000);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        autoSlideHandler.removeCallbacks(autoSlideRunnable);
     }
 
     private void bindCategoryCards(View root) {

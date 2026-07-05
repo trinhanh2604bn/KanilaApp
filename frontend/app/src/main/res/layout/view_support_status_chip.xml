@@ -3,9 +3,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_chip_pill"
-    android:backgroundTint="@color/info_bg"
+    android:backgroundTint="@color/status_preparing_bg"
     android:paddingHorizontal="12dp"
     android:paddingVertical="5dp"
     android:text="Đang xử lý"
     android:textAppearance="@style/Caption"
-    android:textColor="@color/info" />
+    android:textColor="@color/status_preparing_text" />

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutVoucherItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="@dimen/spacing_m"
+    android:background="@drawable/bg_voucher_default"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/spacing_m">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvVoucherCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito_bold"
+            android:text="GIAM100K"
+            android:textAppearance="@style/Body"
+            android:textColor="@color/accent_dark"
+            tools:text="GIAM100K" />
+
+        <TextView
+            android:id="@+id/tvVoucherDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="Giảm 100.000đ · Đơn từ 500.000đ"
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_secondary"
+            tools:text="Giảm 100.000đ · Đơn từ 500.000đ" />
+
+        <TextView
+            android:id="@+id/tvVoucherExpiry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="HSD: 31/12/2025"
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/text_tertiary"
+            tools:text="HSD: 31/12/2025" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivVoucherRadio"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
+        android:layout_marginStart="@dimen/spacing_m"
+        android:contentDescription="Chọn voucher"
+        android:src="@drawable/ic_radio_off" />
+
+</LinearLayout>

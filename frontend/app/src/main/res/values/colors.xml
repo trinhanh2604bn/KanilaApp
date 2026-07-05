@@ -60,6 +60,12 @@
     <color name="info_bg">@color/status_preparing_bg</color>
     <color name="info">@color/status_preparing_text</color>
 
+    <color name="icon_bg_pink">#FFEAF1</color>
+    <color name="icon_bg_green">#E8F5E9</color>
+    <color name="icon_bg_blue">#E3F2FD</color>
+    <color name="icon_bg_grey">#F5F5F5</color>
+    <color name="icon_bg_yellow">#FFF4E5</color>
+
 
 
 
@@ -67,4 +73,3 @@
 
 
 </resources>
-

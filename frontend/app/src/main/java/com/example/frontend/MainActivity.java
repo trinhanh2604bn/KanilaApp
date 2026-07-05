@@ -3,6 +3,8 @@ package com.example.frontend;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,20 +13,26 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
 import com.example.frontend.feature.home.HomeBannerAdapter;
+import com.example.frontend.feature.home.HomeShortcutAdapter;
+import com.example.frontend.feature.search.SearchActivity;
 import com.example.frontend.model.HomeBannerItem;
+import com.example.frontend.model.HomeShortcutItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +43,19 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 vpHomeBanner;
     private View layoutSearchBar;
-    private View layoutSearchExpandedBar;
     private ImageButton btnNotification, btnCart, btnWishlist;
+    private RecyclerView rvHomeShortcuts;
+    private View layoutKanilaReelsCard, layoutReelThumbOne, layoutReelThumbTwo;
+    private ImageView ivReelThumbOne, ivReelThumbTwo;
+    private View layoutKanilaChallengeCard, btnJoinChallenge;
+    private TextView tvChallengeProgress, tvChallengeParticipants, tvChallengeReward;
+
+    private View layoutSearchExpandedBar;
     private EditText edtExpandedSearchQuery;
     private ImageButton btnExpandedSearchBack;
 
     private HomeBannerAdapter bannerAdapter;
+    private HomeShortcutAdapter shortcutAdapter;
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
 
@@ -58,29 +73,94 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         setupSearchBehavior();
         setupBannerSlider();
-        setupBackPressedHandling();
     }
 
     private void initViews() {
         vpHomeBanner = findViewById(R.id.vpHomeBanner);
         layoutSearchBar = findViewById(R.id.layoutSearchBar);
-        layoutSearchExpandedBar = findViewById(R.id.layoutSearchExpandedBar);
         btnNotification = findViewById(R.id.btnNotification);
         btnCart = findViewById(R.id.btnCart);
         btnWishlist = findViewById(R.id.btnWishlist);
+        rvHomeShortcuts = findViewById(R.id.rvHomeShortcuts);
 
+        layoutKanilaReelsCard = findViewById(R.id.layoutKanilaReelsCard);
+        layoutReelThumbOne = findViewById(R.id.layoutReelThumbOne);
+        layoutReelThumbTwo = findViewById(R.id.layoutReelThumbTwo);
+        ivReelThumbOne = findViewById(R.id.ivReelThumbOne);
+        ivReelThumbTwo = findViewById(R.id.ivReelThumbTwo);
+        layoutKanilaChallengeCard = findViewById(R.id.layoutKanilaChallengeCard);
+        btnJoinChallenge = findViewById(R.id.btnJoinChallenge);
+        tvChallengeProgress = findViewById(R.id.tvChallengeProgress);
+        tvChallengeParticipants = findViewById(R.id.tvChallengeParticipants);
+        tvChallengeReward = findViewById(R.id.tvChallengeReward);
+
+        layoutSearchExpandedBar = findViewById(R.id.layoutSearchExpandedBar);
         edtExpandedSearchQuery = findViewById(R.id.edtExpandedSearchQuery);
         btnExpandedSearchBack = findViewById(R.id.btnExpandedSearchBack);
     }
 
     private void setupSearchBehavior() {
-        layoutSearchBar.setOnClickListener(v -> showExpandedSearch());
-
-        btnExpandedSearchBack.setOnClickListener(v -> collapseExpandedSearch());
+        layoutSearchBar.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
+        });
 
         btnNotification.setOnClickListener(v -> Toast.makeText(this, R.string.notification, Toast.LENGTH_SHORT).show());
         btnCart.setOnClickListener(v -> Toast.makeText(this, R.string.cart, Toast.LENGTH_SHORT).show());
         btnWishlist.setOnClickListener(v -> Toast.makeText(this, R.string.wishlist, Toast.LENGTH_SHORT).show());
+
+        setupHomeShortcuts();
+        setupSocialSection();
+
+
+//        btnCart.setOnClickListener(v -> {
+            // Tạm thời thay thế bằng việc mở CheckoutFragment để xem giao diện
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.main, new ui.commerce.CheckoutFragment())
+//                    .addToBackStack(null)
+//                    .commit();
+//        });
+    }
+
+    private void setupSocialSection() {
+        String reelOneUrl = "https://youtube.com/shorts/JytbqPADyQc?si=cXt-VYSr5hhdpOQg";
+        String reelTwoUrl = "https://youtube.com/shorts/LwHA4UF3XQI?si=icecCgY-kTDcaYTz";
+
+        // Construct YouTube thumbnail URLs
+        String thumbOneUrl = "https://img.youtube.com/vi/JytbqPADyQc/0.jpg";
+        String thumbTwoUrl = "https://img.youtube.com/vi/LwHA4UF3XQI/0.jpg";
+
+        // Load thumbnails using Glide
+        Glide.with(this).load(thumbOneUrl).into(ivReelThumbOne);
+        Glide.with(this).load(thumbTwoUrl).into(ivReelThumbTwo);
+
+        layoutKanilaReelsCard.setOnClickListener(v -> {
+            Toast.makeText(this, "Kanila Reels", Toast.LENGTH_SHORT).show();
+            // TODO: Navigate to ReelsFeedFragment
+        });
+
+        layoutReelThumbOne.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reelOneUrl));
+            startActivity(intent);
+        });
+
+        layoutReelThumbTwo.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reelTwoUrl));
+            startActivity(intent);
+        });
+
+        layoutKanilaChallengeCard.setOnClickListener(v -> {
+            Toast.makeText(this, "Kanila Challenge", Toast.LENGTH_SHORT).show();
+            // TODO: Navigate to ChallengeDetailFragment
+        });
+
+        btnJoinChallenge.setOnClickListener(v -> {
+            Toast.makeText(this, "Tham gia challenge", Toast.LENGTH_SHORT).show();
+        });
+
+        tvChallengeProgress.setText(getString(R.string.home_social_challenge_progress_format, "8", "14"));
+        tvChallengeParticipants.setText(getString(R.string.home_social_challenge_participants_format, "12.6K"));
+        tvChallengeReward.setText(getString(R.string.home_social_challenge_reward_format, "200"));
     }
 
     private void showExpandedSearch() {
@@ -104,44 +184,43 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isSearchExpanded() {
-        return layoutSearchExpandedBar.getVisibility() == View.VISIBLE;
-    }
-
-    private void setupBackPressedHandling() {
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (isSearchExpanded()) {
-                    collapseExpandedSearch();
-                } else {
-                    setEnabled(false);
-                    getOnBackPressedDispatcher().onBackPressed();
-                }
-            }
+    private void setupHomeShortcuts() {
+        shortcutAdapter = new HomeShortcutAdapter();
+        shortcutAdapter.setOnShortcutClickListener(item -> {
+            Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
         });
+
+        rvHomeShortcuts.setAdapter(shortcutAdapter);
+
+        List<HomeShortcutItem> shortcuts = new ArrayList<>();
+        shortcuts.add(new HomeShortcutItem("orders", "Đơn hàng", R.drawable.ic_shortcut_order, "orders", "", false, false));
+        shortcuts.add(new HomeShortcutItem("voucher", "Voucher", R.drawable.ic_shortcut_voucher, "voucher", "", false, false));
+        shortcuts.add(new HomeShortcutItem("ar", "AR", R.drawable.ic_shortcut_ar, "ar_try_on", "", false, false));
+        shortcuts.add(new HomeShortcutItem("kanila_beauty", "Kanila Beauty", R.drawable.ic_shortcut_kanila_beauty, "beauty", "", false, false));
+        shortcuts.add(new HomeShortcutItem("creator", "Creator", R.drawable.ic_shortcut_creator, "creator", "", false, false));
+        shortcuts.add(new HomeShortcutItem("royalty", "Royalty", R.drawable.ic_shortcut_royalty, "loyalty", "", false, false));
+        shortcuts.add(new HomeShortcutItem("help", "Trợ giúp", R.drawable.ic_shortcut_help, "support", "", false, false));
+        shortcuts.add(new HomeShortcutItem("policy", "Chính sách", R.drawable.ic_shortcut_policy, "policy", "", false, false));
+
+        shortcutAdapter.setItems(shortcuts);
     }
 
     private void setupBannerSlider() {
         bannerAdapter = new HomeBannerAdapter();
         bannerAdapter.setOnBannerClickListener(item -> {
             Toast.makeText(this, "Clicked: " + item.getButtonText(), Toast.LENGTH_SHORT).show();
-            // TODO: Handle deeplink navigation (item.getDeepLinkType(), item.getDeepLinkValue())
         });
 
         vpHomeBanner.setAdapter(bannerAdapter);
         vpHomeBanner.setOffscreenPageLimit(3);
 
-        // Add a CompositePageTransformer for a smoother, more modern transition effect
         CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
-        // MarginPageTransformer provides consistent spacing between items
         compositePageTransformer.addTransformer(new MarginPageTransformer((int) getResources().getDimension(R.dimen.spacing_s)));
         compositePageTransformer.addTransformer((page, position) -> {
             float r = 1 - Math.abs(position);
-            // Smoothly scale the items as they move
             page.setScaleY(0.85f + r * 0.15f);
-            // Fade out the items that are not in focus
             page.setAlpha(0.5f + r * 0.5f);
+
 
             // Adjust translation to keep neighbors partially visible and neatly tucked
             float translationOffset = position * -getResources().getDimension(R.dimen.spacing_m) * 2;
@@ -159,8 +238,6 @@ public class MainActivity extends AppCompatActivity {
 
         bannerAdapter.setItems(items);
 
-        // Start at a large enough position to allow backward scrolling if needed
-        // Choosing a multiple of items.size() ensures we start at the first item
         int startPosition = (Integer.MAX_VALUE / 2) - ((Integer.MAX_VALUE / 2) % items.size());
         vpHomeBanner.setCurrentItem(startPosition, false);
 
@@ -197,14 +274,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Performs a smooth scroll to the specified position with a custom duration.
-     */
     private void smoothScrollTo(int position, long duration) {
         if (vpHomeBanner.isFakeDragging()) return;
 
         int currentItem = vpHomeBanner.getCurrentItem();
         int itemsToScroll = position - currentItem;
+
 
         // Handle wrap-around for a smoother loop feel (optional, but here we just follow position)
         // If we want to always scroll forward even at the end, we'd need a different adapter setup.
@@ -226,7 +301,6 @@ public class MainActivity extends AppCompatActivity {
             try {
                 vpHomeBanner.fakeDragBy(-pixelsToDragNow);
             } catch (Exception e) {
-                // Fail-safe in case fake drag is interrupted
                 animation.cancel();
             }
             previousStep[0] = currentStep;

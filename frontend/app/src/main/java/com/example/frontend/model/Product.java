@@ -73,6 +73,9 @@ public class Product {
     @SerializedName("subcategory")
     private String subcategory;
 
+    @SerializedName("hasAr")
+    private boolean hasAr;
+
     @SerializedName("shades")
     private List<Shade> shades;
 
@@ -144,6 +147,10 @@ public class Product {
     public int getImageResource() { return imageResource; }
 
     public String getSubcategory() { return subcategory != null ? subcategory : ""; }
+
+    public boolean hasAr() { return hasAr; }
+
+    public void setHasAr(boolean hasAr) { this.hasAr = hasAr; }
     
     public String getBadgeText() { 
         if (badgeText != null && !badgeText.isEmpty()) return badgeText;

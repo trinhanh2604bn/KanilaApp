@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvHomeShortcuts;
     private RecyclerView rvRecommendedProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
-    
+
     private View layoutKanilaReelsCard, layoutReelThumbOne, layoutReelThumbTwo;
     private ImageView ivReelThumbOne, ivReelThumbTwo;
     private View layoutKanilaChallengeCard, btnJoinChallenge;
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private HomeShortcutAdapter shortcutAdapter;
     private HomeProductAdapter productAdapter;
     private HomeViewModel viewModel;
-    
+
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
 
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         setupSearchBehavior();
         setupBannerSlider();
         setupProductList();
-        
+
         observeViewModel();
         viewModel.loadHomeData();
     }

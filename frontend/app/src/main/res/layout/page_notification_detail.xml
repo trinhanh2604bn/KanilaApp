@@ -70,9 +70,7 @@
                 android:paddingHorizontal="16dp"
                 android:paddingTop="8dp">
 
-                <!-- Backend will inject view_notif_detail_*.xml here -->
-                <!-- For now, include the order detail as a preview -->
-                <include layout="@layout/view_notif_detail_order" />
+                <!-- NotificationDetailActivity sẽ inflate view_notif_detail_* vào đây theo loại -->
             </FrameLayout>
 
             <!-- Static "Suggested for you" Section -->

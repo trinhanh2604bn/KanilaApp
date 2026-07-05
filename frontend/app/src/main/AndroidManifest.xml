@@ -27,6 +27,10 @@
             android:name=".feature.search.SearchActivity"
             android:exported="false"
             android:windowSoftInputMode="stateVisible" />
+        <activity
+            android:name="ui.notification.NotificationDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

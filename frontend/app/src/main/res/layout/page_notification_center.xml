@@ -135,36 +135,29 @@
         </LinearLayout>
     </HorizontalScrollView>
 
-    <androidx.core.widget.NestedScrollView
+    <!-- Danh sách thông báo (render động, trộn 4 loại) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvNotifications"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingBottom="16dp">
+        android:paddingBottom="@dimen/spacing_l"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_notification_order" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <include layout="@layout/item_notification_order" />
-            <include layout="@layout/item_notification_offer" />
-            <include layout="@layout/item_notification_community" />
-            <include layout="@layout/item_notification_personal" />
-            <include layout="@layout/item_notification_personal" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="32dp"
-                android:gravity="center"
-                android:text="Không có cập nhật mới"
-                android:textAppearance="@style/Text.Kanila.Caption"
-                android:textColor="@color/text_tertiary" />
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+    <!-- Trạng thái rỗng khi lọc ra 0 kết quả (ẩn mặc định) -->
+    <TextView
+        android:id="@+id/layoutNotifEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="@dimen/spacing_l"
+        android:text="@string/notification_empty"
+        android:textAppearance="@style/Text.Kanila.Caption"
+        android:textColor="@color/text_tertiary"
+        android:visibility="gone" />
 
     <!-- Bottom Navigation -->
     <include

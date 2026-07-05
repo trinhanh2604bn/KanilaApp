@@ -31,6 +31,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tvCommunityHeaderTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Bài viết của bạn\nđang bay cao!"
@@ -38,6 +39,7 @@
                 android:textColor="@color/accent_dark" />
 
             <TextView
+                android:id="@+id/tvCommunityHeaderSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -63,6 +65,7 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/ivCommunityAvatar"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@drawable/bg_avatar_circle"
@@ -71,6 +74,7 @@
                 app:tint="@color/accent_dark" />
 
             <TextView
+                android:id="@+id/tvCommunityPostTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
@@ -92,6 +96,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/tvCommunityLikes"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -100,6 +105,7 @@
                 android:textColor="@color/button" />
 
             <TextView
+                android:id="@+id/tvCommunityComments"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -109,6 +115,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/btnCommunityViewPost"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="20dp"

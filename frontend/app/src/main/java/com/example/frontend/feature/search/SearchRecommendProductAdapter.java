@@ -3,7 +3,9 @@ package com.example.frontend.feature.search;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,7 +19,7 @@ import java.util.List;
 
 import com.bumptech.glide.Glide;
 
-public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSuggestedProductAdapter.ViewHolder> {
+public class SearchRecommendProductAdapter extends RecyclerView.Adapter<SearchRecommendProductAdapter.ViewHolder> {
 
     private List<Product> productList = new ArrayList<>();
     private OnProductClickListener listener;
@@ -52,8 +54,19 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
         holder.tvProductName.setText(product.getName());
         holder.tvProductBrand.setText(product.getBrand());
         holder.tvProductPrice.setText(product.getPrice());
-        holder.tvProductReviewCount.setText("(" + product.getReviewCount() + ")");
         
+        if (holder.tvProductReviewCount != null) {
+            holder.tvProductReviewCount.setText("(" + product.getReviewCount() + ")");
+        }
+        
+        if (holder.tvProductRating != null) {
+            try {
+                holder.tvProductRating.setRating(Float.parseFloat(product.getRating()));
+            } catch (Exception e) {
+                holder.tvProductRating.setRating(0);
+            }
+        }
+
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
             Glide.with(holder.ivProductImage.getContext())
                     .load(product.getImageUrl())
@@ -63,17 +76,31 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
         } else {
             holder.ivProductImage.setImageResource(product.getImageResource() != 0 ? product.getImageResource() : R.drawable.ic_product);
         }
-        
-        if (product.getBadgeText() != null && !product.getBadgeText().isEmpty()) {
-            holder.tvProductBadge.setText(product.getBadgeText());
-            holder.layoutProductStatusBadge.setVisibility(View.VISIBLE);
-        } else {
-            holder.layoutProductStatusBadge.setVisibility(View.GONE);
+
+        if (holder.layoutProductStatusBadge != null) {
+            if (product.getBadgeText() != null && !product.getBadgeText().isEmpty()) {
+                holder.tvProductBadge.setText(product.getBadgeText());
+                holder.layoutProductStatusBadge.setVisibility(View.VISIBLE);
+            } else {
+                holder.layoutProductStatusBadge.setVisibility(View.GONE);
+            }
         }
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onProductClick(product);
         });
+        
+        if (holder.btnWishlist != null) {
+            holder.btnWishlist.setOnClickListener(v -> {
+                // TODO: Handle wishlist
+            });
+        }
+        
+        if (holder.btnAddToCart != null) {
+            holder.btnAddToCart.setOnClickListener(v -> {
+                // TODO: Handle add to cart
+            });
+        }
     }
 
     @Override
@@ -84,7 +111,9 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProductImage;
         TextView tvProductName, tvProductBrand, tvProductPrice, tvProductReviewCount, tvProductBadge;
+        RatingBar tvProductRating;
         View layoutProductStatusBadge;
+        ImageButton btnWishlist, btnAddToCart;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -94,7 +123,10 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
             tvProductPrice = itemView.findViewById(R.id.tvProductPrice);
             tvProductReviewCount = itemView.findViewById(R.id.tvProductReviewCount);
             tvProductBadge = itemView.findViewById(R.id.tvProductBadge);
+            tvProductRating = itemView.findViewById(R.id.tvProductRating);
             layoutProductStatusBadge = itemView.findViewById(R.id.layoutProductStatusBadge);
+            btnWishlist = itemView.findViewById(R.id.btnWishlist);
+            btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
         }
     }
 }

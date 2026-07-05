@@ -3,7 +3,6 @@ package com.example.frontend.feature.search;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,7 +40,6 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<SearchSuggesti
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String keyword = suggestionItems.get(position);
-        holder.tvSuggestionKeyword.setText(keyword);
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onSuggestionClick(keyword);
         });
@@ -53,11 +51,8 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<SearchSuggesti
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvSuggestionKeyword;
-
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvSuggestionKeyword = itemView.findViewById(R.id.tvSuggestionKeyword);
         }
     }
 }

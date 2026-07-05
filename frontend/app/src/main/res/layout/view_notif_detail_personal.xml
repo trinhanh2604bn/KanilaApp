@@ -31,6 +31,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tvPersonalHeaderTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Chúc mừng thăng hạng!\nBạn đã lên Gold Member"
@@ -38,6 +39,7 @@
                 android:textColor="@color/accent_dark" />
 
             <TextView
+                android:id="@+id/tvPersonalHeaderSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -71,6 +73,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/tvPointsValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="2.450"
@@ -94,6 +97,7 @@
             android:background="@color/border_divider" />
 
         <TextView
+            android:id="@+id/tvPersonalPrivileges"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="• Giảm giá 5% cho mọi đơn hàng\n• Miễn phí vận chuyển 2 lần/tháng\n• Quà tặng sinh nhật đặc biệt"
@@ -102,6 +106,7 @@
             android:lineSpacingExtra="4dp" />
 
         <TextView
+            android:id="@+id/btnPersonalExplore"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="20dp"

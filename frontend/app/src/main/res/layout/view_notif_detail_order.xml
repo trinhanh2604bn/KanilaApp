@@ -31,6 +31,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tvOrderStatusTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Đơn hàng #KN20458\nđang giao"
@@ -38,6 +39,7 @@
                 android:textColor="@color/accent_dark" />
 
             <TextView
+                android:id="@+id/tvOrderStatusSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -71,6 +73,7 @@
                 android:textColor="@color/text_secondary" />
 
             <TextView
+                android:id="@+id/tvOrderDeliveryDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -79,6 +82,7 @@
                 android:textColor="@color/accent_dark" />
 
             <TextView
+                android:id="@+id/tvOrderDeliveryTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="(09:00 - 18:00)"
@@ -104,6 +108,7 @@
         android:padding="12dp">
 
         <ImageView
+            android:id="@+id/ivOrderProductImage"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@drawable/bg_chatbot_soft_dot"
@@ -119,6 +124,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tvOrderProductName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Kanila Glow Serum"
@@ -126,6 +132,7 @@
                 android:textColor="@color/text_main" />
 
             <TextView
+                android:id="@+id/tvOrderProductVariant"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="30ml"
@@ -140,6 +147,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tvOrderProductQty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="x1"
@@ -147,6 +155,7 @@
                 android:textColor="@color/text_secondary" />
 
             <TextView
+                android:id="@+id/tvOrderProductPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"

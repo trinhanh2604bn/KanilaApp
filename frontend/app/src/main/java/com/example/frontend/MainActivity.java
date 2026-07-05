@@ -40,6 +40,10 @@ import com.example.frontend.model.HomeShortcutItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import ui.category.ProductCategoryFragment;
+import ui.commerce.CartFragment;
+import ui.commerce.CheckoutFragment;
+
 public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 vpHomeBanner;
@@ -48,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvHomeShortcuts;
     private RecyclerView rvRecommendedProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
-    
+
     private View layoutKanilaReelsCard, layoutReelThumbOne, layoutReelThumbTwo;
     private ImageView ivReelThumbOne, ivReelThumbTwo;
     private View layoutKanilaChallengeCard, btnJoinChallenge;
@@ -62,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private HomeShortcutAdapter shortcutAdapter;
     private HomeProductAdapter productAdapter;
     private HomeViewModel viewModel;
-    
+
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
 
@@ -70,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -83,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         setupSearchBehavior();
         setupBannerSlider();
         setupProductList();
-        
+
         observeViewModel();
         viewModel.loadHomeData();
     }
@@ -122,9 +126,30 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        btnNotification.setOnClickListener(v -> Toast.makeText(this, R.string.notification, Toast.LENGTH_SHORT).show());
-        btnCart.setOnClickListener(v -> Toast.makeText(this, R.string.cart, Toast.LENGTH_SHORT).show());
-        btnWishlist.setOnClickListener(v -> Toast.makeText(this, R.string.wishlist, Toast.LENGTH_SHORT).show());
+
+        //btnNotification.setOnClickListener(v -> Toast.makeText(this, R.string.notification, Toast.LENGTH_SHORT).show());
+
+        btnNotification.setOnClickListener(v -> {
+            // Tạm thời thay thế bằng việc mở CheckoutFragment để xem giao diện
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new ui.notification.NotificationCenterFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        btnCart.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new ui.commerce.CartFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        btnWishlist.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new ui.category.ProductCategoryFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
 
         setupHomeShortcuts();
         setupSocialSection();

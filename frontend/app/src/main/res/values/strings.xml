@@ -27,16 +27,47 @@
     <string name="variant_quantity_title">Số lượng</string>
     <string name="variant_apply">Áp dụng</string>
     <string name="variant_stock_format">Còn %d sản phẩm</string>
+    <string name="checkout_edit">Sửa</string>
+    <string name="checkout_address_title">Địa chỉ nhận hàng</string>
+    <string name="checkout_shipping_title">Phương thức vận chuyển</string>
+    <string name="checkout_payment_title">Phương thức thanh toán</string>
+    <string name="checkout_voucher_title">Kanila Voucher</string>
+    <string name="checkout_confirm_title">Xác nhận đơn hàng</string>
+    <string name="checkout_place_order">Đặt hàng</string>
+    <string name="checkout_selected_items">Sản phẩm đã chọn</string>
+    <string name="checkout_total_label">Tổng thanh toán</string>
+    <string name="checkout_sample_receiver">Nguyễn Văn A | 0987654321</string>
+    <string name="checkout_sample_address">123 Đường ABC, Phường 4, Quận 5, TP. Hồ Chí Minh</string>
+    <string name="checkout_sample_shipping">Giao hàng nhanh</string>
+    <string name="checkout_sample_delivery_date">Dự kiến nhận hàng: 20/05 - 22/05</string>
+    <string name="checkout_sample_payment">Thanh toán khi nhận hàng (COD)</string>
+    <string name="checkout_sample_voucher">KANILA_SALE_100K</string>
+    <string name="checkout_order_confirmation_title">Xác nhận đơn hàng</string>
+    <string name="checkout_note_title">Ghi chú</string>
+    <string name="checkout_note_hint">Nhập ghi chú cho đơn hàng</string>
+    <string name="checkout_coins_title">Sử dụng xu</string>
+    <string name="checkout_coins_format">%1$sđ</string>
+    <string name="checkout_price_subtotal">Tạm tính (%1$d sản phẩm)</string>
+    <string name="checkout_price_shipping">Phí vận chuyển</string>
+    <string name="checkout_price_discount">Mã giảm giá</string>
+    <string name="checkout_price_points">Điểm thưởng</string>
+    <string name="checkout_sample_receiver_2">Nguyễn Thanh Thanh - 0794 644 108</string>
+    <string name="checkout_sample_address_2">123 Trần Hưng Đạo, Phường Bến Thành, Hồ Chí Minh</string>
+    <string name="checkout_sample_shipping_2">Giao hàng tiêu chuẩn</string>
+    <string name="checkout_sample_delivery_date_2">Nhận hàng: Ngày 09/7</string>
     <string name="content_desc_close">Đóng</string>
     <string name="content_desc_brand_logo">Logo thương hiệu</string>
     <string name="content_desc_increase">Tăng</string>
     <string name="content_desc_decrease">Giảm</string>
+    <string name="cart_selected_quantity_label">Số lượng: %1$d</string>
+    <string name="product_image_desc">Ảnh sản phẩm</string>
     <string name="category_hero_small_title">Khám phá sản phẩm</string>
     <string name="category_hero_title">Làm sạch dịu nhẹ cho làn da khỏe đẹp</string>
     <string name="category_hero_description">Bắt đầu chu trình dưỡng da khoa học với bước làm sạch chuẩn</string>
     <string name="category_section_demand">Mua theo nhu cầu</string>
     <string name="category_section_brand">Thương hiệu nổi bật</string>
     <string name="action_see_all">Xem tất cả ></string>
+    <string name="action_view_all">Xem tất cả</string>
     <string name="category_lips">Lips</string>
     <string name="category_eyes">Eyes</string>
     <string name="category_cheeks">Cheeks</string>
@@ -52,16 +83,23 @@
     <string name="notification">Thông báo</string>
     <string name="cart">Giỏ hàng</string>
     <string name="wishlist">Yêu thích</string>
-    <string name="address_book_title">Địa chỉ giao hàng</string>
-    <string name="address_book_list_header">Danh sách địa chỉ</string>
-    <string name="address_book_add_new">Thêm địa chỉ mới</string>
-    <string name="address_book_default">Mặc định</string>
     <string name="search_history_title">Tìm kiếm gần đây</string>
     <string name="search_suggestion_title">Gợi ý tìm kiếm</string>
     <string name="search_suggested_products_title">Sản phẩm được gợi ý</string>
     <string name="clear_history_content_desc">Xóa lịch sử</string>
     <string name="search_no_result_title">Không tìm thấy sản phẩm phù hợp</string>
     <string name="search_no_result_cta">Hỏi Kanila AI tìm giúp</string>
+
+    <string name="search_recommend_title">Đề xuất dành cho bạn</string>
+    <string name="search_quick_discovery_title">Khám phá nhanh</string>
+    <string name="discovery_oily_skin_title">Da dầu mụn</string>
+    <string name="discovery_oily_skin_desc">Giải pháp kiềm dầu, giảm mụn</string>
+    <string name="discovery_daily_makeup_title">Makeup hằng ngày</string>
+    <string name="discovery_daily_makeup_desc">Tự nhiên, tươi tắn mỗi ngày</string>
+    <string name="discovery_under_300k_title">Under 300K</string>
+    <string name="discovery_under_300k_desc">Sản phẩm chất lượng giá tốt</string>
+    <string name="discovery_new_arrivals_title">Hàng mới về</string>
+    <string name="discovery_new_arrivals_desc">Cập nhật sản phẩm mới mỗi tuần</string>
 
     <string name="home_social_reels_title">Kanila Reels</string>
     <string name="home_social_challenge_title">Kanila Challenge</string>
@@ -104,6 +142,8 @@
     <string name="priority_formula_msg">Kanila sẽ ưu tiên các sản phẩm có công thức sạch và dịu nhẹ cho bạn</string>
     <string name="btn_save_setup">Lưu thiết lập</string>
 
+
+
     <string name="goal_skin_acne_spots">Mục tiêu: Giảm mụn &amp; thâm</string>
     <string name="week_2_4">Tuần 2/4</string>
     <string name="completed_50">50%</string>
@@ -141,7 +181,6 @@
     <string name="brand_fwee_title">FWEE</string>
     <string name="brand_fwee_desc">K-beauty hàng đầu dưỡng ẩm chuyên sâu</string>
 
-    <!-- New Notification Strings -->
     <string name="notification_title">Thông báo</string>
     <string name="notification_filter_all">Tất cả</string>
     <string name="notification_filter_orders">Đơn hàng</string>
@@ -149,15 +188,10 @@
     <string name="notification_filter_community">Cộng đồng</string>
     <string name="notification_filter_personal">Cá nhân</string>
     <string name="notification_new_tag">Mới</string>
-    <string name="notification_detail_title">Chi tiết thông báo</string>
-    <string name="notification_detail_suggested_title">Gợi ý dành cho bạn</string>
-    <string name="notification_order_header">Đơn hàng #KN20458\nđang giao</string>
-    <string name="notification_order_thanks">Cảm ơn bạn đã mua sắm tại Kanila Beauty.</string>
-    <string name="notification_order_est_delivery">Dự kiến giao hàng</string>
-    <string name="notification_order_track_cta">Theo dõi đơn</string>
-    <string name="notification_order_shipper_cta">Liên hệ shipper</string>
-    <string name="notification_order_support_cta">Mở hỗ trợ</string>
-    <string name="notification_offer_use_now">Dùng ngay</string>
-    <string name="notification_community_view_post">Xem bài viết</string>
-    <string name="notification_personal_discover_perks">Khám phá đặc quyền</string>
+    <string name="notification_empty">Không có thông báo nào</string>
+    <string name="address_book_title">Địa chỉ giao hàng</string>
+    <string name="address_book_list_header">Danh sách địa chỉ</string>
+    <string name="address_book_add_new">Thêm địa chỉ mới</string>
+
+
 </resources>

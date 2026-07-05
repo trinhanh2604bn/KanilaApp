@@ -28,7 +28,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Chọn voucher"
+            android:text="Chọn Voucher"
             android:textAppearance="@style/H3"
             android:textColor="@color/text_main" />
 
@@ -37,7 +37,7 @@
             android:layout_height="24dp"
             android:src="@drawable/ic_close"
             app:tint="@color/text_secondary"
-            android:contentDescription="Đóng" />
+            android:contentDescription="@string/content_desc_close" />
     </LinearLayout>
 
     <!-- Nhập mã -->
@@ -89,30 +89,41 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:paddingHorizontal="16dp"
         android:paddingTop="16dp">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/bg_button_outline"
-            android:gravity="center"
-            android:text="Hủy"
-            android:textAppearance="@style/Body"
-            android:textColor="@color/text_main" />
+        <!-- Thông tin voucher đã chọn -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:layout_marginStart="6dp"
-            android:background="@drawable/bg_button_primary"
-            android:gravity="center"
-            android:text="Áp dụng"
-            android:textAppearance="@style/Body"
-            android:textColor="@color/background_main" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đã chọn: "
+                android:textAppearance="@style/Body"
+                android:textStyle="bold"
+                android:textColor="@color/text_main" />
+
+            <TextView
+                android:id="@+id/tvSelectedVoucherName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GIẢM 100k"
+                android:textAppearance="@style/Body"
+                android:textStyle="bold"
+                android:textColor="@color/button" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnConfirmVoucher"
+            style="@style/Widget.Kanila.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Đồng ý"
+            app:cornerRadius="@dimen/radius_l" />
     </LinearLayout>
 </LinearLayout>

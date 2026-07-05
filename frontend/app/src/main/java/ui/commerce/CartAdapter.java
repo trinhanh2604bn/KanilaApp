@@ -62,21 +62,27 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         CheckBox cbSelected;
         ImageView ivProduct;
         TextView tvName, tvVariant, tvPrice, tvQuantity;
-        ImageButton btnDecrease, btnIncrease, btnRemove, btnWishlist;
+        ImageButton btnDecrease, btnIncrease, btnWishlist;
+        View layoutFront, layoutAction;
+        View tvActionSimilar, tvActionDelete;
 
         public CartViewHolder(@NonNull View itemView) {
             super(itemView);
-            // item_cart_swipeable has layoutCartFront which is item_cart
-            View front = itemView.findViewById(R.id.layoutCartFront);
-            cbSelected = front.findViewById(R.id.cbCartSelected);
-            ivProduct = front.findViewById(R.id.ivCartProductImage);
-            tvName = front.findViewById(R.id.tvCartProductName);
-            tvVariant = front.findViewById(R.id.tvCartProductVariant);
-            tvPrice = front.findViewById(R.id.tvCartPrice);
-            tvQuantity = front.findViewById(R.id.tvCartQuantity);
-            btnDecrease = front.findViewById(R.id.btnDecreaseQuantity);
-            btnIncrease = front.findViewById(R.id.btnIncreaseQuantity);
-            btnWishlist = front.findViewById(R.id.btnCartWishlist);
+            layoutFront = itemView.findViewById(R.id.layoutCartFront);
+            layoutAction = itemView.findViewById(R.id.layoutCartAction);
+            
+            cbSelected = layoutFront.findViewById(R.id.cbCartSelected);
+            ivProduct = layoutFront.findViewById(R.id.ivCartProductImage);
+            tvName = layoutFront.findViewById(R.id.tvCartProductName);
+            tvVariant = layoutFront.findViewById(R.id.tvCartProductVariant);
+            tvPrice = layoutFront.findViewById(R.id.tvCartPrice);
+            tvQuantity = layoutFront.findViewById(R.id.tvCartQuantity);
+            btnDecrease = layoutFront.findViewById(R.id.btnDecreaseQuantity);
+            btnIncrease = layoutFront.findViewById(R.id.btnIncreaseQuantity);
+            btnWishlist = layoutFront.findViewById(R.id.btnCartWishlist);
+
+            tvActionSimilar = layoutAction.findViewById(R.id.tvActionSimilar);
+            tvActionDelete = layoutAction.findViewById(R.id.tvActionDelete);
         }
 
         public void bind(CartItem item) {
@@ -86,6 +92,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             tvQuantity.setText(String.valueOf(item.getQuantity()));
             ivProduct.setImageResource(item.getProduct().getImageResource());
             btnWishlist.setSelected(item.isWishlisted());
+            
+            // Reset translation in case view is reused
+            layoutFront.setTranslationX(0f);
             
             cbSelected.setOnCheckedChangeListener(null);
             cbSelected.setChecked(item.isSelected());
@@ -114,16 +123,18 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 btnWishlist.setSelected(newState);
             });
 
-            if (btnRemove != null) {
-                btnRemove.setOnClickListener(v -> {
-                    int pos = getAdapterPosition();
-                    if (pos != RecyclerView.NO_POSITION) {
-                        items.remove(pos);
-                        notifyItemRemoved(pos);
-                        if (listener != null) listener.onItemSelectedChanged();
-                    }
-                });
-            }
+            tvActionDelete.setOnClickListener(v -> {
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION) {
+                    items.remove(pos);
+                    notifyItemRemoved(pos);
+                    if (listener != null) listener.onItemSelectedChanged();
+                }
+            });
+
+            tvActionSimilar.setOnClickListener(v -> {
+                // Feature logic for similar products
+            });
         }
     }
 }

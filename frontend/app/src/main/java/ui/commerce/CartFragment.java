@@ -12,9 +12,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Canvas;
 import com.example.frontend.R;
 import com.example.frontend.model.CartItem;
 import com.example.frontend.model.Product;
@@ -113,6 +115,59 @@ public class CartFragment extends Fragment {
                 updateSummary();
             }
         });
+
+        setupSwipeToReveal();
+    }
+
+    private void setupSwipeToReveal() {
+        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                // Refresh the item so it doesn't get "deleted" from the UI
+                adapter.notifyItemChanged(viewHolder.getAdapterPosition());
+            }
+
+            @Override
+            public float getSwipeThreshold(@NonNull RecyclerView.ViewHolder viewHolder) {
+                return 0.7f; // Require a long swipe to trigger onSwiped (which we use to reset)
+            }
+
+            @Override
+            public float getSwipeEscapeVelocity(float defaultValue) {
+                return defaultValue * 5f; // Harder to trigger swipe-out by velocity
+            }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    CartAdapter.CartViewHolder holder = (CartAdapter.CartViewHolder) viewHolder;
+                    float actionWidth = 160 * recyclerView.getContext().getResources().getDisplayMetrics().density;
+                    
+                    // Clamp dX
+                    float translationX = Math.max(-actionWidth, dX);
+                    holder.layoutFront.setTranslationX(translationX);
+                } else {
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                }
+            }
+
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+                // The super call might not reset translation of our custom view if we didn't use getDefaultUIUtil()
+                // So we do it manually to ensure it snaps back when released (unless we implement stay-open)
+                CartAdapter.CartViewHolder holder = (CartAdapter.CartViewHolder) viewHolder;
+                holder.layoutFront.setTranslationX(0);
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(rvCartItems);
     }
 
     private void setupSelectAll() {
@@ -159,10 +214,7 @@ public class CartFragment extends Fragment {
     }
 
     private void setupActions() {
-        btnChooseVoucher.setOnClickListener(v -> {
-            // TODO: Open voucher selection dialog
-            Toast.makeText(getContext(), "Chọn voucher", Toast.LENGTH_SHORT).show();
-        });
+        btnChooseVoucher.setOnClickListener(v -> showVoucherBottomSheet());
 
         btnContinueCheckout.setOnClickListener(v -> {
             List<CartItem> selectedItems = new ArrayList<>();
@@ -185,6 +237,13 @@ public class CartFragment extends Fragment {
                         .commit();
             }
         });
+    }
+
+    private void showVoucherBottomSheet() {
+        if (getContext() != null) {
+            VoucherBottomSheetDialog dialog = new VoucherBottomSheetDialog(getContext());
+            dialog.show();
+        }
     }
 
     private void loadCartItems() {

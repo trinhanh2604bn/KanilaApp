@@ -37,18 +37,19 @@ public class VoucherBottomSheetDialog extends BottomSheetDialog {
                 getWindow().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             }
             int screenHeight = displayMetrics.heightPixels;
-            int sheetHeight = (int) (screenHeight * VOUCHER_SHEET_HEIGHT_RATIO);
+            int maxSheetHeight = (int) (screenHeight * VOUCHER_SHEET_HEIGHT_RATIO);
+
+            BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+            behavior.setMaxHeight(maxSheetHeight);
+            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            behavior.setSkipCollapsed(true);
+            behavior.setFitToContents(true);
 
             ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
             if (layoutParams != null) {
-                layoutParams.height = sheetHeight;
+                layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 bottomSheet.setLayoutParams(layoutParams);
             }
-
-            BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
-            behavior.setPeekHeight(sheetHeight);
-            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            behavior.setSkipCollapsed(true);
         }
     }
 

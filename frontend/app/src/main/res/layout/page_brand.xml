@@ -209,12 +209,7 @@
                 </LinearLayout>
             </HorizontalScrollView>
 
-<<<<<<< HEAD
-
             <!-- 3. Brand grid, Loading and Empty state -->
-=======
-            <!-- 3. Brand grid and Empty state -->
->>>>>>> origin/main
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -231,7 +226,6 @@
                     tools:spanCount="3" />
 
                 <include
-<<<<<<< HEAD
                     android:id="@+id/viewBrandLoading"
                     layout="@layout/view_loading_state"
                     android:visibility="gone" />
@@ -239,13 +233,6 @@
                 <include
                     android:id="@+id/viewBrandEmpty"
                     layout="@layout/view_empty_state"
-=======
-                    android:id="@+id/layoutBrandNoResult"
-                    layout="@layout/view_search_no_result"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_xl"
->>>>>>> origin/main
                     android:visibility="gone" />
             </FrameLayout>
 

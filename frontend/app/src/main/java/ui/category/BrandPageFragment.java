@@ -273,30 +273,11 @@ public class BrandPageFragment extends Fragment {
             }
         }
 
-<<<<<<< HEAD
         if (filteredList.isEmpty() && !fullBrandList.isEmpty() && !region.equals(allText)) {
             // Optional: Show a "No brands found in this region" message
         }
         
         adapter.updateData(filteredList);
         showEmpty(filteredList.isEmpty());
-=======
-        if (adapter == null) {
-            adapter = new BrandAdapter(filteredList);
-            adapter.setOnBrandClickListener(brand -> {
-                if (getActivity() != null) {
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, ProductListingFragment.newBrandInstance(brand.getBrandName()))
-                            .addToBackStack(null)
-                            .commit();
-                }
-            });
-        } else {
-            adapter.updateData(filteredList);
-        }
-
-        // Always set adapter to the RecyclerView because the View might have been recreated
-        rvBrandGrid.setAdapter(adapter);
->>>>>>> origin/main
     }
 }

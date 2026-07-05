@@ -10,6 +10,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -47,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
     private ImageView ivReelThumbOne, ivReelThumbTwo;
     private View layoutKanilaChallengeCard, btnJoinChallenge;
     private TextView tvChallengeProgress, tvChallengeParticipants, tvChallengeReward;
+
+    private View layoutSearchExpandedBar;
+    private EditText edtExpandedSearchQuery;
+    private ImageButton btnExpandedSearchBack;
 
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
@@ -88,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         tvChallengeParticipants = findViewById(R.id.tvChallengeParticipants);
         tvChallengeReward = findViewById(R.id.tvChallengeReward);
 
+        layoutSearchExpandedBar = findViewById(R.id.layoutSearchExpandedBar);
         edtExpandedSearchQuery = findViewById(R.id.edtExpandedSearchQuery);
         btnExpandedSearchBack = findViewById(R.id.btnExpandedSearchBack);
     }
@@ -122,16 +129,6 @@ public class MainActivity extends AppCompatActivity {
         // Construct YouTube thumbnail URLs
         String thumbOneUrl = "https://img.youtube.com/vi/JytbqPADyQc/0.jpg";
         String thumbTwoUrl = "https://img.youtube.com/vi/LwHA4UF3XQI/0.jpg";
-    private void showExpandedSearch() {
-        layoutSearchBar.setVisibility(View.GONE);
-        layoutSearchExpandedBar.setVisibility(View.VISIBLE);
-
-        edtExpandedSearchQuery.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.showSoftInput(edtExpandedSearchQuery, InputMethodManager.SHOW_IMPLICIT);
-        }
-    }
 
         // Load thumbnails using Glide
         Glide.with(this).load(thumbOneUrl).into(ivReelThumbOne);
@@ -141,15 +138,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Kanila Reels", Toast.LENGTH_SHORT).show();
             // TODO: Navigate to ReelsFeedFragment
         });
-    private void collapseExpandedSearch() {
-        layoutSearchExpandedBar.setVisibility(View.GONE);
-        layoutSearchBar.setVisibility(View.VISIBLE);
-
-        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(edtExpandedSearchQuery.getWindowToken(), 0);
-        }
-    }
 
         layoutReelThumbOne.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reelOneUrl));
@@ -173,6 +161,27 @@ public class MainActivity extends AppCompatActivity {
         tvChallengeProgress.setText(getString(R.string.home_social_challenge_progress_format, "8", "14"));
         tvChallengeParticipants.setText(getString(R.string.home_social_challenge_participants_format, "12.6K"));
         tvChallengeReward.setText(getString(R.string.home_social_challenge_reward_format, "200"));
+    }
+
+    private void showExpandedSearch() {
+        layoutSearchBar.setVisibility(View.GONE);
+        layoutSearchExpandedBar.setVisibility(View.VISIBLE);
+
+        edtExpandedSearchQuery.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.showSoftInput(edtExpandedSearchQuery, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
+    private void collapseExpandedSearch() {
+        layoutSearchExpandedBar.setVisibility(View.GONE);
+        layoutSearchBar.setVisibility(View.VISIBLE);
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(edtExpandedSearchQuery.getWindowToken(), 0);
+        }
     }
 
     private void setupHomeShortcuts() {

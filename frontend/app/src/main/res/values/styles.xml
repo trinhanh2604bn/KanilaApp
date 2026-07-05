@@ -167,6 +167,10 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="MetricFooter" parent="Text.Kanila.Micro">
+        <item name="android:textColor">@color/text_tertiary</item>
+    </style>
+
     <style name="GridItemTick">
         <item name="android:layout_width">16dp</item>
         <item name="android:layout_height">16dp</item>

@@ -3,7 +3,9 @@ package com.example.frontend.feature.search;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -54,6 +56,12 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
         holder.tvProductPrice.setText(product.getPrice());
         holder.tvProductReviewCount.setText("(" + product.getReviewCount() + ")");
         
+        try {
+            holder.ratingBar.setRating(Float.parseFloat(product.getRating()));
+        } catch (Exception e) {
+            holder.ratingBar.setRating(0);
+        }
+
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
             Glide.with(holder.ivProductImage.getContext())
                     .load(product.getImageUrl())
@@ -74,6 +82,10 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onProductClick(product);
         });
+
+        if (holder.btnWishlist != null) {
+            holder.btnWishlist.setOnClickListener(v -> v.setSelected(!v.isSelected()));
+        }
     }
 
     @Override
@@ -84,7 +96,9 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProductImage;
         TextView tvProductName, tvProductBrand, tvProductPrice, tvProductReviewCount, tvProductBadge;
+        RatingBar ratingBar;
         View layoutProductStatusBadge;
+        ImageButton btnWishlist, btnAddToCart;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -95,6 +109,9 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
             tvProductReviewCount = itemView.findViewById(R.id.tvProductReviewCount);
             tvProductBadge = itemView.findViewById(R.id.tvProductBadge);
             layoutProductStatusBadge = itemView.findViewById(R.id.layoutProductStatusBadge);
+            ratingBar = itemView.findViewById(R.id.tvProductRating);
+            btnWishlist = itemView.findViewById(R.id.btnWishlist);
+            btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
         }
     }
 }

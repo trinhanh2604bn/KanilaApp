@@ -25,7 +25,7 @@
             android:contentDescription="Back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_top_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/accent_dark" />
 
         <TextView
@@ -41,7 +41,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_top_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:layout_marginHorizontal="64dp" />
 
         <ImageView
@@ -54,7 +54,7 @@
             android:contentDescription="Save"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_top_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/accent_dark" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

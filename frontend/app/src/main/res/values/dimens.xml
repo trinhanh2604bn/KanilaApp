@@ -94,13 +94,17 @@
 
     <!-- Category Demand Card -->
     <dimen name="category_demand_card_height">160dp</dimen>
-    <dimen name="category_demand_card_grid_height">92dp</dimen>
+    <dimen name="category_demand_card_grid_height">72dp</dimen>
     <dimen name="category_demand_icon_circle_size">80dp</dimen>
     <dimen name="category_demand_icon_circle_grid_size">40dp</dimen>
     <dimen name="category_demand_icon_size">48dp</dimen>
     <dimen name="category_demand_icon_grid_size">24dp</dimen>
 
     <!-- Brand Logo Card -->
-    <dimen name="brand_logo_card_grid_height">68dp</dimen>
+    <dimen name="brand_logo_card_grid_height">64dp</dimen>
     <dimen name="brand_logo_card_radius">18dp</dimen>
+
+    <!-- Brand Listing Page -->
+    <dimen name="brand_card_height">120dp</dimen>
+    <dimen name="brand_card_favorite_icon_size">28dp</dimen>
 </resources>

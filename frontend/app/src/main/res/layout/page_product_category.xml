@@ -12,17 +12,10 @@
     <include
         android:id="@+id/includeTopBar"
         layout="@layout/view_app_top_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        />
 
     <!-- Search expanded container placeholder -->
-    <FrameLayout
-        android:id="@+id/containerSearchExpanded"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone">
-        <include layout="@layout/view_search_expanded_bar" />
-    </FrameLayout>
+
 
     <!-- B. Scrollable content area -->
     <androidx.core.widget.NestedScrollView
@@ -265,11 +258,17 @@
                     android:text="@string/category_section_demand" />
 
                 <TextView
+                    android:id="@+id/tvSeeAllDemand"
                     style="@style/Text.Kanila.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/action_see_all"
-                    android:textColor="@color/text_tertiary" />
+                    android:textColor="@color/text_tertiary"
+                    android:clickable="true"
+                    android:focusable="true"
+                    tools:ignore="TouchTargetSizeCheck"
+
+                    android:background="?attr/selectableItemBackground" />
             </LinearLayout>
 
             <HorizontalScrollView
@@ -346,70 +345,67 @@
                     android:text="@string/category_section_brand" />
 
                 <TextView
+                    android:id="@+id/tvSeeAllBrands"
                     style="@style/Text.Kanila.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/action_see_all"
-                    android:textColor="@color/text_tertiary" />
+                    android:textColor="@color/text_tertiary"
+                    android:clickable="true"
+                    android:focusable="true"
+                    tools:ignore="TouchTargetSizeCheck"
+                    android:background="?attr/selectableItemBackground" />
             </LinearLayout>
 
-            <HorizontalScrollView
-                android:id="@+id/hsvFeaturedBrands"
+            <LinearLayout
+                android:id="@+id/layoutFeaturedBrands"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/brand_logo_card_grid_height"
                 android:layout_marginTop="@dimen/spacing_m"
-                android:fillViewport="true"
-                android:overScrollMode="never"
-                android:scrollbars="none">
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:weightSum="5">
 
-                <LinearLayout
-                    android:id="@+id/layoutFeaturedBrands"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/brand_logo_card_grid_height"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal"
-                    android:weightSum="5">
+                <include
+                    android:id="@+id/cardBrandMaybelline"
+                    layout="@layout/view_brand_logo_card"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
 
-                    <include
-                        android:id="@+id/cardBrandMaybelline"
-                        layout="@layout/view_brand_logo_card"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1" />
+                <include
+                    android:id="@+id/cardBrandHuda"
+                    layout="@layout/view_brand_logo_card"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:layout_weight="1" />
 
-                    <include
-                        android:id="@+id/cardBrandHuda"
-                        layout="@layout/view_brand_logo_card"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/spacing_xs"
-                        android:layout_weight="1" />
+                <include
+                    android:id="@+id/cardBrandFwee"
+                    layout="@layout/view_brand_logo_card"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:layout_weight="1" />
 
-                    <include
-                        android:id="@+id/cardBrandFwee"
-                        layout="@layout/view_brand_logo_card"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/spacing_xs"
-                        android:layout_weight="1" />
+                <include
+                    android:id="@+id/cardBrandJudydoll"
+                    layout="@layout/view_brand_logo_card"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:layout_weight="1" />
 
-                    <include
-                        android:id="@+id/cardBrandJudydoll"
-                        layout="@layout/view_brand_logo_card"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/spacing_xs"
-                        android:layout_weight="1" />
+                <include
+                    android:id="@+id/cardBrandAnastasia"
+                    layout="@layout/view_brand_logo_card"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:layout_weight="1" />
 
-                    <include
-                        android:id="@+id/cardBrandAnastasia"
-                        layout="@layout/view_brand_logo_card"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/spacing_xs"
-                        android:layout_weight="1" />
-                </LinearLayout>
-            </HorizontalScrollView>
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
@@ -418,7 +414,6 @@
     <include
         android:id="@+id/includeBottomNavigation"
         layout="@layout/view_bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+         />
 
 </LinearLayout>

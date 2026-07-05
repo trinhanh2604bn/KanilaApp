@@ -60,4 +60,12 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="ShapeAppearance.Kanila.BottomPanel" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">@dimen/radius_l</item>
+        <item name="cornerSizeTopRight">@dimen/radius_l</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
 </resources>

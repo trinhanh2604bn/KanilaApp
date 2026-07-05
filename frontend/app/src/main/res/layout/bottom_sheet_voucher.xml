@@ -33,6 +33,7 @@
             android:textColor="@color/text_main" />
 
         <ImageView
+            android:id="@+id/ivCloseVoucherSheet"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_close"

@@ -42,7 +42,7 @@
             android:contentDescription="@string/content_desc_close"
             android:scaleType="centerInside"
             android:src="@drawable/ic_close"
-            app:tint="@color/accent_dark"
+            app:tint="@color/text_main"
             tools:ignore="TouchTargetSizeCheck" />
     </FrameLayout>
 
@@ -322,7 +322,7 @@
                 <EditText
                     android:id="@+id/edtMinPrice"
                     android:layout_width="0dp"
-                    android:layout_height="@dimen/input_height"
+                    android:layout_height="40dp"
                     android:layout_weight="1"
                     android:autofillHints="none"
                     android:background="@drawable/bg_input"
@@ -330,6 +330,8 @@
                     android:inputType="number"
                     android:paddingHorizontal="@dimen/spacing_m"
                     android:textColor="@color/text_main"
+                    tools:ignore="TouchTargetSizeCheck"
+
                     android:textSize="14sp" />
 
                 <TextView
@@ -342,7 +344,7 @@
                 <EditText
                     android:id="@+id/edtMaxPrice"
                     android:layout_width="0dp"
-                    android:layout_height="@dimen/input_height"
+                    android:layout_height="40dp"
                     android:layout_weight="1"
                     android:autofillHints="none"
                     android:background="@drawable/bg_input"
@@ -350,14 +352,15 @@
                     android:inputType="number"
                     android:paddingHorizontal="@dimen/spacing_m"
                     android:textColor="@color/text_main"
+                    tools:ignore="TouchTargetSizeCheck"
+
                     android:textSize="14sp" />
             </LinearLayout>
 
             <com.google.android.material.chip.ChipGroup
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_s"
-                app:chipSpacingHorizontal="32dp"
+                android:layout_marginTop="6dp"
                 app:chipSpacingVertical="@dimen/spacing_l"
                 app:singleSelection="true">
 
@@ -375,10 +378,6 @@
                     app:chipStrokeWidth="1dp"
                     app:checkedIconVisible="false"
                     app:closeIconVisible="false"
-                    app:chipStartPadding="0dp"
-                    app:chipEndPadding="0dp"
-                    app:textStartPadding="0dp"
-                    app:textEndPadding="0dp"
                     android:paddingStart="0dp"
                     android:paddingEnd="0dp" />
 
@@ -396,10 +395,6 @@
                     app:chipStrokeWidth="1dp"
                     app:checkedIconVisible="false"
                     app:closeIconVisible="false"
-                    app:chipStartPadding="0dp"
-                    app:chipEndPadding="0dp"
-                    app:textStartPadding="0dp"
-                    app:textEndPadding="0dp"
                     android:paddingStart="0dp"
                     android:paddingEnd="0dp" />
 
@@ -417,10 +412,6 @@
                     app:chipStrokeWidth="1dp"
                     app:checkedIconVisible="false"
                     app:closeIconVisible="false"
-                    app:chipStartPadding="0dp"
-                    app:chipEndPadding="0dp"
-                    app:textStartPadding="0dp"
-                    app:textEndPadding="0dp"
                     android:paddingStart="0dp"
                     android:paddingEnd="0dp" />
             </com.google.android.material.chip.ChipGroup>
@@ -438,7 +429,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_s"
-                app:chipSpacingHorizontal="28dp"
                 app:chipSpacingVertical="@dimen/spacing_l"
                 app:singleSelection="true">
 
@@ -517,7 +507,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_s"
                 app:chipSpacingHorizontal="@dimen/spacing_s"
-                app:chipSpacingVertical="@dimen/spacing_s">
+                app:chipSpacingVertical="0dp">
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipBrandFwee"

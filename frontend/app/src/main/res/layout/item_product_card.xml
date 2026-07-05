@@ -44,10 +44,11 @@
             android:layout_height="32dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Add to wishlist"
-            android:src="@drawable/ic_heart_outline"
+            android:src="@drawable/selector_post_like"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/text_main" />
+            tools:ignore="TouchTargetSizeCheck"
+            app:tint="@color/selector_post_action_tint" />
 
         <!-- Product Image -->
         <ImageView
@@ -146,6 +147,7 @@
             app:layout_constraintBottom_toBottomOf="@id/tvProductPrice"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvProductPrice"
+            tools:ignore="TouchTargetSizeCheck"
             app:tint="@color/text_main" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -44,6 +44,7 @@ import java.util.List;
 import ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
 import ui.commerce.CheckoutFragment;
+import ui.common.BottomNavigationHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         setupSearchBehavior();
+        setupBottomNavigation();
         setupBannerSlider();
         setupProductList();
 
@@ -169,6 +171,21 @@ public class MainActivity extends AppCompatActivity {
 
         setupHomeShortcuts();
         setupSocialSection();
+
+        setupHomeShortcuts();
+        setupSocialSection();
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationHelper.setup(findViewById(R.id.main), tabIndex -> {
+            if (tabIndex == BottomNavigationHelper.TAB_CATEGORY) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.category.ProductCategoryFragment())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+        BottomNavigationHelper.setSelectedTab(findViewById(R.id.main), BottomNavigationHelper.TAB_HOME);
     }
 
     private void setupProductList() {

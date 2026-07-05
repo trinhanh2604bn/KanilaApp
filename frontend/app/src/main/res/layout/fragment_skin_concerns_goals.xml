@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical">
+
+    <!-- Header Toolbar -->
+    <!-- Header Toolbar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="@color/background_main"
+        android:elevation="4dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="@string/app_name"
+            app:tint="@color/accent_dark"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="64dp"
+            android:fontFamily="@font/nunito_bold"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="Mối quan tâm &amp; Mục tiêu"
+            android:textColor="@color/accent_dark"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <ImageView
+            android:id="@+id/btnEdit"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_tick"
+            android:contentDescription="@string/app_name"
+            app:tint="@color/accent_dark"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingTop="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chọn vấn đề da và mục tiêu để nhận gợi ý chính xác hơn"
+                style="@style/Text.Kanila.Caption"
+                android:textColor="@color/text_main"
+                android:alpha="0.6" />
+
+            <!-- Section 1: Mối quan tâm hiện tại -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Mối quan tâm hiện tại"
+                style="@style/Text.Kanila.H3"
+                android:textColor="@color/accent_dark" />
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:columnCount="4">
+
+                <!-- Mụn (Selected) -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard.Selected">
+                    <FrameLayout style="@style/GridItemFrame">
+                        <LinearLayout style="@style/GridItemContent">
+                            <ImageView style="@style/GridItemIcon"
+                                android:src="@drawable/ic_skin_acne"
+                                android:background="@drawable/bg_circle"
+                                android:backgroundTint="@color/secondary"
+                                android:padding="8dp"
+                                app:tint="@color/button" />
+                            <TextView style="@style/GridItemLabel" android:text="Mụn" />
+                        </LinearLayout>
+                        <ImageView style="@style/GridItemTick" />
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Thâm (Selected) -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard.Selected">
+                    <FrameLayout style="@style/GridItemFrame">
+                        <LinearLayout style="@style/GridItemContent">
+                            <ImageView style="@style/GridItemIcon"
+                                android:src="@drawable/ic_skin_spots"
+                                android:background="@drawable/bg_circle"
+                                android:backgroundTint="@color/secondary"
+                                android:padding="8dp"
+                                app:tint="@color/button" />
+                            <TextView style="@style/GridItemLabel" android:text="Thâm" />
+                        </LinearLayout>
+                        <ImageView style="@style/GridItemTick" />
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Lỗ chân lông -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon"
+                            android:src="@drawable/ic_skin_pores"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/icon_bg_grey"
+                            android:padding="8dp" />
+                        <TextView style="@style/GridItemLabel" android:text="Lỗ chân lông" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Đỏ rát -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon"
+                            android:src="@drawable/ic_skin_redness"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/icon_bg_pink"
+                            android:padding="8dp"
+                            app:tint="@color/button" />
+                        <TextView style="@style/GridItemLabel" android:text="Đỏ rát" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Xỉn màu -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon"
+                            android:src="@drawable/ic_skin_dullness"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/icon_bg_yellow"
+                            android:padding="8dp"
+                            app:tint="@color/status_pending_text" />
+                        <TextView style="@style/GridItemLabel" android:text="Xỉn màu" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Thiếu ẩm (Selected) -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard.Selected">
+                    <FrameLayout style="@style/GridItemFrame">
+                        <LinearLayout style="@style/GridItemContent">
+                            <ImageView style="@style/GridItemIcon"
+                                android:src="@drawable/ic_drops"
+                                android:background="@drawable/bg_circle"
+                                android:backgroundTint="@color/secondary"
+                                android:padding="8dp"
+                                app:tint="@color/button" />
+                            <TextView style="@style/GridItemLabel" android:text="Thiếu ẩm" />
+                        </LinearLayout>
+                        <ImageView style="@style/GridItemTick" />
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Lão hóa -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon"
+                            android:src="@drawable/ic_skin_aging"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/icon_bg_blue"
+                            android:padding="8dp"
+                            app:tint="@color/status_preparing_text" />
+                        <TextView style="@style/GridItemLabel" android:text="Lão hóa" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Nhạy cảm -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon"
+                            android:src="@drawable/ic_skin_sensitive"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/icon_bg_green"
+                            android:padding="8dp"
+                            app:tint="@color/success" />
+                        <TextView style="@style/GridItemLabel" android:text="Nhạy cảm" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </GridLayout>
+
+            <!-- Section 2: Mục tiêu chăm sóc -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Mục tiêu chăm sóc"
+                style="@style/Text.Kanila.H3"
+                android:textColor="@color/accent_dark" />
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:columnCount="3">
+
+                <!-- Giảm mụn (Selected) -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard.Selected">
+                    <FrameLayout style="@style/GridItemFrame">
+                        <LinearLayout style="@style/GridItemContent">
+                            <ImageView style="@style/GridItemIcon"
+                                android:src="@drawable/ic_goal_target"
+                                android:background="@drawable/bg_circle"
+                                android:backgroundTint="@color/secondary"
+                                android:padding="8dp"
+                                app:tint="@color/button" />
+                            <TextView style="@style/GridItemLabel" android:text="Giảm mụn" />
+                        </LinearLayout>
+                        <ImageView style="@style/GridItemTick" />
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Mờ thâm (Selected) -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard.Selected">
+                    <FrameLayout style="@style/GridItemFrame">
+                        <LinearLayout style="@style/GridItemContent">
+                            <ImageView style="@style/GridItemIcon"
+                                android:src="@drawable/ic_goal_sparkle"
+                                android:background="@drawable/bg_circle"
+                                android:backgroundTint="@color/secondary"
+                                android:padding="8dp"
+                                app:tint="@color/button" />
+                            <TextView style="@style/GridItemLabel" android:text="Mờ thâm" />
+                        </LinearLayout>
+                        <ImageView style="@style/GridItemTick" />
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Phục hồi -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon"
+                            android:src="@drawable/ic_goal_recovery"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/icon_bg_blue"
+                            android:padding="8dp"
+                            app:tint="@color/status_preparing_text" />
+                        <TextView style="@style/GridItemLabel" android:text="Phục hồi" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Cấp ẩm (Selected) -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard.Selected">
+                    <FrameLayout style="@style/GridItemFrame">
+                        <LinearLayout style="@style/GridItemContent">
+                            <ImageView style="@style/GridItemIcon"
+                                android:src="@drawable/ic_drops_filled"
+                                android:background="@drawable/bg_circle"
+                                android:backgroundTint="@color/secondary"
+                                android:padding="8dp"
+                                app:tint="@color/button" />
+                            <TextView style="@style/GridItemLabel" android:text="Cấp ẩm" />
+                        </LinearLayout>
+                        <ImageView style="@style/GridItemTick" />
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Sáng da -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon"
+                            android:src="@drawable/ic_goal_sparkle"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/icon_bg_yellow"
+                            android:padding="8dp"
+                            app:tint="@color/status_pending_text" />
+                        <TextView style="@style/GridItemLabel" android:text="Sáng da" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Chống nắng -->
+                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon"
+                            android:src="@drawable/ic_sun"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/icon_bg_yellow"
+                            android:padding="8dp"
+                            app:tint="@color/status_pending_text" />
+                        <TextView style="@style/GridItemLabel" android:text="Chống nắng" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </GridLayout>
+
+            <!-- AI Recommendation Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="@color/background_sub"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeColor="@color/secondary"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@drawable/ic_chatbot"
+                        android:padding="8dp"
+                        android:background="@color/icon_bg_pink"
+                        app:shapeAppearanceOverlay="@style/CircleImage"
+                        app:tint="@color/button" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Kanila AI gợi ý"
+                            android:textColor="@color/accent_dark"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="bạn ưu tiên phục hồi + giảm mụn trong 4 tuần tới"
+                            android:textColor="@color/text_main"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUpdateProfile"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp"
+                style="@style/Widget.Kanila.Button.Primary"
+                android:text="Cập nhật hồ sơ" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

@@ -45,7 +45,7 @@ public class BrandPageFragment extends Fragment {
         filterBrands(getString(R.string.filter_all));
 
         BottomNavigationHelper.setup(view, tabIndex -> {
-            // Navigation handled by BottomNavigationHelper UI state
+            // Handle tab navigation
         });
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
     }
@@ -80,24 +80,18 @@ public class BrandPageFragment extends Fragment {
 
     private void setupMockData() {
         fullBrandList = new ArrayList<>();
-        // Hàn Quốc
         fullBrandList.add(new Brand("Fwee", R.drawable.brand_fee, true, getString(R.string.filter_korea)));
-        fullBrandList.add(new Brand("Peripera", R.drawable.img_hot, false, getString(R.string.filter_korea)));
-        // Âu Mỹ
         fullBrandList.add(new Brand("Maybelline", R.drawable.brand_mbl, false, getString(R.string.filter_western)));
         fullBrandList.add(new Brand("Nars", R.drawable.brand_nars, false, getString(R.string.filter_western)));
+        fullBrandList.add(new Brand("Judydoll", R.drawable.brand_jd, false, getString(R.string.filter_vietnam)));
         fullBrandList.add(new Brand("Anastasia", R.drawable.img_eyeshadow, false, getString(R.string.filter_western)));
         fullBrandList.add(new Brand("Hudabeauty", R.drawable.brand_hdbt, false, getString(R.string.filter_western)));
-        fullBrandList.add(new Brand("Rare Beauty", R.drawable.img_blush, false, getString(R.string.filter_western)));
-        fullBrandList.add(new Brand("MAC", R.drawable.img_lipstick, false, getString(R.string.filter_western)));
-        fullBrandList.add(new Brand("NYX", R.drawable.img_foudation, false, getString(R.string.filter_western)));
-        fullBrandList.add(new Brand("e.l.f.", R.drawable.img_new, false, getString(R.string.filter_western)));
+        fullBrandList.add(new Brand("Peripera", R.drawable.img_hot, false, getString(R.string.filter_korea)));
         fullBrandList.add(new Brand("Charlotte Tilbury", R.drawable.img_gift, false, getString(R.string.filter_western)));
-        // Việt Nam
-        fullBrandList.add(new Brand("Judydoll", R.drawable.brand_jd, false, getString(R.string.filter_vietnam)));
     }
 
     private void setupFilterLogic() {
+        if (layoutFilterChips == null) return;
         for (int i = 0; i < layoutFilterChips.getChildCount(); i++) {
             View child = layoutFilterChips.getChildAt(i);
             if (child instanceof TextView) {

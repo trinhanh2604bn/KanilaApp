@@ -13,9 +13,6 @@ import com.example.frontend.model.Brand;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Adapter dùng để hiển thị danh sách thương hiệu động (Dynamic List).
- */
 public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHolder> {
 
     private List<Brand> brandList;
@@ -40,7 +37,7 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHol
     public void onBindViewHolder(@NonNull BrandViewHolder holder, int position) {
         Brand brand = brandList.get(position);
         holder.ivBrandLogo.setImageResource(brand.getLogoRes());
-        holder.tvBrandName.setText(brand.getName());
+        holder.tvBrandName.setText(brand.getBrandName());
         holder.btnBrandFavorite.setSelected(brand.isFavorite());
 
         holder.btnBrandFavorite.setOnClickListener(v -> {

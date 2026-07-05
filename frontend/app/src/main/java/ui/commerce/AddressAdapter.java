@@ -72,6 +72,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
         TextView tvName;
         TextView tvPhone;
         TextView tvDetail;
+        TextView tvDefaultText;
         View layoutDefaultTag;
         View btnEdit;
 
@@ -82,6 +83,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
             tvName = itemView.findViewById(R.id.tvAddressName);
             tvPhone = itemView.findViewById(R.id.tvAddressPhone);
             tvDetail = itemView.findViewById(R.id.tvAddressDetail);
+            tvDefaultText = itemView.findViewById(R.id.tvAddressDefaultText);
             layoutDefaultTag = itemView.findViewById(R.id.layoutAddressDefaultTag);
             btnEdit = itemView.findViewById(R.id.btnAddressEdit);
         }
@@ -91,8 +93,14 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
             tvPhone.setText(address.getPhone());
             tvDetail.setText(address.getDetail());
 
-            // Default tag visibility is controlled only by isDefault state
-            layoutDefaultTag.setVisibility(address.isDefault() ? View.VISIBLE : View.GONE);
+            if (address.isDefault()) {
+                layoutDefaultTag.setVisibility(View.VISIBLE);
+                if (tvDefaultText != null) {
+                    tvDefaultText.setText("Mặc định");
+                }
+            } else {
+                layoutDefaultTag.setVisibility(View.GONE);
+            }
             
             // Selected state controls card background and radio indicator via selectors
             root.setSelected(isSelected);

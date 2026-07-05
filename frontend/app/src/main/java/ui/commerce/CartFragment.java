@@ -114,6 +114,11 @@ public class CartFragment extends Fragment {
             public void onQuantityChanged() {
                 updateSummary();
             }
+
+            @Override
+            public void onVariantClick(CartItem item, int position) {
+                showVariantBottomSheet(item, position);
+            }
         });
 
         setupSwipeToReveal();
@@ -242,6 +247,19 @@ public class CartFragment extends Fragment {
     private void showVoucherBottomSheet() {
         if (getContext() != null) {
             VoucherBottomSheetDialog dialog = new VoucherBottomSheetDialog(getContext());
+            dialog.show();
+        }
+    }
+
+    private void showVariantBottomSheet(CartItem item, int position) {
+        if (getContext() != null) {
+            VariantBottomSheetDialog dialog = new VariantBottomSheetDialog(getContext(), item);
+            dialog.setOnVariantAppliedListener((variant, quantity) -> {
+                item.setVariant(variant);
+                item.setQuantity(quantity);
+                adapter.notifyItemChanged(position);
+                updateSummary();
+            });
             dialog.show();
         }
     }

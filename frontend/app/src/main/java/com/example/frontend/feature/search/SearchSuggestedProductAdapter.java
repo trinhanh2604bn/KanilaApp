@@ -54,6 +54,7 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
         holder.tvProductName.setText(product.getName());
         holder.tvProductBrand.setText(product.getBrand());
         holder.tvProductPrice.setText(product.getPrice());
+        holder.btnWishlist.setSelected(product.isFavorite());
         holder.tvProductReviewCount.setText("(" + product.getReviewCount() + ")");
         
         try {
@@ -84,7 +85,11 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
         });
 
         if (holder.btnWishlist != null) {
-            holder.btnWishlist.setOnClickListener(v -> v.setSelected(!v.isSelected()));
+            holder.btnWishlist.setOnClickListener(v -> {
+                boolean newState = !product.isFavorite();
+                product.setFavorite(newState);
+                v.setSelected(newState);
+            });
         }
     }
 

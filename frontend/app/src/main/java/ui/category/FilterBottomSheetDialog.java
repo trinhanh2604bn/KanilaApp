@@ -52,6 +52,8 @@ public class FilterBottomSheetDialog extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         setupHeader(view);
+        setupSkinTypeChips(view);
+        setupToneChips(view);
         setupPriceQuickChips(view);
         setupActionButtons(view);
     }
@@ -60,6 +62,26 @@ public class FilterBottomSheetDialog extends BottomSheetDialogFragment {
         View btnClose = root.findViewById(R.id.btnCloseFilter);
         if (btnClose != null) {
             btnClose.setOnClickListener(v -> dismiss());
+        }
+    }
+
+    private void setupSkinTypeChips(View root) {
+        int[] ids = {R.id.chipSkinOily, R.id.chipSkinDry, R.id.chipSkinNormal, R.id.chipSkinSensitive};
+        for (int id : ids) {
+            View chip = root.findViewById(id);
+            if (chip != null) {
+                chip.setOnClickListener(v -> v.setSelected(!v.isSelected()));
+            }
+        }
+    }
+
+    private void setupToneChips(View root) {
+        int[] ids = {R.id.chipToneLight, R.id.chipToneMedium, R.id.chipToneDark};
+        for (int id : ids) {
+            View chip = root.findViewById(id);
+            if (chip != null) {
+                chip.setOnClickListener(v -> v.setSelected(!v.isSelected()));
+            }
         }
     }
 
@@ -112,6 +134,16 @@ public class FilterBottomSheetDialog extends BottomSheetDialogFragment {
 
         SwitchMaterial switchAr = root.findViewById(R.id.switchArOnly);
         if (switchAr != null) switchAr.setChecked(false);
+
+        // Reset custom chips
+        int[] customChipIds = {
+                R.id.chipSkinOily, R.id.chipSkinDry, R.id.chipSkinNormal, R.id.chipSkinSensitive,
+                R.id.chipToneLight, R.id.chipToneMedium, R.id.chipToneDark
+        };
+        for (int id : customChipIds) {
+            View v = root.findViewById(id);
+            if (v != null) v.setSelected(false);
+        }
 
         ViewGroup content = root.findViewById(R.id.layoutFilterContent);
         if (content != null) {

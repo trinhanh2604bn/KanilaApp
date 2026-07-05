@@ -143,6 +143,35 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         });
 
+        btnWishlist.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        // Setup bottom nav for Home Activity (as per layout)
+        View bottomNav = findViewById(R.id.layoutBottomNavigation);
+        if (bottomNav != null) {
+            ui.common.BottomNavigationHelper.setup(bottomNav, tabIndex -> {
+                if (tabIndex == ui.common.BottomNavigationHelper.TAB_ACCOUNT) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ui.account.AccountFragment())
+                            .addToBackStack(null)
+                            .commit();
+                } else if (tabIndex == ui.common.BottomNavigationHelper.TAB_CATEGORY) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ui.category.ProductCategoryFragment())
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
+            ui.common.BottomNavigationHelper.setSelectedTab(bottomNav, ui.common.BottomNavigationHelper.TAB_HOME);
+        }
+
+        setupHomeShortcuts();
+        setupSocialSection();
+
         setupHomeShortcuts();
         setupSocialSection();
     }
@@ -162,7 +191,10 @@ public class MainActivity extends AppCompatActivity {
     private void setupProductList() {
         productAdapter = new HomeProductAdapter();
         productAdapter.setOnProductClickListener(product -> {
-            Toast.makeText(this, "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                    .addToBackStack(null)
+                    .commit();
         });
 
         rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));

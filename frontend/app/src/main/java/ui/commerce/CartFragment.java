@@ -12,17 +12,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Canvas;
 import com.example.frontend.R;
-import com.example.frontend.model.CartItem;
-import com.example.frontend.model.Product;
+import com.example.frontend.data.model.cart.CartDto;
+import com.example.frontend.data.model.cart.CartItemDto;
+import com.example.frontend.feature.cart.CartViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class CartFragment extends Fragment {
 
@@ -32,7 +35,9 @@ public class CartFragment extends Fragment {
     private ImageView ivUseCoinsCheck;
     private TextView tvTotalValue, tvDiscountValue;
     private View btnContinueCheckout, btnChooseVoucher;
+    private View layoutCartLoading, layoutCartEmpty, layoutCartContent;
     
+    private CartViewModel viewModel;
     private boolean useCoins = false;
 
     @Nullable
@@ -45,6 +50,8 @@ public class CartFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
+        viewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        
         initViews(view);
         setupHeader(view);
         setupRecyclerView();
@@ -52,8 +59,9 @@ public class CartFragment extends Fragment {
         setupCoinToggle(view);
         setupActions();
         
-        loadCartItems();
-        updateSummary();
+        observeViewModel();
+        
+        viewModel.loadCart();
     }
 
     private void initViews(View view) {
@@ -65,9 +73,13 @@ public class CartFragment extends Fragment {
         btnContinueCheckout = view.findViewById(R.id.btnCartContinueCheckout);
         btnChooseVoucher = view.findViewById(R.id.btnCartChooseVoucher);
         
+        layoutCartLoading = view.findViewById(R.id.viewCartLoading);
+        layoutCartEmpty = view.findViewById(R.id.viewCartEmpty);
+        layoutCartContent = view.findViewById(R.id.layoutCartContent); // Assuming this wrapper exists or using scrollable part
+        
         TextView tvUseCoins = view.findViewById(R.id.tvCartUseCoins);
         if (tvUseCoins != null) {
-            tvUseCoins.setText("Sử dụng 100đ xu"); // Placeholder as requested
+            tvUseCoins.setText("Sử dụng Kanila xu"); 
         }
     }
 
@@ -76,24 +88,17 @@ public class CartFragment extends Fragment {
         if (header == null) return;
 
         TextView tvTitle = header.findViewById(R.id.tvTopBarTitle);
-        if (tvTitle != null) {
-            tvTitle.setText(R.string.cart);
-        }
+        if (tvTitle != null) tvTitle.setText(R.string.cart);
 
         View btnSearch = header.findViewById(R.id.btnTopBarSearch);
-        if (btnSearch != null) {
-            // Heart icon on the right if existing cart design supports it
-            if (btnSearch instanceof ImageView) {
-                ((ImageView) btnSearch).setImageResource(R.drawable.ic_heart_outline);
-            }
+        if (btnSearch instanceof ImageView) {
+            ((ImageView) btnSearch).setImageResource(R.drawable.ic_heart_outline);
         }
         
         View btnBack = header.findViewById(R.id.btnTopBarBack);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
-                if (getActivity() != null) {
-                    getActivity().getOnBackPressedDispatcher().onBackPressed();
-                }
+                if (getActivity() != null) getActivity().getOnBackPressedDispatcher().onBackPressed();
             });
         }
     }
@@ -105,23 +110,79 @@ public class CartFragment extends Fragment {
         
         adapter.setOnCartItemChangeListener(new CartAdapter.OnCartItemChangeListener() {
             @Override
-            public void onItemSelectedChanged() {
-                updateSelectAllState();
-                updateSummary();
+            public void onItemSelectedChanged(CartItemDto item, boolean isSelected) {
+                viewModel.toggleItemSelection(item.getId(), isSelected);
             }
 
             @Override
-            public void onQuantityChanged() {
-                updateSummary();
+            public void onQuantityChanged(CartItemDto item, int newQuantity) {
+                viewModel.updateItemQuantity(item.getId(), newQuantity);
             }
 
             @Override
-            public void onVariantClick(CartItem item, int position) {
-                showVariantBottomSheet(item, position);
+            public void onVariantClick(CartItemDto item, int position) {
+                // showVariantBottomSheet(item, position);
+            }
+
+            @Override
+            public void onDeleteClick(CartItemDto item, int position) {
+                viewModel.removeItem(item.getId());
             }
         });
 
         setupSwipeToReveal();
+    }
+
+    private void observeViewModel() {
+        viewModel.getCartResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            
+            switch (result.status) {
+                case LOADING:
+                    showLoading();
+                    break;
+                case SUCCESS:
+                    showContent(result.data);
+                    break;
+                case EMPTY:
+                    showEmpty();
+                    break;
+                case ERROR:
+                    showError(result.message);
+                    break;
+            }
+        });
+    }
+
+    private void showLoading() {
+        if (layoutCartLoading != null) layoutCartLoading.setVisibility(View.VISIBLE);
+        if (layoutCartEmpty != null) layoutCartEmpty.setVisibility(View.GONE);
+        if (rvCartItems != null) rvCartItems.setVisibility(View.GONE);
+    }
+
+    private void showContent(CartDto cart) {
+        if (layoutCartLoading != null) layoutCartLoading.setVisibility(View.GONE);
+        if (layoutCartEmpty != null) layoutCartEmpty.setVisibility(View.GONE);
+        if (rvCartItems != null) rvCartItems.setVisibility(View.VISIBLE);
+        
+        if (cart != null && cart.getItems() != null && !cart.getItems().isEmpty()) {
+            adapter.setItems(cart.getItems());
+            updateSummary(cart);
+            updateSelectAllState();
+        } else {
+            showEmpty();
+        }
+    }
+
+    private void showEmpty() {
+        if (layoutCartLoading != null) layoutCartLoading.setVisibility(View.GONE);
+        if (layoutCartEmpty != null) layoutCartEmpty.setVisibility(View.VISIBLE);
+        if (rvCartItems != null) rvCartItems.setVisibility(View.GONE);
+    }
+
+    private void showError(String message) {
+        if (layoutCartLoading != null) layoutCartLoading.setVisibility(View.GONE);
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     private void setupSwipeToReveal() {
@@ -133,18 +194,7 @@ public class CartFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                // Refresh the item so it doesn't get "deleted" from the UI
                 adapter.notifyItemChanged(viewHolder.getAdapterPosition());
-            }
-
-            @Override
-            public float getSwipeThreshold(@NonNull RecyclerView.ViewHolder viewHolder) {
-                return 0.7f; // Require a long swipe to trigger onSwiped (which we use to reset)
-            }
-
-            @Override
-            public float getSwipeEscapeVelocity(float defaultValue) {
-                return defaultValue * 5f; // Harder to trigger swipe-out by velocity
             }
 
             @Override
@@ -152,8 +202,6 @@ public class CartFragment extends Fragment {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     CartAdapter.CartViewHolder holder = (CartAdapter.CartViewHolder) viewHolder;
                     float actionWidth = 160 * recyclerView.getContext().getResources().getDisplayMetrics().density;
-                    
-                    // Clamp dX
                     float translationX = Math.max(-actionWidth, dX);
                     holder.layoutFront.setTranslationX(translationX);
                 } else {
@@ -164,15 +212,12 @@ public class CartFragment extends Fragment {
             @Override
             public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
                 super.clearView(recyclerView, viewHolder);
-                // The super call might not reset translation of our custom view if we didn't use getDefaultUIUtil()
-                // So we do it manually to ensure it snaps back when released (unless we implement stay-open)
                 CartAdapter.CartViewHolder holder = (CartAdapter.CartViewHolder) viewHolder;
                 holder.layoutFront.setTranslationX(0);
             }
         };
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
-        itemTouchHelper.attachToRecyclerView(rvCartItems);
+        new ItemTouchHelper(callback).attachToRecyclerView(rvCartItems);
     }
 
     private void setupSelectAll() {
@@ -180,30 +225,21 @@ public class CartFragment extends Fragment {
         if (layoutSelectAll != null) {
             layoutSelectAll.setOnClickListener(v -> {
                 cbSelectAll.setChecked(!cbSelectAll.isChecked());
-                selectAllItems(cbSelectAll.isChecked());
+                // selectAllItems(cbSelectAll.isChecked()); // Should call API
             });
         }
-        
-        cbSelectAll.setOnClickListener(v -> selectAllItems(cbSelectAll.isChecked()));
-    }
-
-    private void selectAllItems(boolean isSelected) {
-        for (CartItem item : adapter.getItems()) {
-            item.setSelected(isSelected);
-        }
-        adapter.notifyDataSetChanged();
-        updateSummary();
     }
 
     private void updateSelectAllState() {
         boolean allSelected = true;
-        for (CartItem item : adapter.getItems()) {
+        List<CartItemDto> items = adapter.getItems();
+        for (CartItemDto item : items) {
             if (!item.isSelected()) {
                 allSelected = false;
                 break;
             }
         }
-        cbSelectAll.setChecked(allSelected && !adapter.getItems().isEmpty());
+        cbSelectAll.setChecked(allSelected && !items.isEmpty());
     }
 
     private void setupCoinToggle(View view) {
@@ -212,29 +248,30 @@ public class CartFragment extends Fragment {
             layoutUseCoins.setOnClickListener(v -> {
                 useCoins = !useCoins;
                 ivUseCoinsCheck.setSelected(useCoins);
-                updateSummary();
+                updateSummaryLocal();
             });
         }
-        ivUseCoinsCheck.setSelected(useCoins);
     }
 
     private void setupActions() {
-        btnChooseVoucher.setOnClickListener(v -> showVoucherBottomSheet());
+        btnChooseVoucher.setOnClickListener(v -> {
+            if (getContext() != null) new VoucherBottomSheetDialog(getContext()).show();
+        });
 
         btnContinueCheckout.setOnClickListener(v -> {
-            List<CartItem> selectedItems = new ArrayList<>();
-            for (CartItem item : adapter.getItems()) {
+            boolean hasSelection = false;
+            for (CartItemDto item : adapter.getItems()) {
                 if (item.isSelected()) {
-                    selectedItems.add(item);
+                    hasSelection = true;
+                    break;
                 }
             }
 
-            if (selectedItems.isEmpty()) {
+            if (!hasSelection) {
                 Toast.makeText(getContext(), "Vui lòng chọn ít nhất 1 sản phẩm", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Navigate to CheckoutFragment
             if (getActivity() != null) {
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main, new CheckoutFragment())
@@ -244,68 +281,16 @@ public class CartFragment extends Fragment {
         });
     }
 
-    private void showVoucherBottomSheet() {
-        if (getContext() != null) {
-            VoucherBottomSheetDialog dialog = new VoucherBottomSheetDialog(getContext());
-            dialog.show();
-        }
+    private void updateSummary(CartDto cart) {
+        tvTotalValue.setText(formatPrice(cart.getTotalAmount()));
+        tvDiscountValue.setText("-" + formatPrice(cart.getDiscountAmount()) + ", miễn phí vận chuyển");
     }
 
-    private void showVariantBottomSheet(CartItem item, int position) {
-        if (getContext() != null) {
-            VariantBottomSheetDialog dialog = new VariantBottomSheetDialog(getContext(), item);
-            dialog.setOnVariantAppliedListener((variant, quantity) -> {
-                item.setVariant(variant);
-                item.setQuantity(quantity);
-                adapter.notifyItemChanged(position);
-                updateSummary();
-            });
-            dialog.show();
-        }
+    private void updateSummaryLocal() {
+        // Fallback or local calculation if needed before API response
     }
 
-    private void loadCartItems() {
-        List<CartItem> items = new ArrayList<>();
-        Product p1 = new Product("1", "Kanila", "Kanila Sweet Lip For You", "245.000đ", "5.0", "100", R.drawable.ic_lipstick, "New");
-        items.add(new CartItem(p1, "#001 Rose", 1, true));
-        items.add(new CartItem(p1, "#002 Pink", 1, true));
-        items.add(new CartItem(p1, "#003 Red", 1, false));
-        items.add(new CartItem(p1, "#004 Coral", 1, false));
-        items.add(new CartItem(p1, "#003 Red", 1, false));
-        items.add(new CartItem(p1, "#004 Coral", 1, false));
-        
-        adapter.setItems(items);
-        updateSelectAllState();
-    }
-
-    private void updateSummary() {
-        long total = 0;
-        int selectedCount = 0;
-        for (CartItem item : adapter.getItems()) {
-            if (item.isSelected()) {
-                // Simplified price parsing for demo
-                String priceStr = item.getProduct().getPrice().replace(".", "").replace("đ", "");
-                long price = Long.parseLong(priceStr);
-                total += price * item.getQuantity();
-                selectedCount++;
-            }
-        }
-
-        if (useCoins) {
-            total -= 100;
-        }
-        
-        // Apply a fake discount if any item is selected
-        long discount = selectedCount > 0 ? 100000 : 0;
-        total -= discount;
-        
-        if (total < 0) total = 0;
-
-        tvTotalValue.setText(formatPrice(total));
-        tvDiscountValue.setText("-" + formatPrice(discount) + ", miễn phí vận chuyển");
-    }
-
-    private String formatPrice(long price) {
-        return String.format("%,d", price).replace(',', '.') + "đ";
+    private String formatPrice(double price) {
+        return String.format(Locale.US, "%,.0fđ", price).replace(",", ".");
     }
 }

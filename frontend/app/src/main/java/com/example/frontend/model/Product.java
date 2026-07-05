@@ -17,13 +17,13 @@ public class Product {
     private String slug;
     
     @SerializedName("brandId")
-    private String brandId;
+    private Brand brand;
     
-    @SerializedName("brandName") // Often populated or added in controllers
+    @SerializedName("brandName")
     private String brandName;
     
     @SerializedName("categoryId")
-    private String categoryId;
+    private Category category;
     
     @SerializedName("price")
     private double price;
@@ -76,15 +76,10 @@ public class Product {
     @SerializedName("hasAr")
     private boolean hasAr;
 
-    @SerializedName("isFavorite")
-    private boolean isFavorite;
+    private int imageResource;
 
     @SerializedName("shades")
     private List<Shade> shades;
-
-    // UI-only fields
-    private int imageResource;
-    private String badgeText;
 
     public static class Shade {
         @SerializedName("shadeName")
@@ -98,39 +93,14 @@ public class Product {
 
     public Product() {}
 
-    // Constructor to support old sample data creation with subcategory
-    public Product(String id, String brandName, String productName, String priceStr, String averageRating, String reviewCount, int imageResource, String badgeText, String subcategory) {
-        this(id, brandName, productName, priceStr, averageRating, reviewCount, imageResource, badgeText);
-        this.subcategory = subcategory;
-    }
-
-    // Constructor to support old sample data creation
-    public Product(String id, String brandName, String productName, String priceStr, String averageRating, String reviewCount, int imageResource, String badgeText) {
-        this.id = id;
-        this.brandName = brandName;
-        this.productName = productName;
-        try {
-            this.price = Double.parseDouble(priceStr.replaceAll("[^0-9.]", ""));
-        } catch (Exception e) {
-            this.price = 0;
-        }
-        try {
-            this.averageRating = Double.parseDouble(averageRating);
-        } catch (Exception e) {
-            this.averageRating = 0;
-        }
-        this.reviewCount = reviewCount;
-        this.imageResource = imageResource;
-        this.badgeText = badgeText;
-    }
-
-    // Getters for compatibility with existing UI code
     public String getId() { return id; }
     
     public String getName() { return productName != null ? productName : ""; }
     
     public String getBrand() { 
-        return brandName != null ? brandName : (brandId != null ? brandId : ""); 
+        if (brandName != null && !brandName.isEmpty()) return brandName;
+        if (brand != null && brand.getBrandName() != null) return brand.getBrandName();
+        return "";
     }
     
     public String getPrice() { 
@@ -149,24 +119,21 @@ public class Product {
     
     public int getImageResource() { return imageResource; }
 
+    public void setImageResource(int imageResource) { this.imageResource = imageResource; }
+
     public String getSubcategory() { return subcategory != null ? subcategory : ""; }
 
     public boolean hasAr() { return hasAr; }
 
     public void setHasAr(boolean hasAr) { this.hasAr = hasAr; }
-
-    public boolean isFavorite() { return isFavorite; }
-
-    public void setFavorite(boolean favorite) { isFavorite = favorite; }
     
     public String getBadgeText() { 
-        if (badgeText != null && !badgeText.isEmpty()) return badgeText;
         if (isBestSeller) return "Best Seller";
         return "";
     }
 
-    // Full schema getters
-    public String getProductCode() { return productCode; }
+    public Brand getBrandObject() { return brand; }
+    public Category getCategoryObject() { return category; }
     public String getSlug() { return slug; }
     public double getPriceValue() { return price; }
     public double getAverageRatingValue() { return averageRating; }

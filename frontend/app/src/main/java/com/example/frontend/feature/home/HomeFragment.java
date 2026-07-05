@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.frontend.R;
-import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.model.HomeBannerItem;
 import com.example.frontend.model.HomeShortcutItem;
 import com.example.frontend.model.Product;
@@ -70,8 +69,8 @@ public class HomeFragment extends Fragment {
     private void setupProductList() {
         productAdapter = new HomeProductAdapter();
         productAdapter.setOnProductClickListener(product -> {
-            Toast.makeText(requireContext(), "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
             // Navigate to Product Detail
+            Toast.makeText(requireContext(), "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
         });
         
         rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -121,65 +120,22 @@ public class HomeFragment extends Fragment {
     private void setupBannerSlider() {
         bannerAdapter = new HomeBannerAdapter();
         bannerAdapter.setOnBannerClickListener(item -> {
-            Toast.makeText(requireContext(), "Click: " + item.getTitle(), Toast.LENGTH_SHORT).show();
             // Handle deeplink navigation here
         });
 
         viewPagerBanner.setAdapter(bannerAdapter);
 
-        // Sample Data
-        List<HomeBannerItem> sampleBanners = new ArrayList<>();
-        sampleBanners.add(new HomeBannerItem(
-                "1",
-                "Khám phá vẻ đẹp cùng Kanila",
-                "Gợi ý chuẩn da\nRạng ngời mỗi ngày",
-                "Sản phẩm chính hãng • Gợi ý cá nhân hóa",
-                "Khám phá ngay",
-                "", // No URL for now
-                R.drawable.bg_reward, // Using an existing drawable as fallback
-                "category",
-                "skincare",
-                true,
-                1
-        ));
-        sampleBanners.add(new HomeBannerItem(
-                "2",
-                "Ưu đãi độc quyền",
-                "Deal hời cho nàng\nTự tin tỏa sáng",
-                "Giảm đến 50% cho các sản phẩm best-seller",
-                "Săn deal ngay",
-                "",
-                R.drawable.bg_voucher,
-                "promotion",
-                "summer_sale",
-                true,
-                2
-        ));
-        sampleBanners.add(new HomeBannerItem(
-                "3",
-                "Thành viên mới",
-                "Quà tặng chào mừng\nĐặc quyền Kanila",
-                "Nhận ngay voucher 50k cho đơn đầu tiên",
-                "Nhận quà ngay",
-                "",
-                R.drawable.bg_reward,
-                "auth",
-                "register",
-                true,
-                3
-        ));
+        // Banners could be moved to ViewModel and loaded via API if supported
+        List<HomeBannerItem> banners = new ArrayList<>();
+        banners.add(new HomeBannerItem("1", "Kanila", "Gợi ý chuẩn da", "Sản phẩm chính hãng", "Khám phá", "", R.drawable.bg_reward, "category", "skincare", true, 1));
+        banners.add(new HomeBannerItem("2", "Ưu đãi", "Deal hời cho nàng", "Giảm đến 50%", "Săn deal", "", R.drawable.bg_voucher, "promotion", "sale", true, 2));
 
-        bannerAdapter.setItems(sampleBanners);
-
-        // ViewPager2 doesn't have a direct "counter" view inside it, 
-        // but we handle it inside the item layout (item_home_banner.xml).
-        // The adapter already handles updating the counter text in onBindViewHolder.
+        bannerAdapter.setItems(banners);
     }
 
     private void setupHomeShortcuts() {
         shortcutAdapter = new HomeShortcutAdapter();
         shortcutAdapter.setOnShortcutClickListener(item -> {
-            Toast.makeText(requireContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
             // Handle navigation based on item.getDestinationType()
         });
 
@@ -187,13 +143,9 @@ public class HomeFragment extends Fragment {
 
         List<HomeShortcutItem> shortcuts = new ArrayList<>();
         shortcuts.add(new HomeShortcutItem("orders", "Đơn hàng", R.drawable.ic_shortcut_order, "orders", "", false, false));
-        shortcuts.add(new HomeShortcutItem("voucher", "Voucher", R.drawable.ic_shortcut_voucher, "voucher", "", false, true)); // Example badge
-        shortcuts.add(new HomeShortcutItem("ar", "AR", R.drawable.ic_shortcut_ar, "ar_try_on", "", false, false));
-        shortcuts.add(new HomeShortcutItem("kanila_beauty", "Kanila Beauty", R.drawable.ic_shortcut_kanila_beauty, "beauty", "", false, false));
-        shortcuts.add(new HomeShortcutItem("creator", "Creator", R.drawable.ic_shortcut_creator, "creator", "", false, false));
-        shortcuts.add(new HomeShortcutItem("royalty", "Royalty", R.drawable.ic_shortcut_royalty, "loyalty", "", false, false));
-        shortcuts.add(new HomeShortcutItem("help", "Trợ giúp", R.drawable.ic_shortcut_help, "support", "", false, false));
-        shortcuts.add(new HomeShortcutItem("policy", "Chính sách", R.drawable.ic_shortcut_policy, "policy", "", false, false));
+        shortcuts.add(new HomeShortcutItem("voucher", "Voucher", R.drawable.ic_shortcut_voucher, "voucher", "", false, false));
+        shortcuts.add(new HomeShortcutItem("ar", "AR Try-on", R.drawable.ic_shortcut_ar, "ar_try_on", "", false, false));
+        shortcuts.add(new HomeShortcutItem("support", "Hỗ trợ", R.drawable.ic_shortcut_help, "support", "", false, false));
 
         shortcutAdapter.setItems(shortcuts);
     }

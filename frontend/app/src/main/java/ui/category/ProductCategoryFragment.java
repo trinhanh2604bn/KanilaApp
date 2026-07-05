@@ -10,18 +10,27 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
 import com.example.frontend.R;
+import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.model.Brand;
+import com.example.frontend.model.Category;
 import com.example.frontend.model.HomeBannerItem;
 
+<<<<<<< HEAD
+=======
 import ui.category.BrandPageFragment;
 
+>>>>>>> origin/main
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +43,8 @@ public class ProductCategoryFragment extends Fragment {
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
     private final List<View> indicators = new ArrayList<>();
+    
+    private CatalogViewModel viewModel;
 
     @Nullable
     @Override
@@ -45,32 +56,34 @@ public class ProductCategoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Setup Top Bar
+        viewModel = new ViewModelProvider(this).get(CatalogViewModel.class);
+
         setupTopBar(view);
+<<<<<<< HEAD
+=======
 
         // 2. Bind Category Grid
         bindCategoryCards(view);
 
         // 3. Setup Hero Slider
+>>>>>>> origin/main
         setupHeroSlider(view);
+        
+        observeViewModel(view);
 
-        // 4. Bind Demand Section
-        bindDemandCards(view);
-
-        // 5. Bind Brand Section
-        bindBrandCards(view);
-
-        // 6. Setup Bottom Navigation
         BottomNavigationHelper.setup(view, tabIndex -> {
+<<<<<<< HEAD
+            // Handle cross-tab navigation if needed
+=======
             if (tabIndex == BottomNavigationHelper.TAB_HOME) {
                 if (getActivity() != null) {
                     getActivity().getSupportFragmentManager().popBackStack();
                 }
             }
+>>>>>>> origin/main
         });
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
 
-        // 7. Navigation to Brand Page
         TextView tvSeeAllBrands = view.findViewById(R.id.tvSeeAllBrands);
         if (tvSeeAllBrands != null) {
             tvSeeAllBrands.setOnClickListener(v -> {
@@ -87,10 +100,26 @@ public class ProductCategoryFragment extends Fragment {
     private void setupTopBar(View root) {
         View topBar = root.findViewById(R.id.includeTopBar);
         if (topBar == null) return;
-
         TextView tvTitle = topBar.findViewById(R.id.tvTopBarTitle);
         if (tvTitle != null) tvTitle.setText(R.string.top_bar_category_title);
+    }
 
+<<<<<<< HEAD
+    private void observeViewModel(View root) {
+        viewModel.getCategories().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                bindCategoryCards(root, result.data);
+            }
+        });
+
+        viewModel.getBrands().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                bindBrandCards(root, result.data);
+            }
+        });
+=======
         ImageButton btnBack = topBar.findViewById(R.id.btnTopBarBack);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
@@ -101,6 +130,7 @@ public class ProductCategoryFragment extends Fragment {
         }
 
         ImageButton btnSearch = topBar.findViewById(R.id.btnTopBarSearch);
+>>>>>>> origin/main
     }
 
     private void setupHeroSlider(View root) {
@@ -116,7 +146,6 @@ public class ProductCategoryFragment extends Fragment {
         vpCategoryBanner.setAdapter(bannerAdapter);
 
         List<HomeBannerItem> items = new ArrayList<>();
-        // Using existing slide images that likely match the prompt's content
         items.add(new HomeBannerItem("1", "", "", "", "Mua ngay", null, R.drawable.img_cate_list_1, "promotion", "1", true, 1));
         items.add(new HomeBannerItem("2", "", "", "", "Khám phá", null, R.drawable.img_cate_list_2, "promotion", "2", true, 2));
         items.add(new HomeBannerItem("3", "", "", "", "Xem thêm", null, R.drawable.img_cate_list_3, "promotion", "3", true, 3));
@@ -135,11 +164,8 @@ public class ProductCategoryFragment extends Fragment {
                 super.onPageSelected(position);
                 int realPos = position % items.size();
                 updateIndicators(realPos);
-                
                 autoSlideHandler.removeCallbacks(autoSlideRunnable);
-                if (autoSlideRunnable != null) {
-                    autoSlideHandler.postDelayed(autoSlideRunnable, 4000);
-                }
+                if (autoSlideRunnable != null) autoSlideHandler.postDelayed(autoSlideRunnable, 4000);
             }
         });
     }
@@ -148,29 +174,76 @@ public class ProductCategoryFragment extends Fragment {
         for (int i = 0; i < indicators.size(); i++) {
             View indicator = indicators.get(i);
             if (indicator != null) {
-                if (i == position) {
-                    indicator.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.accent_dark)));
-                } else {
-                    indicator.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.border_divider)));
-                }
+                int color = (i == position) ? R.color.accent_dark : R.color.border_divider;
+                indicator.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), color)));
             }
         }
     }
 
     private void setupAutoSlide(int size) {
         if (size <= 1) return;
-
-        autoSlideRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (vpCategoryBanner == null) return;
-                int currentItem = vpCategoryBanner.getCurrentItem();
-                vpCategoryBanner.setCurrentItem(currentItem + 1, true);
-                autoSlideHandler.postDelayed(this, 4000);
+        autoSlideRunnable = () -> {
+            if (vpCategoryBanner != null) {
+                vpCategoryBanner.setCurrentItem(vpCategoryBanner.getCurrentItem() + 1, true);
+                autoSlideHandler.postDelayed(autoSlideRunnable, 4000);
             }
         };
-
         autoSlideHandler.postDelayed(autoSlideRunnable, 4000);
+    }
+
+    private void bindCategoryCards(View root, List<Category> categories) {
+        if (categories == null || categories.isEmpty()) return;
+
+        int[] cardIds = {
+            R.id.cardCategoryFace, R.id.cardCategoryLips, R.id.cardCategoryEyes,
+            R.id.cardCategoryCheeks, R.id.cardCategoryGift, R.id.cardCategoryNew,
+            R.id.cardCategoryHot, R.id.cardCategoryBrushes, R.id.cardCategoryAR
+        };
+
+        for (int i = 0; i < Math.min(categories.size(), cardIds.length); i++) {
+            Category category = categories.get(i);
+            View card = root.findViewById(cardIds[i]);
+            if (card != null) {
+                TextView titleView = card.findViewById(R.id.tvCategoryName);
+                if (titleView != null) titleView.setText(category.getCategoryName());
+                
+                ImageView image = card.findViewById(R.id.ivCategoryProductImage);
+                // Assume category might have an icon/image URL in future, or use dynamic mapping
+                // Glide.with(this).load(category.getImageUrl()).into(image);
+
+                card.setOnClickListener(v -> {
+                    // Navigate to category details
+                    Toast.makeText(getContext(), category.getCategoryName(), Toast.LENGTH_SHORT).show();
+                });
+            }
+        }
+    }
+
+    private void bindBrandCards(View root, List<Brand> brands) {
+        if (brands == null || brands.isEmpty()) return;
+
+        int[] brandCardIds = {
+            R.id.cardBrandMaybelline, R.id.cardBrandHuda, R.id.cardBrandFwee,
+            R.id.cardBrandJudydoll, R.id.cardBrandAnastasia
+        };
+
+        for (int i = 0; i < Math.min(brands.size(), brandCardIds.length); i++) {
+            Brand brand = brands.get(i);
+            View card = root.findViewById(brandCardIds[i]);
+            if (card != null) {
+                ImageView logo = card.findViewById(R.id.ivBrandLogo);
+                if (logo != null) {
+                    Glide.with(this)
+                            .load(brand.getLogoUrl())
+                            .placeholder(R.drawable.ic_product)
+                            .into(logo);
+                }
+                card.setOnClickListener(v -> {
+                    // Navigate to brand details
+                    Toast.makeText(getContext(), brand.getBrandName(), Toast.LENGTH_SHORT).show();
+                });
+            }
+        }
     }
 
     @Override
@@ -178,6 +251,8 @@ public class ProductCategoryFragment extends Fragment {
         super.onDestroyView();
         autoSlideHandler.removeCallbacks(autoSlideRunnable);
     }
+<<<<<<< HEAD
+=======
 
     private void bindCategoryCards(View root) {
         bindCategoryCard(root.findViewById(R.id.cardCategoryFace), R.drawable.ic_face, R.drawable.img_foudation, "Face");
@@ -251,4 +326,5 @@ public class ProductCategoryFragment extends Fragment {
             card.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), bgColorRes)));
         }
     }
+>>>>>>> origin/main
 }

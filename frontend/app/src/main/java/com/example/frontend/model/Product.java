@@ -70,6 +70,9 @@ public class Product {
     @SerializedName("reviewCount")
     private String reviewCount;
 
+    @SerializedName("subcategory")
+    private String subcategory;
+
     @SerializedName("shades")
     private List<Shade> shades;
 
@@ -88,6 +91,12 @@ public class Product {
     }
 
     public Product() {}
+
+    // Constructor to support old sample data creation with subcategory
+    public Product(String id, String brandName, String productName, String priceStr, String averageRating, String reviewCount, int imageResource, String badgeText, String subcategory) {
+        this(id, brandName, productName, priceStr, averageRating, reviewCount, imageResource, badgeText);
+        this.subcategory = subcategory;
+    }
 
     // Constructor to support old sample data creation
     public Product(String id, String brandName, String productName, String priceStr, String averageRating, String reviewCount, int imageResource, String badgeText) {
@@ -133,6 +142,8 @@ public class Product {
     public String getImageUrl() { return imageUrl; }
     
     public int getImageResource() { return imageResource; }
+
+    public String getSubcategory() { return subcategory != null ? subcategory : ""; }
     
     public String getBadgeText() { 
         if (badgeText != null && !badgeText.isEmpty()) return badgeText;

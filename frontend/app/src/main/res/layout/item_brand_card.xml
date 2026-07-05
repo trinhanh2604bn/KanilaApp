@@ -22,8 +22,8 @@
         android:contentDescription="@string/app_name"
 
         android:scaleType="centerInside"
-        android:src="@drawable/selector_heart_brand"
-        app:tint="@color/primary" />
+        android:src="@drawable/selector_post_like"
+        app:tint="@color/selector_post_action_tint" />
 
         <ImageView
             android:id="@+id/ivBrandLogo"

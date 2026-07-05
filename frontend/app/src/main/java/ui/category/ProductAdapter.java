@@ -1,4 +1,4 @@
-package com.example.frontend.feature.search;
+package ui.category;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,21 +7,16 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.model.Product;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bumptech.glide.Glide;
-
-public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSuggestedProductAdapter.ViewHolder> {
-
-    private List<Product> productList = new ArrayList<>();
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
+    private List<Product> products = new ArrayList<>();
     private OnProductClickListener listener;
 
     public interface OnProductClickListener {
@@ -32,8 +27,8 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
         this.listener = listener;
     }
 
-    public void setItems(List<Product> items) {
-        this.productList = items;
+    public void setProducts(List<Product> products) {
+        this.products = products;
         notifyDataSetChanged();
     }
 
@@ -46,38 +41,45 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Product product = productList.get(position);
-        holder.tvProductName.setText(product.getName());
-        holder.tvProductBrand.setText(product.getBrand());
-        holder.tvProductPrice.setText(product.getPrice());
-        holder.tvProductReviewCount.setText("(" + product.getReviewCount() + ")");
+        Product product = products.get(position);
         
+        holder.tvBrand.setText(product.getBrand());
+        holder.tvName.setText(product.getName());
+        holder.tvPrice.setText(product.getPrice());
         try {
             holder.ratingBar.setRating(Float.parseFloat(product.getRating()));
         } catch (Exception e) {
             holder.ratingBar.setRating(0);
         }
+        holder.tvReviewCount.setText("(" + product.getReviewCount() + ")");
 
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
-            Glide.with(holder.ivProductImage.getContext())
+            Glide.with(holder.ivImage.getContext())
                     .load(product.getImageUrl())
                     .placeholder(R.drawable.ic_product)
                     .error(R.drawable.ic_product)
-                    .into(holder.ivProductImage);
+                    .into(holder.ivImage);
         } else {
-            holder.ivProductImage.setImageResource(product.getImageResource() != 0 ? product.getImageResource() : R.drawable.ic_product);
+            holder.ivImage.setImageResource(product.getImageResource() != 0 ? product.getImageResource() : R.drawable.ic_product);
         }
-        
-        if (product.getBadgeText() != null && !product.getBadgeText().isEmpty()) {
-            holder.tvProductBadge.setText(product.getBadgeText());
-            holder.layoutProductStatusBadge.setVisibility(View.VISIBLE);
+
+        String badge = product.getBadgeText();
+        if (badge != null && !badge.isEmpty()) {
+            holder.tvBadge.setText(badge);
+            holder.layoutBadge.setVisibility(View.VISIBLE);
         } else {
-            holder.layoutProductStatusBadge.setVisibility(View.GONE);
+            holder.layoutBadge.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onProductClick(product);
         });
+        
+        if (holder.btnAddToCart != null) {
+            holder.btnAddToCart.setOnClickListener(v -> {
+                // TODO: Add to cart logic
+            });
+        }
 
         if (holder.btnWishlist != null) {
             holder.btnWishlist.setOnClickListener(v -> v.setSelected(!v.isSelected()));
@@ -86,28 +88,28 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
 
     @Override
     public int getItemCount() {
-        return productList.size();
+        return products.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivProductImage;
-        TextView tvProductName, tvProductBrand, tvProductPrice, tvProductReviewCount, tvProductBadge;
+        ImageView ivImage;
+        TextView tvName, tvBrand, tvPrice, tvReviewCount, tvBadge;
         RatingBar ratingBar;
-        View layoutProductStatusBadge;
-        ImageButton btnWishlist, btnAddToCart;
+        View layoutBadge;
+        ImageButton btnAddToCart, btnWishlist;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivProductImage = itemView.findViewById(R.id.ivProductImage);
-            tvProductName = itemView.findViewById(R.id.tvProductName);
-            tvProductBrand = itemView.findViewById(R.id.tvProductBrand);
-            tvProductPrice = itemView.findViewById(R.id.tvProductPrice);
-            tvProductReviewCount = itemView.findViewById(R.id.tvProductReviewCount);
-            tvProductBadge = itemView.findViewById(R.id.tvProductBadge);
-            layoutProductStatusBadge = itemView.findViewById(R.id.layoutProductStatusBadge);
+            ivImage = itemView.findViewById(R.id.ivProductImage);
+            tvName = itemView.findViewById(R.id.tvProductName);
+            tvBrand = itemView.findViewById(R.id.tvProductBrand);
+            tvPrice = itemView.findViewById(R.id.tvProductPrice);
             ratingBar = itemView.findViewById(R.id.tvProductRating);
-            btnWishlist = itemView.findViewById(R.id.btnWishlist);
+            tvReviewCount = itemView.findViewById(R.id.tvProductReviewCount);
+            tvBadge = itemView.findViewById(R.id.tvProductBadge);
+            layoutBadge = itemView.findViewById(R.id.layoutProductStatusBadge);
             btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
+            btnWishlist = itemView.findViewById(R.id.btnWishlist);
         }
     }
 }

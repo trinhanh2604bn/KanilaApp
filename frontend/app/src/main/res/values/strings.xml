@@ -67,6 +67,7 @@
     <string name="category_section_demand">Mua theo nhu cầu</string>
     <string name="category_section_brand">Thương hiệu nổi bật</string>
     <string name="action_see_all">Xem tất cả ></string>
+    <string name="action_view_all">Xem tất cả</string>
     <string name="category_lips">Lips</string>
     <string name="category_eyes">Eyes</string>
     <string name="category_cheeks">Cheeks</string>
@@ -88,6 +89,17 @@
     <string name="clear_history_content_desc">Xóa lịch sử</string>
     <string name="search_no_result_title">Không tìm thấy sản phẩm phù hợp</string>
     <string name="search_no_result_cta">Hỏi Kanila AI tìm giúp</string>
+
+    <string name="search_recommend_title">Đề xuất dành cho bạn</string>
+    <string name="search_quick_discovery_title">Khám phá nhanh</string>
+    <string name="discovery_oily_skin_title">Da dầu mụn</string>
+    <string name="discovery_oily_skin_desc">Giải pháp kiềm dầu, giảm mụn</string>
+    <string name="discovery_daily_makeup_title">Makeup hằng ngày</string>
+    <string name="discovery_daily_makeup_desc">Tự nhiên, tươi tắn mỗi ngày</string>
+    <string name="discovery_under_300k_title">Under 300K</string>
+    <string name="discovery_under_300k_desc">Sản phẩm chất lượng giá tốt</string>
+    <string name="discovery_new_arrivals_title">Hàng mới về</string>
+    <string name="discovery_new_arrivals_desc">Cập nhật sản phẩm mới mỗi tuần</string>
 
     <string name="home_social_reels_title">Kanila Reels</string>
     <string name="home_social_challenge_title">Kanila Challenge</string>

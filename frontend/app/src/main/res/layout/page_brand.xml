@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutBrandPage"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical">
+
+    <!-- A. Fixed top area -->
+    <include
+        android:id="@+id/includeBrandTopBar"
+        layout="@layout/view_app_top_bar" />
+
+    <!-- Search bar container, toggled by Java -->
+    <FrameLayout
+        android:id="@+id/containerBrandSearchBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/spacing_l"
+        android:paddingBottom="6dp"
+        android:visibility="gone">
+        <include layout="@layout/view_search_bar" />
+    </FrameLayout>
+
+    <!-- B. Scrollable content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollBrandContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/layoutBrandContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_l"
+            android:paddingBottom="@dimen/spacing_s">
+
+            <!-- 1. Hero banner slider -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_marginTop="@dimen/spacing_m">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/vpBrandBanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <LinearLayout
+                    android:id="@+id/layoutBrandHeroIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginBottom="@dimen/spacing_s"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/indicator0"
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:background="@drawable/bg_circle"
+                        android:backgroundTint="@color/accent_dark" />
+
+                    <View
+                        android:id="@+id/indicator1"
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:background="@drawable/bg_circle"
+                        android:backgroundTint="@color/border_divider" />
+
+                    <View
+                        android:id="@+id/indicator2"
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:background="@drawable/bg_circle"
+                        android:backgroundTint="@color/border_divider" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <!-- 2. Filter chip row -->
+            <HorizontalScrollView
+                android:id="@+id/hsvBrandFilters"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_l"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/layoutFilterChips"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="4dp">
+
+                    <TextView
+                        android:id="@+id/chipFilterAll"
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_chip_selected"
+                        android:gravity="center"
+                        android:paddingHorizontal="@dimen/spacing_m"
+                        android:text="@string/filter_all"
+                        android:textColor="@color/background_main"
+                        android:clickable="true"
+                        tools:ignore="TouchTargetSizeCheck"
+                        android:focusable="true" />
+
+                    <TextView
+                        android:id="@+id/chipFilterKorea"
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="@dimen/spacing_s"
+                        android:background="@drawable/bg_chip_outline"
+                        android:gravity="center"
+                        android:paddingHorizontal="@dimen/spacing_m"
+                        android:text="@string/filter_korea"
+                        android:textColor="@color/primary"
+                        android:clickable="true"
+                        tools:ignore="TouchTargetSizeCheck"
+                        android:focusable="true" />
+
+                    <TextView
+                        android:id="@+id/chipFilterJapan"
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="@dimen/spacing_s"
+                        android:background="@drawable/bg_chip_outline"
+                        android:gravity="center"
+                        android:paddingHorizontal="@dimen/spacing_m"
+                        android:text="@string/filter_japan"
+                        android:textColor="@color/primary"
+                        android:clickable="true"
+                        tools:ignore="TouchTargetSizeCheck"
+                        android:focusable="true" />
+
+                    <TextView
+                        android:id="@+id/chipFilterWestern"
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="@dimen/spacing_s"
+                        android:background="@drawable/bg_chip_outline"
+                        android:gravity="center"
+                        android:paddingHorizontal="@dimen/spacing_m"
+                        android:text="@string/filter_western"
+                        android:textColor="@color/primary"
+                        android:clickable="true"
+                        tools:ignore="TouchTargetSizeCheck"
+                        android:focusable="true" />
+
+                    <TextView
+                        android:id="@+id/chipFilterVietnam"
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="@dimen/spacing_s"
+                        android:background="@drawable/bg_chip_outline"
+                        android:gravity="center"
+                        android:paddingHorizontal="@dimen/spacing_m"
+                        android:text="@string/filter_vietnam"
+                        android:textColor="@color/primary"
+                        android:clickable="true"
+                        android:focusable="true" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- 3. Brand grid -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvBrandGrid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_m"
+                android:nestedScrollingEnabled="false"
+                tools:itemCount="30"
+                tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                tools:listitem="@layout/item_brand_card"
+                tools:spanCount="3" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- C. Fixed bottom area -->
+    <include
+        android:id="@+id/includeBrandBottomNavigation"
+        layout="@layout/view_bottom_navigation" />
+
+</LinearLayout>

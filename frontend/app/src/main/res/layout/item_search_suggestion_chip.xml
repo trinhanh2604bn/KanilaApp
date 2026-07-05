@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<View xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tvSuggestionKeyword"
+    android:layout_width="40dp"
+    android:layout_height="40dp"
+    android:layout_marginEnd="@dimen/spacing_m"
+    android:background="@drawable/bg_circle_pink"
+    android:clickable="true"
+    android:focusable="true" />

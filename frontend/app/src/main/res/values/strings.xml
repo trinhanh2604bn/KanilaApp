@@ -27,12 +27,6 @@
     <string name="variant_quantity_title">Số lượng</string>
     <string name="variant_apply">Áp dụng</string>
     <string name="variant_stock_format">Còn %d sản phẩm</string>
-    <string name="content_desc_close">Đóng</string>
-    <string name="content_desc_brand_logo">Logo thương hiệu</string>
-    <string name="content_desc_increase">Tăng</string>
-    <string name="content_desc_decrease">Giảm</string>
-    <string name="cart_selected_quantity_label">Số lượng: %1$d</string>
-    <string name="product_image_desc">Ảnh sản phẩm</string>
     <string name="checkout_edit">Sửa</string>
     <string name="checkout_address_title">Địa chỉ nhận hàng</string>
     <string name="checkout_shipping_title">Phương thức vận chuyển</string>
@@ -61,12 +55,19 @@
     <string name="checkout_sample_address_2">123 Trần Hưng Đạo, Phường Bến Thành, Hồ Chí Minh</string>
     <string name="checkout_sample_shipping_2">Giao hàng tiêu chuẩn</string>
     <string name="checkout_sample_delivery_date_2">Nhận hàng: Ngày 09/7</string>
+    <string name="content_desc_close">Đóng</string>
+    <string name="content_desc_brand_logo">Logo thương hiệu</string>
+    <string name="content_desc_increase">Tăng</string>
+    <string name="content_desc_decrease">Giảm</string>
+    <string name="cart_selected_quantity_label">Số lượng: %1$d</string>
+    <string name="product_image_desc">Ảnh sản phẩm</string>
     <string name="category_hero_small_title">Khám phá sản phẩm</string>
     <string name="category_hero_title">Làm sạch dịu nhẹ cho làn da khỏe đẹp</string>
     <string name="category_hero_description">Bắt đầu chu trình dưỡng da khoa học với bước làm sạch chuẩn</string>
     <string name="category_section_demand">Mua theo nhu cầu</string>
     <string name="category_section_brand">Thương hiệu nổi bật</string>
     <string name="action_see_all">Xem tất cả ></string>
+    <string name="action_view_all">Xem tất cả</string>
     <string name="category_lips">Lips</string>
     <string name="category_eyes">Eyes</string>
     <string name="category_cheeks">Cheeks</string>
@@ -82,72 +83,168 @@
     <string name="notification">Thông báo</string>
     <string name="cart">Giỏ hàng</string>
     <string name="wishlist">Yêu thích</string>
+    <string name="search_history_title">Tìm kiếm gần đây</string>
+    <string name="search_suggestion_title">Gợi ý tìm kiếm</string>
+    <string name="search_suggested_products_title">Sản phẩm được gợi ý</string>
+    <string name="clear_history_content_desc">Xóa lịch sử</string>
+    <string name="search_no_result_title">Không tìm thấy sản phẩm phù hợp</string>
+    <string name="search_no_result_cta">Hỏi Kanila AI tìm giúp</string>
 
-        <!-- Beauty Profile -->
-        <string name="beauty_profile_title">Hồ sơ làm đẹp</string>
+    <string name="search_recommend_title">Đề xuất dành cho bạn</string>
+    <string name="search_quick_discovery_title">Khám phá nhanh</string>
+    <string name="discovery_oily_skin_title">Da dầu mụn</string>
+    <string name="discovery_oily_skin_desc">Giải pháp kiềm dầu, giảm mụn</string>
+    <string name="discovery_daily_makeup_title">Makeup hằng ngày</string>
+    <string name="discovery_daily_makeup_desc">Tự nhiên, tươi tắn mỗi ngày</string>
+    <string name="discovery_under_300k_title">Under 300K</string>
+    <string name="discovery_under_300k_desc">Sản phẩm chất lượng giá tốt</string>
+    <string name="discovery_new_arrivals_title">Hàng mới về</string>
+    <string name="discovery_new_arrivals_desc">Cập nhật sản phẩm mới mỗi tuần</string>
 
-        <!-- Skin Journey -->
-        <string name="skin_journey_title">Hành trình làn da</string>
-        <string name="goal_4_weeks">Mục tiêu trong 4 tuần</string>
-        <string name="goal_skin_acne_spots">Giảm mụn và mờ thâm</string>
-        <string name="week_2_4">Tuần 2/4</string>
-        <string name="completed_50">50%</string>
-        <string name="completed_label">Hoàn thành</string>
+    <string name="home_social_reels_title">Kanila Reels</string>
+    <string name="home_social_challenge_title">Kanila Challenge</string>
+    <string name="home_social_reel_1_title">Routine da dầu</string>
+    <string name="home_social_reel_2_title">Makeup nhẹ nhàng</string>
+    <string name="home_social_challenge_hot">HOT</string>
+    <string name="home_social_challenge_name">14 ngày da sáng khỏe</string>
+    <string name="home_social_challenge_subtitle">Cùng Kanila</string>
+    <string name="home_social_challenge_progress_format">%1$s/%2$s ngày</string>
+    <string name="home_social_challenge_participants_format">%s tham gia</string>
+    <string name="home_social_challenge_reward_format">%s điểm</string>
+    <string name="home_social_challenge_cta">Tham gia</string>
+    <string name="content_desc_reward_icon">Biểu tượng phần thưởng</string>
+    <string name="content_desc_reels_icon">Biểu tượng Reels</string>
 
-        <string name="week_1">Tuần 1</string>
-        <string name="week_2">Tuần 2</string>
-
-        <string name="recent_updates">Cập nhật gần đây</string>
-        <string name="date_05_06">05/06</string>
-        <string name="date_09_06">09/06</string>
-        <string name="date_12_06">12/06</string>
-
-        <string name="update_oil_control">Da được kiểm soát dầu tốt hơn</string>
-        <string name="update_acne_reduction">Tình trạng mụn đã cải thiện</string>
-        <string name="update_moisture_improvement">Độ ẩm da được cải thiện</string>
-
-        <string name="metric_acne">Mụn</string>
-        <string name="metric_spots">Thâm</string>
-        <string name="metric_moisture">Độ ẩm</string>
-        <string name="improvement_vs_week_1">So với tuần 1</string>
-
-        <string name="streak_reminder">Bạn đã cập nhật đều đặn</string>
-        <string name="streak_reward">Tiếp tục duy trì để nhận phần thưởng</string>
-        <string name="btn_save_changes">Lưu thay đổi</string>
-
-    <!-- Suitable Ingredients -->
+    <string name="beauty_profile_title">Hồ sơ làm đẹp</string>
     <string name="suitable_ingredients_title">Thành phần phù hợp</string>
-    <string name="suitable_ingredients_subtitle">Thiết lập thành phần ưu tiên và thành phần cần tránh cho làn da của bạn</string>
-
+    <string name="suitable_ingredients_subtitle">Chọn thành phần bạn quan tâm để Kanila gợi ý tốt nhất</string>
     <string name="quick_setup">Thiết lập nhanh</string>
-
     <string name="priority">Ưu tiên</string>
     <string name="priority_count">3 thành phần</string>
-    <string name="priority_list">Niacinamide, Ceramide, Hyaluronic Acid</string>
-
+    <string name="priority_list">Niacinamide, Ceramide, HA</string>
     <string name="avoid">Cần tránh</string>
     <string name="avoid_count">2 thành phần</string>
     <string name="avoid_list">Cồn khô, Hương liệu</string>
-
     <string name="priority_ingredients">Thành phần ưu tiên</string>
     <string name="avoid_ingredients">Thành phần cần tránh</string>
-
     <string name="ing_niacinamide">Niacinamide</string>
     <string name="ing_ceramide">Ceramide</string>
     <string name="ing_hyaluronic_acid">Hyaluronic Acid</string>
     <string name="ing_bha">BHA</string>
     <string name="ing_vitamin_c">Vitamin C</string>
     <string name="ing_peptide">Peptide</string>
-
     <string name="ing_alcohol">Cồn khô</string>
     <string name="ing_fragrance">Hương liệu</string>
     <string name="ing_paraben">Paraben</string>
     <string name="ing_retinol">Retinol</string>
     <string name="ing_essential_oil">Tinh dầu</string>
-
-    <string name="sensitive_skin_treatment">Da nhạy cảm hoặc đang trong quá trình điều trị</string>
-    <string name="priority_formula_msg">Ưu tiên công thức dịu nhẹ, tối giản và phù hợp với tình trạng da hiện tại.</string>
+    <string name="sensitive_skin_treatment">Da đang trong quá trình treatment</string>
+    <string name="priority_formula_msg">Kanila sẽ ưu tiên các sản phẩm có công thức sạch và dịu nhẹ cho bạn</string>
     <string name="btn_save_setup">Lưu thiết lập</string>
+
+    <string name="goal_skin_acne_spots">Mục tiêu: Giảm mụn &amp; thâm</string>
+    <string name="week_2_4">Tuần 2/4</string>
+    <string name="completed_50">50%</string>
+    <string name="completed_label">Hoàn thành</string>
+    <string name="week_1">Tuần 1</string>
+    <string name="skin_journey_title">Hành trình làn da</string>
+    <string name="goal_4_weeks">Mục tiêu 4 tuần</string>
+    <string name="week_2">Tuần 2</string>
+    <string name="recent_updates">Cập nhật gần đây</string>
+    <string name="date_05_06">05/06</string>
+    <string name="update_oil_control">Kiểm soát dầu tốt hơn</string>
+    <string name="date_09_06">09/06</string>
+    <string name="update_acne_reduction">Giảm mụn đáng kể</string>
+    <string name="date_12_06">12/06</string>
+    <string name="update_moisture_improvement">Độ ẩm cải thiện</string>
+    <string name="metric_acne">Mụn</string>
+    <string name="improvement_vs_week_1">Cải thiện so với tuần 1</string>
+    <string name="metric_spots">Vết thâm</string>
+    <string name="metric_moisture">Độ ẩm</string>
+    <string name="streak_reminder">Nhắc nhở chuỗi ngày</string>
+    <string name="streak_reward">Nhận quà khi hoàn thành chuỗi</string>
+    <string name="btn_save_changes">Lưu thay đổi</string>
+    <string name="try_products">Dùng thử sản phẩm</string>
+    <string name="brand_maybelline">Maybelline New York</string>
+    <string name="product_foundation">Kem nền Fit Me Fresh Tint</string>
+    <string name="foundation_benefit">Kiềm dầu, chống nắng SPF 50</string>
+    <string name="match_score_92">92% Phù hợp</string>
+    <string name="top_bar_brand_title">Thương Hiệu</string>
+    <string name="brand_hero_action">Khám phá ngay →</string>
+    <string name="filter_all">Tất cả</string>
+    <string name="filter_korea">Hàn Quốc</string>
+    <string name="filter_japan">Nhật Bản</string>
+    <string name="filter_western">Âu Mỹ</string>
+    <string name="filter_vietnam">Việt Nam</string>
+    <string name="brand_fwee_title">FWEE</string>
+    <string name="brand_fwee_desc">K-beauty hàng đầu dưỡng ẩm chuyên sâu</string>
+
+    <string name="filter_title">Bộ lọc tìm kiếm</string>
+    <string name="filter_skin_type">Loại da</string>
+    <string name="filter_skin_oily">Da dầu</string>
+    <string name="filter_skin_dry">Da khô</string>
+    <string name="filter_skin_normal">Da thường</string>
+    <string name="filter_skin_sensitive">Da nhạy cảm</string>
+    <string name="filter_tone">Tone da</string>
+    <string name="filter_tone_light">Da sáng</string>
+    <string name="filter_tone_dark">Da tối</string>
+    <string name="filter_tone_medium">Da ngăm</string>
+    <string name="filter_price_range">Khoảng giá</string>
+    <string name="filter_rating">Đánh giá</string>
+    <string name="filter_brand">Thương hiệu</string>
+    <string name="filter_ingredients">Thành phần nổi bật</string>
+    <string name="filter_ar_only">Chỉ hiển thị sản phẩm có AR</string>
+    <string name="filter_reset">Thiết lập lại</string>
+    <string name="filter_apply">Áp dụng</string>
+    <string name="filter_price_from">Từ</string>
+    <string name="filter_price_to">Đến</string>
+    <string name="filter_price_separator">—</string>
+    <string name="price_0_100">0-100k</string>
+    <string name="price_100_300">100k-300k</string>
+    <string name="price_300_500">300k-500k</string>
+    <string name="rating_5">5★</string>
+    <string name="rating_4_plus">≥ 4★</string>
+    <string name="rating_3_plus">≥ 3★</string>
+    <string name="rating_2_plus">≥ 2★</string>
+    <string name="rating_1_plus">≥ 1★</string>
+    <string name="brand_fwee">Fwee</string>
+    <string name="brand_peripera">Peri Pera</string>
+    <string name="brand_nars">Nars</string>
+    <string name="brand_carlans">Carlans</string>
+    <string name="brand_canmake">Canmake</string>
+    <string name="brand_charlotte_tilbury">Charlotte Tilbury</string>
+    <string name="brand_mario">Mario</string>
+    <string name="ing_zinc_pca">Zinc PCA</string>
+    <string name="ing_panthenol">Panthenol</string>
+    <string name="ing_tranexamic_acid">Tranexamic Acid</string>
+    <string name="ing_aha">AHA</string>
+
+    <string name="chip_all">Tất cả</string>
+    <string name="filter_label">Lọc</string>
+    <string name="sort_label">Sắp xếp</string>
+    <string name="chip_foundation">Foundation</string>
+    <string name="chip_concealer">Concealer</string>
+    <string name="chip_primer">Primer</string>
+    <string name="chip_powder">Powder</string>
+    <string name="chip_setting_spray">Setting Spray</string>
+    <string name="chip_bb_cc_cream">BB &amp; CC Cream</string>
+    <string name="chip_tinted_moisturizer">Tinted Moisturizer</string>
+
+
+
+    <string name="notification_title">Thông báo</string>
+    <string name="notification_filter_all">Tất cả</string>
+    <string name="notification_filter_orders">Đơn hàng</string>
+    <string name="notification_filter_offers">Ưu đãi</string>
+    <string name="notification_filter_community">Cộng đồng</string>
+    <string name="notification_filter_personal">Cá nhân</string>
+    <string name="notification_new_tag">Mới</string>
+    <string name="notification_empty">Không có thông báo nào</string>
+    <string name="address_book_title">Địa chỉ giao hàng</string>
+    <string name="address_book_list_header">Danh sách địa chỉ</string>
+    <string name="address_book_add_new">Thêm địa chỉ mới</string>
+
+
     <string name="search_ingredients_hint">Tìm kiếm thành phần…</string>
     <string name="no_ingredients_found">Không tìm thấy thành phần phù hợp</string>
     <string name="selected_count_format">Đã chọn %1$d</string>
@@ -159,11 +256,6 @@
     <string name="popular_ingredients">Thành phần phổ biến</string>
     <string name="recent_searches">Tìm kiếm gần đây</string>
     <string name="add_custom_ingredient">Thêm thành phần khác</string>
-    <string name="try_products">Sản phẩm nên thử</string>
-    <string name="brand_maybelline">Maybelline</string>
-    <string name="product_foundation">Fit Me Matte + Poreless Foundation</string>
-    <string name="foundation_benefit">Kiềm dầu, che phủ tự nhiên</string>
-    <string name="match_score_92">Phù hợp 92%</string>
     <!-- Skin indicators -->
     <string name="skin_type_oily">Da dầu</string>
     <string name="skin_type_dry">Da khô</string>

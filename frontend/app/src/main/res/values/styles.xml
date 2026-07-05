@@ -68,7 +68,7 @@
         <item name="android:layout_height">@dimen/button_height</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
-        <item name="cornerRadius">@dimen/radius_m</item>
+        <item name="cornerRadius">@dimen/radius_xl</item>
         <item name="strokeColor">@color/button</item>
         <item name="android:textColor">@color/button</item>
         <item name="android:textSize">14sp</item>
@@ -216,6 +216,10 @@
 
         <item name="android:minHeight">36dp</item>
         <item name="android:minWidth">0dp</item>
+
+    <style name="MetricFooter" parent="Text.Kanila.Micro">
+        <item name="android:textColor">@color/text_tertiary</item>
+    </style>
 
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>

@@ -59,6 +59,8 @@
     <string name="content_desc_brand_logo">Logo thương hiệu</string>
     <string name="content_desc_increase">Tăng</string>
     <string name="content_desc_decrease">Giảm</string>
+    <string name="cart_selected_quantity_label">Số lượng: %1$d</string>
+    <string name="product_image_desc">Ảnh sản phẩm</string>
     <string name="category_hero_small_title">Khám phá sản phẩm</string>
     <string name="category_hero_title">Làm sạch dịu nhẹ cho làn da khỏe đẹp</string>
     <string name="category_hero_description">Bắt đầu chu trình dưỡng da khoa học với bước làm sạch chuẩn</string>

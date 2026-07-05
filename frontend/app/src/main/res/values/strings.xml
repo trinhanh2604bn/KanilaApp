@@ -180,6 +180,17 @@
     <string name="filter_vietnam">Việt Nam</string>
     <string name="brand_fwee_title">FWEE</string>
     <string name="brand_fwee_desc">K-beauty hàng đầu dưỡng ẩm chuyên sâu</string>
+    <string name="filter_label">Lọc</string>
+    <string name="sort_label">Sắp xếp</string>
+    <string name="chip_foundation">Foundation</string>
+    <string name="chip_concealer">Concealer</string>
+    <string name="chip_primer">Primer</string>
+    <string name="chip_powder">Powder</string>
+    <string name="chip_setting_spray">Setting Spray</string>
+    <string name="chip_bb_cc_cream">BB &amp; CC Cream</string>
+    <string name="chip_tinted_moisturizer">Tinted Moisturizer</string>
+
+
 
     <string name="notification_title">Thông báo</string>
     <string name="notification_filter_all">Tất cả</string>

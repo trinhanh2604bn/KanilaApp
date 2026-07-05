@@ -20,6 +20,9 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.frontend.R;
 import com.example.frontend.model.HomeBannerItem;
 
+import ui.category.FaceFragment;
+import ui.category.BrandPageFragment;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +51,18 @@ public class ProductCategoryFragment extends Fragment {
 
         // 2. Bind Category Grid
         bindCategoryCards(view);
+        
+        View cardFace = view.findViewById(R.id.cardCategoryFace);
+        if (cardFace != null) {
+            cardFace.setOnClickListener(v -> {
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new FaceFragment())
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
+        }
 
         // 3. Setup Hero Slider
         setupHeroSlider(view);

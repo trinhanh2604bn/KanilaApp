@@ -82,4 +82,198 @@
     <string name="notification">Thông báo</string>
     <string name="cart">Giỏ hàng</string>
     <string name="wishlist">Yêu thích</string>
+
+        <!-- Beauty Profile -->
+        <string name="beauty_profile_title">Hồ sơ làm đẹp</string>
+
+        <!-- Skin Journey -->
+        <string name="skin_journey_title">Hành trình làn da</string>
+        <string name="goal_4_weeks">Mục tiêu trong 4 tuần</string>
+        <string name="goal_skin_acne_spots">Giảm mụn và mờ thâm</string>
+        <string name="week_2_4">Tuần 2/4</string>
+        <string name="completed_50">50%</string>
+        <string name="completed_label">Hoàn thành</string>
+
+        <string name="week_1">Tuần 1</string>
+        <string name="week_2">Tuần 2</string>
+
+        <string name="recent_updates">Cập nhật gần đây</string>
+        <string name="date_05_06">05/06</string>
+        <string name="date_09_06">09/06</string>
+        <string name="date_12_06">12/06</string>
+
+        <string name="update_oil_control">Da được kiểm soát dầu tốt hơn</string>
+        <string name="update_acne_reduction">Tình trạng mụn đã cải thiện</string>
+        <string name="update_moisture_improvement">Độ ẩm da được cải thiện</string>
+
+        <string name="metric_acne">Mụn</string>
+        <string name="metric_spots">Thâm</string>
+        <string name="metric_moisture">Độ ẩm</string>
+        <string name="improvement_vs_week_1">So với tuần 1</string>
+
+        <string name="streak_reminder">Bạn đã cập nhật đều đặn</string>
+        <string name="streak_reward">Tiếp tục duy trì để nhận phần thưởng</string>
+        <string name="btn_save_changes">Lưu thay đổi</string>
+
+    <!-- Suitable Ingredients -->
+    <string name="suitable_ingredients_title">Thành phần phù hợp</string>
+    <string name="suitable_ingredients_subtitle">Thiết lập thành phần ưu tiên và thành phần cần tránh cho làn da của bạn</string>
+
+    <string name="quick_setup">Thiết lập nhanh</string>
+
+    <string name="priority">Ưu tiên</string>
+    <string name="priority_count">3 thành phần</string>
+    <string name="priority_list">Niacinamide, Ceramide, Hyaluronic Acid</string>
+
+    <string name="avoid">Cần tránh</string>
+    <string name="avoid_count">2 thành phần</string>
+    <string name="avoid_list">Cồn khô, Hương liệu</string>
+
+    <string name="priority_ingredients">Thành phần ưu tiên</string>
+    <string name="avoid_ingredients">Thành phần cần tránh</string>
+
+    <string name="ing_niacinamide">Niacinamide</string>
+    <string name="ing_ceramide">Ceramide</string>
+    <string name="ing_hyaluronic_acid">Hyaluronic Acid</string>
+    <string name="ing_bha">BHA</string>
+    <string name="ing_vitamin_c">Vitamin C</string>
+    <string name="ing_peptide">Peptide</string>
+
+    <string name="ing_alcohol">Cồn khô</string>
+    <string name="ing_fragrance">Hương liệu</string>
+    <string name="ing_paraben">Paraben</string>
+    <string name="ing_retinol">Retinol</string>
+    <string name="ing_essential_oil">Tinh dầu</string>
+
+    <string name="sensitive_skin_treatment">Da nhạy cảm hoặc đang trong quá trình điều trị</string>
+    <string name="priority_formula_msg">Ưu tiên công thức dịu nhẹ, tối giản và phù hợp với tình trạng da hiện tại.</string>
+    <string name="btn_save_setup">Lưu thiết lập</string>
+    <string name="search_ingredients_hint">Tìm kiếm thành phần…</string>
+    <string name="no_ingredients_found">Không tìm thấy thành phần phù hợp</string>
+    <string name="selected_count_format">Đã chọn %1$d</string>
+    <string name="all_ingredients">Tất cả thành phần</string>
+    <string name="clear_selection">Xóa chọn</string>
+    <string name="confirm_selection">Xác nhận (%1$d)</string>
+    <string name="no_ingredients_selected">Chưa có thành phần nào được chọn</string>
+    <string name="search_no_results">Không tìm thấy kết quả cho \"%1$s\"</string>
+    <string name="popular_ingredients">Thành phần phổ biến</string>
+    <string name="recent_searches">Tìm kiếm gần đây</string>
+    <string name="add_custom_ingredient">Thêm thành phần khác</string>
+    <string name="try_products">Sản phẩm nên thử</string>
+    <string name="brand_maybelline">Maybelline</string>
+    <string name="product_foundation">Fit Me Matte + Poreless Foundation</string>
+    <string name="foundation_benefit">Kiềm dầu, che phủ tự nhiên</string>
+    <string name="match_score_92">Phù hợp 92%</string>
+    <!-- Skin indicators -->
+    <string name="skin_type_oily">Da dầu</string>
+    <string name="skin_type_dry">Da khô</string>
+    <string name="skin_type_combination">Da hỗn hợp</string>
+    <string name="skin_type_normal">Da thường</string>
+    <string name="skin_type_sensitive">Da nhạy cảm</string>
+    <string name="skin_type_unknown">Chưa chắc chắn</string>
+
+    <string name="skin_score_oily">72/100</string>
+    <string name="skin_score_dry">38/100</string>
+    <string name="skin_score_combination">64/100</string>
+    <string name="skin_score_normal">82/100</string>
+    <string name="skin_score_sensitive">56/100</string>
+    <string name="skin_score_unknown">--/100</string>
+
+    <string name="skin_status_high">Khá cao</string>
+    <string name="skin_status_low">Thấp</string>
+    <string name="skin_status_medium">Trung bình</string>
+    <string name="skin_status_balanced">Cân bằng</string>
+    <string name="skin_status_sensitive">Dễ kích ứng</string>
+    <string name="skin_status_unknown">Chưa xác định</string>
+
+    <!-- Beauty goals -->
+    <string name="goal_hydrating">Cấp ẩm</string>
+    <string name="goal_brightening">Làm sáng da</string>
+    <string name="goal_acne">Hỗ trợ giảm mụn</string>
+    <string name="goal_oil_control">Kiểm soát dầu</string>
+    <string name="goal_barrier">Phục hồi hàng rào da</string>
+    <string name="goal_anti_aging">Chống lão hóa</string>
+    <string name="goal_pores">Chăm sóc lỗ chân lông</string>
+    <string name="goal_soothing">Làm dịu da</string>
+    <string name="goal_sun">Chống nắng</string>
+    <string name="goal_even_tone">Làm đều màu da</string>
+    <string name="log_today_progress" />
+    <!-- ================================================= -->
+    <!-- SUITABLE INGREDIENTS COMPONENTS                   -->
+    <!-- ================================================= -->
+
+    <!-- Hai thẻ Thiết lập nhanh: Ưu tiên / Cần tránh -->
+    <style
+        name="QuickSetupCard"
+        parent="Widget.MaterialComponents.CardView">
+
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">124dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+
+        <item name="cardBackgroundColor">@color/background_main</item>
+        <item name="cardCornerRadius">14dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/border_divider</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+
+    <!-- Chip thành phần ở trạng thái mặc định -->
+    <style
+        name="IngredientChip"
+        parent="Widget.MaterialComponents.CardView">
+
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_gravity">fill_horizontal</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+
+        <item name="cardBackgroundColor">@color/background_main</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/border_divider</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+
+    <!-- Chip thành phần đang được chọn -->
+    <style
+        name="IngredientChip.Selected"
+        parent="IngredientChip">
+
+        <item name="cardBackgroundColor">@color/background_sub</item>
+        <item name="strokeColor">@color/button</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+
+    <!-- Tên thành phần mặc định -->
+    <style
+        name="IngredientChipLabel"
+        parent="Text.Kanila.Micro">
+
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textColor">@color/text_main</item>
+    </style>
+
+
+    <!-- Tên thành phần đang được chọn -->
+    <style
+        name="IngredientChipLabel.Selected"
+        parent="IngredientChipLabel">
+
+        <item name="android:textColor">@color/button</item>
+    </style>
+
+
 </resources>

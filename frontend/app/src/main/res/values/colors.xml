@@ -60,7 +60,13 @@
     <color name="info_bg">@color/status_preparing_bg</color>
     <color name="info">@color/status_preparing_text</color>
 
-
+    <!-- Phú bổ sung -->
+    <color name="icon_bg_pink">#FFF1F4</color>
+    <color name="icon_pink">#E83E72</color>
+    <color name="icon_bg_grey">#F2F2F2</color>
+    <color name="icon_bg_yellow">#FFF7D6</color>
+    <color name="icon_bg_blue">#EAF3FF</color>
+    <color name="icon_bg_green">#E8F7EF</color>
 
 
 

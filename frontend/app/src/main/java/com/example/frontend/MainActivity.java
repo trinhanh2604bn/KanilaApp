@@ -83,13 +83,13 @@ public class MainActivity extends AppCompatActivity {
         btnWishlist.setOnClickListener(v -> Toast.makeText(this, R.string.wishlist, Toast.LENGTH_SHORT).show());
 
 
-//        btnCart.setOnClickListener(v -> {
-            // Tạm thời thay thế bằng việc mở CheckoutFragment để xem giao diện
-//            getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.main, new ui.commerce.CheckoutFragment())
-//                    .addToBackStack(null)
-//                    .commit();
-//        });
+        btnCart.setOnClickListener(v -> {
+//             Tạm thời thay thế bằng việc mở BeautyProfileOverviewFragment để xem giao diện
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new ui.account.BeautyProfileOverviewFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     private void showExpandedSearch() {

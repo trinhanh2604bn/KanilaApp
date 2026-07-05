@@ -73,6 +73,12 @@ public class Product {
     @SerializedName("subcategory")
     private String subcategory;
 
+    @SerializedName("hasAr")
+    private boolean hasAr;
+
+    @SerializedName("isFavorite")
+    private boolean isFavorite;
+
     @SerializedName("shades")
     private List<Shade> shades;
 
@@ -144,6 +150,14 @@ public class Product {
     public int getImageResource() { return imageResource; }
 
     public String getSubcategory() { return subcategory != null ? subcategory : ""; }
+
+    public boolean hasAr() { return hasAr; }
+
+    public void setHasAr(boolean hasAr) { this.hasAr = hasAr; }
+
+    public boolean isFavorite() { return isFavorite; }
+
+    public void setFavorite(boolean favorite) { isFavorite = favorite; }
     
     public String getBadgeText() { 
         if (badgeText != null && !badgeText.isEmpty()) return badgeText;

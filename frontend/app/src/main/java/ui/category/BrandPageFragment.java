@@ -212,7 +212,7 @@ public class BrandPageFragment extends Fragment {
     private void filterBrands(String region) {
         List<Brand> filteredList = new ArrayList<>();
         String allText = getString(R.string.filter_all);
-        
+
         if (region.equals(allText)) {
             filteredList.addAll(fullBrandList);
         } else {
@@ -225,9 +225,19 @@ public class BrandPageFragment extends Fragment {
 
         if (adapter == null) {
             adapter = new BrandAdapter(filteredList);
-            rvBrandGrid.setAdapter(adapter);
+            adapter.setOnBrandClickListener(brand -> {
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, ProductListingFragment.newBrandInstance(brand.getBrandName()))
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
         } else {
             adapter.updateData(filteredList);
         }
+
+        // Always set adapter to the RecyclerView because the View might have been recreated
+        rvBrandGrid.setAdapter(adapter);
     }
 }

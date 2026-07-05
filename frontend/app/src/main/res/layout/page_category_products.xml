@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutFacePage"
+    android:id="@+id/layoutCategoryProductsPage"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main"
@@ -10,7 +10,7 @@
 
     <!-- A. Fixed header area (Sticky Header) -->
     <LinearLayout
-        android:id="@+id/layoutFaceStickyHeader"
+        android:id="@+id/layoutCategoryStickyHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -19,7 +19,7 @@
 
         <!-- Top row: Back + Search + Actions -->
         <LinearLayout
-            android:id="@+id/layoutFaceTopBar"
+            android:id="@+id/layoutCategoryTopBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -28,7 +28,7 @@
             android:paddingVertical="@dimen/spacing_s">
 
             <ImageButton
-                android:id="@+id/btnFaceBack"
+                android:id="@+id/btnCategoryBack"
                 android:layout_width="@dimen/touch_target_min"
                 android:layout_height="@dimen/touch_target_min"
                 android:background="?attr/selectableItemBackgroundBorderless"
@@ -39,7 +39,7 @@
                 tools:ignore="TouchTargetSizeCheck" />
 
             <include
-                android:id="@+id/layoutFaceSearchBar"
+                android:id="@+id/layoutCategorySearchBar"
                 layout="@layout/view_search_bar"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
@@ -55,6 +55,7 @@
                 android:gravity="center"
                 android:orientation="vertical"
                 android:paddingHorizontal="@dimen/spacing_xs"
+                android:background="?attr/selectableItemBackground"
                 tools:ignore="TouchTargetSizeCheck">
 
                 <ImageView
@@ -83,6 +84,7 @@
                 android:gravity="center"
                 android:orientation="vertical"
                 android:paddingHorizontal="@dimen/spacing_xs"
+                android:background="?attr/selectableItemBackground"
                 tools:ignore="TouchTargetSizeCheck">
 
                 <ImageView
@@ -105,7 +107,7 @@
 
         <!-- Filter chips row -->
         <HorizontalScrollView
-            android:id="@+id/hsvFaceFilterChips"
+            android:id="@+id/hsvCategoryFilterChips"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_s"
@@ -113,115 +115,12 @@
             android:scrollbars="none">
 
             <LinearLayout
-                android:id="@+id/layoutFaceFilterChips"
+                android:id="@+id/layoutCategoryFilterChips"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingHorizontal="@dimen/spacing_l">
-
-                <TextView
-                    android:id="@+id/chipFoundation"
-                    style="@style/Text.Kanila.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:background="@drawable/bg_chip_selected"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:paddingHorizontal="@dimen/spacing_m"
-                    android:text="@string/chip_foundation"
-                    android:textColor="@color/background_main"
-                    tools:ignore="TouchTargetSizeCheck" />
-
-                <TextView
-                    android:id="@+id/chipConcealer"
-                    style="@style/Text.Kanila.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="@dimen/spacing_s"
-                    android:background="@drawable/bg_chip_outline"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:paddingHorizontal="@dimen/spacing_m"
-                    android:text="@string/chip_concealer"
-                    android:textColor="@color/primary"
-                    tools:ignore="TouchTargetSizeCheck" />
-
-                <TextView
-                    android:id="@+id/chipPrimer"
-                    style="@style/Text.Kanila.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="@dimen/spacing_s"
-                    android:background="@drawable/bg_chip_outline"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:paddingHorizontal="@dimen/spacing_m"
-                    android:text="@string/chip_primer"
-                    android:textColor="@color/primary"
-                    tools:ignore="TouchTargetSizeCheck" />
-
-                <TextView
-                    android:id="@+id/chipPowder"
-                    style="@style/Text.Kanila.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="@dimen/spacing_s"
-                    android:background="@drawable/bg_chip_outline"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:paddingHorizontal="@dimen/spacing_m"
-                    android:text="@string/chip_powder"
-                    android:textColor="@color/primary"
-                    tools:ignore="TouchTargetSizeCheck" />
-
-                <TextView
-                    android:id="@+id/chipSettingSpray"
-                    style="@style/Text.Kanila.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="@dimen/spacing_s"
-                    android:background="@drawable/bg_chip_outline"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:paddingHorizontal="@dimen/spacing_m"
-                    android:text="@string/chip_setting_spray"
-                    android:textColor="@color/primary"
-                    tools:ignore="TouchTargetSizeCheck" />
-
-                <TextView
-                    android:id="@+id/chipBbCcCream"
-                    style="@style/Text.Kanila.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="@dimen/spacing_s"
-                    android:background="@drawable/bg_chip_outline"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:paddingHorizontal="@dimen/spacing_m"
-                    android:text="@string/chip_bb_cc_cream"
-                    android:textColor="@color/primary"
-                    tools:ignore="TouchTargetSizeCheck" />
-
-                <TextView
-                    android:id="@+id/chipTintedMoisturizer"
-                    style="@style/Text.Kanila.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="@dimen/spacing_s"
-                    android:background="@drawable/bg_chip_outline"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:paddingHorizontal="@dimen/spacing_m"
-                    android:text="@string/chip_tinted_moisturizer"
-                    android:textColor="@color/primary"
-                    tools:ignore="TouchTargetSizeCheck" />
+                <!-- Chips will be added dynamically in Java -->
             </LinearLayout>
         </HorizontalScrollView>
     </LinearLayout>
@@ -233,7 +132,7 @@
         android:layout_weight="1">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvFaceProducts"
+            android:id="@+id/rvCategoryProducts"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
@@ -256,7 +155,11 @@
 
     <!-- C. Fixed bottom area -->
     <include
-        android:id="@+id/includeFaceBottomNavigation"
-        layout="@layout/view_bottom_navigation" />
+        android:id="@+id/includeCategoryBottomNavigation"
+        layout="@layout/view_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 
 </LinearLayout>

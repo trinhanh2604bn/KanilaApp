@@ -93,6 +93,16 @@ public class NotificationCenterFragment extends Fragment {
     }
 
     private void setupListeners() {
+        View btnBack = getView().findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> {
+                if (getActivity() != null) {
+                    // Trở về trang trước đó (thường là MainActivity nếu navigate từ đó)
+                    getActivity().getOnBackPressedDispatcher().onBackPressed();
+                }
+            });
+        }
+
         for (TextView tab : filterTabs) {
             tab.setOnClickListener(v -> {
                 updateTabs(tab);

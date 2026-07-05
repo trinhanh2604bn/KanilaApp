@@ -16,6 +16,15 @@ import java.util.List;
 public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHolder> {
 
     private List<Brand> brandList;
+    private OnBrandClickListener listener;
+
+    public interface OnBrandClickListener {
+        void onBrandClick(Brand brand);
+    }
+
+    public void setOnBrandClickListener(OnBrandClickListener listener) {
+        this.listener = listener;
+    }
 
     public BrandAdapter(List<Brand> brandList) {
         this.brandList = new ArrayList<>(brandList);
@@ -44,6 +53,12 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHol
             boolean newState = !brand.isFavorite();
             brand.setFavorite(newState);
             holder.btnBrandFavorite.setSelected(newState);
+        });
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onBrandClick(brand);
+            }
         });
     }
 

@@ -142,8 +142,6 @@
     <string name="priority_formula_msg">Kanila sẽ ưu tiên các sản phẩm có công thức sạch và dịu nhẹ cho bạn</string>
     <string name="btn_save_setup">Lưu thiết lập</string>
 
-
-
     <string name="goal_skin_acne_spots">Mục tiêu: Giảm mụn &amp; thâm</string>
     <string name="week_2_4">Tuần 2/4</string>
     <string name="completed_50">50%</string>
@@ -180,6 +178,48 @@
     <string name="filter_vietnam">Việt Nam</string>
     <string name="brand_fwee_title">FWEE</string>
     <string name="brand_fwee_desc">K-beauty hàng đầu dưỡng ẩm chuyên sâu</string>
+
+    <string name="filter_title">Bộ lọc tìm kiếm</string>
+    <string name="filter_skin_type">Loại da</string>
+    <string name="filter_skin_oily">Da dầu</string>
+    <string name="filter_skin_dry">Da khô</string>
+    <string name="filter_skin_normal">Da thường</string>
+    <string name="filter_skin_sensitive">Da nhạy cảm</string>
+    <string name="filter_tone">Tone da</string>
+    <string name="filter_tone_light">Da sáng</string>
+    <string name="filter_tone_dark">Da tối</string>
+    <string name="filter_tone_medium">Da ngăm</string>
+    <string name="filter_price_range">Khoảng giá</string>
+    <string name="filter_rating">Đánh giá</string>
+    <string name="filter_brand">Thương hiệu</string>
+    <string name="filter_ingredients">Thành phần nổi bật</string>
+    <string name="filter_ar_only">Chỉ hiển thị sản phẩm có AR</string>
+    <string name="filter_reset">Thiết lập lại</string>
+    <string name="filter_apply">Áp dụng</string>
+    <string name="filter_price_from">Từ</string>
+    <string name="filter_price_to">Đến</string>
+    <string name="filter_price_separator">—</string>
+    <string name="price_0_100">0-100k</string>
+    <string name="price_100_300">100k-300k</string>
+    <string name="price_300_500">300k-500k</string>
+    <string name="rating_5">5★</string>
+    <string name="rating_4_plus">≥ 4★</string>
+    <string name="rating_3_plus">≥ 3★</string>
+    <string name="rating_2_plus">≥ 2★</string>
+    <string name="rating_1_plus">≥ 1★</string>
+    <string name="brand_fwee">Fwee</string>
+    <string name="brand_peripera">Peri Pera</string>
+    <string name="brand_nars">Nars</string>
+    <string name="brand_carlans">Carlans</string>
+    <string name="brand_canmake">Canmake</string>
+    <string name="brand_charlotte_tilbury">Charlotte Tilbury</string>
+    <string name="brand_mario">Mario</string>
+    <string name="ing_zinc_pca">Zinc PCA</string>
+    <string name="ing_panthenol">Panthenol</string>
+    <string name="ing_tranexamic_acid">Tranexamic Acid</string>
+    <string name="ing_aha">AHA</string>
+
+    <string name="chip_all">Tất cả</string>
     <string name="filter_label">Lọc</string>
     <string name="sort_label">Sắp xếp</string>
     <string name="chip_foundation">Foundation</string>

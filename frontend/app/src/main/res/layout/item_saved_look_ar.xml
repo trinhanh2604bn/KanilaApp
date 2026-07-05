@@ -23,7 +23,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/RoundedProductImage"
+            app:shapeAppearanceOverlay="@style/GridItemCard"
             tools:src="@android:drawable/ic_menu_report_image" />
 
         <!-- Look Name -->

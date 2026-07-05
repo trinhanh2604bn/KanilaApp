@@ -20,7 +20,6 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.frontend.R;
 import com.example.frontend.model.HomeBannerItem;
 
-import ui.category.FaceFragment;
 import ui.category.BrandPageFragment;
 
 import java.util.ArrayList;
@@ -51,18 +50,6 @@ public class ProductCategoryFragment extends Fragment {
 
         // 2. Bind Category Grid
         bindCategoryCards(view);
-        
-        View cardFace = view.findViewById(R.id.cardCategoryFace);
-        if (cardFace != null) {
-            cardFace.setOnClickListener(v -> {
-                if (getActivity() != null) {
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new FaceFragment())
-                            .addToBackStack(null)
-                            .commit();
-                }
-            });
-        }
 
         // 3. Setup Hero Slider
         setupHeroSlider(view);
@@ -75,7 +62,11 @@ public class ProductCategoryFragment extends Fragment {
 
         // 6. Setup Bottom Navigation
         BottomNavigationHelper.setup(view, tabIndex -> {
-            // Navigation handled by BottomNavigationHelper UI state
+            if (tabIndex == BottomNavigationHelper.TAB_HOME) {
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }
+            }
         });
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
 
@@ -99,6 +90,15 @@ public class ProductCategoryFragment extends Fragment {
 
         TextView tvTitle = topBar.findViewById(R.id.tvTopBarTitle);
         if (tvTitle != null) tvTitle.setText(R.string.top_bar_category_title);
+
+        ImageButton btnBack = topBar.findViewById(R.id.btnTopBarBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> {
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }
+            });
+        }
 
         ImageButton btnSearch = topBar.findViewById(R.id.btnTopBarSearch);
     }
@@ -200,6 +200,15 @@ public class ProductCategoryFragment extends Fragment {
         if (icon != null) icon.setImageResource(iconRes);
         if (image != null) image.setImageResource(imageRes);
         if (titleView != null) titleView.setText(title);
+
+        card.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, ProductListingFragment.newCategoryInstance(title))
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
     }
 
     private void bindDemandCards(View root) {

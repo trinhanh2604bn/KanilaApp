@@ -17,6 +17,7 @@ public class CartItem {
 
     public Product getProduct() { return product; }
     public String getVariant() { return variant; }
+    public void setVariant(String variant) { this.variant = variant; }
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
     public boolean isSelected() { return isSelected; }

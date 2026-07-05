@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Component tái sử dụng "Gợi ý dành cho bạn": tiêu đề + danh sách sản phẩm ngang.
-  Ruột dùng lại item_product_card.xml (Module 0) qua adapter sản phẩm sẵn có.
-  Dùng <include> vào các màn cần cross-sell (notification detail, ...).
--->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"

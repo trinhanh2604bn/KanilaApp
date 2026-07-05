@@ -63,7 +63,7 @@ public class CheckoutFragment extends Fragment {
     private void setupAddressCard(View view) {
         View card = view.findViewById(R.id.layoutCheckoutAddress);
         if (card == null) return;
-        
+
         ImageView ivIcon = card.findViewById(R.id.ivCheckoutOptionIcon);
         if (ivIcon != null) ivIcon.setImageResource(R.drawable.ic_location);
 
@@ -82,7 +82,10 @@ public class CheckoutFragment extends Fragment {
         View btnEdit = card.findViewById(R.id.tvCheckoutOptionEdit);
         if (btnEdit != null) {
             btnEdit.setOnClickListener(v -> {
-                // TODO: Handle address edit
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new CheckoutAddressFragment())
+                        .addToBackStack(null)
+                        .commit();
             });
         }
     }

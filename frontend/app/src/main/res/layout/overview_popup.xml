@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    app:cardBackgroundColor="@color/background_main"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_check_circle"
+            app:tint="@color/success" />
+
+        <TextView
+            style="@style/Text.Kanila.H2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Cập nhật thành công!"
+            android:textColor="@color/accent_dark"
+            android:textStyle="bold" />
+
+        <TextView
+            style="@style/Text.Kanila.Body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:alpha="0.7"
+            android:gravity="center"
+            android:text="Hồ sơ làm đẹp của bạn đã được lưu lại hệ thống."
+            android:textColor="@color/text_main" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPopupOk"
+            style="@style/Widget.Kanila.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Tuyệt vời"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

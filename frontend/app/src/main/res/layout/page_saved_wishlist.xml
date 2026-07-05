@@ -40,7 +40,7 @@
             android:layout_height="36dp"
             android:layout_weight="1"
             android:layout_marginHorizontal="8dp"
-            android:background="@drawable/bg_icon_soft"
+            android:background="@drawable/bg_category_visual_card"
             android:gravity="center"
             android:text="@string/tab_look_ar"
             android:textAppearance="@style/Text.Kanila.H3"

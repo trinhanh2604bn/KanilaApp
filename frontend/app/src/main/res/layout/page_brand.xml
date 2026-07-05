@@ -40,75 +40,47 @@
             android:paddingHorizontal="@dimen/spacing_l"
             android:paddingBottom="@dimen/spacing_s">
 
-            <!-- 1. Hero banner -->
+            <!-- 1. Hero banner slider -->
             <FrameLayout
-                android:id="@+id/layoutBrandHeroBanner"
                 android:layout_width="match_parent"
                 android:layout_height="140dp"
-                android:layout_marginTop="@dimen/spacing_m"
-                android:background="@drawable/bg_category_hero_banner">
+                android:layout_marginTop="@dimen/spacing_m">
 
-                <LinearLayout
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/vpBrandBanner"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/spacing_m">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvBrandHeroSmallTitle"
-                            style="@style/Text.Kanila.Micro"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/brand_fwee_title"
-                            android:textColor="@color/text_secondary" />
-
-                        <TextView
-                            android:id="@+id/tvBrandHeroTitle"
-                            style="@style/Text.Kanila.H3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/spacing_xs"
-                            android:text="@string/brand_fwee_desc"
-                            android:textColor="@color/accent_dark" />
-
-                        <TextView
-                            android:id="@+id/btnBrandHeroAction"
-                            style="@style/Text.Kanila.Micro"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/spacing_s"
-                            android:background="@drawable/bg_kanila_button_pill"
-                            android:paddingHorizontal="@dimen/spacing_m"
-                            android:paddingVertical="@dimen/spacing_xs"
-                            android:text="@string/brand_hero_action"
-                            android:textColor="@color/background_main" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/ivBrandHeroImage"
-                        android:layout_width="100dp"
-                        android:layout_height="match_parent"
-                        android:contentDescription="@string/content_desc_brand_logo"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/img_gift" />
-                </LinearLayout>
+                    android:layout_height="match_parent" />
 
                 <LinearLayout
+                    android:id="@+id/layoutBrandHeroIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
                     android:layout_marginBottom="@dimen/spacing_s"
                     android:orientation="horizontal">
-                    <View android:layout_width="6dp" android:layout_height="6dp" android:background="@drawable/bg_circle" android:backgroundTint="@color/accent_dark" />
-                    <View android:layout_width="6dp" android:layout_height="6dp" android:layout_marginStart="@dimen/spacing_xs" android:background="@drawable/bg_circle" android:backgroundTint="@color/border_divider" />
-                    <View android:layout_width="6dp" android:layout_height="6dp" android:layout_marginStart="@dimen/spacing_xs" android:background="@drawable/bg_circle" android:backgroundTint="@color/border_divider" />
+
+                    <View
+                        android:id="@+id/indicator0"
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:background="@drawable/bg_circle"
+                        android:backgroundTint="@color/accent_dark" />
+
+                    <View
+                        android:id="@+id/indicator1"
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:background="@drawable/bg_circle"
+                        android:backgroundTint="@color/border_divider" />
+
+                    <View
+                        android:id="@+id/indicator2"
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:background="@drawable/bg_circle"
+                        android:backgroundTint="@color/border_divider" />
                 </LinearLayout>
             </FrameLayout>
 

@@ -134,6 +134,13 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         });
 
+        btnWishlist.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new ui.category.ProductCategoryFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
         setupHomeShortcuts();
         setupSocialSection();
     }

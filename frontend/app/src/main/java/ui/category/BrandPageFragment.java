@@ -1,6 +1,9 @@
 package ui.category;
 
+import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +16,10 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 import com.example.frontend.R;
 import com.example.frontend.model.Brand;
+import com.example.frontend.model.HomeBannerItem;
 import java.util.ArrayList;
 import java.util.List;
 import ui.common.BottomNavigationHelper;
@@ -25,6 +30,12 @@ public class BrandPageFragment extends Fragment {
     private List<Brand> fullBrandList;
     private BrandAdapter adapter;
     private LinearLayout layoutFilterChips;
+    
+    private ViewPager2 vpBrandBanner;
+    private CategoryBannerAdapter bannerAdapter;
+    private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
+    private Runnable autoSlideRunnable;
+    private final List<View> indicators = new ArrayList<>();
 
     @Nullable
     @Override
@@ -40,6 +51,7 @@ public class BrandPageFragment extends Fragment {
         setupTopBar(view);
         setupMockData();
         setupFilterLogic();
+        setupHeroSlider(view);
         
         // Mặc định hiển thị "Tất cả"
         filterBrands(getString(R.string.filter_all));
@@ -76,6 +88,83 @@ public class BrandPageFragment extends Fragment {
                 containerSearch.setVisibility(visibility);
             });
         }
+    }
+
+    private void setupHeroSlider(View root) {
+        vpBrandBanner = root.findViewById(R.id.vpBrandBanner);
+        if (vpBrandBanner == null) return;
+
+        indicators.clear();
+        indicators.add(root.findViewById(R.id.indicator0));
+        indicators.add(root.findViewById(R.id.indicator1));
+        indicators.add(root.findViewById(R.id.indicator2));
+
+        bannerAdapter = new CategoryBannerAdapter();
+        vpBrandBanner.setAdapter(bannerAdapter);
+
+        List<HomeBannerItem> items = new ArrayList<>();
+        // Using existing slide images as requested
+        items.add(new HomeBannerItem("1", "", "", "", "Xem ngay", null, R.drawable.img_brand_1, "promotion", "4", true, 1));
+        items.add(new HomeBannerItem("2", "", "", "", "Xem ngay", null, R.drawable.img_brand_2, "promotion", "5", true, 2));
+        items.add(new HomeBannerItem("3", "", "", "", "Xem ngay", null, R.drawable.img_brand_3, "promotion", "1", true, 3));
+        items.add(new HomeBannerItem("4", "", "", "", "Xem ngay", null, R.drawable.img_brand_4, "promotion", "1", true, 3));
+
+        bannerAdapter.setItems(items);
+
+        int startPosition = (Integer.MAX_VALUE / 2) - ((Integer.MAX_VALUE / 2) % items.size());
+        vpBrandBanner.setCurrentItem(startPosition, false);
+        updateIndicators(startPosition % items.size());
+
+        setupAutoSlide(items.size());
+
+        vpBrandBanner.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                int realPos = position % items.size();
+                updateIndicators(realPos);
+                
+                autoSlideHandler.removeCallbacks(autoSlideRunnable);
+                if (autoSlideRunnable != null) {
+                    autoSlideHandler.postDelayed(autoSlideRunnable, 4000);
+                }
+            }
+        });
+    }
+
+    private void updateIndicators(int position) {
+        for (int i = 0; i < indicators.size(); i++) {
+            View indicator = indicators.get(i);
+            if (indicator != null) {
+                if (i == position) {
+                    indicator.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.accent_dark)));
+                } else {
+                    indicator.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.border_divider)));
+                }
+            }
+        }
+    }
+
+    private void setupAutoSlide(int size) {
+        if (size <= 1) return;
+
+        autoSlideRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (vpBrandBanner == null) return;
+                int currentItem = vpBrandBanner.getCurrentItem();
+                vpBrandBanner.setCurrentItem(currentItem + 1, true);
+                autoSlideHandler.postDelayed(this, 4000);
+            }
+        };
+
+        autoSlideHandler.postDelayed(autoSlideRunnable, 4000);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        autoSlideHandler.removeCallbacks(autoSlideRunnable);
     }
 
     private void setupMockData() {

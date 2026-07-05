@@ -33,63 +33,18 @@
             android:paddingHorizontal="@dimen/spacing_l"
             android:paddingBottom="@dimen/spacing_l">
 
-            <!-- 1. Hero banner -->
+            <!-- 1. Hero banner slider -->
             <FrameLayout
-                android:id="@+id/layoutCategoryHeroBanner"
                 android:layout_width="match_parent"
                 android:layout_height="130dp"
-                android:layout_marginTop="@dimen/spacing_m"
-                android:background="@drawable/bg_category_hero_banner">
+                android:layout_marginTop="@dimen/spacing_m">
 
-                <LinearLayout
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/vpCategoryBanner"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/spacing_m">
+                    android:layout_height="match_parent" />
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvHeroSmallTitle"
-                            style="@style/Text.Kanila.Micro"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/category_hero_small_title"
-                            android:textColor="@color/text_secondary" />
-
-                        <TextView
-                            android:id="@+id/tvHeroTitle"
-                            style="@style/Text.Kanila.H3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/spacing_xs"
-                            android:text="@string/category_hero_title"
-                            android:textColor="@color/accent_dark" />
-
-                        <TextView
-                            android:id="@+id/tvHeroDescription"
-                            style="@style/Text.Kanila.Micro"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/spacing_xs"
-                            android:text="@string/category_hero_description"
-                            android:textColor="@color/text_secondary" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/ivHeroProductImage"
-                        android:layout_width="100dp"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/img_gift" />
-                </LinearLayout>
-
-                <!-- Indicator dots placeholder -->
+                <!-- Indicator dots -->
                 <LinearLayout
                     android:id="@+id/layoutHeroIndicator"
                     android:layout_width="wrap_content"
@@ -99,12 +54,14 @@
                     android:orientation="horizontal">
 
                     <View
+                        android:id="@+id/indicator0"
                         android:layout_width="6dp"
                         android:layout_height="6dp"
                         android:background="@drawable/bg_circle"
                         android:backgroundTint="@color/accent_dark" />
 
                     <View
+                        android:id="@+id/indicator1"
                         android:layout_width="6dp"
                         android:layout_height="6dp"
                         android:layout_marginStart="@dimen/spacing_xs"
@@ -112,6 +69,7 @@
                         android:backgroundTint="@color/border_divider" />
 
                     <View
+                        android:id="@+id/indicator2"
                         android:layout_width="6dp"
                         android:layout_height="6dp"
                         android:layout_marginStart="@dimen/spacing_xs"

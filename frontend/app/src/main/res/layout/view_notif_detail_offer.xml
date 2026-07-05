@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- Status Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_account_header_card"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="20dp">
+
+        <ImageView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_icon_circle_pink"
+            android:padding="12dp"
+            android:src="@drawable/ic_coupon"
+            app:tint="@color/accent_dark" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvOfferHeaderTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Voucher độc quyền\ndành riêng cho bạn"
+                android:textAppearance="@style/Text.Kanila.H3"
+                android:textColor="@color/accent_dark" />
+
+            <TextView
+                android:id="@+id/tvOfferHeaderSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Ưu đãi giới hạn, sử dụng ngay trước khi hết hạn."
+                android:textAppearance="@style/Text.Kanila.Caption"
+                android:textColor="@color/text_secondary" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Big Voucher Card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_voucher_selected"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/tvOfferAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="GIẢM 100.000đ"
+            android:textAppearance="@style/Text.Kanila.H1"
+            android:textColor="@color/button"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvOfferCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="Mã: KANILA100K"
+            android:textAppearance="@style/Text.Kanila.H3"
+            android:textColor="@color/accent_dark" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="16dp"
+            android:background="@color/border_divider" />
+
+        <TextView
+            android:id="@+id/tvOfferCondition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• Áp dụng cho đơn từ 500.000đ\n• Hạn dùng: 25/05/2025\n• Tất cả các dòng serum"
+            android:textAppearance="@style/Text.Kanila.Body"
+            android:textColor="@color/text_secondary"
+            android:lineSpacingExtra="4dp" />
+
+        <TextView
+            android:id="@+id/btnOfferUse"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_button_primary"
+            android:gravity="center"
+            android:text="Dùng ngay"
+            android:textAppearance="@style/Text.Kanila.BodyMedium"
+            android:textColor="@color/background_main" />
+    </LinearLayout>
+
+</LinearLayout>

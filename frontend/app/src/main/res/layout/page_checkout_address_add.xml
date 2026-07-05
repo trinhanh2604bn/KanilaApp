@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical">
+
+    <!-- Header -->
+    <include
+        android:id="@+id/layoutTopBar"
+        layout="@layout/view_app_top_bar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_l">
+
+            <!-- Name Input -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/form_field_spacing"
+                android:background="@drawable/bg_kanila_input_default"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:paddingVertical="@dimen/spacing_s">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_account"
+                    app:tint="@color/accent_dark" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_m"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelFullName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_bold"
+                        android:textColor="@color/accent_dark"
+                        android:textSize="12sp"
+                        tools:text="Họ và tên" />
+
+                    <EditText
+                        android:id="@+id/edtAddressFullName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:fontFamily="@font/nunito_regular"
+                        android:hint=""
+                        android:importantForAutofill="no"
+                        android:inputType="textPersonName"
+                        android:paddingVertical="@dimen/spacing_xs"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        tools:hint="Nhập họ và tên"
+                        tools:ignore="TouchTargetSizeCheck" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Phone Input -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/form_field_spacing"
+                android:background="@drawable/bg_kanila_input_default"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:paddingVertical="@dimen/spacing_s">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_support"
+                    app:tint="@color/accent_dark" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_m"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelPhone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_bold"
+                        android:textColor="@color/accent_dark"
+                        android:textSize="12sp"
+                        tools:text="Số điện thoại" />
+
+                    <EditText
+                        android:id="@+id/edtAddressPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:fontFamily="@font/nunito_regular"
+                        android:hint=""
+                        android:importantForAutofill="no"
+                        android:inputType="phone"
+                        android:paddingVertical="@dimen/spacing_xs"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        tools:hint="Nhập số điện thoại"
+                        tools:ignore="TouchTargetSizeCheck" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Province Selector -->
+            <LinearLayout
+                android:id="@+id/layoutAddressProvince"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/form_field_spacing"
+                android:background="@drawable/bg_kanila_input_default"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:paddingVertical="@dimen/spacing_s">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_location"
+                    app:tint="@color/accent_dark" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_m"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelProvince"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_bold"
+                        android:textColor="@color/accent_dark"
+                        android:textSize="12sp"
+                        tools:text="Tỉnh/Thành phố" />
+
+                    <TextView
+                        android:id="@+id/edtAddressProvince"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_regular"
+                        android:paddingVertical="@dimen/spacing_xs"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        tools:text="Chọn tỉnh/thành phố" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_chevron_down"
+                    app:tint="@color/text_tertiary" />
+            </LinearLayout>
+
+            <!-- Ward Selector -->
+            <LinearLayout
+                android:id="@+id/layoutAddressWard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/form_field_spacing"
+                android:background="@drawable/bg_kanila_input_default"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:paddingVertical="@dimen/spacing_s">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_location"
+                    app:tint="@color/accent_dark" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_m"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelWard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_bold"
+                        android:textColor="@color/accent_dark"
+                        android:textSize="12sp"
+                        tools:text="Thôn/Xóm" />
+
+                    <TextView
+                        android:id="@+id/edtAddressWard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_regular"
+                        android:paddingVertical="@dimen/spacing_xs"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        tools:text="Chọn phường/xã" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_chevron_down"
+                    app:tint="@color/text_tertiary" />
+            </LinearLayout>
+
+            <!-- Detailed Address Input -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/form_field_spacing"
+                android:background="@drawable/bg_kanila_input_default"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:paddingVertical="@dimen/spacing_s">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="2dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_home"
+                    app:tint="@color/accent_dark" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_m"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelDetail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_bold"
+                        android:textColor="@color/accent_dark"
+                        android:textSize="12sp"
+                        tools:text="Địa chỉ chi tiết" />
+
+                    <EditText
+                        android:id="@+id/edtAddressDetail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:fontFamily="@font/nunito_regular"
+                        android:gravity="top"
+                        android:hint=""
+                        android:importantForAutofill="no"
+                        android:inputType="textMultiLine"
+                        android:maxLength="255"
+                        android:minLines="2"
+                        android:paddingVertical="@dimen/spacing_xs"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        tools:hint="Số nhà, tên đường, tòa nhà, căn hộ..." />
+
+                    <TextView
+                        android:id="@+id/tvAddressCounter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:fontFamily="@font/nunito_regular"
+                        android:textColor="@color/text_tertiary"
+                        android:textSize="11sp"
+                        tools:text="0/255" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Use Current Location -->
+            <LinearLayout
+                android:id="@+id/layoutUseCurrentLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_xl"
+                android:background="@drawable/bg_chip_pink"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:padding="@dimen/spacing_m">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_goal_target"
+                    app:tint="@color/button" />
+
+                <TextView
+                    android:id="@+id/tvUseCurrentLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_m"
+                    android:fontFamily="@font/nunito_bold"
+                    android:textColor="@color/button"
+                    android:textSize="14sp"
+                    tools:text="Dùng vị trí hiện tại" />
+            </LinearLayout>
+
+            <!-- Address Tag Selector -->
+            <TextView
+                android:id="@+id/tvLabelTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_m"
+                android:fontFamily="@font/nunito_bold"
+                android:textColor="@color/text_main"
+                android:textSize="14sp"
+                tools:text="Gắn thẻ địa chỉ" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupAddressTag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_xl"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAddressHome"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_semibold"
+                    app:chipIcon="@drawable/ic_home"
+                    app:chipIconTint="@color/accent_dark"
+                    tools:text="Nhà riêng" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAddressOffice"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_semibold"
+                    app:chipIcon="@drawable/ic_verified"
+                    app:chipIconTint="@color/accent_dark"
+                    tools:text="Văn phòng" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAddressOther"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_semibold"
+                    app:chipIcon="@drawable/ic_comment"
+                    app:chipIconTint="@color/accent_dark"
+                    tools:text="Khác" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Set as Default -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_xl">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@+id/switchAddressDefault"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelDefault"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_bold"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        tools:text="Đặt làm mặc định" />
+
+                    <TextView
+                        android:id="@+id/tvLabelDefaultDesc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:fontFamily="@font/nunito_regular"
+                        android:textColor="@color/text_tertiary"
+                        android:textSize="12sp"
+                        tools:text="Địa chỉ mặc định sẽ được chọn ở lần đặt hàng sau" />
+                </LinearLayout>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchAddressDefault"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    app:thumbTint="@color/button"
+                    app:trackTint="@color/secondary" />
+            </RelativeLayout>
+
+            <!-- Save Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveAddress"
+                style="@style/Widget.Kanila.Button.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_l"
+                tools:text="Lưu địa chỉ" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

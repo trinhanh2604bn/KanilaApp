@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutBottomSheetArrange"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_l">
+
+    <FrameLayout
+        android:id="@+id/layoutArrangeHeader"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/touch_target_min"
+        android:paddingHorizontal="@dimen/spacing_s">
+
+        <TextView
+            android:id="@+id/tvArrangeTitle"
+            style="@style/H2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Sắp xếp"
+            android:textColor="@color/accent_dark" />
+
+        <ImageButton
+            android:id="@+id/btnCloseArrange"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:layout_gravity="end|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Đóng"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_close"
+            app:tint="@color/text_main"
+            tools:ignore="TouchTargetSizeCheck" />
+
+    </FrameLayout>
+
+    <!-- Phù hợp nhất -->
+    <LinearLayout
+        android:id="@+id/layoutSortBestMatch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+
+        <RadioButton
+            android:id="@+id/rbSortBestMatch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/button"
+            android:checked="true"
+            android:clickable="false" />
+
+        <ImageView
+            android:id="@+id/ivSortBestMatch"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginHorizontal="@dimen/spacing_m"
+            android:src="@drawable/ic_goal_sparkle"
+            app:tint="@color/button" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvSortBestMatchTitle"
+                style="@style/H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phù hợp nhất"
+                android:textColor="@color/accent_dark" />
+
+            <TextView
+                android:id="@+id/tvSortBestMatchSubtitle"
+                style="@style/Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thuật toán đề xuất của Kanila AI"
+                android:textColor="@color/button" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_divider" />
+
+    <!-- Bán chạy -->
+    <LinearLayout
+        android:id="@+id/layoutSortBestSeller"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+
+        <RadioButton
+            android:id="@+id/rbSortBestSeller"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/primary"
+            android:clickable="false" />
+
+        <ImageView
+            android:id="@+id/ivSortBestSeller"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginHorizontal="@dimen/spacing_m"
+            android:src="@drawable/ic_hot"
+            app:tint="@color/button" />
+
+        <TextView
+            android:id="@+id/tvSortBestSellerTitle"
+            style="@style/H3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Bán chạy"
+            android:textColor="@color/text_main" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_divider" />
+
+    <!-- Giá thấp đến cao -->
+    <LinearLayout
+        android:id="@+id/layoutSortPriceLowToHigh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+
+        <RadioButton
+            android:id="@+id/rbSortPriceLowToHigh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/primary"
+            android:clickable="false" />
+
+        <ImageView
+            android:id="@+id/ivSortPriceLowToHigh"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginHorizontal="@dimen/spacing_m"
+            android:src="@drawable/ic_arrow_up"
+            app:tint="@color/button" />
+
+        <TextView
+            android:id="@+id/tvSortPriceLowToHighTitle"
+            style="@style/H3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Giá thấp đến cao"
+            android:textColor="@color/text_main" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_divider" />
+
+    <!-- Giá cao đến thấp -->
+    <LinearLayout
+        android:id="@+id/layoutSortPriceHighToLow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+
+        <RadioButton
+            android:id="@+id/rbSortPriceHighToLow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/primary"
+            android:clickable="false" />
+
+        <ImageView
+            android:id="@+id/ivSortPriceHighToLow"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginHorizontal="@dimen/spacing_m"
+            android:src="@drawable/ic_arrow_down"
+            app:tint="@color/button" />
+
+        <TextView
+            android:id="@+id/tvSortPriceHighToLowTitle"
+            style="@style/H3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Giá cao đến thấp"
+            android:textColor="@color/text_main" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_divider" />
+
+    <!-- Mới nhất -->
+    <LinearLayout
+        android:id="@+id/layoutSortNewest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+
+        <RadioButton
+            android:id="@+id/rbSortNewest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/primary"
+            android:clickable="false" />
+
+        <ImageView
+            android:id="@+id/ivSortNewest"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginHorizontal="@dimen/spacing_m"
+            android:src="@drawable/ic_new"
+            app:tint="@color/button" />
+
+        <TextView
+            android:id="@+id/tvSortNewestTitle"
+            style="@style/H3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Mới nhất"
+            android:textColor="@color/text_main" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_divider" />
+
+    <LinearLayout
+        android:id="@+id/layoutArrangeActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnApplyArrange"
+            style="@style/Widget.Kanila.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:text="Áp dụng" />
+    </LinearLayout>
+
+</LinearLayout>

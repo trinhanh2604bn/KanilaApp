@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical">
+
+    <!-- Header - Title set in code, Search button hidden in code -->
+    <include
+        android:id="@+id/layoutHeader"
+        layout="@layout/view_app_top_bar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_l">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_bold"
+                android:text="@string/payment_method_choose"
+                android:textColor="@color/text_main"
+                android:textSize="16sp" />
+
+            <!-- Payment Methods List -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_m"
+                android:orientation="vertical">
+
+                <!-- COD - Selected -->
+                <LinearLayout
+                    android:id="@+id/layoutCod"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_selection_selected"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_m">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/rbCod"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        app:buttonTint="@color/button" />
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="@dimen/spacing_m"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_delivery_truck" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_m"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="@string/payment_method_cod"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/payment_method_cod_desc"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- VNPay -->
+                <LinearLayout
+                    android:id="@+id/layoutVnpay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_m">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/rbVnpay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        app:buttonTint="@color/button" />
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="@dimen/spacing_m"
+                        android:scaleType="centerInside"
+                        android:src="@android:drawable/ic_menu_report_image" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_m"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="@string/payment_method_vnpay"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/payment_method_vnpay_desc"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="80dp"
+                    android:background="@color/border_divider" />
+
+                <!-- MoMo -->
+                <LinearLayout
+                    android:id="@+id/layoutMomo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_m">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/rbMomo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        app:buttonTint="@color/button" />
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="@dimen/spacing_m"
+                        android:background="@drawable/bg_icon_soft"
+                        android:padding="4dp"
+                        android:scaleType="centerInside"
+                        android:src="@android:drawable/ic_menu_report_image" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_m"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="@string/payment_method_momo"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/payment_method_momo_desc"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="80dp"
+                    android:background="@color/border_divider" />
+
+                <!-- ZaloPay -->
+                <LinearLayout
+                    android:id="@+id/layoutZalopay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_m">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/rbZalopay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        app:buttonTint="@color/button" />
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="@dimen/spacing_m"
+                        android:background="#E3F2FD"
+                        android:padding="4dp"
+                        android:scaleType="centerInside"
+                        android:src="@android:drawable/ic_menu_report_image" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_m"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="@string/payment_method_zalopay"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/payment_method_zalopay_desc"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="80dp"
+                    android:background="@color/border_divider" />
+
+                <!-- Thẻ ngân hàng -->
+                <LinearLayout
+                    android:id="@+id/layoutBankCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_m">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/rbBankCard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        app:buttonTint="@color/button" />
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="@dimen/spacing_m"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_paymeny_card" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_m"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="@string/payment_method_bank"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/payment_method_bank_desc"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="80dp"
+                    android:background="@color/border_divider" />
+
+                <!-- Apple Pay / Google Pay -->
+                <LinearLayout
+                    android:id="@+id/layoutAppleGoogle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_m">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/rbAppleGoogle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        app:buttonTint="@color/button" />
+
+                    <View
+                        android:layout_width="40dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="@dimen/spacing_m" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_m"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="@string/payment_method_apple_google"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/payment_method_apple_google_desc"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Invoice Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardInvoice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:layout_marginBottom="@dimen/spacing_xl"
+                app:cardBackgroundColor="@color/background_main"
+                app:cardCornerRadius="@dimen/radius_m"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border_divider"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_l">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_bold"
+                        android:text="@string/invoice_title"
+                        android:textColor="@color/text_main"
+                        android:textSize="16sp" />
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/cbInvoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_s"
+                        android:checked="true"
+                        android:fontFamily="@font/nunito_bold"
+                        android:text="@string/invoice_checkbox"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        app:buttonTint="@color/button" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutInvoiceDetails"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_m"
+                        android:background="@drawable/bg_skeleton_placeholder"
+                        android:backgroundTint="@color/background_sub"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_m">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/nunito_regular"
+                                android:text="@string/invoice_company_label"
+                                android:textColor="@color/text_tertiary"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/tvInvoiceName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/nunito_bold"
+                                android:text="Nguyễn Thị Mai"
+                                android:textColor="@color/text_main"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_s"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/nunito_regular"
+                                android:text="@string/invoice_tax_label"
+                                android:textColor="@color/text_tertiary"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/tvInvoiceTaxCode"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/nunito_bold"
+                                android:text="0101234567"
+                                android:textColor="@color/text_main"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_s"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/nunito_regular"
+                                android:text="@string/invoice_email_label"
+                                android:textColor="@color/text_tertiary"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/tvInvoiceEmail"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/nunito_bold"
+                                android:text="mainguyen@gmail.com"
+                                android:textColor="@color/text_main"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Action Button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/spacing_l">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAgree"
+            style="@style/Widget.Kanila.Button.Primary"
+            android:layout_width="200dp"
+            android:layout_height="@dimen/button_height"
+            android:text="@string/action_agree" />
+    </LinearLayout>
+
+</LinearLayout>

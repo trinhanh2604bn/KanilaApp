@@ -8,8 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -17,11 +17,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
@@ -29,7 +30,9 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.example.frontend.feature.home.HomeBannerAdapter;
+import com.example.frontend.feature.home.HomeProductAdapter;
 import com.example.frontend.feature.home.HomeShortcutAdapter;
+import com.example.frontend.feature.home.HomeViewModel;
 import com.example.frontend.feature.search.SearchActivity;
 import com.example.frontend.model.HomeBannerItem;
 import com.example.frontend.model.HomeShortcutItem;
@@ -47,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
     private View layoutSearchBar;
     private ImageButton btnNotification, btnCart, btnWishlist;
     private RecyclerView rvHomeShortcuts;
+    private RecyclerView rvRecommendedProducts;
+    private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
+    
     private View layoutKanilaReelsCard, layoutReelThumbOne, layoutReelThumbTwo;
     private ImageView ivReelThumbOne, ivReelThumbTwo;
     private View layoutKanilaChallengeCard, btnJoinChallenge;
@@ -58,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
 
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
+    private HomeProductAdapter productAdapter;
+    private HomeViewModel viewModel;
+    
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
 
@@ -65,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -75,6 +86,10 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         setupSearchBehavior();
         setupBannerSlider();
+        setupProductList();
+        
+        observeViewModel();
+        viewModel.loadHomeData();
     }
 
     private void initViews() {
@@ -84,6 +99,10 @@ public class MainActivity extends AppCompatActivity {
         btnCart = findViewById(R.id.btnCart);
         btnWishlist = findViewById(R.id.btnWishlist);
         rvHomeShortcuts = findViewById(R.id.rvHomeShortcuts);
+        rvRecommendedProducts = findViewById(R.id.rvRecommendedProducts);
+        layoutHomeStateContainer = findViewById(R.id.layoutHomeStateContainer);
+        viewHomeLoading = findViewById(R.id.viewHomeLoading);
+        viewHomeError = findViewById(R.id.viewHomeError);
 
         layoutKanilaReelsCard = findViewById(R.id.layoutKanilaReelsCard);
         layoutReelThumbOne = findViewById(R.id.layoutReelThumbOne);
@@ -117,33 +136,69 @@ public class MainActivity extends AppCompatActivity {
 
         setupHomeShortcuts();
         setupSocialSection();
+    }
 
+    private void setupProductList() {
+        productAdapter = new HomeProductAdapter();
+        productAdapter.setOnProductClickListener(product -> {
+            Toast.makeText(this, "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
+        });
 
-//        btnCart.setOnClickListener(v -> {
-            // Tạm thời thay thế bằng việc mở CheckoutFragment để xem giao diện
-//            getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.main, new ui.commerce.CheckoutFragment())
-//                    .addToBackStack(null)
-//                    .commit();
-//        });
+        rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        rvRecommendedProducts.setAdapter(productAdapter);
+    }
+
+    private void observeViewModel() {
+        viewModel.getUiState().observe(this, state -> {
+            if (state == null) return;
+
+            if (state.loading) {
+                showLoading();
+            } else if (state.error != null) {
+                showError(state.error);
+            } else if (state.products != null) {
+                showContent();
+                productAdapter.setProducts(state.products);
+            }
+        });
+    }
+
+    private void showLoading() {
+        layoutHomeStateContainer.setVisibility(View.VISIBLE);
+        viewHomeLoading.setVisibility(View.VISIBLE);
+        viewHomeError.setVisibility(View.GONE);
+        rvRecommendedProducts.setVisibility(View.GONE);
+    }
+
+    private void showContent() {
+        layoutHomeStateContainer.setVisibility(View.GONE);
+        rvRecommendedProducts.setVisibility(View.VISIBLE);
+    }
+
+    private void showError(String message) {
+        layoutHomeStateContainer.setVisibility(View.VISIBLE);
+        viewHomeLoading.setVisibility(View.GONE);
+        viewHomeError.setVisibility(View.VISIBLE);
+        rvRecommendedProducts.setVisibility(View.GONE);
+
+        TextView tvError = viewHomeError.findViewById(R.id.tvErrorTitle);
+        if (tvError != null) tvError.setText(message);
+
+        View btnRetry = viewHomeError.findViewById(R.id.btnErrorRetry);
+        if (btnRetry != null) btnRetry.setOnClickListener(v -> viewModel.loadHomeData());
     }
 
     private void setupSocialSection() {
         String reelOneUrl = "https://youtube.com/shorts/JytbqPADyQc?si=cXt-VYSr5hhdpOQg";
         String reelTwoUrl = "https://youtube.com/shorts/LwHA4UF3XQI?si=icecCgY-kTDcaYTz";
 
-        // Construct YouTube thumbnail URLs
         String thumbOneUrl = "https://img.youtube.com/vi/JytbqPADyQc/0.jpg";
         String thumbTwoUrl = "https://img.youtube.com/vi/LwHA4UF3XQI/0.jpg";
 
-        // Load thumbnails using Glide
         Glide.with(this).load(thumbOneUrl).into(ivReelThumbOne);
         Glide.with(this).load(thumbTwoUrl).into(ivReelThumbTwo);
 
-        layoutKanilaReelsCard.setOnClickListener(v -> {
-            Toast.makeText(this, "Kanila Reels", Toast.LENGTH_SHORT).show();
-            // TODO: Navigate to ReelsFeedFragment
-        });
+        layoutKanilaReelsCard.setOnClickListener(v -> Toast.makeText(this, "Kanila Reels", Toast.LENGTH_SHORT).show());
 
         layoutReelThumbOne.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reelOneUrl));
@@ -155,46 +210,18 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        layoutKanilaChallengeCard.setOnClickListener(v -> {
-            Toast.makeText(this, "Kanila Challenge", Toast.LENGTH_SHORT).show();
-            // TODO: Navigate to ChallengeDetailFragment
-        });
+        layoutKanilaChallengeCard.setOnClickListener(v -> Toast.makeText(this, "Kanila Challenge", Toast.LENGTH_SHORT).show());
 
-        btnJoinChallenge.setOnClickListener(v -> {
-            Toast.makeText(this, "Tham gia challenge", Toast.LENGTH_SHORT).show();
-        });
+        btnJoinChallenge.setOnClickListener(v -> Toast.makeText(this, "Tham gia challenge", Toast.LENGTH_SHORT).show());
 
         tvChallengeProgress.setText(getString(R.string.home_social_challenge_progress_format, "8", "14"));
         tvChallengeParticipants.setText(getString(R.string.home_social_challenge_participants_format, "12.6K"));
         tvChallengeReward.setText(getString(R.string.home_social_challenge_reward_format, "200"));
     }
 
-    private void showExpandedSearch() {
-        layoutSearchBar.setVisibility(View.GONE);
-        layoutSearchExpandedBar.setVisibility(View.VISIBLE);
-
-        edtExpandedSearchQuery.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.showSoftInput(edtExpandedSearchQuery, InputMethodManager.SHOW_IMPLICIT);
-        }
-    }
-
-    private void collapseExpandedSearch() {
-        layoutSearchExpandedBar.setVisibility(View.GONE);
-        layoutSearchBar.setVisibility(View.VISIBLE);
-
-        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(edtExpandedSearchQuery.getWindowToken(), 0);
-        }
-    }
-
     private void setupHomeShortcuts() {
         shortcutAdapter = new HomeShortcutAdapter();
-        shortcutAdapter.setOnShortcutClickListener(item -> {
-            Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
-        });
+        shortcutAdapter.setOnShortcutClickListener(item -> Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show());
 
         rvHomeShortcuts.setAdapter(shortcutAdapter);
 
@@ -213,9 +240,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupBannerSlider() {
         bannerAdapter = new HomeBannerAdapter();
-        bannerAdapter.setOnBannerClickListener(item -> {
-            Toast.makeText(this, "Clicked: " + item.getButtonText(), Toast.LENGTH_SHORT).show();
-        });
+        bannerAdapter.setOnBannerClickListener(item -> Toast.makeText(this, "Clicked: " + item.getButtonText(), Toast.LENGTH_SHORT).show());
 
         vpHomeBanner.setAdapter(bannerAdapter);
         vpHomeBanner.setOffscreenPageLimit(3);
@@ -226,9 +251,6 @@ public class MainActivity extends AppCompatActivity {
             float r = 1 - Math.abs(position);
             page.setScaleY(0.85f + r * 0.15f);
             page.setAlpha(0.5f + r * 0.5f);
-
-
-            // Adjust translation to keep neighbors partially visible and neatly tucked
             float translationOffset = position * -getResources().getDimension(R.dimen.spacing_m) * 2;
             page.setTranslationX(translationOffset);
         });
@@ -257,13 +279,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (vpHomeBanner == null) return;
-
                 int currentItem = vpHomeBanner.getCurrentItem();
                 int nextItem = currentItem + 1;
-
-                // Use custom smooth scroll for a more fluid movement
                 smoothScrollTo(nextItem, 800);
-
                 autoSlideHandler.postDelayed(this, 4000);
             }
         };
@@ -285,25 +303,15 @@ public class MainActivity extends AppCompatActivity {
 
         int currentItem = vpHomeBanner.getCurrentItem();
         int itemsToScroll = position - currentItem;
-
-
-        // Handle wrap-around for a smoother loop feel (optional, but here we just follow position)
-        // If we want to always scroll forward even at the end, we'd need a different adapter setup.
-
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1f);
         final float[] previousStep = {0f};
-
-        // Calculate the total pixels to scroll
-        // In ViewPager2, one page scroll corresponds to its full width
         float totalPxToDrag = (float) vpHomeBanner.getWidth() * itemsToScroll;
 
         animator.addUpdateListener(animation -> {
             if (!vpHomeBanner.isFakeDragging()) return;
-
             float currentStep = (float) animation.getAnimatedValue();
             float deltaStep = currentStep - previousStep[0];
             float pixelsToDragNow = deltaStep * totalPxToDrag;
-
             try {
                 vpHomeBanner.fakeDragBy(-pixelsToDragNow);
             } catch (Exception e) {
@@ -320,16 +328,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                if (vpHomeBanner.isFakeDragging()) {
-                    vpHomeBanner.endFakeDrag();
-                }
+                if (vpHomeBanner.isFakeDragging()) vpHomeBanner.endFakeDrag();
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-                if (vpHomeBanner.isFakeDragging()) {
-                    vpHomeBanner.endFakeDrag();
-                }
+                if (vpHomeBanner.isFakeDragging()) vpHomeBanner.endFakeDrag();
             }
         });
 

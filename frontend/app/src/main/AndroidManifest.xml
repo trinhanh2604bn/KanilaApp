@@ -23,6 +23,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".feature.search.SearchActivity"
+            android:exported="false"
+            android:windowSoftInputMode="stateVisible" />
+        <activity
             android:name=".MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />

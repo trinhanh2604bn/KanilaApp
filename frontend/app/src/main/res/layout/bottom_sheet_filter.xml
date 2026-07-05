@@ -1,279 +1,838 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutBottomSheetFilter"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
     android:background="@drawable/bg_bottom_sheet"
-    android:paddingTop="12dp"
-    android:paddingBottom="16dp">
+    android:orientation="vertical">
 
     <View
         android:layout_width="40dp"
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/spacing_m"
         android:background="@drawable/bg_drag_handle" />
 
-    <!-- Header -->
+    <!-- Fixed Header -->
     <FrameLayout
+        android:id="@+id/layoutFilterHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="8dp">
+        android:paddingHorizontal="@dimen/spacing_s"
+        android:paddingTop="@dimen/spacing_s"
+        android:paddingBottom="6dp">
 
         <TextView
+            android:id="@+id/tvFilterTitle"
+            style="@style/Text.Kanila.H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Bộ lọc sản phẩm"
-            android:textAppearance="@style/H3"
-            android:textColor="@color/text_main" />
+            android:text="@string/filter_title"
+            android:textColor="@color/accent_dark" />
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+        <ImageButton
+            android:id="@+id/btnCloseFilter"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
             android:layout_gravity="end|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_close"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_close"
-            app:tint="@color/text_secondary"
-            android:contentDescription="Đóng" />
+            app:tint="@color/accent_dark"
+            tools:ignore="TouchTargetSizeCheck" />
     </FrameLayout>
 
-    <!-- Nhóm: Danh mục -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="16dp"
-        android:text="Danh mục"
-        android:textAppearance="@style/H3"
-        android:textColor="@color/text_main" />
-
-    <com.google.android.material.chip.ChipGroup
+    <!-- Scrollable Content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollFilterContent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="8dp"
-        app:chipSpacingHorizontal="8dp"
-        app:chipSpacingVertical="8dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="false"
+        android:overScrollMode="never">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/layoutFilterContent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_default"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="Skincare"
-            android:textAppearance="@style/Caption"
-            android:textColor="@color/text_secondary" />
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_s"
+            android:paddingBottom="@dimen/spacing_l">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_selected"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="Makeup"
-            android:textAppearance="@style/Caption"
-            android:textColor="@color/background_main" />
+            <!-- Section 1: Loại da -->
+            <TextView
+                android:id="@+id/tvSkinTypeTitle"
+                style="@style/Text.Kanila.H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                android:text="@string/filter_skin_type"
+                android:textColor="@color/accent_dark" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_default"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="Haircare"
-            android:textAppearance="@style/Caption"
-            android:textColor="@color/text_secondary" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:weightSum="4">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_default"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="Bodycare"
-            android:textAppearance="@style/Caption"
-            android:textColor="@color/text_secondary" />
-    </com.google.android.material.chip.ChipGroup>
+                <LinearLayout
+                    android:id="@+id/chipSkinOily"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_filter_card_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="@dimen/spacing_s">
 
-    <!-- Nhóm: Giá -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="24dp"
-        android:text="Giá"
-        android:textAppearance="@style/H3"
-        android:textColor="@color/text_main" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_drops"
+                        app:tint="@color/selector_filter_icon_tint" />
 
-    <com.google.android.material.chip.ChipGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="8dp"
-        app:chipSpacingHorizontal="8dp"
-        app:chipSpacingVertical="8dp">
+                    <TextView
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/filter_skin_oily"
+                        android:textColor="@color/selector_filter_chip_text" />
+                </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_default"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="Dưới 200k"
-            android:textAppearance="@style/Caption"
-            android:textColor="@color/text_secondary" />
+                <LinearLayout
+                    android:id="@+id/chipSkinDry"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_filter_card_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="@dimen/spacing_s">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_selected"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="200k – 500k"
-            android:textAppearance="@style/Caption"
-            android:textColor="@color/background_main" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_drops"
+                        app:tint="@color/selector_filter_icon_tint" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_default"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="500k – 1 triệu"
-            android:textAppearance="@style/Caption"
-            android:textColor="@color/text_secondary" />
+                    <TextView
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/filter_skin_dry"
+                        android:textColor="@color/selector_filter_chip_text" />
+                </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_default"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="Trên 1 triệu"
-            android:textAppearance="@style/Caption"
-            android:textColor="@color/text_secondary" />
-    </com.google.android.material.chip.ChipGroup>
+                <LinearLayout
+                    android:id="@+id/chipSkinNormal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_filter_card_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="@dimen/spacing_s">
 
-    <!-- Nhóm: Thương hiệu -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="24dp"
-        android:text="Thương hiệu"
-        android:textAppearance="@style/H3"
-        android:textColor="@color/text_main" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_drops"
+                        app:tint="@color/selector_filter_icon_tint" />
 
-    <com.google.android.material.chip.ChipGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="8dp"
-        app:chipSpacingHorizontal="8dp"
-        app:chipSpacingVertical="8dp">
+                    <TextView
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/filter_skin_normal"
+                        android:textColor="@color/selector_filter_chip_text" />
+                </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_selected"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="Tất cả"
-            android:textAppearance="@style/Caption"
-            android:textColor="@color/background_main" />
+                <LinearLayout
+                    android:id="@+id/chipSkinSensitive"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_filter_card_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="@dimen/spacing_s">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_default"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="Kanila"
-            android:textAppearance="@style/Caption"
-            android:textColor="@color/text_secondary" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_drops"
+                        app:tint="@color/selector_filter_icon_tint" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_default"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="The Ordinary"
-            android:textAppearance="@style/Caption"
-            android:textColor="@color/text_secondary" />
+                    <TextView
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/filter_skin_sensitive"
+                        android:textColor="@color/selector_filter_chip_text" />
+                </LinearLayout>
+            </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_default"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="Laneige"
-            android:textAppearance="@style/Caption"
-            android:textColor="@color/text_secondary" />
-    </com.google.android.material.chip.ChipGroup>
+            <!-- Section 2: Tone da -->
+            <TextView
+                style="@style/Text.Kanila.H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                android:text="@string/filter_tone"
+                android:textColor="@color/accent_dark" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="8dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:weightSum="3">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Xem thêm"
-            android:textAppearance="@style/Caption"
-            android:textColor="@color/text_secondary" />
+                <LinearLayout
+                    android:id="@+id/chipToneLight"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_filter_card_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="@dimen/spacing_s">
 
-        <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="4dp"
-            android:src="@drawable/ic_chevron_down"
-            app:tint="@color/text_secondary"
-            android:contentDescription="Mở rộng" />
-    </LinearLayout>
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_drops"
+                        app:tint="@color/selector_filter_icon_tint" />
 
+                    <TextView
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/filter_tone_light"
+                        android:textColor="@color/selector_filter_chip_text" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/chipToneMedium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_filter_card_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="@dimen/spacing_s">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_drops"
+                        app:tint="@color/selector_filter_icon_tint" />
+
+                    <TextView
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/filter_tone_medium"
+                        android:textColor="@color/selector_filter_chip_text" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/chipToneDark"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_filter_card_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="@dimen/spacing_s">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_drops"
+                        app:tint="@color/selector_filter_icon_tint" />
+
+                    <TextView
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/filter_tone_dark"
+                        android:textColor="@color/selector_filter_chip_text" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Section 3: Khoảng giá -->
+            <TextView
+                style="@style/Text.Kanila.H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                android:text="@string/filter_price_range"
+                android:textColor="@color/accent_dark" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/edtMinPrice"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/input_height"
+                    android:layout_weight="1"
+                    android:autofillHints="none"
+                    android:background="@drawable/bg_input"
+                    android:hint="@string/filter_price_from"
+                    android:inputType="number"
+                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:textColor="@color/text_main"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/spacing_s"
+                    android:text="@string/filter_price_separator"
+                    android:textColor="@color/text_tertiary" />
+
+                <EditText
+                    android:id="@+id/edtMaxPrice"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/input_height"
+                    android:layout_weight="1"
+                    android:autofillHints="none"
+                    android:background="@drawable/bg_input"
+                    android:hint="@string/filter_price_to"
+                    android:inputType="number"
+                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:textColor="@color/text_main"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                app:chipSpacingHorizontal="32dp"
+                app:chipSpacingVertical="@dimen/spacing_l"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPrice0To100"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="110dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textAlignment="center"
+                    android:text="@string/price_0_100"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    app:checkedIconVisible="false"
+                    app:closeIconVisible="false"
+                    app:chipStartPadding="0dp"
+                    app:chipEndPadding="0dp"
+                    app:textStartPadding="0dp"
+                    app:textEndPadding="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPrice100To300"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="110dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textAlignment="center"
+                    android:text="@string/price_100_300"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    app:checkedIconVisible="false"
+                    app:closeIconVisible="false"
+                    app:chipStartPadding="0dp"
+                    app:chipEndPadding="0dp"
+                    app:textStartPadding="0dp"
+                    app:textEndPadding="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPrice300To500"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="110dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textAlignment="center"
+                    android:text="@string/price_300_500"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    app:checkedIconVisible="false"
+                    app:closeIconVisible="false"
+                    app:chipStartPadding="0dp"
+                    app:chipEndPadding="0dp"
+                    app:textStartPadding="0dp"
+                    app:textEndPadding="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Section 4: Đánh giá -->
+            <TextView
+                style="@style/Text.Kanila.H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                android:text="@string/filter_rating"
+                android:textColor="@color/accent_dark" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                app:chipSpacingHorizontal="28dp"
+                app:chipSpacingVertical="@dimen/spacing_l"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipRating5"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rating_5"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipRating4Plus"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rating_4_plus"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipRating3Plus"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rating_3_plus"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipRating2Plus"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rating_2_plus"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipRating1Plus"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rating_1_plus"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Section 5: Thương hiệu -->
+            <TextView
+                style="@style/Text.Kanila.H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                android:text="@string/filter_brand"
+                android:textColor="@color/accent_dark" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                app:chipSpacingHorizontal="@dimen/spacing_s"
+                app:chipSpacingVertical="@dimen/spacing_s">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBrandFwee"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/brand_fwee"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBrandPeriPera"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/brand_peripera"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBrandNars"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/brand_nars"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBrandCarlans"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/brand_carlans"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBrandCanmake"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/brand_canmake"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBrandCharlotteTilbury"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/brand_charlotte_tilbury"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBrandMario"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/brand_mario"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Section 6: Thành phần nổi bật -->
+            <TextView
+                style="@style/Text.Kanila.H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                android:text="@string/filter_ingredients"
+                android:textColor="@color/accent_dark" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                app:chipSpacingHorizontal="@dimen/spacing_s"
+                app:chipSpacingVertical="@dimen/spacing_s">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipIngNiacinamide"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ing_niacinamide"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipIngHyaluronicAcid"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ing_hyaluronic_acid"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipIngCeramide"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ing_ceramide"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipIngVitaminC"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ing_vitamin_c"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipIngZincPca"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ing_zinc_pca"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipIngPeptide"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ing_peptide"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipIngPanthenol"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ing_panthenol"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipIngTranexamicAcid"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ing_tranexamic_acid"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipIngRetinol"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ing_retinol"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipIngAha"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ing_aha"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipIngBha"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ing_bha"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/selector_filter_chip_background"
+                    app:chipStrokeColor="@color/selector_filter_chip_stroke"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/selector_filter_chip_text"
+                    app:checkedIconVisible="false" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Section 7: AR-only switch -->
+            <LinearLayout
+                android:id="@+id/layoutArOnlyFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_s"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/filter_ar_only"
+
+                    android:textColor="@color/accent_dark" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchArOnly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:thumbTint="@color/selector_filter_icon_tint"
+                    app:trackTint="@color/selector_filter_chip_stroke"
+                    app:useMaterialThemeColors="false" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Fixed Bottom Action Bar -->
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="24dp"
         android:background="@color/border_divider" />
 
-    <!-- Action -->
     <LinearLayout
+        android:id="@+id/layoutFilterActionBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/background_main"
         android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="16dp">
+        android:paddingHorizontal="@dimen/spacing_l"
+        android:paddingVertical="@dimen/spacing_m">
 
-        <TextView
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnResetFilter"
+            style="@style/Widget.Kanila.Button.Secondary"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="45dp"
             android:layout_weight="1"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/bg_button_outline"
-            android:gravity="center"
-            android:text="Đặt lại"
-            android:textAppearance="@style/Body"
-            android:textColor="@color/text_main" />
+            tools:ignore="TouchTargetSizeCheck"
+            android:layout_marginEnd="@dimen/spacing_s"
+            android:text="@string/filter_reset" />
 
-        <TextView
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnApplyFilter"
+            style="@style/Widget.Kanila.Button.Primary"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/button_height"
             android:layout_weight="1"
-            android:layout_marginStart="6dp"
-            android:background="@drawable/bg_button_primary"
-            android:gravity="center"
-            android:text="Áp dụng (128)"
-            android:textAppearance="@style/Body"
-            android:textColor="@color/background_main" />
+            android:layout_marginStart="@dimen/spacing_s"
+            android:text="@string/filter_apply" />
     </LinearLayout>
 </LinearLayout>

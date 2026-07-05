@@ -63,6 +63,7 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/clear_history_content_desc"
                         android:src="@drawable/ic_trash"
+                        tools:ignore="TouchTargetSizeCheck"
                         app:tint="@color/text_tertiary" />
                 </RelativeLayout>
 

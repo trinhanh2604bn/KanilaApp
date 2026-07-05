@@ -47,7 +47,65 @@
 
         </LinearLayout>
 
-        <!-- Other home sections can be added here -->
+        <!-- Product Section Header -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/spacing_m"
+            android:layout_marginTop="@dimen/spacing_l"
+            android:layout_marginBottom="@dimen/spacing_s">
+
+            <TextView
+                android:id="@+id/tvProductSectionTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/nunito_bold"
+                android:text="Gợi ý riêng cho bạn"
+                android:textColor="@color/text_main"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/btnViewAllProducts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/nunito_medium"
+                android:text="Xem tất cả"
+                android:textColor="@color/pink_primary"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+        <!-- Recommended Products RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvRecommendedProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/spacing_m"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_product_card" />
+
+        <!-- Loading / Error States -->
+        <FrameLayout
+            android:id="@+id/layoutHomeStateContainer"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:visibility="gone">
+
+            <include
+                android:id="@+id/viewHomeLoading"
+                layout="@layout/view_loading_state"
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/viewHomeError"
+                layout="@layout/view_error_generic"
+                android:visibility="gone" />
+        </FrameLayout>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

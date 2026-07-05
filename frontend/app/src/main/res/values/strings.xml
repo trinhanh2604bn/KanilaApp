@@ -157,4 +157,13 @@
     <string name="product_foundation">Kem nền Fit Me Fresh Tint</string>
     <string name="foundation_benefit">Kiềm dầu, chống nắng SPF 50</string>
     <string name="match_score_92">92% Phù hợp</string>
+    <string name="top_bar_brand_title">Thương Hiệu</string>
+    <string name="brand_hero_action">Khám phá ngay →</string>
+    <string name="filter_all">Tất cả</string>
+    <string name="filter_korea">Hàn Quốc</string>
+    <string name="filter_japan">Nhật Bản</string>
+    <string name="filter_western">Âu Mỹ</string>
+    <string name="filter_vietnam">Việt Nam</string>
+    <string name="brand_fwee_title">FWEE</string>
+    <string name="brand_fwee_desc">K-beauty hàng đầu dưỡng ẩm chuyên sâu</string>
 </resources>

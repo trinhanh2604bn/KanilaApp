@@ -19,7 +19,7 @@ import java.util.List;
 
 import com.bumptech.glide.Glide;
 
-public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSuggestedProductAdapter.ViewHolder> {
+public class SearchRecommendProductAdapter extends RecyclerView.Adapter<SearchRecommendProductAdapter.ViewHolder> {
 
     private List<Product> productList = new ArrayList<>();
     private OnProductClickListener listener;
@@ -54,12 +54,17 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
         holder.tvProductName.setText(product.getName());
         holder.tvProductBrand.setText(product.getBrand());
         holder.tvProductPrice.setText(product.getPrice());
-        holder.tvProductReviewCount.setText("(" + product.getReviewCount() + ")");
         
-        try {
-            holder.ratingBar.setRating(Float.parseFloat(product.getRating()));
-        } catch (Exception e) {
-            holder.ratingBar.setRating(0);
+        if (holder.tvProductReviewCount != null) {
+            holder.tvProductReviewCount.setText("(" + product.getReviewCount() + ")");
+        }
+        
+        if (holder.tvProductRating != null) {
+            try {
+                holder.tvProductRating.setRating(Float.parseFloat(product.getRating()));
+            } catch (Exception e) {
+                holder.tvProductRating.setRating(0);
+            }
         }
 
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
@@ -71,20 +76,30 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
         } else {
             holder.ivProductImage.setImageResource(product.getImageResource() != 0 ? product.getImageResource() : R.drawable.ic_product);
         }
-        
-        if (product.getBadgeText() != null && !product.getBadgeText().isEmpty()) {
-            holder.tvProductBadge.setText(product.getBadgeText());
-            holder.layoutProductStatusBadge.setVisibility(View.VISIBLE);
-        } else {
-            holder.layoutProductStatusBadge.setVisibility(View.GONE);
+
+        if (holder.layoutProductStatusBadge != null) {
+            if (product.getBadgeText() != null && !product.getBadgeText().isEmpty()) {
+                holder.tvProductBadge.setText(product.getBadgeText());
+                holder.layoutProductStatusBadge.setVisibility(View.VISIBLE);
+            } else {
+                holder.layoutProductStatusBadge.setVisibility(View.GONE);
+            }
         }
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onProductClick(product);
         });
-
+        
         if (holder.btnWishlist != null) {
-            holder.btnWishlist.setOnClickListener(v -> v.setSelected(!v.isSelected()));
+            holder.btnWishlist.setOnClickListener(v -> {
+                // TODO: Handle wishlist
+            });
+        }
+        
+        if (holder.btnAddToCart != null) {
+            holder.btnAddToCart.setOnClickListener(v -> {
+                // TODO: Handle add to cart
+            });
         }
     }
 
@@ -96,7 +111,7 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProductImage;
         TextView tvProductName, tvProductBrand, tvProductPrice, tvProductReviewCount, tvProductBadge;
-        RatingBar ratingBar;
+        RatingBar tvProductRating;
         View layoutProductStatusBadge;
         ImageButton btnWishlist, btnAddToCart;
 
@@ -108,8 +123,8 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
             tvProductPrice = itemView.findViewById(R.id.tvProductPrice);
             tvProductReviewCount = itemView.findViewById(R.id.tvProductReviewCount);
             tvProductBadge = itemView.findViewById(R.id.tvProductBadge);
+            tvProductRating = itemView.findViewById(R.id.tvProductRating);
             layoutProductStatusBadge = itemView.findViewById(R.id.layoutProductStatusBadge);
-            ratingBar = itemView.findViewById(R.id.tvProductRating);
             btnWishlist = itemView.findViewById(R.id.btnWishlist);
             btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
         }

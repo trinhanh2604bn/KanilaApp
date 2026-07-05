@@ -29,8 +29,8 @@
                 android:id="@+id/cbCartSelectAll"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:buttonTint="@color/button"
                 android:checked="false"
+
                 tools:ignore="TouchTargetSizeCheck" />
 
             <TextView

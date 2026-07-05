@@ -62,7 +62,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         CheckBox cbSelected;
         ImageView ivProduct;
         TextView tvName, tvVariant, tvPrice, tvQuantity;
-        ImageButton btnDecrease, btnIncrease, btnRemove;
+        ImageButton btnDecrease, btnIncrease, btnRemove, btnWishlist;
 
         public CartViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,6 +76,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             tvQuantity = front.findViewById(R.id.tvCartQuantity);
             btnDecrease = front.findViewById(R.id.btnDecreaseQuantity);
             btnIncrease = front.findViewById(R.id.btnIncreaseQuantity);
+            btnWishlist = front.findViewById(R.id.btnCartWishlist);
         }
 
         public void bind(CartItem item) {
@@ -84,6 +85,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             tvPrice.setText(item.getProduct().getPrice());
             tvQuantity.setText(String.valueOf(item.getQuantity()));
             ivProduct.setImageResource(item.getProduct().getImageResource());
+            btnWishlist.setSelected(item.isWishlisted());
             
             cbSelected.setOnCheckedChangeListener(null);
             cbSelected.setChecked(item.isSelected());
@@ -104,6 +106,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 item.setQuantity(item.getQuantity() + 1);
                 tvQuantity.setText(String.valueOf(item.getQuantity()));
                 if (listener != null) listener.onQuantityChanged();
+            });
+
+            btnWishlist.setOnClickListener(v -> {
+                boolean newState = !item.isWishlisted();
+                item.setWishlisted(newState);
+                btnWishlist.setSelected(newState);
             });
 
             if (btnRemove != null) {

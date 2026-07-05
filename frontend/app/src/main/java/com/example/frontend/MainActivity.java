@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
     private EditText edtExpandedSearchQuery;
     private ImageButton btnExpandedSearchBack;
 
-    private TextView paymentMethod;
 
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
@@ -100,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
     private void initViews() {
 
 
-        paymentMethod = findViewById(R.id.thunhe);
 
 
         vpHomeBanner = findViewById(R.id.vpHomeBanner);
@@ -144,12 +142,6 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         });
 
-        paymentMethod.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, new ui.commerce.PaymentMethodFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
 
         btnNotification.setOnClickListener(v -> {
             getSupportFragmentManager().beginTransaction()
@@ -157,6 +149,35 @@ public class MainActivity extends AppCompatActivity {
                     .addToBackStack(null)
                     .commit();
         });
+
+        btnWishlist.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        // Setup bottom nav for Home Activity (as per layout)
+        View bottomNav = findViewById(R.id.layoutBottomNavigation);
+        if (bottomNav != null) {
+            ui.common.BottomNavigationHelper.setup(bottomNav, tabIndex -> {
+                if (tabIndex == ui.common.BottomNavigationHelper.TAB_ACCOUNT) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ui.account.AccountFragment())
+                            .addToBackStack(null)
+                            .commit();
+                } else if (tabIndex == ui.common.BottomNavigationHelper.TAB_CATEGORY) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ui.category.ProductCategoryFragment())
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
+            ui.common.BottomNavigationHelper.setSelectedTab(bottomNav, ui.common.BottomNavigationHelper.TAB_HOME);
+        }
+
+        setupHomeShortcuts();
+        setupSocialSection();
 
         setupHomeShortcuts();
         setupSocialSection();
@@ -177,7 +198,10 @@ public class MainActivity extends AppCompatActivity {
     private void setupProductList() {
         productAdapter = new HomeProductAdapter();
         productAdapter.setOnProductClickListener(product -> {
-            Toast.makeText(this, "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                    .addToBackStack(null)
+                    .commit();
         });
 
         rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));

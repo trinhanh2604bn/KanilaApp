@@ -240,7 +240,6 @@
     <string name="notification_filter_personal">Cá nhân</string>
     <string name="notification_new_tag">Mới</string>
     <string name="notification_empty">Không có thông báo nào</string>
-    <string name="suggested_for_you_title">Gợi ý dành cho bạn</string>
     <string name="address_book_title">Địa chỉ giao hàng</string>
     <string name="address_book_list_header">Danh sách địa chỉ</string>
     <string name="address_book_add_new">Thêm địa chỉ mới</string>
@@ -276,4 +275,53 @@
     <string name="action_share">Chia sẻ</string>
     <string name="look_ar_sample_name">Rosy Peach Glow</string>
     <string name="look_ar_sample_date">Tạo ngày 12/05/2025</string>
+
+    <string name="search_ingredients_hint">Tìm kiếm thành phần…</string>
+    <string name="no_ingredients_found">Không tìm thấy thành phần phù hợp</string>
+    <string name="selected_count_format">Đã chọn %1$d</string>
+    <string name="all_ingredients">Tất cả thành phần</string>
+    <string name="clear_selection">Xóa chọn</string>
+    <string name="confirm_selection">Xác nhận (%1$d)</string>
+    <string name="no_ingredients_selected">Chưa có thành phần nào được chọn</string>
+    <string name="search_no_results">Không tìm thấy kết quả cho \"%1$s\"</string>
+    <string name="popular_ingredients">Thành phần phổ biến</string>
+    <string name="recent_searches">Tìm kiếm gần đây</string>
+    <string name="add_custom_ingredient">Thêm thành phần khác</string>
+    <!-- Skin indicators -->
+    <string name="skin_type_oily">Da dầu</string>
+    <string name="skin_type_dry">Da khô</string>
+    <string name="skin_type_combination">Da hỗn hợp</string>
+    <string name="skin_type_normal">Da thường</string>
+    <string name="skin_type_sensitive">Da nhạy cảm</string>
+    <string name="skin_type_unknown">Chưa chắc chắn</string>
+
+    <string name="skin_score_oily">72/100</string>
+    <string name="skin_score_dry">38/100</string>
+    <string name="skin_score_combination">64/100</string>
+    <string name="skin_score_normal">82/100</string>
+    <string name="skin_score_sensitive">56/100</string>
+    <string name="skin_score_unknown">--/100</string>
+
+    <string name="skin_status_high">Khá cao</string>
+    <string name="skin_status_low">Thấp</string>
+    <string name="skin_status_medium">Trung bình</string>
+    <string name="skin_status_balanced">Cân bằng</string>
+    <string name="skin_status_sensitive">Dễ kích ứng</string>
+    <string name="skin_status_unknown">Chưa xác định</string>
+
+    <!-- Beauty goals -->
+    <string name="goal_hydrating">Cấp ẩm</string>
+    <string name="goal_brightening">Làm sáng da</string>
+    <string name="goal_acne">Hỗ trợ giảm mụn</string>
+    <string name="goal_oil_control">Kiểm soát dầu</string>
+    <string name="goal_barrier">Phục hồi hàng rào da</string>
+    <string name="goal_anti_aging">Chống lão hóa</string>
+    <string name="goal_pores">Chăm sóc lỗ chân lông</string>
+    <string name="goal_soothing">Làm dịu da</string>
+    <string name="goal_sun">Chống nắng</string>
+    <string name="goal_even_tone">Làm đều màu da</string>
+    <string name="log_today_progress" />
+    <string name="error_no_internet">Không có kết nối Internet</string>
+    <string name="empty_state_title">Chưa có dữ liệu</string>
+    <string name="empty_state_description">Hiện tại chưa có thông tin để hiển thị.</string>
 </resources>

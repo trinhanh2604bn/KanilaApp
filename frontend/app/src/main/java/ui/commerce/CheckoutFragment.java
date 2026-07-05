@@ -5,21 +5,33 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.example.frontend.R;
+import com.example.frontend.data.model.checkout.CheckoutSessionDto;
+import com.example.frontend.feature.checkout.CheckoutViewModel;
+
+import java.util.Locale;
 
 public class CheckoutFragment extends Fragment {
+
+    private CheckoutViewModel viewModel;
+    private View layoutCheckoutLoading;
+    private LinearLayout layoutCheckoutItemsList;
+    private TextView tvSubtotal, tvShipping, tvDiscount, tvPoints, tvTotal;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Refactored to inflate page_checkout.xml as per requirements
         return inflater.inflate(R.layout.page_checkout, container, false);
     }
 
@@ -27,13 +39,24 @@ public class CheckoutFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        viewModel = new ViewModelProvider(this).get(CheckoutViewModel.class);
+        
+        initViews(view);
         setupHeader(view);
-        setupAddressCard(view);
-        setupShippingCard(view);
-        setupPaymentCard(view);
-        setupVoucherCard(view);
-        setupCoinSection(view);
-        setupSummary(view);
+        observeViewModel();
+        
+        viewModel.prepareCheckout();
+    }
+
+    private void initViews(View view) {
+        layoutCheckoutItemsList = view.findViewById(R.id.layoutCheckoutItemsList);
+        tvSubtotal = view.findViewById(R.id.tvCheckoutPriceSubtotalValue);
+        tvShipping = view.findViewById(R.id.tvCheckoutPriceShippingValue);
+        tvDiscount = view.findViewById(R.id.tvCheckoutPriceDiscountValue);
+        tvPoints = view.findViewById(R.id.tvCheckoutPricePointsValue);
+        tvTotal = view.findViewById(R.id.tvCheckoutTotalFinal);
+        
+        // layoutCheckoutLoading = view.findViewById(R.id.viewCheckoutLoading); // Add this to XML if needed
     }
 
     private void setupHeader(View view) {
@@ -41,174 +64,125 @@ public class CheckoutFragment extends Fragment {
         if (header == null) return;
 
         TextView tvTitle = header.findViewById(R.id.tvTopBarTitle);
-        if (tvTitle != null) {
-            tvTitle.setText(R.string.checkout_order_confirmation_title);
-        }
+        if (tvTitle != null) tvTitle.setText(R.string.checkout_order_confirmation_title);
 
         View btnSearch = header.findViewById(R.id.btnTopBarSearch);
-        if (btnSearch != null) {
-            btnSearch.setVisibility(View.GONE);
-        }
+        if (btnSearch != null) btnSearch.setVisibility(View.GONE);
         
         View btnBack = header.findViewById(R.id.btnTopBarBack);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
-                if (getActivity() != null) {
-                    getActivity().getOnBackPressedDispatcher().onBackPressed();
-                }
+                if (getActivity() != null) getActivity().getOnBackPressedDispatcher().onBackPressed();
             });
         }
     }
 
-    private void setupAddressCard(View view) {
-        View card = view.findViewById(R.id.layoutCheckoutAddress);
-        if (card == null) return;
-
-        ImageView ivIcon = card.findViewById(R.id.ivCheckoutOptionIcon);
-        if (ivIcon != null) ivIcon.setImageResource(R.drawable.ic_location);
-
-        TextView tvTitle = card.findViewById(R.id.tvCheckoutOptionTitle);
-        if (tvTitle != null) tvTitle.setText(R.string.checkout_address_title);
-
-        TextView tvPrimary = card.findViewById(R.id.tvCheckoutOptionPrimary);
-        if (tvPrimary != null) tvPrimary.setText(R.string.checkout_sample_receiver_2);
-
-        TextView tvSecondary = card.findViewById(R.id.tvCheckoutOptionSecondary);
-        if (tvSecondary != null) tvSecondary.setText(R.string.checkout_sample_address_2);
-
-        View vRight = card.findViewById(R.id.tvCheckoutOptionRightValue);
-        if (vRight != null) vRight.setVisibility(View.GONE);
-
-        View btnEdit = card.findViewById(R.id.tvCheckoutOptionEdit);
-        if (btnEdit != null) {
-            btnEdit.setOnClickListener(v -> {
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main, new CheckoutAddressFragment())
-                        .addToBackStack(null)
-                        .commit();
-            });
-        }
-    }
-
-    private void setupShippingCard(View view) {
-        View card = view.findViewById(R.id.layoutCheckoutShipping);
-        if (card == null) return;
-
-        ImageView ivIcon = card.findViewById(R.id.ivCheckoutOptionIcon);
-        if (ivIcon != null) ivIcon.setImageResource(R.drawable.ic_shipping);
-
-        TextView tvTitle = card.findViewById(R.id.tvCheckoutOptionTitle);
-        if (tvTitle != null) tvTitle.setText(R.string.checkout_shipping_title);
-
-        TextView tvPrimary = card.findViewById(R.id.tvCheckoutOptionPrimary);
-        if (tvPrimary != null) tvPrimary.setText(R.string.checkout_sample_shipping_2);
-
-        TextView tvSecondary = card.findViewById(R.id.tvCheckoutOptionSecondary);
-        if (tvSecondary != null) tvSecondary.setText(R.string.checkout_sample_delivery_date_2);
-
-        TextView tvValue = card.findViewById(R.id.tvCheckoutOptionRightValue);
-        if (tvValue != null) tvValue.setText("30.000đ");
-
-        View btnEdit = card.findViewById(R.id.tvCheckoutOptionEdit);
-        if (btnEdit != null) {
-            btnEdit.setOnClickListener(v -> {
-                // TODO: Handle shipping method change
-            });
-        }
-    }
-
-    private void setupPaymentCard(View view) {
-        View card = view.findViewById(R.id.layoutCheckoutPayment);
-        if (card == null) return;
-
-        ImageView ivIcon = card.findViewById(R.id.ivCheckoutOptionIcon);
-        if (ivIcon != null) ivIcon.setImageResource(R.drawable.ic_lock); 
-
-        TextView tvTitle = card.findViewById(R.id.tvCheckoutOptionTitle);
-        if (tvTitle != null) tvTitle.setText(R.string.checkout_payment_title);
-
-        TextView tvPrimary = card.findViewById(R.id.tvCheckoutOptionPrimary);
-        if (tvPrimary != null) tvPrimary.setText(R.string.checkout_sample_payment);
-
-        View tvSecondary = card.findViewById(R.id.tvCheckoutOptionSecondary);
-        if (tvSecondary != null) tvSecondary.setVisibility(View.GONE);
-
-        View vRight = card.findViewById(R.id.tvCheckoutOptionRightValue);
-        if (vRight != null) vRight.setVisibility(View.GONE);
-
-        View btnEdit = card.findViewById(R.id.tvCheckoutOptionEdit);
-        if (btnEdit != null) {
-            btnEdit.setOnClickListener(v -> {
-                // TODO: Handle payment method change
-            });
-        }
-    }
-
-    private void setupVoucherCard(View view) {
-        View card = view.findViewById(R.id.layoutCheckoutVoucher);
-        if (card == null) return;
-
-        ImageView ivIcon = card.findViewById(R.id.ivCheckoutOptionIcon);
-        if (ivIcon != null) ivIcon.setImageResource(R.drawable.ic_coupon);
-
-        TextView tvTitle = card.findViewById(R.id.tvCheckoutOptionTitle);
-        if (tvTitle != null) tvTitle.setText(R.string.checkout_voucher_title);
-
-        TextView tvPrimary = card.findViewById(R.id.tvCheckoutOptionPrimary);
-        if (tvPrimary != null) tvPrimary.setText("GIẢM 100k");
-
-        View tvSecondary = card.findViewById(R.id.tvCheckoutOptionSecondary);
-        if (tvSecondary != null) tvSecondary.setVisibility(View.GONE);
-
-        TextView tvValue = card.findViewById(R.id.tvCheckoutOptionRightValue);
-        if (tvValue != null) {
-            tvValue.setText("-100.000đ");
-            if (getContext() != null) {
-                tvValue.setTextColor(ContextCompat.getColor(getContext(), R.color.button));
+    private void observeViewModel() {
+        viewModel.getCheckoutSession().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            
+            switch (result.status) {
+                case LOADING:
+                    // showLoading();
+                    break;
+                case SUCCESS:
+                    bindCheckoutData(result.data);
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    break;
             }
-        }
-
-        View btnEdit = card.findViewById(R.id.tvCheckoutOptionEdit);
-        if (btnEdit != null) {
-            btnEdit.setOnClickListener(v -> {
-                // TODO: Handle voucher change
-            });
-        }
-    }
-
-    private void setupCoinSection(View view) {
-        View coinCard = view.findViewById(R.id.layoutCheckoutCoins);
-        if (coinCard == null) return;
-        
-        TextView tvAmount = view.findViewById(R.id.tvCheckoutCoinsAmount);
-        if (tvAmount != null) {
-            tvAmount.setText(getString(R.string.checkout_coins_format, "100"));
-        }
-        
-        coinCard.setOnClickListener(v -> {
-            // TODO: Toggle coin usage
         });
     }
 
-    private void setupSummary(View view) {
-        TextView tvSubtotal = view.findViewById(R.id.tvCheckoutPriceSubtotalValue);
-        TextView tvShipping = view.findViewById(R.id.tvCheckoutPriceShippingValue);
-        TextView tvDiscount = view.findViewById(R.id.tvCheckoutPriceDiscountValue);
-        TextView tvPoints = view.findViewById(R.id.tvCheckoutPricePointsValue);
-        TextView tvTotal = view.findViewById(R.id.tvCheckoutTotalFinal);
-        View btnOrder = view.findViewById(R.id.btnPlaceOrder);
+    private void bindCheckoutData(CheckoutSessionDto session) {
+        if (session == null) return;
 
-        // Sample data binding
-        if (tvSubtotal != null) tvSubtotal.setText("970.000đ");
-        if (tvShipping != null) tvShipping.setText("40.000đ");
-        if (tvDiscount != null) tvDiscount.setText("-100.000đ");
-        if (tvPoints != null) tvPoints.setText("-10.000đ");
-        if (tvTotal != null) tvTotal.setText("800.000đ");
+        // 1. Address
+        setupAddress(session.getShippingAddress());
 
+        // 2. Shipping
+        setupShipping(session.getShippingMethod(), session.getShippingAmount());
+
+        // 3. Payment
+        setupPayment(session.getPaymentMethod());
+
+        // 4. Items
+        bindItems(session.getItems());
+
+        // 5. Summary
+        tvSubtotal.setText(formatPrice(session.getSubtotalAmount()));
+        tvShipping.setText(formatPrice(session.getShippingAmount()));
+        tvDiscount.setText("-" + formatPrice(session.getDiscountAmount()));
+        tvPoints.setText("-" + formatPrice(session.getPointsAmount()));
+        tvTotal.setText(formatPrice(session.getTotalAmount()));
+
+        View btnOrder = getView().findViewById(R.id.btnPlaceOrder);
         if (btnOrder != null) {
             btnOrder.setOnClickListener(v -> {
-                // TODO: Process order
+                // viewModel.placeOrder(session.getId());
             });
         }
+    }
+
+    private void setupAddress(CheckoutSessionDto.CheckoutAddressDto address) {
+        View card = getView().findViewById(R.id.layoutCheckoutAddress);
+        if (card == null || address == null) return;
+
+        TextView tvPrimary = card.findViewById(R.id.tvCheckoutOptionPrimary);
+        TextView tvSecondary = card.findViewById(R.id.tvCheckoutOptionSecondary);
+
+        tvPrimary.setText(address.getFullName() + " | " + address.getPhone());
+        tvSecondary.setText(address.getAddressLine());
+        
+        card.findViewById(R.id.tvCheckoutOptionEdit).setOnClickListener(v -> {
+            // Navigate to address selector
+        });
+    }
+
+    private void setupShipping(String method, double amount) {
+        View card = getView().findViewById(R.id.layoutCheckoutShipping);
+        if (card == null) return;
+
+        TextView tvPrimary = card.findViewById(R.id.tvCheckoutOptionPrimary);
+        TextView tvValue = card.findViewById(R.id.tvCheckoutOptionRightValue);
+
+        tvPrimary.setText(method != null ? method : "Giao hàng tiêu chuẩn");
+        tvValue.setText(formatPrice(amount));
+    }
+
+    private void setupPayment(String method) {
+        View card = getView().findViewById(R.id.layoutCheckoutPayment);
+        if (card == null) return;
+
+        TextView tvPrimary = card.findViewById(R.id.tvCheckoutOptionPrimary);
+        tvPrimary.setText(method != null ? method : "Thanh toán khi nhận hàng (COD)");
+    }
+
+    private void bindItems(java.util.List<CheckoutSessionDto.CheckoutItemDto> items) {
+        if (items == null || layoutCheckoutItemsList == null) return;
+        layoutCheckoutItemsList.removeAllViews();
+        
+        for (CheckoutSessionDto.CheckoutItemDto item : items) {
+            View itemView = getLayoutInflater().inflate(R.layout.item_cart_selected, layoutCheckoutItemsList, false);
+            TextView tvName = itemView.findViewById(R.id.tvSelectedCartProductName);
+            TextView tvVariant = itemView.findViewById(R.id.tvSelectedCartVariant);
+            TextView tvPrice = itemView.findViewById(R.id.tvSelectedCartPrice);
+            TextView tvQuantity = itemView.findViewById(R.id.tvSelectedCartQuantity);
+            ImageView ivProduct = itemView.findViewById(R.id.ivSelectedCartProductImage);
+
+            tvName.setText(item.getProductName());
+            tvVariant.setText(item.getVariantName());
+            tvPrice.setText(formatPrice(item.getPrice()));
+            tvQuantity.setText("Số lượng: " + item.getQuantity());
+
+            Glide.with(this).load(item.getImageUrl()).placeholder(R.drawable.ic_product).into(ivProduct);
+            
+            layoutCheckoutItemsList.addView(itemView);
+        }
+    }
+
+    private String formatPrice(double price) {
+        return String.format(Locale.US, "%,.0fđ", price).replace(",", ".");
     }
 }

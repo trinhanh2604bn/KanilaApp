@@ -5,14 +5,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
+import com.example.frontend.data.model.address.AddressDto;
+import com.example.frontend.feature.account.AccountViewModel;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
@@ -22,7 +26,7 @@ public class CheckoutAddressFragment extends Fragment {
 
     private RecyclerView rvAddressList;
     private AddressAdapter adapter;
-    private final List<AddressAdapter.Address> addressList = new ArrayList<>();
+    private AccountViewModel viewModel;
 
     @Nullable
     @Override
@@ -34,10 +38,14 @@ public class CheckoutAddressFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+
         setupHeader(view);
         setupAddressList(view);
         setupFooter(view);
-        loadAddressData();
+        
+        observeViewModel();
+        viewModel.loadAddresses();
     }
 
     private void setupHeader(View view) {
@@ -45,45 +53,34 @@ public class CheckoutAddressFragment extends Fragment {
         if (header == null) return;
 
         TextView tvTitle = header.findViewById(R.id.tvTopBarTitle);
-        if (tvTitle != null) {
-            tvTitle.setText(R.string.checkout_address_title);
-        }
-
-        View btnSearch = header.findViewById(R.id.btnTopBarSearch);
-        if (btnSearch != null) {
-            btnSearch.setVisibility(View.GONE);
-        }
+        if (tvTitle != null) tvTitle.setText(R.string.checkout_address_title);
 
         View btnBack = header.findViewById(R.id.btnTopBarBack);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
-                if (getActivity() != null) {
-                    getActivity().getOnBackPressedDispatcher().onBackPressed();
-                }
+                if (getActivity() != null) getActivity().getOnBackPressedDispatcher().onBackPressed();
             });
         }
     }
 
     private void setupAddressList(View view) {
-        TextView tvSectionTitle = view.findViewById(R.id.tvAddressListTitle);
-        if (tvSectionTitle != null) {
-            // Using hardcoded text as per instruction if string resource doesn't exist
-            // instructing that text should be set from Java
-            tvSectionTitle.setText("Danh sách địa chỉ");
-        }
-
         rvAddressList = view.findViewById(R.id.rvCheckoutAddressList);
         if (rvAddressList != null) {
             rvAddressList.setLayoutManager(new LinearLayoutManager(getContext()));
-            adapter = new AddressAdapter(addressList, new AddressAdapter.OnAddressClickListener() {
+            adapter = new AddressAdapter(new ArrayList<>(), new AddressAdapter.OnAddressClickListener() {
                 @Override
-                public void onAddressClick(AddressAdapter.Address address, int position) {
-                    // TODO: Return selected address to checkout page if existing flow requires it
+                public void onAddressClick(AddressDto address, int position) {
+                    // Handle selection
                 }
 
                 @Override
-                public void onEditClick(AddressAdapter.Address address) {
-                    // TODO: Open existing edit address flow if available
+                public void onEditClick(AddressDto address) {
+                    // Open edit
+                }
+
+                @Override
+                public void onDeleteClick(AddressDto address) {
+                    // Handle delete
                 }
             });
             rvAddressList.setAdapter(adapter);
@@ -93,26 +90,23 @@ public class CheckoutAddressFragment extends Fragment {
     private void setupFooter(View view) {
         MaterialButton btnAdd = view.findViewById(R.id.btnAddNewAddress);
         if (btnAdd != null) {
-            btnAdd.setText("Thêm địa chỉ mới");
             btnAdd.setOnClickListener(v -> {
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main, new CheckoutAddressAddFragment())
-                        .addToBackStack(null)
-                        .commit();
+                // Navigate to add address
             });
         }
     }
 
-    private void loadAddressData() {
-        // Sample data matching the reference image for demonstration
-        addressList.clear();
-        addressList.add(new AddressAdapter.Address("Nguyễn Thị Mai", "0987654321", "Thủ Đức, TP.Hồ Chí Minh", true, true));
-        addressList.add(new AddressAdapter.Address("Nguyễn Thị Mai", "0987654321", "Thủ Đức, TP.Hồ Chí Minh", false, false));
-        addressList.add(new AddressAdapter.Address("Nguyễn Thị Mai", "0987654321", "Thủ Đức, TP.Hồ Chí Minh", false, false));
-        addressList.add(new AddressAdapter.Address("Nguyễn Thị Mai", "0987654321", "Thủ Đức, TP.Hồ Chí Minh", false, false));
-        
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        }
+    private void observeViewModel() {
+        viewModel.getAddressesResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case SUCCESS:
+                    if (result.data != null) adapter.setAddresses(result.data);
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
     }
 }

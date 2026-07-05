@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.model.Brand;
 import java.util.ArrayList;
@@ -27,11 +28,11 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHol
     }
 
     public BrandAdapter(List<Brand> brandList) {
-        this.brandList = new ArrayList<>(brandList);
+        this.brandList = brandList != null ? new ArrayList<>(brandList) : new ArrayList<>();
     }
 
     public void updateData(List<Brand> newList) {
-        this.brandList = new ArrayList<>(newList);
+        this.brandList = newList != null ? new ArrayList<>(newList) : new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -45,7 +46,17 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHol
     @Override
     public void onBindViewHolder(@NonNull BrandViewHolder holder, int position) {
         Brand brand = brandList.get(position);
-        holder.ivBrandLogo.setImageResource(brand.getLogoRes());
+        
+        if (brand.getLogoUrl() != null && !brand.getLogoUrl().isEmpty()) {
+            Glide.with(holder.ivBrandLogo.getContext())
+                    .load(brand.getLogoUrl())
+                    .placeholder(R.drawable.bg_circle)
+                    .error(R.drawable.bg_circle)
+                    .into(holder.ivBrandLogo);
+        } else {
+            holder.ivBrandLogo.setImageResource(brand.getLogoRes());
+        }
+
         holder.tvBrandName.setText(brand.getBrandName());
         holder.btnBrandFavorite.setSelected(brand.isFavorite());
 

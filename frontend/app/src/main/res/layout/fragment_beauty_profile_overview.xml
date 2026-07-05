@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical">
+
+    <!-- Header Toolbar -->
+    <!-- Header Toolbar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="@color/background_main"
+        android:elevation="4dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="@string/app_name"
+            app:tint="@color/accent_dark"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="64dp"
+            android:fontFamily="@font/nunito_bold"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="@string/beauty_profile_title"
+            android:textColor="@color/accent_dark"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <ImageView
+            android:id="@+id/btnEdit"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_edit"
+            android:contentDescription="@string/app_name"
+            app:tint="@color/accent_dark"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingTop="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hiểu làn da của bạn để gợi ý sản phẩm phù hợp hơn"
+                style="@style/Text.Kanila.Caption"
+                android:textColor="@color/text_main"
+                android:alpha="0.6" />
+
+            <!-- Profile Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/background_sub"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/secondary"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/imgAvatar"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:background="@color/secondary"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/hinh_nen"
+                            app:shapeAppearanceOverlay="@style/CircleImage" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hồ sơ làn da của bạn"
+                                android:textColor="@color/accent_dark"
+                                style="@style/Text.Kanila.H3"
+                                android:textStyle="bold" />
+
+                            <GridLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:columnCount="2"
+                                android:rowCount="2">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="4dp"
+                                    android:text="Loại da:"
+                                    style="@style/Text.Kanila.Micro" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_chip_pink"
+                                    android:paddingHorizontal="8dp"
+                                    android:paddingVertical="2dp"
+                                    android:text="Da dầu"
+                                    android:textColor="@color/button"
+                                    style="@style/Text.Kanila.Micro"
+                                    android:textSize="11sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Mối quan tâm:"
+                                    style="@style/Text.Kanila.Micro" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:background="@drawable/bg_chip_pink"
+                                    android:paddingHorizontal="8dp"
+                                    android:paddingVertical="2dp"
+                                    android:text="Mụn, Thâm"
+                                    android:textColor="@color/button"
+                                    style="@style/Text.Kanila.Micro"
+                                    android:textSize="11sp" />
+                            </GridLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Hồ sơ của bạn hoàn thành 80"
+                        android:textColor="@color/accent_dark"
+                        style="@style/Text.Kanila.BodyMedium" />
+
+                    <ProgressBar
+                        style="@android:style/Widget.ProgressBar.Horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="8dp"
+                        android:progress="80"
+                        android:progressDrawable="@drawable/custom_progress_bar" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Chỉ còn 2 bước để hoàn thành hồ sơ"
+                        android:alpha="0.6"
+                        style="@style/Text.Kanila.Micro" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Indicators Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Chỉ số làn da"
+                android:textColor="@color/accent_dark"
+                style="@style/Text.Kanila.H3"
+                android:textStyle="bold" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Indicator Card 1 -->
+                    <include layout="@layout/item_indicator_card" />
+                    <!-- Indicator Card 2 -->
+                    <include layout="@layout/item_indicator_card" />
+                    <!-- Indicator Card 3 -->
+                    <include layout="@layout/item_indicator_card" />
+                    <!-- Indicator Card 4 -->
+                    <include layout="@layout/item_indicator_card" />
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Goals Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Mục tiêu của bạn"
+                android:textColor="@color/accent_dark"
+                style="@style/Text.Kanila.H3"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_chip_pink"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:text="Giảm mụn"
+                    android:textColor="@color/button"
+                    style="@style/Text.Kanila.BodyMedium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_chip_pink"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:text="Mờ thâm"
+                    android:textColor="@color/button"
+                    style="@style/Text.Kanila.BodyMedium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_chip_pink"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:text="Dưỡng ẩm"
+                    android:textColor="@color/button"
+                    style="@style/Text.Kanila.BodyMedium" />
+            </LinearLayout>
+
+            <!-- Beauty Goals Section (Converted from Routine) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Mục tiêu làm đẹp"
+                android:textColor="@color/accent_dark"
+                style="@style/Text.Kanila.H3"
+                android:textStyle="bold" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Cấp ẩm -->
+                    <include
+                        layout="@layout/item_selection_card"
+                        android:id="@+id/goalHydrating" />
+                    <!-- Làm sáng da -->
+                    <include
+                        layout="@layout/item_selection_card"
+                        android:id="@+id/goalBrightening" />
+                    <!-- Hỗ trợ giảm mụn -->
+                    <include
+                        layout="@layout/item_selection_card"
+                        android:id="@+id/goalAcne" />
+                    <!-- Kiểm soát dầu -->
+                    <include
+                        layout="@layout/item_selection_card"
+                        android:id="@+id/goalOilControl" />
+                    <!-- Phục hồi hàng rào da -->
+                    <include
+                        layout="@layout/item_selection_card"
+                        android:id="@+id/goalBarrier" />
+                    <!-- Chống lão hóa -->
+                    <include
+                        layout="@layout/item_selection_card"
+                        android:id="@+id/goalAntiAging" />
+                    <!-- Chăm sóc lỗ chân lông -->
+                    <include
+                        layout="@layout/item_selection_card"
+                        android:id="@+id/goalPores" />
+                    <!-- Làm dịu da -->
+                    <include
+                        layout="@layout/item_selection_card"
+                        android:id="@+id/goalSoothing" />
+                    <!-- Chống nắng -->
+                    <include
+                        layout="@layout/item_selection_card"
+                        android:id="@+id/goalSun" />
+                    <!-- Làm đều màu da -->
+                    <include
+                        layout="@layout/item_selection_card"
+                        android:id="@+id/goalEvenTone" />
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp"
+                style="@style/Widget.Kanila.Button.Primary"
+                android:text="Cập nhật hồ sơ" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

@@ -48,4 +48,16 @@
         <item name="cornerSize">12dp</item>
     </style>
 
+    <style name="RoundedFour" parent="">
+        <item name="cornerSize">4dp</item>
+    </style>
+
+    <style name="RoundedEight" parent="">
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="CircleImage" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+
 </resources>

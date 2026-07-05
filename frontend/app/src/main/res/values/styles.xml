@@ -92,4 +92,136 @@
         <item name="iconTint">@color/text_main</item>
     </style>
 
+    <!-- Grid Selection Items -->
+    <style name="GridItemCard" parent="Widget.MaterialComponents.CardView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">100dp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">#F0F0F0</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cardBackgroundColor">@color/background_main</item>
+    </style>
+
+    <style name="GridItemCard.Selected">
+        <item name="cardBackgroundColor">@color/icon_bg_pink</item>
+        <item name="strokeColor">@color/button</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="GridItemFrame">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="GridItemContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="GridItemIcon">
+        <item name="android:layout_width">36dp</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="tint">@color/text_main</item>
+    </style>
+
+    <style name="GridItemLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/text_main</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">@font/nunito_semibold</item>
+    </style>
+
+    <style name="MetricCard" parent="Widget.MaterialComponents.CardView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/border_divider</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="MetricIcon">
+        <item name="android:layout_width">32dp</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:background">@drawable/bg_circle</item>
+        <item name="android:padding">6dp</item>
+    </style>
+
+    <style name="MetricLabel" parent="Text.Kanila.Caption">
+        <item name="android:textColor">@color/text_main</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MetricValue" parent="Text.Kanila.H3">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="MetricFooter" parent="Text.Kanila.Micro">
+        <item name="android:textColor">@color/text_tertiary</item>
+    </style>
+
+    <style name="GridItemTick">
+        <item name="android:layout_width">16dp</item>
+        <item name="android:layout_height">16dp</item>
+        <item name="android:layout_gravity">top|end</item>
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:background">@drawable/bg_circle_pink</item>
+        <item name="android:backgroundTint">@color/button</item>
+        <item name="android:padding">3dp</item>
+        <item name="android:src">@drawable/ic_tick</item>
+        <item name="tint">@android:color/white</item>
+    </style>
+
+    <style name="IngredientChip" parent="Widget.MaterialComponents.CardView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/border_divider</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cardBackgroundColor">@color/background_main</item>
+    </style>
+
+    <style name="IngredientChip.Selected">
+        <item name="cardBackgroundColor">@color/icon_bg_pink</item>
+        <item name="strokeColor">@color/button</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="IngredientChipLabel" parent="Text.Kanila.Micro">
+        <item name="android:textColor">@color/text_main</item>
+        <item name="android:fontFamily">@font/nunito_semibold</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="IngredientChipLabel.Selected">
+        <item name="android:textColor">@color/button</item>
+    </style>
+
+    <style name="QuickSetupCard" parent="Widget.MaterialComponents.CardView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">120dp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">#F5F5F5</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
 </resources>

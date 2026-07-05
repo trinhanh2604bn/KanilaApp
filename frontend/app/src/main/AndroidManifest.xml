@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Frontend" >
         <activity
-            android:name=".MainActivity2"
+            android:name=".MainActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,9 +23,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".feature.search.SearchActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="stateVisible" />
     </application>
 
 </manifest>

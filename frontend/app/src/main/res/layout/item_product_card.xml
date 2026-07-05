@@ -2,7 +2,7 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="170dp"
     android:layout_height="wrap_content"
     app:cardBackgroundColor="@color/background_main"
     app:cardCornerRadius="16dp"
@@ -11,17 +11,17 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="250dp">
+            android:layout_height="144dp">
 
             <ImageView
                 android:id="@+id/ivProductImage"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="140dp"
                 android:scaleType="centerInside"
                 android:src="@android:drawable/ic_menu_report_image"
                 tools:ignore="ContentDescription" />
@@ -69,11 +69,11 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/selector_post_like"
-                app:tint="@color/selector_post_action_tint"
                 android:contentDescription="Add to wishlist"
                 android:padding="8dp"
                 android:scaleType="centerInside"
+                android:src="@drawable/selector_post_like"
+                app:tint="@color/selector_post_action_tint"
                 tools:ignore="TouchTargetSizeCheck" />
 
         </FrameLayout>
@@ -82,7 +82,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="8dp">
 
             <TextView
                 android:id="@+id/tvProductBrand"
@@ -108,7 +108,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="6dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -135,7 +135,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="6dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -153,13 +153,13 @@
                     android:id="@+id/btnAddToCart"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Add to cart"
                     android:padding="6dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_plus"
-                    tools:ignore="TouchTargetSizeCheck"
-                    app:tint="@color/selector_post_action_tint" />
+                    app:tint="@color/selector_post_action_tint"
+                    tools:ignore="TouchTargetSizeCheck" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

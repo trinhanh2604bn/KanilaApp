@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main">
@@ -22,6 +23,29 @@
                 layout="@layout/view_home_banner_slider" />
 
         </FrameLayout>
+
+        <!-- Home Shortcut Section -->
+        <LinearLayout
+            android:id="@+id/layoutHomeShortcutSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/spacing_m"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/spacing_s">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvHomeShortcuts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/spacing_s"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_home_shortcut" />
+
+        </LinearLayout>
 
         <!-- Other home sections can be added here -->
 

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_card"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <!-- Notification Icon -->
+    <ImageView
+        android:id="@+id/ivNotifIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_icon_soft"
+        android:padding="12dp"
+        android:src="@drawable/ic_delivery_truck"
+        app:tint="@color/accent_dark"
+        android:contentDescription="@null" />
+
+    <!-- Content -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvNotifTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tiêu đề thông báo"
+            android:textAppearance="@style/Text.Kanila.BodyMedium"
+            android:textColor="@color/accent_dark"
+            android:textStyle="bold"
+            tools:text="Đơn #KN20458 đang giao" />
+
+        <TextView
+            android:id="@+id/tvNotifContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Nội dung thông báo chi tiết hiển thị tại đây."
+            android:textAppearance="@style/Text.Kanila.Caption"
+            android:textColor="@color/text_secondary"
+            tools:text="Đơn hàng của bạn đang trên đường giao đến bạn." />
+    </LinearLayout>
+
+    <!-- Meta Info (New tag, Time, Status dot) -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:gravity="end"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvNewTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_pill"
+            android:backgroundTint="@color/secondary"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:text="@string/notification_new_tag"
+            android:textAppearance="@style/Text.Kanila.H3"
+            android:textColor="@color/accent_dark"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvNotifTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10:30"
+                android:textAppearance="@style/Text.Kanila.Caption"
+                android:textColor="@color/text_tertiary"
+                tools:text="10:30" />
+
+            <View
+                android:id="@+id/viewUnreadDot"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginStart="3dp"
+                android:background="@drawable/bg_badge_dot" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

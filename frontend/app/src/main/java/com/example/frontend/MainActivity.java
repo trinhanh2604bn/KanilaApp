@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 vpHomeBanner;
     private View layoutSearchBar;
+    private View layoutSearchExpandedBar;
     private ImageButton btnNotification, btnCart, btnWishlist;
     private RecyclerView rvHomeShortcuts;
     private RecyclerView rvRecommendedProducts;
@@ -58,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
     private View layoutKanilaChallengeCard, btnJoinChallenge;
     private TextView tvChallengeProgress, tvChallengeParticipants, tvChallengeReward;
 
-    private View layoutSearchExpandedBar;
     private EditText edtExpandedSearchQuery;
     private ImageButton btnExpandedSearchBack;
 
@@ -126,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        btnNotification.setOnClickListener(v -> Toast.makeText(this, R.string.notification, Toast.LENGTH_SHORT).show());
+        //btnNotification.setOnClickListener(v -> Toast.makeText(this, R.string.notification, Toast.LENGTH_SHORT).show());
+
         btnCart.setOnClickListener(v -> {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main, new ui.commerce.CartFragment())
@@ -134,6 +136,13 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         });
 
+        btnNotification.setOnClickListener(v -> {
+            // Tạm thời thay thế bằng việc mở CheckoutFragment để xem giao diện
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new ui.notification.NotificationCenterFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
         btnWishlist.setOnClickListener(v -> {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main, new ui.category.ProductCategoryFragment())

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- Status Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_account_header_card"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="20dp">
+
+        <ImageView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_icon_circle_pink"
+            android:padding="12dp"
+            android:src="@drawable/ic_trophy"
+            app:tint="@color/accent_dark" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvPersonalHeaderTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chúc mừng thăng hạng!\nBạn đã lên Gold Member"
+                android:textAppearance="@style/Text.Kanila.H3"
+                android:textColor="@color/accent_dark" />
+
+            <TextView
+                android:id="@+id/tvPersonalHeaderSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Nhận ngay những đặc quyền ưu tiên từ Kanila."
+                android:textAppearance="@style/Text.Kanila.Caption"
+                android:textColor="@color/text_secondary" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Points Summary Card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_card"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tổng điểm hiện tại"
+            android:textAppearance="@style/Text.Kanila.Caption"
+            android:textColor="@color/text_secondary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvPointsValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2.450"
+                android:textAppearance="@style/Text.Kanila.H1"
+                android:textColor="@color/burgundy"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="điểm"
+                android:textAppearance="@style/Text.Kanila.Body"
+                android:textColor="@color/text_secondary" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="16dp"
+            android:background="@color/border_divider" />
+
+        <TextView
+            android:id="@+id/tvPersonalPrivileges"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• Giảm giá 5% cho mọi đơn hàng\n• Miễn phí vận chuyển 2 lần/tháng\n• Quà tặng sinh nhật đặc biệt"
+            android:textAppearance="@style/Text.Kanila.Body"
+            android:textColor="@color/text_secondary"
+            android:lineSpacingExtra="4dp" />
+
+        <TextView
+            android:id="@+id/btnPersonalExplore"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_button_primary"
+            android:gravity="center"
+            android:text="Khám phá đặc quyền"
+            android:textAppearance="@style/Text.Kanila.BodyMedium"
+            android:textColor="@color/background_main" />
+    </LinearLayout>
+
+</LinearLayout>

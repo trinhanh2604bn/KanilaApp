@@ -14,6 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Frontend"
         android:networkSecurityConfig="@xml/network_security_config" >
+
         <activity
             android:name=".MainActivity"
             android:exported="true" >
@@ -23,10 +24,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".feature.search.SearchActivity"
             android:exported="false"
             android:windowSoftInputMode="stateVisible" />
+
+        <activity
+            android:name="ui.notification.NotificationDetailActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

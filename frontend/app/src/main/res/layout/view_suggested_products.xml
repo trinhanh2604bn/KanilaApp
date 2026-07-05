@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_l"
-        android:text="@string/suggested_for_you_title"
+        android:text="Gợi ý dành cho bạn"
         android:textAppearance="@style/Text.Kanila.H3"
         android:textColor="@color/accent_dark"
         android:textStyle="bold" />

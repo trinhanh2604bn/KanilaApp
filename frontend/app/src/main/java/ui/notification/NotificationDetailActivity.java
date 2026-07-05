@@ -110,10 +110,10 @@ public class NotificationDetailActivity extends AppCompatActivity {
 
         // TODO: thay bằng API gợi ý sản phẩm khi backend sẵn sàng
         List<Product> suggested = new ArrayList<>();
-        suggested.add(new Product("s1", "Anua", "Heartleaf 77% Soothing Toner", "320.000đ", "4.8", "1.2k", R.drawable.ic_product, "Best"));
-        suggested.add(new Product("s2", "Skin1004", "Centella Ampoule", "365.000đ", "4.7", "800", R.drawable.ic_product, ""));
-        suggested.add(new Product("s3", "La Roche-Posay", "Mela B3 Serum", "790.000đ", "4.9", "300", R.drawable.ic_product, "New"));
-        suggested.add(new Product("s4", "The Ordinary", "Niacinamide 10% + Zinc 1%", "255.000đ", "4.6", "2.1k", R.drawable.ic_product, ""));
+        suggested.add(new Product("s1", "Anua", "Heartleaf 77% Soothing Toner", "320000", "4.8", "1.2k", R.drawable.ic_product, "Best", ""));
+        suggested.add(new Product("s2", "Skin1004", "Centella Ampoule", "365000", "4.7", "800", R.drawable.ic_product, "", ""));
+        suggested.add(new Product("s3", "La Roche-Posay", "Mela B3 Serum", "790000", "4.9", "300", R.drawable.ic_product, "New", ""));
+        suggested.add(new Product("s4", "The Ordinary", "Niacinamide 10% + Zinc 1%", "255000", "4.6", "2.1k", R.drawable.ic_product, "", ""));
         adapter.setItems(suggested);
 
         adapter.setOnProductClickListener(product ->

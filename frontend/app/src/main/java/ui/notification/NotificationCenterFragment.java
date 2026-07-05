@@ -113,6 +113,9 @@ public class NotificationCenterFragment extends Fragment {
     private void openDetail(NotificationItem item) {
         Intent intent = new Intent(requireContext(), NotificationDetailActivity.class);
         intent.putExtra(NotificationDetailActivity.EXTRA_NOTIF_TYPE, item.getType().name());
+        intent.putExtra(NotificationDetailActivity.EXTRA_NOTIF_TITLE, item.getTitle());
+        intent.putExtra(NotificationDetailActivity.EXTRA_NOTIF_CONTENT, item.getContent());
+        intent.putExtra(NotificationDetailActivity.EXTRA_NOTIF_REF_ID, item.getRefId());
         startActivity(intent);
     }
 

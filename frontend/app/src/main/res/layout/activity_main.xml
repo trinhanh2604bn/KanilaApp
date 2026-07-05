@@ -179,6 +179,16 @@
                     android:visibility="gone" />
             </FrameLayout>
 
+
+            <TextView
+                android:id="@+id/thunhe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_bold"
+                android:text="Gợi ý riêng cho bạn"
+                android:textColor="@color/text_main"
+                android:textSize="18sp" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

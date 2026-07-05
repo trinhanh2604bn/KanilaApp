@@ -63,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText edtExpandedSearchQuery;
     private ImageButton btnExpandedSearchBack;
 
+    private TextView paymentMethod;
+
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
     private HomeProductAdapter productAdapter;
@@ -94,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+
+
+        paymentMethod = findViewById(R.id.thunhe);
+
+
         vpHomeBanner = findViewById(R.id.vpHomeBanner);
         layoutSearchBar = findViewById(R.id.layoutSearchBar);
         btnNotification = findViewById(R.id.btnNotification);
@@ -119,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         layoutSearchExpandedBar = findViewById(R.id.layoutSearchExpandedBar);
         edtExpandedSearchQuery = findViewById(R.id.edtExpandedSearchQuery);
         btnExpandedSearchBack = findViewById(R.id.btnExpandedSearchBack);
+
     }
 
     private void setupSearchBehavior() {
@@ -132,6 +140,13 @@ public class MainActivity extends AppCompatActivity {
         btnCart.setOnClickListener(v -> {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main, new ui.commerce.CartFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        paymentMethod.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new ui.commerce.PaymentMethodFragment())
                     .addToBackStack(null)
                     .commit();
         });

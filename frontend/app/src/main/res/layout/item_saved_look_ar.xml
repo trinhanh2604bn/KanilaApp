@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/background_main"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    android:layout_marginVertical="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <!-- User Image -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivLookUserImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/RoundedProductImage"
+            tools:src="@android:drawable/ic_menu_report_image" />
+
+        <!-- Look Name -->
+        <TextView
+            android:id="@+id/tvLookName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/nunito_bold"
+            android:text="@string/look_ar_sample_name"
+            android:textColor="@color/text_main"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@id/ivLookWishlist"
+            app:layout_constraintStart_toEndOf="@id/ivLookUserImage"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Wishlist Icon -->
+        <ImageView
+            android:id="@+id/ivLookWishlist"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_heart_filled"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/button"
+            android:contentDescription="@null" />
+
+        <!-- Creation Date -->
+        <TextView
+            android:id="@+id/tvLookDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/nunito_regular"
+            android:text="@string/look_ar_sample_date"
+            android:textColor="@color/text_tertiary"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@id/tvLookName"
+            app:layout_constraintTop_toBottomOf="@id/tvLookName" />
+
+        <!-- Color Swatches -->
+        <LinearLayout
+            android:id="@+id/layoutLookSwatches"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/tvLookName"
+            app:layout_constraintTop_toBottomOf="@id/tvLookDate">
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/bg_circle"
+                android:backgroundTint="#F2A88D" />
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_circle"
+                android:backgroundTint="#FF6B81" />
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_circle"
+                android:backgroundTint="#E59D82" />
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_circle"
+                android:backgroundTint="#9E6E5C" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="+2"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <!-- Retry Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRetryLookAr"
+            style="@style/Widget.Kanila.Button.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginTop="8dp"
+            android:paddingHorizontal="12dp"
+            android:text="@string/action_retry_ar"
+            android:textSize="11sp"
+            app:icon="@drawable/ic_ar"
+            app:iconSize="14dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvLookName"
+            app:layout_constraintTop_toBottomOf="@id/layoutLookSwatches"
+            tools:ignore="TouchTargetSizeCheck" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

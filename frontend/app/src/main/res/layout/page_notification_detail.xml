@@ -73,35 +73,13 @@
                 <!-- NotificationDetailActivity sẽ inflate view_notif_detail_* vào đây theo loại -->
             </FrameLayout>
 
-            <!-- Static "Suggested for you" Section -->
-            <LinearLayout
+            <!-- Component "Gợi ý dành cho bạn" (tái sử dụng, cross-sell) -->
+            <include
                 android:id="@+id/layoutSuggestedForYou"
+                layout="@layout/view_suggested_products"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Gợi ý dành cho bạn"
-                    android:textAppearance="@style/Text.Kanila.H3"
-                    android:textColor="@color/accent_dark"
-                    android:textStyle="bold" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvSuggestedProducts"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:clipToPadding="false"
-                    android:paddingHorizontal="8dp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    android:orientation="horizontal"
-                    tools:listitem="@layout/item_product_card" />
-
-            </LinearLayout>
+                android:layout_marginTop="@dimen/spacing_xxl" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

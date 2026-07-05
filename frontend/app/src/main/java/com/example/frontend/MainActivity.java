@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ui.category.ProductCategoryFragment;
+import ui.commerce.CartFragment;
+import ui.commerce.CheckoutFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -106,8 +108,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnNotification.setOnClickListener(v -> Toast.makeText(this, R.string.notification, Toast.LENGTH_SHORT).show());
-        btnCart.setOnClickListener(v -> Toast.makeText(this, R.string.cart, Toast.LENGTH_SHORT).show());
-        btnWishlist.setOnClickListener(v -> Toast.makeText(this, R.string.wishlist, Toast.LENGTH_SHORT).show());
+        btnCart.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new ui.commerce.CartFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
 
         setupHomeShortcuts();
         setupSocialSection();

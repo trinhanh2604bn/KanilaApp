@@ -74,12 +74,19 @@
     <string name="category_gift">Gift</string>
     <string name="category_new">New</string>
     <string name="category_hot">Hot</string>
-    <string name="category_brushes">Brushes</string>
+    <string name="category_brushes">Mini &amp; Travel</string>
     <string name="category_ar">AR</string>
     <string name="category_moisturizing">Dưỡng ẩm</string>
     <string name="category_sunproof">Sunproof</string>
     <string name="category_tone_up">Nâng tone</string>
     <string name="category_waterproof">Waterproof</string>
+
+    <string name="chip_mini_foundation">Mini Foundation</string>
+    <string name="chip_mini_lipstick">Mini Lipstick</string>
+    <string name="chip_trial_kits">Trial Kits</string>
+    <string name="chip_eyeshadow_palette">Eyeshadow Palette</string>
+    <string name="chip_face_palette">Face Palette</string>
+    <string name="chip_makeup_kit">Makeup Kit</string>
     <string name="notification">Thông báo</string>
     <string name="cart">Giỏ hàng</string>
     <string name="wishlist">Yêu thích</string>

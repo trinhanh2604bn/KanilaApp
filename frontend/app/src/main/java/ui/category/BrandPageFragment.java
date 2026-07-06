@@ -61,6 +61,8 @@ public class BrandPageFragment extends Fragment {
         setupFilterLogic();
         setupHeroSlider(view);
         observeViewModel();
+        
+        viewModel.loadBrands();
 
         BottomNavigationHelper.setup(view, tabIndex -> {
             // Handle tab navigation
@@ -78,6 +80,15 @@ public class BrandPageFragment extends Fragment {
         
         // Initial adapter setup
         adapter = new BrandAdapter(new ArrayList<>());
+        adapter.setOnBrandClickListener(brand -> {
+            // Handle brand click - navigate to products by brand
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, ProductListingFragment.newBrandInstance(brand.getBrandName()))
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         rvBrandGrid.setAdapter(adapter);
     }
 
@@ -89,7 +100,7 @@ public class BrandPageFragment extends Fragment {
         ImageButton btnBack = topBar.findViewById(R.id.btnTopBarBack);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
-                if (getActivity() != null) getActivity().getOnBackPressedDispatcher().onBackPressed();
+                if (getActivity() != null) getActivity().getSupportFragmentManager().popBackStack();
             });
         }
 
@@ -116,7 +127,6 @@ public class BrandPageFragment extends Fragment {
         vpBrandBanner.setAdapter(bannerAdapter);
 
         List<HomeBannerItem> items = new ArrayList<>();
-        // Using existing slide images as requested
         items.add(new HomeBannerItem("1", "", "", "", "Xem ngay", null, R.drawable.img_brand_1, "promotion", "4", true, 1));
         items.add(new HomeBannerItem("2", "", "", "", "Xem ngay", null, R.drawable.img_brand_2, "promotion", "5", true, 2));
         items.add(new HomeBannerItem("3", "", "", "", "Xem ngay", null, R.drawable.img_brand_3, "promotion", "1", true, 3));
@@ -187,14 +197,14 @@ public class BrandPageFragment extends Fragment {
             switch (result.status) {
                 case LOADING:
                     showLoading(true);
+                    showEmpty(false);
                     break;
                 case SUCCESS:
                     showLoading(false);
                     if (result.data != null) {
                         fullBrandList = result.data;
-                        // TODO: Backend does not return 'region' field. 
-                        // Region filtering will show all brands under 'Tất cả' until backend is updated.
-                        filterBrands(getString(R.string.filter_all));
+                        adapter.updateData(fullBrandList);
+                        showEmpty(fullBrandList.isEmpty());
                     }
                     break;
                 case EMPTY:
@@ -202,12 +212,9 @@ public class BrandPageFragment extends Fragment {
                     showEmpty(true);
                     break;
                 case ERROR:
-                    showLoading(false);
-                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
-                    break;
                 case NO_INTERNET:
                     showLoading(false);
-                    Toast.makeText(getContext(), R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), result.message != null ? result.message : "Error loading brands", Toast.LENGTH_SHORT).show();
                     break;
             }
         });
@@ -217,7 +224,6 @@ public class BrandPageFragment extends Fragment {
         if (loadingState != null) loadingState.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         if (isLoading) {
             rvBrandGrid.setVisibility(View.GONE);
-            showEmpty(false);
         } else {
             rvBrandGrid.setVisibility(View.VISIBLE);
         }
@@ -236,7 +242,8 @@ public class BrandPageFragment extends Fragment {
                 TextView chip = (TextView) child;
                 chip.setOnClickListener(v -> {
                     updateFilterUI(chip);
-                    filterBrands(chip.getText().toString());
+                    // Filter brands based on region - Currently disabled as per requirements
+                    // filterBrands(chip.getText().toString());
                 });
             }
         }
@@ -256,28 +263,5 @@ public class BrandPageFragment extends Fragment {
                 }
             }
         }
-    }
-
-    private void filterBrands(String region) {
-        List<Brand> filteredList = new ArrayList<>();
-        String allText = getString(R.string.filter_all);
-
-        if (region.equals(allText)) {
-            filteredList.addAll(fullBrandList);
-        } else {
-            for (Brand brand : fullBrandList) {
-                // Currently backend doesn't have region, so we check the UI property we might have set or null
-                if (brand.getRegion() != null && brand.getRegion().equals(region)) {
-                    filteredList.add(brand);
-                }
-            }
-        }
-
-        if (filteredList.isEmpty() && !fullBrandList.isEmpty() && !region.equals(allText)) {
-            // Optional: Show a "No brands found in this region" message
-        }
-        
-        adapter.updateData(filteredList);
-        showEmpty(filteredList.isEmpty());
     }
 }

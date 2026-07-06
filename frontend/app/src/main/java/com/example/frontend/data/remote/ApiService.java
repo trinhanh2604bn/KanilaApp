@@ -27,111 +27,111 @@ import retrofit2.http.PUT;
 import retrofit2.http.DELETE;
 
 public interface ApiService {
-    @POST("api/auth/login")
+    @POST("auth/login")
     Call<ApiResponse<LoginResponse>> login(@Body LoginRequest credentials);
 
-    @POST("api/auth/register")
+    @POST("auth/register")
     Call<ApiResponse<LoginResponse>> register(@Body Object userData);
 
-    @GET("api/products")
+    @GET("products")
     Call<ApiResponse<List<Product>>> getProducts(@Query("q") String query, @Query("category") String categoryId, @Query("brand") String brandId);
 
-    @GET("api/products/{id}")
+    @GET("products/{id}")
     Call<ApiResponse<Product>> getProductById(@Path("id") String id);
 
-    @GET("api/products/slug/{slug}")
+    @GET("products/slug/{slug}")
     Call<ApiResponse<Product>> getProductBySlug(@Path("slug") String slug);
 
-    @GET("api/product-media/product/{productId}")
+    @GET("product-media/product/{productId}")
     Call<ApiResponse<List<ProductMediaDto>>> getProductMedia(@Path("productId") String productId);
 
-    @GET("api/product-variants/product/{productId}")
+    @GET("product-variants/product/{productId}")
     Call<ApiResponse<List<ProductVariantDto>>> getProductVariants(@Path("productId") String productId);
 
-    @GET("api/brands")
+    @GET("brands")
     Call<ApiResponse<List<com.example.frontend.model.Brand>>> getBrands();
 
-    @GET("api/categories")
+    @GET("categories")
     Call<ApiResponse<List<com.example.frontend.model.Category>>> getCategories();
 
-    @GET("api/catalog")
+    @GET("catalog")
     Call<ApiResponse<Object>> getCatalogBundle();
 
-    @GET("api/recommendations/me/homepage")
+    @GET("recommendations/me/homepage")
     Call<ApiResponse<List<Product>>> getHomepageRecommendations();
 
-    @GET("api/carts/me")
+    @GET("carts/me")
     Call<ApiResponse<CartDto>> getMyCart();
 
-    @GET("api/carts/guest/me")
+    @GET("carts/guest/me")
     Call<ApiResponse<CartDto>> getGuestCart();
 
-    @POST("api/carts/me/items")
+    @POST("carts/me/items")
     Call<ApiResponse<CartDto>> addToCart(@Body AddToCartRequest itemRequest);
 
-    @PATCH("api/carts/me/items/{itemId}/quantity")
+    @PATCH("carts/me/items/{itemId}/quantity")
     Call<ApiResponse<CartDto>> updateCartItemQuantity(@Path("itemId") String itemId, @Body UpdateCartItemRequest updateRequest);
 
-    @PATCH("api/carts/me/items/{itemId}/selection")
+    @PATCH("carts/me/items/{itemId}/selection")
     Call<ApiResponse<CartDto>> toggleCartItemSelection(@Path("itemId") String itemId, @Body UpdateCartItemRequest updateRequest);
 
-    @DELETE("api/carts/me/items/{itemId}")
+    @DELETE("carts/me/items/{itemId}")
     Call<ApiResponse<CartDto>> removeFromCart(@Path("itemId") String itemId);
 
-    @GET("api/carts/me/checkout-prepare")
+    @GET("carts/me/checkout-prepare")
     Call<ApiResponse<CheckoutSessionDto>> prepareCheckout();
 
-    @POST("api/checkout-sessions/me")
+    @POST("checkout-sessions/me")
     Call<ApiResponse<CheckoutSessionDto>> createCheckoutSession(@Body Object request);
 
-    @POST("api/checkout-sessions/me/place-order")
+    @POST("checkout-sessions/me/place-order")
     Call<ApiResponse<Object>> placeOrder(@Path("id") String sessionId, @Body Object request);
 
-    @GET("api/beauty-references")
+    @GET("beauty-references")
     Call<ApiResponse<List<BeautyReferenceDto>>> getBeautyReferences();
 
-    @GET("api/customers/{customer_id}/beauty-profile")
+    @GET("customers/{customer_id}/beauty-profile")
     Call<ApiResponse<CustomerBeautyProfileDto>> getBeautyProfile(@Path("customer_id") String customerId);
 
-    @PATCH("api/customers/{customer_id}/beauty-profile")
+    @PATCH("customers/{customer_id}/beauty-profile")
     Call<ApiResponse<CustomerBeautyProfileDto>> updateBeautyProfile(@Path("customer_id") String customerId, @Body Object profileData);
 
-    @GET("api/accounts/profile-hub")
+    @GET("accounts/profile-hub")
     Call<ApiResponse<ProfileHubDto>> getProfileHub();
 
-    @GET("api/accounts/addresses")
+    @GET("accounts/addresses")
     Call<ApiResponse<List<AddressDto>>> getMyAddresses();
 
-    @POST("api/accounts/addresses")
+    @POST("accounts/addresses")
     Call<ApiResponse<AddressDto>> addAddress(@Body Object addressData);
 
-    @PATCH("api/accounts/addresses/{id}")
+    @PATCH("accounts/addresses/{id}")
     Call<ApiResponse<AddressDto>> updateAddress(@Path("id") String id, @Body Object addressData);
 
-    @DELETE("api/accounts/addresses/{id}")
+    @DELETE("accounts/addresses/{id}")
     Call<ApiResponse<Object>> deleteAddress(@Path("id") String id);
 
-    @GET("api/orders/me")
+    @GET("orders/me")
     Call<ApiResponse<List<OrderDto>>> getMyOrders();
 
-    @GET("api/orders/me/{id}")
+    @GET("orders/me/{id}")
     Call<ApiResponse<OrderDto>> getMyOrderById(@Path("id") String id);
 
-    @GET("api/coupons/me")
+    @GET("coupons/me")
     Call<ApiResponse<List<CouponDto>>> getMyCoupons();
 
-    @GET("api/coupons/available")
+    @GET("coupons/available")
     Call<ApiResponse<List<CouponDto>>> getAvailableCoupons();
 
-    @GET("api/wishlists/me/items")
+    @GET("wishlists/me/items")
     Call<ApiResponse<List<Object>>> getMyWishlistItems();
 
-    @GET("api/orders/me/summary")
+    @GET("orders/me/summary")
     Call<ApiResponse<Object>> getMyOrderSummary();
 
-    @GET("api/loyalty-accounts/me")
+    @GET("loyalty-accounts/me")
     Call<ApiResponse<Object>> getMyLoyaltyAccount();
 
-    @GET("api/accounts")
+    @GET("accounts")
     Call<ApiResponse<List<Object>>> getAccounts();
 }

@@ -9,6 +9,9 @@ public class ApiResponse<T> {
     @SerializedName("message")
     private String message;
 
+    @SerializedName("count")
+    private int count;
+
     @SerializedName("data")
     private T data;
 
@@ -21,6 +24,10 @@ public class ApiResponse<T> {
 
     public String getMessage() {
         return message;
+    }
+
+    public int getCount() {
+        return count;
     }
 
     public T getData() {

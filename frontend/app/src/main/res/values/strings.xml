@@ -231,7 +231,6 @@
     <string name="chip_tinted_moisturizer">Tinted Moisturizer</string>
 
 
-
     <string name="notification_title">Thông báo</string>
     <string name="notification_filter_all">Tất cả</string>
     <string name="notification_filter_orders">Đơn hàng</string>
@@ -324,4 +323,70 @@
     <string name="error_no_internet">Không có kết nối Internet</string>
     <string name="empty_state_title">Chưa có dữ liệu</string>
     <string name="empty_state_description">Hiện tại chưa có thông tin để hiển thị.</string>
+
+    <!-- Support Center -->
+    <string name="support_center_title">Trung tâm hỗ trợ</string>
+    <string name="support_search_hint">Tìm câu trả lời, đơn hàng, chính sách...</string>
+    <string name="popular_topics">Chủ đề phổ biến</string>
+    <string name="track_order">Tra cứu đơn hàng</string>
+    <string name="return_refund">Đổi trả &amp; hoàn tiền</string>
+    <string name="product_consult">Tư vấn sản phẩm</string>
+    <string name="shipping_policy">Chính sách giao hàng</string>
+    <string name="need_help_now">Cần hỗ trợ ngay?</string>
+    <string name="chat_ai">Chat với\nKanila AI</string>
+    <string name="call_support">Gọi\nCSKH</string>
+    <string name="send_request">Gửi\nyêu cầu</string>
+    <string name="recent_requests">Yêu cầu gần đây</string>
+    <string name="see_all_requests">Xem tất cả yêu cầu</string>
+    <string name="status_processing">Đang xử lý</string>
+    <string name="last_updated_format">Cập nhật lần cuối: %s</string>
+
+    <!-- Chat Conversation -->
+    <string name="chat_assistant_title">Kanila AI Assistant</string>
+    <string name="chat_welcome_title">Xin chào bạn! 👋</string>
+    <string name="chat_welcome_desc">Mình là Kanila AI Assistant. Mình có thể giúp bạn tư vấn sản phẩm, thành phần, đơn hàng và chính sách của Kanila Beauty.</string>
+    <string name="chat_suggestion_header">Bạn muốn hỏi điều gì?</string>
+    <string name="chat_suggest_oily">Da dầu nên dùng gì?</string>
+    <string name="chat_suggest_order">Đơn hàng của tôi tới đâu?</string>
+    <string name="chat_suggest_sensitive">Sản phẩm có hợp da nhạy cảm?</string>
+    <string name="chat_suggest_return">Hướng dẫn đổi trả</string>
+    <string name="chat_ai_status">AI hoạt động\n24/7</string>
+    <string name="chat_input_hint">Nhập câu hỏi của bạn...</string>
+    <string name="chat_disclaimer">AI có thể mắc lỗi. Vui lòng kiểm tra lại thông tin quan trọng.</string>
+
+    <!-- Chatbot Quick Menu -->
+    <string name="quick_menu_title">Tác vụ nhanh</string>
+    <string name="track_order_subtitle">Xem tình trạng đơn hàng của bạn</string>
+    <string name="ingredients_check">Kiểm tra thành phần</string>
+    <string name="ingredients_check_subtitle">Tra cứu thành phần sản phẩm</string>
+    <string name="skin_routine">Chọn routine theo da</string>
+    <string name="skin_routine_subtitle">Gợi ý routine phù hợp cho bạn</string>
+    <string name="create_support">Tạo yêu cầu hỗ trợ</string>
+    <string name="create_support_subtitle">Gửi yêu cầu và theo dõi tiến độ</string>
+    <string name="menu_talk_human">Liên hệ nhân viên</string>
+    <string name="menu_talk_human_subtitle">Kết nối với đội ngũ Kanila</string>
+    <string name="support_banner_title">Hỗ trợ luôn sẵn sàng</string>
+    <string name="support_banner_subtitle">Phản hồi trung bình: <![CDATA[<font color="#E83E72"><b>5 phút</b></font>]]></string>
+    <string name="choose_contact_channel">Chọn kênh liên hệ</string>
+    <string name="channel_chat">Chat</string>
+    <string name="channel_chat_recommend">(Khuyến nghị)</string>
+    <string name="channel_call">Call</string>
+    <string name="channel_call_desc">(Gọi điện)</string>
+    <string name="channel_email">Email</string>
+    <string name="channel_zalo">Zalo</string>
+    <string name="menu_clear_chat">Xóa lịch sử trò chuyện</string>
+
+    <!-- Ingredient Analysis -->
+    <string name="ingredient_check_title">Kiểm tra thành phần</string>
+    <string name="advisor_name">Kanila Beauty Advisor</string>
+    <string name="online_status">Đang online</string>
+    <string name="analysis_intro">Kanila đã phân tích thành phần cho bạn ⚡</string>
+    <string name="match_score_label">Độ phù hợp</string>
+    <string name="match_score_desc">Thành phần nhìn chung phù hợp với da dầu mụn của bạn.</string>
+    <string name="save_analysis">Lưu phân tích</string>
+    <string name="find_similar">Xem gợi ý</string>
+    <string name="status_good">Tốt</string>
+    <string name="status_consider">Cần cân nhắc</string>
+    <string name="match_yes">Phù hợp với bạn</string>
+    <string name="match_no">Có thể không phù hợp</string>
 </resources>

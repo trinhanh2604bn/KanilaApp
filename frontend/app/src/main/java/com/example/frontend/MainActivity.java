@@ -56,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
 
+    private View layoutSearchExpandedBar;
+    private EditText edtExpandedSearchQuery;
+    private ImageButton btnExpandedSearchBack;
+
     private View layoutKanilaReelsCard, layoutReelThumbOne, layoutReelThumbTwo;
     private ImageView ivReelThumbOne, ivReelThumbTwo;
     private View layoutKanilaChallengeCard, btnJoinChallenge;

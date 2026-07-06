@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private HomeProductAdapter recommendedProductAdapter;
     private HomeProductAdapter allProductAdapter;
     private HomeViewModel viewModel;
+    private com.example.frontend.feature.wishlist.WishlistViewModel wishlistViewModel;
 
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
@@ -80,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        wishlistViewModel = new ViewModelProvider(this).get(com.example.frontend.feature.wishlist.WishlistViewModel.class);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -153,10 +155,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnWishlist.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
-                    .addToBackStack(null)
-                    .commit();
+            if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
+                        .addToBackStack(null)
+                        .commit();
+            } else {
+                showLoginPrompt();
+            }
         });
 
         setupHomeShortcuts();
@@ -198,6 +204,16 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         });
 
+        recommendedProductAdapter.setOnWishlistToggleListener((product, wasWishlisted) -> {
+            if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                wishlistViewModel.toggleWishlist(product.getId(), wasWishlisted);
+            } else {
+                product.setFavorite(wasWishlisted); // rollback UI
+                recommendedProductAdapter.notifyDataSetChanged();
+                showLoginPrompt();
+            }
+        });
+
         rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvRecommendedProducts.setAdapter(recommendedProductAdapter);
         
@@ -207,6 +223,16 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
                     .addToBackStack(null)
                     .commit();
+        });
+
+        allProductAdapter.setOnWishlistToggleListener((product, wasWishlisted) -> {
+            if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                wishlistViewModel.toggleWishlist(product.getId(), wasWishlisted);
+            } else {
+                product.setFavorite(wasWishlisted); // rollback UI
+                allProductAdapter.notifyDataSetChanged();
+                showLoginPrompt();
+            }
         });
         
         rvAllProducts.setLayoutManager(new GridLayoutManager(this, 2));
@@ -232,6 +258,26 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void showLoginPrompt() {
+        com.google.android.material.bottomsheet.BottomSheetDialog dialog = new com.google.android.material.bottomsheet.BottomSheetDialog(this);
+        View view = getLayoutInflater().inflate(R.layout.view_not_logged_in_state, null);
+        dialog.setContentView(view);
+        
+        view.findViewById(R.id.btnLoginNow).setOnClickListener(v -> {
+            dialog.dismiss();
+            // Navigate to login
+            // Assuming there's a login activity or fragment
+            Toast.makeText(this, "Redirecting to Login...", Toast.LENGTH_SHORT).show();
+        });
+        
+        view.findViewById(R.id.tvCreateAccount).setOnClickListener(v -> {
+            dialog.dismiss();
+            Toast.makeText(this, "Redirecting to Register...", Toast.LENGTH_SHORT).show();
+        });
+
+        dialog.show();
     }
 
     private void showLoading() {

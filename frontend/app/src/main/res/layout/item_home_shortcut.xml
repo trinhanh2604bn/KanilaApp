@@ -2,33 +2,33 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="80dp"
+    android:layout_width="72dp"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingVertical="@dimen/spacing_m">
+    android:paddingVertical="@dimen/spacing_s">
 
     <FrameLayout
         android:id="@+id/layoutShortcutIconContainer"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:background="@drawable/bg_icon_soft">
 
         <ImageView
             android:id="@+id/ivShortcutIcon"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:layout_gravity="center"
             app:tint="@color/accent_dark"
             tools:src="@drawable/ic_order_tracking" />
 
         <View
             android:id="@+id/viewShortcutBadge"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
             android:layout_gravity="top|end"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="2dp"
@@ -41,7 +41,7 @@
         android:id="@+id/tvShortcutTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_s"
+        android:layout_marginTop="6dp"
         android:ellipsize="end"
         android:gravity="center"
         android:maxLines="2"

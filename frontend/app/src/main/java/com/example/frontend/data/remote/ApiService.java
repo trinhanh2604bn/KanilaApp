@@ -2,7 +2,9 @@ package com.example.frontend.data.remote;
 
 import com.example.frontend.model.Product;
 import com.example.frontend.data.model.auth.LoginRequest;
-import com.example.frontend.data.model.auth.LoginResponse;
+import com.example.frontend.data.model.auth.RegisterRequest;
+import com.example.frontend.data.model.auth.VerifyOtpRequest;
+import com.example.frontend.data.model.auth.AuthResponse;
 import com.example.frontend.data.model.cart.CartDto;
 import com.example.frontend.data.model.cart.AddToCartRequest;
 import com.example.frontend.data.model.cart.UpdateCartItemRequest;
@@ -28,10 +30,22 @@ import retrofit2.http.DELETE;
 
 public interface ApiService {
     @POST("api/auth/login")
-    Call<ApiResponse<LoginResponse>> login(@Body LoginRequest credentials);
+    Call<ApiResponse<AuthResponse>> login(@Body LoginRequest credentials);
+
+    @POST("api/auth/forgot-password")
+    Call<ApiResponse<AuthResponse>> forgotPassword(@Body LoginRequest request);
 
     @POST("api/auth/register")
-    Call<ApiResponse<LoginResponse>> register(@Body Object userData);
+    Call<ApiResponse<AuthResponse>> register(@Body RegisterRequest request);
+
+    @POST("api/auth/verify-otp")
+    Call<ApiResponse<AuthResponse>> verifyOtp(@Body VerifyOtpRequest request);
+
+    @POST("api/auth/reset-password")
+    Call<ApiResponse<Void>> resetPassword(@Body com.example.frontend.data.model.auth.ResetPasswordRequest request);
+
+    @GET("api/auth/me")
+    Call<ApiResponse<Object>> getMe();
 
     @GET("api/products")
     Call<ApiResponse<List<Product>>> getProducts(@Query("q") String query, @Query("category") String categoryId, @Query("brand") String brandId);
@@ -65,6 +79,9 @@ public interface ApiService {
 
     @GET("api/carts/me")
     Call<ApiResponse<CartDto>> getMyCart();
+
+    @POST("api/carts/me/merge-guest")
+    Call<ApiResponse<CartDto>> mergeGuestCart();
 
     @GET("api/carts/guest/me")
     Call<ApiResponse<CartDto>> getGuestCart();

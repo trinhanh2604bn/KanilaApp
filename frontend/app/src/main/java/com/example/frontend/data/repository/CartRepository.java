@@ -55,6 +55,31 @@ public class CartRepository {
         });
     }
 
+    public void mergeGuestCart(MutableLiveData<NetworkResult<CartDto>> result) {
+        if (!tokenManager.isLoggedIn()) return;
+        
+        apiService.mergeGuestCart().enqueue(new Callback<ApiResponse<CartDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<CartDto>> call, Response<ApiResponse<CartDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<CartDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Merge failed"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<CartDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
     public void updateItemQuantity(String itemId, int quantity, MutableLiveData<NetworkResult<CartDto>> result) {
         result.setValue(NetworkResult.loading());
         apiService.updateCartItemQuantity(itemId, new UpdateCartItemRequest(quantity, null)).enqueue(new Callback<ApiResponse<CartDto>>() {

@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   register,
   login,
+  forgotPassword,
   verifyOtp,
   getMe,
   checkEmail,
@@ -19,11 +20,17 @@ router.post("/register", register);
 /** Initiate passwordless login — sends an OTP to the given email */
 router.post("/login", login);
 
+/** Initiate forgot password — sends an OTP to the given email/phone */
+router.post("/forgot-password", forgotPassword);
+
 /** Verify an OTP (purpose: "email_verification" | "login") → returns JWT */
 router.post("/verify-otp", verifyOtp);
 
 /** Get the currently authenticated user (requires Bearer JWT) */
 router.get("/me", authMiddleware, getMe);
+
+/** Reset password using a reset token */
+router.post("/reset-password", resetPassword);
 
 // ─── Deprecated endpoints (410 Gone) ─────────────────────────────────────────
 // These were part of the old password-based auth flow and have been removed.
@@ -31,6 +38,6 @@ router.get("/me", authMiddleware, getMe);
 
 router.post("/check-email", checkEmail);
 router.post("/verify-reset-otp", verifyResetOtp);
-router.post("/reset-password", resetPassword);
+// router.post("/reset-password", resetPassword); // Moved up
 
 module.exports = router;

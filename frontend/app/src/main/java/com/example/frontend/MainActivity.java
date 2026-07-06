@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -44,6 +45,7 @@ import java.util.List;
 import ui.account.AccountFragment;
 import ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
+import ui.commerce.CheckoutFragment;
 import ui.common.BottomNavigationHelper;
 
 public class MainActivity extends AppCompatActivity {
@@ -253,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
 
         rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvRecommendedProducts.setAdapter(recommendedProductAdapter);
-        
+
         allProductAdapter = new HomeProductAdapter();
         allProductAdapter.setOnProductClickListener(product -> {
             getSupportFragmentManager().beginTransaction()

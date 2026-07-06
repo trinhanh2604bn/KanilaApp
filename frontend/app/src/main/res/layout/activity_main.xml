@@ -105,7 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/spacing_m"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="3dp"
                 android:orientation="vertical"
                 android:paddingVertical="@dimen/spacing_s">
 
@@ -141,6 +141,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
+                        android:layout_marginStart="4dp"
                         android:fontFamily="@font/nunito_bold"
                         android:text="Gợi ý riêng cho bạn"
                         android:textColor="@color/text_main"
@@ -168,6 +169,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tvRecommendationTitle"
                         android:layout_marginTop="2dp"
+                        android:layout_marginLeft="3dp"
                         android:fontFamily="@font/nunito_regular"
                         android:text="Dựa trên hồ sơ làm đẹp và sở thích của bạn"
                         android:textColor="@color/text_secondary"

@@ -4,9 +4,12 @@ import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,12 +18,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 import com.example.frontend.R;
 import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.data.repository.CatalogRepository;
 import com.example.frontend.model.Brand;
 import com.example.frontend.model.HomeBannerItem;
 import java.util.ArrayList;
@@ -42,7 +45,9 @@ public class BrandPageFragment extends Fragment {
     private Runnable autoSlideRunnable;
     private final List<View> indicators = new ArrayList<>();
 
-    private CatalogViewModel viewModel;
+    private CatalogRepository catalogRepository;
+    private EditText edtBrandSearch;
+    private ImageButton btnClearBrandSearch;
 
     @Nullable
     @Override
@@ -54,15 +59,14 @@ public class BrandPageFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(this).get(CatalogViewModel.class);
+        catalogRepository = new CatalogRepository(requireContext());
 
         initViews(view);
         setupTopBar(view);
+        setupSearchLogic();
         setupFilterLogic();
         setupHeroSlider(view);
-        observeViewModel();
-        
-        viewModel.loadBrands();
+        loadBrandsFromRepository();
 
         BottomNavigationHelper.setup(view, tabIndex -> {
             // Handle tab navigation
@@ -75,6 +79,8 @@ public class BrandPageFragment extends Fragment {
         layoutFilterChips = root.findViewById(R.id.layoutFilterChips);
         loadingState = root.findViewById(R.id.viewBrandLoading);
         emptyState = root.findViewById(R.id.viewBrandEmpty);
+        edtBrandSearch = root.findViewById(R.id.edtBrandSearch);
+        btnClearBrandSearch = root.findViewById(R.id.btnClearBrandSearch);
         
         rvBrandGrid.setLayoutManager(new GridLayoutManager(requireContext(), 3));
         
@@ -112,6 +118,48 @@ public class BrandPageFragment extends Fragment {
                 containerSearch.setVisibility(visibility);
             });
         }
+    }
+
+    private void setupSearchLogic() {
+        if (edtBrandSearch == null) return;
+        
+        edtBrandSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String query = s.toString().trim();
+                filterBrandsLocally(query);
+                if (btnClearBrandSearch != null) {
+                    btnClearBrandSearch.setVisibility(query.isEmpty() ? View.GONE : View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        if (btnClearBrandSearch != null) {
+            btnClearBrandSearch.setOnClickListener(v -> edtBrandSearch.setText(""));
+        }
+    }
+
+    private void filterBrandsLocally(String query) {
+        if (query.isEmpty()) {
+            adapter.updateData(fullBrandList);
+            showEmpty(fullBrandList.isEmpty());
+            return;
+        }
+
+        List<Brand> filtered = new ArrayList<>();
+        for (Brand brand : fullBrandList) {
+            if (brand.getBrandName().toLowerCase().contains(query.toLowerCase())) {
+                filtered.add(brand);
+            }
+        }
+        adapter.updateData(filtered);
+        showEmpty(filtered.isEmpty());
     }
 
     private void setupHeroSlider(View root) {
@@ -190,8 +238,8 @@ public class BrandPageFragment extends Fragment {
         autoSlideHandler.removeCallbacks(autoSlideRunnable);
     }
 
-    private void observeViewModel() {
-        viewModel.getBrands().observe(getViewLifecycleOwner(), result -> {
+    private void loadBrandsFromRepository() {
+        catalogRepository.getBrands().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             
             switch (result.status) {
@@ -205,16 +253,24 @@ public class BrandPageFragment extends Fragment {
                         fullBrandList = result.data;
                         adapter.updateData(fullBrandList);
                         showEmpty(fullBrandList.isEmpty());
+                    } else {
+                        showEmpty(true);
                     }
                     break;
                 case EMPTY:
                     showLoading(false);
+                    adapter.updateData(new ArrayList<>());
                     showEmpty(true);
                     break;
                 case ERROR:
                 case NO_INTERNET:
                     showLoading(false);
-                    Toast.makeText(getContext(), result.message != null ? result.message : "Error loading brands", Toast.LENGTH_SHORT).show();
+                    showEmpty(false);
+                    Toast.makeText(
+                            getContext(),
+                            result.message != null ? result.message : "Không tải được danh sách thương hiệu",
+                            Toast.LENGTH_SHORT
+                    ).show();
                     break;
             }
         });
@@ -242,8 +298,15 @@ public class BrandPageFragment extends Fragment {
                 TextView chip = (TextView) child;
                 chip.setOnClickListener(v -> {
                     updateFilterUI(chip);
-                    // Filter brands based on region - Currently disabled as per requirements
-                    // filterBrands(chip.getText().toString());
+                    String chipText = chip.getText().toString();
+                    if (chipText.equals(getString(R.string.filter_all))) {
+                        adapter.updateData(fullBrandList);
+                        showEmpty(fullBrandList.isEmpty());
+                    } else {
+                        // Backend does not return region. Show empty for other regions as per TODO
+                        adapter.updateData(new ArrayList<>());
+                        showEmpty(true);
+                    }
                 });
             }
         }

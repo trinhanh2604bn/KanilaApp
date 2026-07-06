@@ -51,7 +51,7 @@ public interface ApiService {
     @GET("api/products/{id}/similar")
     Call<ApiResponse<List<Product>>> getSimilarProducts(@Path("id") String id, @Query("limit") Integer limit);
 
-    @GET("api/brands")
+    @GET("brands")
     Call<ApiResponse<List<com.example.frontend.model.Brand>>> getBrands();
 
     @GET("categories")

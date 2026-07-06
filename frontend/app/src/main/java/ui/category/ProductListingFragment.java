@@ -232,6 +232,8 @@ public class ProductListingFragment extends Fragment {
                 else if (categoryName.equals("Eyes") && p.getId().startsWith("e")) baseProducts.add(p);
                 else if (categoryName.equals("Lips") && p.getId().startsWith("l")) baseProducts.add(p);
                 else if (categoryName.equals("Cheeks") && p.getId().startsWith("c")) baseProducts.add(p);
+                else if (categoryName.equals("Mini & Travel") && p.getId().startsWith("mt")) baseProducts.add(p);
+                else if (categoryName.equals("Gift") && p.getId().startsWith("g")) baseProducts.add(p);
             } else if (TYPE_BRAND.equals(listingType)) {
                 if (brandName.equalsIgnoreCase(p.getBrand())) {
                     baseProducts.add(p);
@@ -261,6 +263,14 @@ public class ProductListingFragment extends Fragment {
         list.add(new Product("fwee1", "Fwee", "Blurry Pudding Pot", "420000", "4.9", "2k", R.drawable.img_brand_1, "Hot", "Blush"));
         list.add(new Product("nars1", "Nars", "Light Reflecting Foundation", "1200000", "4.8", "5k", R.drawable.brand_nars, "Premium", "Foundation"));
 
+        // Mini & Travel
+        list.add(new Product("mt1", "Laneige", "Mini Foundation Tint", "320000", "4.7", "500", R.drawable.img_foudation, "Mini", "Mini Foundation"));
+        list.add(new Product("mt2", "Innisfree", "Travel Makeup Kit", "550000", "4.5", "300", R.drawable.img_gift, "Kit", "Trial Kits"));
+
+        // Gift
+        list.add(new Product("g1", "Judydoll", "All-in-one Face Palette", "450000", "4.9", "1.5k", R.drawable.img_blush, "Palette", "Face Palette"));
+        list.add(new Product("g2", "Huda Beauty", "Naughty Nude Eyeshadow", "1650000", "4.9", "2k", R.drawable.img_eyeshadow, "Premium", "Eyeshadow Palette"));
+
         for (Product p : list) p.setHasAr(true);
         return list;
     }
@@ -276,12 +286,24 @@ public class ProductListingFragment extends Fragment {
     }
 
     private List<String> getChipsForCategory(String category) {
+        String all = getString(R.string.chip_all);
         switch (category != null ? category : "") {
-            case "Face": return Arrays.asList("Tất cả", "Foundation", "Concealer", "Primer", "Powder", "Setting Spray", "BB & CC Cream", "Tinted Moisturizer");
-            case "Eyes": return Arrays.asList("Tất cả", "Mascara", "Eyeliner", "Eyeshadow", "Eyebrow", "False Lashes");
-            case "Lips": return Arrays.asList("Tất cả", "Lipstick", "Lip Gloss", "Lip Balm", "Lip Liner", "Lip Stain");
-            case "Cheeks": return Arrays.asList("Tất cả", "Blush", "Bronzer", "Highlighter", "Contour");
-            default: return Arrays.asList("Tất cả");
+            case "Face":
+                return Arrays.asList(all, getString(R.string.chip_foundation), getString(R.string.chip_concealer),
+                        getString(R.string.chip_primer), getString(R.string.chip_powder), getString(R.string.chip_setting_spray),
+                        getString(R.string.chip_bb_cc_cream), getString(R.string.chip_tinted_moisturizer));
+            case "Eyes":
+                return Arrays.asList(all, "Mascara", "Eyeliner", "Eyeshadow", "Eyebrow", "False Lashes");
+            case "Lips":
+                return Arrays.asList(all, "Lipstick", "Lip Gloss", "Lip Balm", "Lip Liner", "Lip Stain");
+            case "Cheeks":
+                return Arrays.asList(all, "Blush", "Bronzer", "Highlighter", "Contour");
+            case "Mini & Travel":
+                return Arrays.asList(all, getString(R.string.chip_mini_foundation), getString(R.string.chip_mini_lipstick), getString(R.string.chip_trial_kits));
+            case "Gift":
+                return Arrays.asList(all, getString(R.string.chip_eyeshadow_palette), getString(R.string.chip_face_palette), getString(R.string.chip_makeup_kit));
+            default:
+                return Arrays.asList(all);
         }
     }
 

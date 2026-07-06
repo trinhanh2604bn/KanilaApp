@@ -16,20 +16,40 @@ const accountSchema = new mongoose.Schema(
       enum: ["customer", "admin", "staff"],
       default: "customer",
     },
+    /**
+     * Optional if phone registration is used.
+     * Trimmed, lowercased, and unique sparse.
+     */
     email: {
       type: String,
-      required: [true, "Email is required"],
       trim: true,
       lowercase: true,
     },
     /**
-     * Optional contact phone. NOT used for authentication or verification.
-     * Phone verification has been removed from the auth model.
+     * Optional if email registration is used.
+     * Trimmed, unique sparse.
      */
     phone: {
       type: String,
-      default: null,
       trim: true,
+      set: function(v) {
+        if (!v) return v;
+        // Strip everything except digits and +
+        let digits = String(v).replace(/[^\d+]/g, "");
+        // Ensure VN E.164 format
+        if (digits.startsWith("0")) {
+          digits = "+84" + digits.substring(1);
+        } else if (digits.length >= 9 && !digits.startsWith("+")) {
+          digits = "+84" + digits;
+        }
+        return digits;
+      }
+    },
+    registration_channel: {
+      type: String,
+      enum: ["email", "phone", "social"],
+      required: true,
+      default: "email",
     },
     username: {
       type: String,
@@ -38,11 +58,21 @@ const accountSchema = new mongoose.Schema(
     },
     account_status: {
       type: String,
-      enum: ["active", "inactive", "locked"],
+      enum: ["active", "inactive", "locked", "pending"],
       default: "active",
+    },
+    password_hash: {
+      type: String,
+      select: false,
+      default: null,
     },
     /** Set to a Date when email ownership is confirmed via OTP/magic-link. */
     email_verified_at: {
+      type: Date,
+      default: null,
+    },
+    /** Set to a Date when phone ownership is confirmed via SMS OTP. */
+    phone_verified_at: {
       type: Date,
       default: null,
     },
@@ -70,16 +100,35 @@ const accountSchema = new mongoose.Schema(
   }
 );
 
-// Unique indexes — declared once via schema.index() to avoid Mongoose duplicate-index warnings.
-accountSchema.index({ email: 1 }, { unique: true });
-accountSchema.index({ username: 1 }, { unique: true, sparse: true });
-// Phone is unique only when present and non-empty (partial filter).
-// Accounts with phone = null or "" are excluded — multiple no-phone accounts are allowed.
+// Validation: account must have at least one of email or phone.
+accountSchema.pre("validate", function (next) {
+  if (!this.email && !this.phone) {
+    next(new Error("Account must have at least one of email or phone."));
+  } else {
+    next();
+  }
+});
+
+// Unique indexes with partial filter to exclude null/empty values
+accountSchema.index(
+  { email: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { email: { $type: "string" } },
+  }
+);
 accountSchema.index(
   { phone: 1 },
   {
     unique: true,
-    partialFilterExpression: { phone: { $exists: true, $gt: "" } },
+    partialFilterExpression: { phone: { $type: "string" } },
+  }
+);
+accountSchema.index(
+  { username: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { username: { $type: "string" } },
   }
 );
 

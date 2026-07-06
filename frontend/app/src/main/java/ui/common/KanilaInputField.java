@@ -88,7 +88,12 @@ public class KanilaInputField extends LinearLayout {
 
             boolean showLeading = a.getBoolean(R.styleable.KanilaInputField_kanilaShowLeadingIcon, mode == 3);
             ivLeadingIcon.setVisibility(showLeading ? VISIBLE : GONE);
-            if (mode == 3) {
+            
+            int leadingIconResId = a.getResourceId(R.styleable.KanilaInputField_kanilaLeadingIcon, 0);
+            if (leadingIconResId != 0) {
+                ivLeadingIcon.setImageResource(leadingIconResId);
+                ivLeadingIcon.setVisibility(VISIBLE);
+            } else if (mode == 3) {
                 ivLeadingIcon.setImageResource(R.drawable.ic_search);
             }
 
@@ -207,6 +212,32 @@ public class KanilaInputField extends LinearLayout {
 
     public void setOnActionClickListener(OnClickListener listener) {
         btnAction.setOnClickListener(listener);
+    }
+
+    public void setLeadingIcon(int resId) {
+        if (resId != 0) {
+            ivLeadingIcon.setImageResource(resId);
+            ivLeadingIcon.setVisibility(VISIBLE);
+        } else {
+            ivLeadingIcon.setVisibility(GONE);
+        }
+    }
+
+    public void setInputType(int inputType) {
+        etInput.setInputType(inputType);
+    }
+
+    public void showMessage(String message) {
+        tvMessage.setText(message);
+        containerMessage.setVisibility(message != null && !message.isEmpty() ? VISIBLE : GONE);
+    }
+
+    public void hideMessage() {
+        containerMessage.setVisibility(GONE);
+    }
+
+    public String getText() {
+        return etInput.getText().toString();
     }
 
     public EditText getEditText() {

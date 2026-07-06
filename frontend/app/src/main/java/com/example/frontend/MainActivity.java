@@ -97,6 +97,32 @@ public class MainActivity extends AppCompatActivity {
 
         observeViewModel();
         viewModel.loadHomeData();
+        
+        checkAuthStatus();
+    }
+
+    private void checkAuthStatus() {
+        com.example.frontend.data.remote.TokenManager tm = com.example.frontend.data.remote.TokenManager.getInstance(this);
+        if (tm.isLoggedIn()) {
+            // Validate token by calling /me
+            com.example.frontend.data.remote.ApiClient.getClient(this)
+                .create(com.example.frontend.data.remote.ApiService.class)
+                .getMe()
+                .enqueue(new retrofit2.Callback<com.example.frontend.data.remote.ApiResponse<Object>>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, retrofit2.Response<com.example.frontend.data.remote.ApiResponse<Object>> response) {
+                        if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
+                            tm.clearToken();
+                            Toast.makeText(MainActivity.this, "Phiên đăng nhập hết hạn", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, Throwable t) {
+                        // Network error, maybe don't clear token yet
+                    }
+                });
+        }
     }
 
     public void navigateToCart() {
@@ -210,7 +236,18 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 product.setFavorite(wasWishlisted); // rollback UI
                 recommendedProductAdapter.notifyDataSetChanged();
-                showLoginPrompt();
+                
+                Bundle extras = new Bundle();
+                extras.putString("productId", product.getId());
+                extras.putBoolean("wasWishlisted", wasWishlisted);
+                
+                com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                    com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
+                    "Home",
+                    0,
+                    extras
+                );
+                com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
             }
         });
 
@@ -231,7 +268,18 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 product.setFavorite(wasWishlisted); // rollback UI
                 allProductAdapter.notifyDataSetChanged();
-                showLoginPrompt();
+                
+                Bundle extras = new Bundle();
+                extras.putString("productId", product.getId());
+                extras.putBoolean("wasWishlisted", wasWishlisted);
+
+                com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                    com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
+                    "Home",
+                    0,
+                    extras
+                );
+                com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
             }
         });
         
@@ -261,23 +309,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showLoginPrompt() {
-        com.google.android.material.bottomsheet.BottomSheetDialog dialog = new com.google.android.material.bottomsheet.BottomSheetDialog(this);
-        View view = getLayoutInflater().inflate(R.layout.view_not_logged_in_state, null);
-        dialog.setContentView(view);
-        
-        view.findViewById(R.id.btnLoginNow).setOnClickListener(v -> {
-            dialog.dismiss();
-            // Navigate to login
-            // Assuming there's a login activity or fragment
-            Toast.makeText(this, "Redirecting to Login...", Toast.LENGTH_SHORT).show();
-        });
-        
-        view.findViewById(R.id.tvCreateAccount).setOnClickListener(v -> {
-            dialog.dismiss();
-            Toast.makeText(this, "Redirecting to Register...", Toast.LENGTH_SHORT).show();
-        });
-
-        dialog.show();
+        com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+            com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT,
+            "Home",
+            0,
+            null
+        );
+        com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
     }
 
     private void showLoading() {

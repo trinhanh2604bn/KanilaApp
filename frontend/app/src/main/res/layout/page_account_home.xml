@@ -27,11 +27,10 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Tài khoản của tôi"
-            android:textAppearance="@style/Text.Kanila.H2"
+            android:textAppearance="@style/H2"
             android:textColor="@color/accent_dark" />
 
         <ImageView
-            android:id="@+id/btnNotification"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:contentDescription="Thông báo"
@@ -39,281 +38,639 @@
             app:tint="@color/text_main" />
     </LinearLayout>
 
-    <FrameLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollAccountContent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        android:visibility="gone"
+        tools:visibility="visible">
 
-        <!-- Loading State -->
-        <include
-            android:id="@+id/layoutLoading"
-            layout="@layout/view_loading_state"
-            android:visibility="gone" />
-
-        <!-- Error State -->
-        <include
-            android:id="@+id/layoutError"
-            layout="@layout/view_error_generic"
-            android:visibility="gone" />
-
-        <!-- Success Content -->
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/layoutContent"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="16dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp">
 
+            <!-- Profile Header Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingHorizontal="16dp">
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_account_header_card"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp">
 
-                <!-- Profile Header Card -->
+                <ImageView
+                    android:id="@+id/ivAvatar"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:background="@drawable/bg_avatar_circle"
+                    android:contentDescription="Ảnh đại diện"
+                    android:padding="2dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_account"
+                    app:tint="@color/accent_dark" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvName"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Nguyễn Minh Anh"
+                            android:textAppearance="@style/H2"
+                            android:textColor="@color/accent_dark" />
+
+                        <ImageView
+                            android:id="@+id/btnEdit"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/bg_card"
+                            android:contentDescription="Chỉnh sửa"
+                            android:padding="4dp"
+                            android:src="@drawable/ic_edit"
+                            app:tint="@color/accent_dark" />
+                    </LinearLayout>
+
+                    <!-- Rank Chip -->
+                    <LinearLayout
+                        android:id="@+id/layoutRank"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_status_pending"
+                        android:backgroundTint="#FFF4E5"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp">
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@drawable/ic_crown"
+                            app:tint="#FF9800" />
+
+                        <TextView
+                            android:id="@+id/tvRankName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="Gold Member"
+                            android:textAppearance="@style/Caption"
+                            android:textColor="#FF9800" />
+                    </LinearLayout>
+
+                    <!-- Points -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_star"
+                            app:tint="#FF9800" />
+
+                        <TextView
+                            android:id="@+id/tvPointsHeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="2.450"
+                            android:textAppearance="@style/Text.Kanila.BodyMedium"
+                            android:textStyle="bold"
+                            android:textColor="@color/button" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:text="điểm"
+                            android:textAppearance="@style/Caption"
+                            android:textColor="@color/accent_dark" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Stats Grid using LinearLayers -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical">
+
+                <!-- Row 1 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_account_header_card"
+                    android:orientation="horizontal">
+
+                    <!-- Đơn hàng -->
+                    <LinearLayout
+                        android:id="@+id/btnAccountOrders"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_marginBottom="12dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:id="@+id/ivOrder"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_chatbot_soft_dot"
+                            android:padding="10dp"
+                            android:src="@drawable/ic_cart"
+                            app:tint="@color/accent_dark" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvOrderTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Đơn hàng"
+                                android:textStyle="bold"
+                                android:textAppearance="@style/Text.Kanila.Caption"
+                                android:textColor="@color/accent_dark" />
+
+                            <TextView
+                                android:id="@+id/tvOrderCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="18"
+                                android:textAppearance="@style/H2"
+                                android:textColor="@color/button" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="@color/text_tertiary" />
+                    </LinearLayout>
+
+                    <!-- Ví voucher -->
+                    <LinearLayout
+                        android:id="@+id/btnAccountVouchers"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginBottom="12dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:id="@+id/ivVoucher"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_chatbot_soft_dot"
+                            android:padding="10dp"
+                            android:src="@drawable/ic_coupon"
+                            app:tint="@color/accent_dark" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvVoucherTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ví voucher"
+                                android:textStyle="bold"
+                                android:textAppearance="@style/Text.Kanila.Caption"
+                                android:textColor="@color/accent_dark" />
+
+                            <TextView
+                                android:id="@+id/tvVoucherCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="6"
+                                android:textAppearance="@style/H2"
+                                android:textColor="@color/button" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="@color/text_tertiary" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Row 2 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Điểm thưởng -->
+                    <LinearLayout
+                        android:id="@+id/btnAccountPoints"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:id="@+id/ivPoints"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_chatbot_soft_dot"
+                            android:padding="10dp"
+                            android:src="@drawable/ic_star"
+                            app:tint="@color/accent_dark" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvPointsTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Điểm thưởng"
+                                android:textStyle="bold"
+                                android:textAppearance="@style/Text.Kanila.Caption"
+                                android:textColor="@color/accent_dark" />
+
+                            <TextView
+                                android:id="@+id/tvPointsVal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="2.450"
+                                android:textAppearance="@style/H2"
+                                android:textColor="@color/button" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="@color/text_tertiary" />
+                    </LinearLayout>
+
+                    <!-- Đã lưu -->
+                    <LinearLayout
+                        android:id="@+id/btnAccountSaved"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:id="@+id/ivSaved"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_chatbot_soft_dot"
+                            android:padding="10dp"
+                            android:src="@drawable/ic_heart"
+                            app:tint="@color/accent_dark" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvSavedTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Đã lưu"
+                                android:textStyle="bold"
+                                android:textAppearance="@style/Text.Kanila.Caption"
+                                android:textColor="@color/accent_dark" />
+
+                            <TextView
+                                android:id="@+id/tvSavedCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="32"
+                                android:textAppearance="@style/H2"
+                                android:textColor="@color/button" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="@color/text_tertiary" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Menu List -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_card"
+                android:orientation="vertical"
+                android:paddingVertical="8dp">
+
+                <!-- Beauty Profile -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="20dp">
+                    android:paddingHorizontal="16dp">
 
                     <ImageView
-                        android:id="@+id/ivAvatar"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:background="@drawable/bg_avatar_circle"
-                        android:contentDescription="Ảnh đại diện"
-                        android:padding="2dp"
-                        android:scaleType="centerCrop"
+                        android:id="@+id/ivMenu1"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_chatbot_soft_dot"
+                        android:padding="6dp"
                         android:src="@drawable/ic_account"
                         app:tint="@color/accent_dark" />
 
-                    <LinearLayout
+                    <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:text="Beauty Profile"
+                        android:textAppearance="@style/H3"
+                        android:textColor="@color/text_main" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvName"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Nguyễn Minh Anh"
-                                android:textAppearance="@style/Text.Kanila.H2"
-                                android:textColor="@color/accent_dark" />
-
-                            <ImageView
-                                android:id="@+id/btnEdit"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:background="@drawable/bg_card"
-                                android:contentDescription="Chỉnh sửa"
-                                android:padding="4dp"
-                                android:src="@drawable/ic_edit"
-                                app:tint="@color/accent_dark" />
-                        </LinearLayout>
-
-                        <!-- Rank Chip -->
-                        <LinearLayout
-                            android:id="@+id/layoutRank"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:background="@drawable/bg_status_pending"
-                            android:backgroundTint="#FFF4E5"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="4dp">
-
-                            <ImageView
-                                android:layout_width="14dp"
-                                android:layout_height="14dp"
-                                android:src="@drawable/ic_crown"
-                                app:tint="#FF9800" />
-
-                            <TextView
-                                android:id="@+id/tvRankName"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="6dp"
-                                android:text="Gold Member"
-                                android:textAppearance="@style/Text.Kanila.Caption"
-                                android:textColor="#FF9800" />
-                        </LinearLayout>
-
-                        <!-- Points -->
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:src="@drawable/ic_star"
-                                app:tint="#FF9800" />
-
-                            <TextView
-                                android:id="@+id/tvPointsHeader"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="6dp"
-                                android:text="2.450"
-                                android:textAppearance="@style/Text.Kanila.BodyMedium"
-                                android:textStyle="bold"
-                                android:textColor="@color/button" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:text="điểm"
-                                android:textAppearance="@style/Text.Kanila.Caption"
-                                android:textColor="@color/accent_dark" />
-                        </LinearLayout>
-                    </LinearLayout>
-
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_tertiary" />
                 </LinearLayout>
 
-                <!-- Stats Grid -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="56dp"
+                    android:background="@color/border_divider" />
+
+                <!-- Skin Journey -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="vertical">
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
 
-                    <!-- Row 1 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:id="@+id/ivMenu2"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_chatbot_soft_dot"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_drops"
+                        app:tint="@color/accent_dark" />
+
+                    <TextView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:text="Skin Journey"
+                        android:textAppearance="@style/H3"
+                        android:textColor="@color/text_main" />
 
-                        <include
-                            android:id="@+id/itemOrders"
-                            layout="@layout/view_account_stat_card"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="6dp"
-                            android:layout_marginBottom="12dp"
-                            android:layout_weight="1" />
-
-                        <include
-                            android:id="@+id/itemVouchers"
-                            layout="@layout/view_account_stat_card"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="6dp"
-                            android:layout_marginBottom="12dp"
-                            android:layout_weight="1" />
-                    </LinearLayout>
-
-                    <!-- Row 2 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <include
-                            android:id="@+id/itemPoints"
-                            layout="@layout/view_account_stat_card"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="6dp"
-                            android:layout_weight="1" />
-
-                        <include
-                            android:id="@+id/itemSaved"
-                            layout="@layout/view_account_stat_card"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="6dp"
-                            android:layout_weight="1" />
-                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_tertiary" />
                 </LinearLayout>
 
-                <!-- Menu List -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="56dp"
+                    android:background="@color/border_divider" />
+
+                <!-- Địa chỉ -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:background="@drawable/bg_card"
-                    android:orientation="vertical"
-                    android:paddingVertical="8dp">
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
 
-                    <include
-                        android:id="@+id/menuBeautyProfile"
-                        layout="@layout/view_account_menu_item" />
+                    <ImageView
+                        android:id="@+id/ivMenu3"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_chatbot_soft_dot"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_location"
+                        app:tint="@color/accent_dark" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginStart="56dp"
-                        android:background="@color/border_divider" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:text="Địa chỉ giao hàng"
+                        android:textAppearance="@style/H3"
+                        android:textColor="@color/text_main" />
 
-                    <include
-                        android:id="@+id/menuSkinJourney"
-                        layout="@layout/view_account_menu_item" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_tertiary" />
+                </LinearLayout>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginStart="56dp"
-                        android:background="@color/border_divider" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="56dp"
+                    android:background="@color/border_divider" />
 
-                    <include
-                        android:id="@+id/menuAddress"
-                        layout="@layout/view_account_menu_item" />
+                <!-- Phương thức thanh toán -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginStart="56dp"
-                        android:background="@color/border_divider" />
+                    <ImageView
+                        android:id="@+id/ivMenu4"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_chatbot_soft_dot"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_paymeny_card"
+                        app:tint="@color/accent_dark" />
 
-                    <include
-                        android:id="@+id/menuPayment"
-                        layout="@layout/view_account_menu_item" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:text="Phương thức thanh toán"
+                        android:textAppearance="@style/H3"
+                        android:textColor="@color/text_main" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginStart="56dp"
-                        android:background="@color/border_divider" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_tertiary" />
+                </LinearLayout>
 
-                    <include
-                        android:id="@+id/menuSettings"
-                        layout="@layout/view_account_menu_item" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="56dp"
+                    android:background="@color/border_divider" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginStart="56dp"
-                        android:background="@color/border_divider" />
+                <!-- Cài đặt -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
 
-                    <include
-                        android:id="@+id/menuSupport"
-                        layout="@layout/view_account_menu_item" />
+                    <ImageView
+                        android:id="@+id/ivMenu5"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_chatbot_soft_dot"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_settings"
+                        app:tint="@color/accent_dark" />
 
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:text="Cài đặt"
+                        android:textAppearance="@style/H3"
+                        android:textColor="@color/text_main" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_tertiary" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="56dp"
+                    android:background="@color/border_divider" />
+
+                <!-- Hỗ trợ -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
+
+                    <ImageView
+                        android:id="@+id/ivMenu6"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_chatbot_soft_dot"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_support"
+                        app:tint="@color/accent_dark" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:text="Trung tâm hỗ trợ"
+                        android:textAppearance="@style/H3"
+                        android:textColor="@color/text_main" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_tertiary" />
                 </LinearLayout>
 
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
 
-    </FrameLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/layoutGuestState"
+        layout="@layout/view_not_logged_in_state"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <!-- Bottom Navigation -->
     <include

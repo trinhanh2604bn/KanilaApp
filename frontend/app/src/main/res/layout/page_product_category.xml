@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <!-- A. Fixed top area -->
     <include
@@ -141,7 +142,7 @@
                     <View
                         android:layout_width="@dimen/spacing_xs"
                         android:layout_height="match_parent" />
-
+6
                     <include
                         android:id="@+id/cardCategoryGift"
                         layout="@layout/view_category_visual_card"

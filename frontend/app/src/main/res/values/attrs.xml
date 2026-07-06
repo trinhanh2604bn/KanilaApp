@@ -32,5 +32,6 @@
         <attr name="kanilaActionText" format="string" />
         <attr name="kanilaShowActionButton" format="boolean" />
         <attr name="kanilaShowLeadingIcon" format="boolean" />
+        <attr name="kanilaLeadingIcon" format="reference" />
     </declare-styleable>
 </resources>

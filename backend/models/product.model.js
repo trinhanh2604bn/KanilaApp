@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 
-/** Register Account so `.populate("createdByAccountId")` / `updatedByAccountId` never throws MissingSchemaError. */
+/** Register dependencies so `.populate()` never throws MissingSchemaError. */
 require("./account.model");
+require("./brand.model");
+require("./category.model");
 
 const productSchema = new mongoose.Schema(
   {

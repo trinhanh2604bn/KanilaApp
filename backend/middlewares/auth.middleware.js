@@ -12,7 +12,10 @@ const authMiddleware = (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET || "access_secret"
+    );
 
     // Normalize JWT payload (legacy tokens used accountId)
     if (!decoded.account_id && decoded.accountId) {

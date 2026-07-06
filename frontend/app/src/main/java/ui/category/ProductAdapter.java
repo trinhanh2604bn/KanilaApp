@@ -46,6 +46,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.tvBrand.setText(product.getBrand());
         holder.tvName.setText(product.getName());
         holder.tvPrice.setText(product.getPrice());
+        holder.btnWishlist.setSelected(product.isFavorite());
         try {
             holder.ratingBar.setRating(Float.parseFloat(product.getRating()));
         } catch (Exception e) {
@@ -82,7 +83,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         }
 
         if (holder.btnWishlist != null) {
-            holder.btnWishlist.setOnClickListener(v -> v.setSelected(!v.isSelected()));
+            holder.btnWishlist.setOnClickListener(v -> {
+                boolean newState = !product.isFavorite();
+                product.setFavorite(newState);
+                v.setSelected(newState);
+            });
         }
     }
 

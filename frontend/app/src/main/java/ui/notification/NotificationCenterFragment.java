@@ -93,6 +93,16 @@ public class NotificationCenterFragment extends Fragment {
     }
 
     private void setupListeners() {
+        View btnBack = getView().findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> {
+                if (getActivity() != null) {
+                    // Trở về trang trước đó (thường là MainActivity nếu navigate từ đó)
+                    getActivity().getOnBackPressedDispatcher().onBackPressed();
+                }
+            });
+        }
+
         for (TextView tab : filterTabs) {
             tab.setOnClickListener(v -> {
                 updateTabs(tab);
@@ -113,6 +123,9 @@ public class NotificationCenterFragment extends Fragment {
     private void openDetail(NotificationItem item) {
         Intent intent = new Intent(requireContext(), NotificationDetailActivity.class);
         intent.putExtra(NotificationDetailActivity.EXTRA_NOTIF_TYPE, item.getType().name());
+        intent.putExtra(NotificationDetailActivity.EXTRA_NOTIF_TITLE, item.getTitle());
+        intent.putExtra(NotificationDetailActivity.EXTRA_NOTIF_CONTENT, item.getContent());
+        intent.putExtra(NotificationDetailActivity.EXTRA_NOTIF_REF_ID, item.getRefId());
         startActivity(intent);
     }
 

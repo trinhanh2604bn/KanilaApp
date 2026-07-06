@@ -27,7 +27,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/form_field_spacing"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/bg_kanila_input_default"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="@dimen/spacing_m"
@@ -77,7 +77,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/form_field_spacing"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/bg_kanila_input_default"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="@dimen/spacing_m"
@@ -128,7 +128,7 @@
                 android:id="@+id/layoutAddressProvince"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/form_field_spacing"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/bg_kanila_input_default"
                 android:clickable="true"
                 android:focusable="true"
@@ -183,7 +183,7 @@
                 android:id="@+id/layoutAddressWard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/form_field_spacing"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/bg_kanila_input_default"
                 android:clickable="true"
                 android:focusable="true"
@@ -237,7 +237,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/form_field_spacing"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/bg_kanila_input_default"
                 android:paddingHorizontal="@dimen/spacing_m"
                 android:paddingVertical="@dimen/spacing_s">
@@ -300,7 +300,7 @@
                 android:id="@+id/layoutUseCurrentLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_xl"
+                android:layout_marginBottom="@dimen/spacing_m"
                 android:background="@drawable/bg_chip_pink"
                 android:clickable="true"
                 android:focusable="true"
@@ -330,7 +330,7 @@
                 android:id="@+id/tvLabelTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_m"
+                android:layout_marginBottom="@dimen/spacing_xs"
                 android:fontFamily="@font/nunito_bold"
                 android:textColor="@color/text_main"
                 android:textSize="14sp"
@@ -340,7 +340,7 @@
                 android:id="@+id/chipGroupAddressTag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_xl"
+                android:layout_marginBottom="10dp"
                 app:singleSelection="true">
 
                 <com.google.android.material.chip.Chip
@@ -378,7 +378,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_xl">
+                android:layout_marginBottom="10dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"

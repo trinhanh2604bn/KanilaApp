@@ -22,6 +22,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
@@ -43,6 +44,7 @@ import java.util.List;
 import ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
 import ui.commerce.CheckoutFragment;
+import ui.common.BottomNavigationHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton btnNotification, btnCart, btnWishlist;
     private RecyclerView rvHomeShortcuts;
     private RecyclerView rvRecommendedProducts;
+    private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
 
     private View layoutKanilaReelsCard, layoutReelThumbOne, layoutReelThumbTwo;
@@ -60,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
 
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
-    private HomeProductAdapter productAdapter;
+    private HomeProductAdapter recommendedProductAdapter;
+    private HomeProductAdapter allProductAdapter;
     private HomeViewModel viewModel;
 
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
@@ -81,8 +85,9 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         setupSearchBehavior();
+        setupBottomNavigation();
         setupBannerSlider();
-        setupProductList();
+        setupProductLists();
 
         observeViewModel();
         viewModel.loadHomeData();
@@ -96,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         btnWishlist = findViewById(R.id.btnWishlist);
         rvHomeShortcuts = findViewById(R.id.rvHomeShortcuts);
         rvRecommendedProducts = findViewById(R.id.rvRecommendedProducts);
+        rvAllProducts = findViewById(R.id.rvAllProducts);
         layoutHomeStateContainer = findViewById(R.id.layoutHomeStateContainer);
         viewHomeLoading = findViewById(R.id.viewHomeLoading);
         viewHomeError = findViewById(R.id.viewHomeError);
@@ -110,6 +116,15 @@ public class MainActivity extends AppCompatActivity {
         tvChallengeProgress = findViewById(R.id.tvChallengeProgress);
         tvChallengeParticipants = findViewById(R.id.tvChallengeParticipants);
         tvChallengeReward = findViewById(R.id.tvChallengeReward);
+
+        layoutSearchExpandedBar = findViewById(R.id.layoutSearchExpandedBar);
+        edtExpandedSearchQuery = findViewById(R.id.edtExpandedSearchQuery);
+        btnExpandedSearchBack = findViewById(R.id.btnExpandedSearchBack);
+
+        findViewById(R.id.btnViewAllRecommended).setOnClickListener(v -> {
+            // TODO: Navigate to recommended product listing screen
+            Toast.makeText(this, "See All Recommended", Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void setupSearchBehavior() {
@@ -117,8 +132,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SearchActivity.class);
             startActivity(intent);
         });
-
-        //btnNotification.setOnClickListener(v -> Toast.makeText(this, R.string.notification, Toast.LENGTH_SHORT).show());
 
         btnCart.setOnClickListener(v -> {
             getSupportFragmentManager().beginTransaction()
@@ -134,12 +147,32 @@ public class MainActivity extends AppCompatActivity {
                     .addToBackStack(null)
                     .commit();
         });
+
         btnWishlist.setOnClickListener(v -> {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, new ui.category.ProductCategoryFragment())
+                    .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
                     .addToBackStack(null)
                     .commit();
         });
+
+        // Setup bottom nav for Home Activity (as per layout)
+        View bottomNav = findViewById(R.id.layoutBottomNavigation);
+        if (bottomNav != null) {
+            ui.common.BottomNavigationHelper.setup(bottomNav, tabIndex -> {
+                if (tabIndex == ui.common.BottomNavigationHelper.TAB_ACCOUNT) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ui.account.AccountFragment())
+                            .addToBackStack(null)
+                            .commit();
+                } else if (tabIndex == ui.common.BottomNavigationHelper.TAB_CATEGORY) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ui.category.ProductCategoryFragment())
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
+            ui.common.BottomNavigationHelper.setSelectedTab(bottomNav, ui.common.BottomNavigationHelper.TAB_HOME);
+        }
 
 
 
@@ -147,14 +180,48 @@ public class MainActivity extends AppCompatActivity {
         setupSocialSection();
     }
 
-    private void setupProductList() {
-        productAdapter = new HomeProductAdapter();
-        productAdapter.setOnProductClickListener(product -> {
-            Toast.makeText(this, "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
+    private void setupBottomNavigation() {
+        BottomNavigationHelper.setup(findViewById(R.id.main), tabIndex -> {
+            if (tabIndex == BottomNavigationHelper.TAB_CATEGORY) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.category.ProductCategoryFragment())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+        BottomNavigationHelper.setSelectedTab(findViewById(R.id.main), BottomNavigationHelper.TAB_HOME);
+    }
+
+    private void setupProductLists() {
+        // Recommended Products (Horizontal)
+        recommendedProductAdapter = new HomeProductAdapter();
+
+        // Premium feel: width around 46% of screen
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        recommendedProductAdapter.setItemWidth((int) (screenWidth * 0.46));
+
+        recommendedProductAdapter.setOnProductClickListener(product -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                    .addToBackStack(null)
+                    .commit();
         });
 
         rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        rvRecommendedProducts.setAdapter(productAdapter);
+        rvRecommendedProducts.setAdapter(recommendedProductAdapter);
+
+        // All Products (Vertical Grid)
+        allProductAdapter = new HomeProductAdapter();
+        allProductAdapter.setOnProductClickListener(product -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        rvAllProducts.setLayoutManager(new GridLayoutManager(this, 2));
+        rvAllProducts.setAdapter(allProductAdapter);
+        rvAllProducts.setNestedScrollingEnabled(false);
     }
 
     private void observeViewModel() {
@@ -165,9 +232,14 @@ public class MainActivity extends AppCompatActivity {
                 showLoading();
             } else if (state.error != null) {
                 showError(state.error);
-            } else if (state.products != null) {
+            } else {
                 showContent();
-                productAdapter.setProducts(state.products);
+                if (state.recommendedProducts != null) {
+                    recommendedProductAdapter.setProducts(state.recommendedProducts);
+                }
+                if (state.allProducts != null) {
+                    allProductAdapter.setProducts(state.allProducts);
+                }
             }
         });
     }
@@ -176,19 +248,22 @@ public class MainActivity extends AppCompatActivity {
         layoutHomeStateContainer.setVisibility(View.VISIBLE);
         viewHomeLoading.setVisibility(View.VISIBLE);
         viewHomeError.setVisibility(View.GONE);
-        rvRecommendedProducts.setVisibility(View.GONE);
+        findViewById(R.id.layoutHomeRecommendation).setVisibility(View.GONE);
+        findViewById(R.id.layoutHomeCatalog).setVisibility(View.GONE);
     }
 
     private void showContent() {
         layoutHomeStateContainer.setVisibility(View.GONE);
-        rvRecommendedProducts.setVisibility(View.VISIBLE);
+        findViewById(R.id.layoutHomeRecommendation).setVisibility(View.VISIBLE);
+        findViewById(R.id.layoutHomeCatalog).setVisibility(View.VISIBLE);
     }
 
     private void showError(String message) {
         layoutHomeStateContainer.setVisibility(View.VISIBLE);
         viewHomeLoading.setVisibility(View.GONE);
         viewHomeError.setVisibility(View.VISIBLE);
-        rvRecommendedProducts.setVisibility(View.GONE);
+        findViewById(R.id.layoutHomeRecommendation).setVisibility(View.GONE);
+        findViewById(R.id.layoutHomeCatalog).setVisibility(View.GONE);
 
         TextView tvError = viewHomeError.findViewById(R.id.tvErrorTitle);
         if (tvError != null) tvError.setText(message);

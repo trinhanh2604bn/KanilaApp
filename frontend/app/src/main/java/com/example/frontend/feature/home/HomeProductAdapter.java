@@ -3,6 +3,7 @@ package com.example.frontend.feature.home;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import java.util.List;
 public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.ViewHolder> {
     private List<Product> products = new ArrayList<>();
     private OnProductClickListener listener;
+    private int itemWidth = -1;
 
     public interface OnProductClickListener {
         void onProductClick(Product product);
@@ -30,10 +32,21 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         notifyDataSetChanged();
     }
 
+    public void setItemWidth(int width) {
+        this.itemWidth = width;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product_card, parent, false);
+        if (itemWidth > 0) {
+            ViewGroup.LayoutParams lp = view.getLayoutParams();
+            if (lp != null) {
+                lp.width = itemWidth;
+                view.setLayoutParams(lp);
+            }
+        }
         return new ViewHolder(view);
     }
 
@@ -44,6 +57,15 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         holder.tvBrand.setText(product.getBrand());
         holder.tvPrice.setText(product.getPrice());
         holder.tvReviewCount.setText("(" + product.getReviewCount() + ")");
+
+        if (holder.btnWishlist != null) {
+            holder.btnWishlist.setSelected(product.isFavorite());
+            holder.btnWishlist.setOnClickListener(v -> {
+                boolean newState = !product.isFavorite();
+                product.setFavorite(newState);
+                v.setSelected(newState);
+            });
+        }
 
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
             Glide.with(holder.ivImage.getContext())
@@ -76,6 +98,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         ImageView ivImage;
         TextView tvName, tvBrand, tvPrice, tvReviewCount, tvBadge;
         View layoutBadge;
+        ImageButton btnWishlist;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -86,6 +109,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
             tvReviewCount = itemView.findViewById(R.id.tvProductReviewCount);
             tvBadge = itemView.findViewById(R.id.tvProductBadge);
             layoutBadge = itemView.findViewById(R.id.layoutProductStatusBadge);
+            btnWishlist = itemView.findViewById(R.id.btnWishlist);
         }
     }
 }

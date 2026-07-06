@@ -3,15 +3,15 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="112dp"
-    android:layout_height="120dp"
-    android:layout_marginEnd="@dimen/spacing_s"
+    android:layout_width="100dp"
+    android:layout_height="130dp"
+    android:layout_marginEnd="10dp"
     android:clickable="true"
     android:focusable="true"
     app:cardBackgroundColor="@color/background_main"
-    app:cardCornerRadius="16dp"
+    app:cardCornerRadius="20dp"
     app:cardElevation="0dp"
-    app:rippleColor="@color/secondary"
+    app:rippleColor="#20FFADBE"
     app:strokeColor="@color/border_divider"
     app:strokeWidth="1dp">
 
@@ -24,25 +24,21 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="@dimen/spacing_m">
+            android:padding="12dp">
 
             <ImageView
                 android:id="@+id/ivGoalIcon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/bg_circle"
-                android:backgroundTint="@color/background_sub"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:contentDescription="@string/app_name"
-                android:padding="9dp"
                 android:src="@drawable/ic_goal_sparkle"
                 app:tint="@color/accent_dark" />
 
             <TextView
                 android:id="@+id/tvGoalLabel"
-                style="@style/Text.Kanila.Micro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_s"
+                android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:fontFamily="@font/nunito_semibold"
                 android:gravity="center"

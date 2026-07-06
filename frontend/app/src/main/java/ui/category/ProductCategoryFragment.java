@@ -1,5 +1,6 @@
 package ui.category;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
@@ -52,9 +53,13 @@ public class ProductCategoryFragment extends Fragment {
 
         BottomNavigationHelper.setup(view, tabIndex -> {
             if (tabIndex == BottomNavigationHelper.TAB_HOME) {
-                if (getActivity() != null) {
-                    getActivity().getSupportFragmentManager().popBackStack();
-                }
+                Intent intent = new Intent(requireContext(), com.example.frontend.MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            } else if (tabIndex == BottomNavigationHelper.TAB_ACCOUNT) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.account.AccountFragment())
+                        .commit();
             }
         });
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);

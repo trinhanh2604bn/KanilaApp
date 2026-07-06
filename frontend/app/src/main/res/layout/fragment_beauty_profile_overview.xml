@@ -47,15 +47,14 @@
         <!-- Tiêu đề -->
         <TextView
             android:id="@+id/tvTitle"
+            style="@style/Text.Kanila.H2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="64dp"
-            android:fontFamily="@font/nunito_bold"
             android:gravity="center"
             android:includeFontPadding="false"
             android:text="@string/beauty_profile_title"
             android:textColor="@color/accent_dark"
-            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -245,13 +244,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:clipChildren="false"
                 android:clipToPadding="false"
                 android:scrollbars="none">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="16dp">
 
                     <!-- Độ dầu -->
                     <include
@@ -297,6 +301,7 @@
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
+            <!-- Mục tiêu làm đẹp -->
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -312,7 +317,6 @@
 
             </HorizontalScrollView>
 
-            <!-- Mục tiêu làm đẹp -->
             <TextView
                 style="@style/Text.Kanila.H3"
                 android:layout_width="wrap_content"
@@ -326,13 +330,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:clipChildren="false"
                 android:clipToPadding="false"
                 android:scrollbars="none">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="16dp">
 
                     <include
                         android:id="@+id/goalHydrating"
@@ -397,7 +406,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginBottom="16dp"
-                android:text="Xem Look đề xuất"
+                android:text="Phân tích làn da AI"
                 android:textAllCaps="false"
                 android:textColor="@color/button"
                 app:cornerRadius="12dp"

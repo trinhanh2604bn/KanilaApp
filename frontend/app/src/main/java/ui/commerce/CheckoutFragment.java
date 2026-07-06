@@ -289,7 +289,69 @@ public class CheckoutFragment extends Fragment {
 
             Glide.with(this).load(item.getImageUrl()).placeholder(R.drawable.ic_product).into(ivProduct);
             
+            itemView.setOnClickListener(v -> {
+                if (getContext() == null) return;
+                
+                // Convert CheckoutItemDto to CartItemDto for dialog
+                com.example.frontend.data.model.cart.CartItemDto cartItem = 
+                    com.example.frontend.data.model.cart.CartItemDto.createMock(
+                        item.getId(), item.getProductName(), item.getVariantName(), 
+                        item.getPrice(), item.getQuantity(), true, item.getImageUrl()
+                    );
+                cartItem.setProductId(item.getProductId());
+                cartItem.setVariantId(item.getVariantId());
+                cartItem.setBrandNameSnapshot(item.getBrandName());
+                cartItem.setStockStatus(item.getStockStatus());
+
+                VariantBottomSheetDialog dialog = new VariantBottomSheetDialog(getContext(), cartItem);
+                dialog.setOnVariantAppliedListener((variant, quantity) -> {
+                    if (variant != null) {
+                        item.setVariantId(variant.getId());
+                        item.setVariantName(variant.getVariantName());
+                        if (variant.getPrice() != null) {
+                            item.setPrice(variant.getPrice());
+                        }
+                    }
+                    item.setQuantity(quantity);
+                    
+                    // Update UI locally
+                    tvVariant.setText(item.getVariantName());
+                    tvPrice.setText(formatPrice(item.getPrice()));
+                    tvQuantity.setText("Số lượng: " + item.getQuantity());
+                    
+                    // TODO: Update summary in ViewModel if price/quantity changed
+                    updatePriceSummaryLocally();
+                });
+                dialog.show();
+            });
+
             layoutCheckoutItemsList.addView(itemView);
+        }
+    }
+
+    private void updatePriceSummaryLocally() {
+        if (viewModel == null) return;
+        
+        CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ? 
+            viewModel.getCheckoutSession().getValue().data : null;
+            
+        if (session == null || session.getItems() == null) return;
+        
+        double subtotal = 0;
+        for (CheckoutSessionDto.CheckoutItemDto item : session.getItems()) {
+            subtotal += item.getPrice() * item.getQuantity();
+        }
+        
+        session.setSubtotalAmount(subtotal);
+        double total = subtotal + session.getShippingAmount() - session.getDiscountAmount() - session.getPointsAmount();
+        session.setTotalAmount(Math.max(0, total));
+        
+        tvSubtotal.setText(formatPrice(session.getSubtotalAmount()));
+        tvTotal.setText(formatPrice(session.getTotalAmount()));
+        
+        TextView tvSubtotalLabel = getView().findViewById(R.id.tvCheckoutPriceSubtotalLabel);
+        if (tvSubtotalLabel != null) {
+            tvSubtotalLabel.setText("Tạm tính (" + session.getItems().size() + " sản phẩm)");
         }
     }
 

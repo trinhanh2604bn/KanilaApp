@@ -65,31 +65,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:background="@drawable/bg_variant_selector"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="3dp">
+                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/tvCartProductVariant"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:fontFamily="@font/nunito_semibold"
-                    android:includeFontPadding="false"
-                    android:maxLines="1"
-                    android:text="Berry 20g"
-                    android:textColor="@color/accent_dark"
-                    android:textSize="11sp" />
-
-                <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:layout_marginStart="4dp"
-                    android:contentDescription="Select variant"
-                    android:src="@drawable/ic_chevron_down"
-                    app:tint="@color/accent_dark" />
+                <include layout="@layout/item_variant_selection" />
             </LinearLayout>
 
             <LinearLayout

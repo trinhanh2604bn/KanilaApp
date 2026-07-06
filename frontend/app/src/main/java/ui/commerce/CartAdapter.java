@@ -78,7 +78,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             cbSelected = layoutFront.findViewById(R.id.cbCartSelected);
             ivProduct = layoutFront.findViewById(R.id.ivCartProductImage);
             tvName = layoutFront.findViewById(R.id.tvCartProductName);
-            tvVariant = layoutFront.findViewById(R.id.tvCartProductVariant);
+            // tvVariant = layoutFront.findViewById(R.id.tvCartProductVariant); // Removed as we use included layout
             tvPrice = layoutFront.findViewById(R.id.tvCartPrice);
             tvQuantity = layoutFront.findViewById(R.id.tvCartQuantity);
             btnDecrease = layoutFront.findViewById(R.id.btnDecreaseQuantity);
@@ -92,7 +92,16 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
         public void bind(CartItemDto item) {
             tvName.setText(item.getProductNameSnapshot());
-            tvVariant.setText(item.getVariantNameSnapshot());
+            
+            if (layoutVariant != null) {
+                TextView tvVariantName = layoutVariant.findViewById(R.id.tvVariantName);
+                if (tvVariantName != null) {
+                    tvVariantName.setText(item.getVariantNameSnapshot());
+                }
+            } else if (tvVariant != null) {
+                tvVariant.setText(item.getVariantNameSnapshot());
+            }
+
             tvPrice.setText(formatPrice(item.getFinalUnitPriceAmount()));
             tvQuantity.setText(String.valueOf(item.getQuantity()));
             

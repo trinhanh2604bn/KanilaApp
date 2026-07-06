@@ -107,6 +107,31 @@ public class CartItemDto implements Serializable {
         this.selected = selected;
     }
 
+    public void setVariantId(String variantId) {
+        this.variantId = variantId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public void setBrandNameSnapshot(String brandNameSnapshot) {
+        this.brandNameSnapshot = brandNameSnapshot;
+    }
+
+    public void setStockStatus(String stockStatus) {
+        this.stockStatus = stockStatus;
+    }
+
+    public void setVariantNameSnapshot(String variantNameSnapshot) {
+        this.variantNameSnapshot = variantNameSnapshot;
+    }
+
+    public void setFinalUnitPriceAmount(double finalUnitPriceAmount) {
+        this.finalUnitPriceAmount = finalUnitPriceAmount;
+        this.lineTotalAmount = this.finalUnitPriceAmount * this.quantity;
+    }
+
     public void setQuantity(int quantity) {
         this.quantity = Math.max(1, quantity);
         this.lineTotalAmount = this.finalUnitPriceAmount * this.quantity;

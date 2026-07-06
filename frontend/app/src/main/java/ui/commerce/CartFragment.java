@@ -141,7 +141,31 @@ public class CartFragment extends Fragment {
 
             @Override
             public void onVariantClick(CartItemDto item, int position) {
-                // showVariantBottomSheet(item, position);
+                if (item == null || getContext() == null) return;
+                
+                VariantBottomSheetDialog dialog = new VariantBottomSheetDialog(getContext(), item);
+                dialog.setOnVariantAppliedListener((variant, quantity) -> {
+                    if (variant != null) {
+                        item.setVariantId(variant.getId());
+                        item.setVariantNameSnapshot(variant.getVariantName());
+                        if (variant.getPrice() != null) {
+                            item.setFinalUnitPriceAmount(variant.getPrice());
+                        }
+                    }
+                    
+                    item.setQuantity(quantity);
+                    adapter.notifyItemChanged(position);
+                    updateSummaryLocal();
+                    
+                    // TODO: Call API to update item variant and quantity
+                    if (variant != null) {
+                        viewModel.updateItemQuantity(item.getId(), quantity);
+                        // viewModel.updateItemVariant(item.getId(), variant.getId());
+                    } else {
+                        viewModel.updateItemQuantity(item.getId(), quantity);
+                    }
+                });
+                dialog.show();
             }
 
             @Override

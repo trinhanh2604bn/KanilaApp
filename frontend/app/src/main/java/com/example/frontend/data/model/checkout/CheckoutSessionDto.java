@@ -66,28 +66,48 @@ public class CheckoutSessionDto {
     public List<CheckoutItemDto> getItems() { return items; }
 
     public static class CheckoutItemDto {
+        @SerializedName("id")
+        private String id;
+        @SerializedName("product_id")
+        private String productId;
+        @SerializedName("variant_id")
+        private String variantId;
         @SerializedName("product_name")
         private String productName;
         @SerializedName("variant_name")
         private String variantName;
+        @SerializedName("brand_name")
+        private String brandName;
         @SerializedName("quantity")
         private int quantity;
         @SerializedName("price")
         private double price;
         @SerializedName("image_url")
         private String imageUrl;
+        @SerializedName("stock_status")
+        private String stockStatus;
 
+        public String getId() { return id; }
+        public String getProductId() { return productId; }
+        public String getVariantId() { return variantId; }
         public String getProductName() { return productName; }
         public String getVariantName() { return variantName; }
+        public String getBrandName() { return brandName; }
         public int getQuantity() { return quantity; }
         public double getPrice() { return price; }
         public String getImageUrl() { return imageUrl; }
+        public String getStockStatus() { return stockStatus; }
 
+        public void setId(String id) { this.id = id; }
+        public void setProductId(String productId) { this.productId = productId; }
+        public void setVariantId(String variantId) { this.variantId = variantId; }
         public void setProductName(String productName) { this.productName = productName; }
         public void setVariantName(String variantName) { this.variantName = variantName; }
+        public void setBrandName(String brandName) { this.brandName = brandName; }
         public void setQuantity(int quantity) { this.quantity = quantity; }
         public void setPrice(double price) { this.price = price; }
         public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+        public void setStockStatus(String stockStatus) { this.stockStatus = stockStatus; }
     }
 
     public static class CheckoutAddressDto {

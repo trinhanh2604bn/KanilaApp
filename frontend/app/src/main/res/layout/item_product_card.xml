@@ -40,15 +40,25 @@
         <!-- Wishlist Button -->
         <ImageButton
             android:id="@+id/btnWishlist"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Add to wishlist"
+            android:padding="6dp"
+            android:scaleType="centerInside"
             android:src="@drawable/selector_post_like"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="TouchTargetSizeCheck"
             app:tint="@color/selector_post_action_tint" />
+
+        <!-- Selection Checkbox -->
+        <CheckBox
+            android:id="@+id/cbSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Product Image -->
         <ImageView
@@ -149,6 +159,24 @@
             app:layout_constraintTop_toTopOf="@id/tvProductPrice"
             tools:ignore="TouchTargetSizeCheck"
             app:tint="@color/text_main" />
+
+        <!-- Find Similar Action (Wishlist only) -->
+        <TextView
+            android:id="@+id/tvFindSimilar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_chip_outline"
+            android:fontFamily="@font/nunito_bold"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:text="Tìm tương tự"
+            android:textColor="@color/pink_primary"
+            android:textSize="10sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvProductPrice"
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

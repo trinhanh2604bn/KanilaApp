@@ -4,9 +4,12 @@ import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,12 +18,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 import com.example.frontend.R;
 import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.data.repository.CatalogRepository;
 import com.example.frontend.model.Brand;
 import com.example.frontend.model.HomeBannerItem;
 import java.util.ArrayList;
@@ -42,7 +45,9 @@ public class BrandPageFragment extends Fragment {
     private Runnable autoSlideRunnable;
     private final List<View> indicators = new ArrayList<>();
 
-    private CatalogViewModel viewModel;
+    private CatalogRepository catalogRepository;
+    private EditText edtBrandSearch;
+    private ImageButton btnClearBrandSearch;
 
     @Nullable
     @Override
@@ -54,13 +59,14 @@ public class BrandPageFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(this).get(CatalogViewModel.class);
+        catalogRepository = new CatalogRepository(requireContext());
 
         initViews(view);
         setupTopBar(view);
+        setupSearchLogic();
         setupFilterLogic();
         setupHeroSlider(view);
-        observeViewModel();
+        loadBrandsFromRepository();
 
         BottomNavigationHelper.setup(view, tabIndex -> {
             // Handle tab navigation
@@ -73,11 +79,22 @@ public class BrandPageFragment extends Fragment {
         layoutFilterChips = root.findViewById(R.id.layoutFilterChips);
         loadingState = root.findViewById(R.id.viewBrandLoading);
         emptyState = root.findViewById(R.id.viewBrandEmpty);
+        edtBrandSearch = root.findViewById(R.id.edtBrandSearch);
+        btnClearBrandSearch = root.findViewById(R.id.btnClearBrandSearch);
         
         rvBrandGrid.setLayoutManager(new GridLayoutManager(requireContext(), 3));
         
         // Initial adapter setup
         adapter = new BrandAdapter(new ArrayList<>());
+        adapter.setOnBrandClickListener(brand -> {
+            // Handle brand click - navigate to products by brand
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, ProductListingFragment.newBrandInstance(brand.getBrandName()))
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         rvBrandGrid.setAdapter(adapter);
     }
 
@@ -89,7 +106,7 @@ public class BrandPageFragment extends Fragment {
         ImageButton btnBack = topBar.findViewById(R.id.btnTopBarBack);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
-                if (getActivity() != null) getActivity().getOnBackPressedDispatcher().onBackPressed();
+                if (getActivity() != null) getActivity().getSupportFragmentManager().popBackStack();
             });
         }
 
@@ -101,6 +118,48 @@ public class BrandPageFragment extends Fragment {
                 containerSearch.setVisibility(visibility);
             });
         }
+    }
+
+    private void setupSearchLogic() {
+        if (edtBrandSearch == null) return;
+        
+        edtBrandSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String query = s.toString().trim();
+                filterBrandsLocally(query);
+                if (btnClearBrandSearch != null) {
+                    btnClearBrandSearch.setVisibility(query.isEmpty() ? View.GONE : View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        if (btnClearBrandSearch != null) {
+            btnClearBrandSearch.setOnClickListener(v -> edtBrandSearch.setText(""));
+        }
+    }
+
+    private void filterBrandsLocally(String query) {
+        if (query.isEmpty()) {
+            adapter.updateData(fullBrandList);
+            showEmpty(fullBrandList.isEmpty());
+            return;
+        }
+
+        List<Brand> filtered = new ArrayList<>();
+        for (Brand brand : fullBrandList) {
+            if (brand.getBrandName().toLowerCase().contains(query.toLowerCase())) {
+                filtered.add(brand);
+            }
+        }
+        adapter.updateData(filtered);
+        showEmpty(filtered.isEmpty());
     }
 
     private void setupHeroSlider(View root) {
@@ -116,7 +175,6 @@ public class BrandPageFragment extends Fragment {
         vpBrandBanner.setAdapter(bannerAdapter);
 
         List<HomeBannerItem> items = new ArrayList<>();
-        // Using existing slide images as requested
         items.add(new HomeBannerItem("1", "", "", "", "Xem ngay", null, R.drawable.img_brand_1, "promotion", "4", true, 1));
         items.add(new HomeBannerItem("2", "", "", "", "Xem ngay", null, R.drawable.img_brand_2, "promotion", "5", true, 2));
         items.add(new HomeBannerItem("3", "", "", "", "Xem ngay", null, R.drawable.img_brand_3, "promotion", "1", true, 3));
@@ -180,34 +238,39 @@ public class BrandPageFragment extends Fragment {
         autoSlideHandler.removeCallbacks(autoSlideRunnable);
     }
 
-    private void observeViewModel() {
-        viewModel.getBrands().observe(getViewLifecycleOwner(), result -> {
+    private void loadBrandsFromRepository() {
+        catalogRepository.getBrands().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             
             switch (result.status) {
                 case LOADING:
                     showLoading(true);
+                    showEmpty(false);
                     break;
                 case SUCCESS:
                     showLoading(false);
                     if (result.data != null) {
                         fullBrandList = result.data;
-                        // TODO: Backend does not return 'region' field. 
-                        // Region filtering will show all brands under 'Tất cả' until backend is updated.
-                        filterBrands(getString(R.string.filter_all));
+                        adapter.updateData(fullBrandList);
+                        showEmpty(fullBrandList.isEmpty());
+                    } else {
+                        showEmpty(true);
                     }
                     break;
                 case EMPTY:
                     showLoading(false);
+                    adapter.updateData(new ArrayList<>());
                     showEmpty(true);
                     break;
                 case ERROR:
-                    showLoading(false);
-                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
-                    break;
                 case NO_INTERNET:
                     showLoading(false);
-                    Toast.makeText(getContext(), R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+                    showEmpty(false);
+                    Toast.makeText(
+                            getContext(),
+                            result.message != null ? result.message : "Không tải được danh sách thương hiệu",
+                            Toast.LENGTH_SHORT
+                    ).show();
                     break;
             }
         });
@@ -217,7 +280,6 @@ public class BrandPageFragment extends Fragment {
         if (loadingState != null) loadingState.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         if (isLoading) {
             rvBrandGrid.setVisibility(View.GONE);
-            showEmpty(false);
         } else {
             rvBrandGrid.setVisibility(View.VISIBLE);
         }
@@ -236,7 +298,15 @@ public class BrandPageFragment extends Fragment {
                 TextView chip = (TextView) child;
                 chip.setOnClickListener(v -> {
                     updateFilterUI(chip);
-                    filterBrands(chip.getText().toString());
+                    String chipText = chip.getText().toString();
+                    if (chipText.equals(getString(R.string.filter_all))) {
+                        adapter.updateData(fullBrandList);
+                        showEmpty(fullBrandList.isEmpty());
+                    } else {
+                        // Backend does not return region. Show empty for other regions as per TODO
+                        adapter.updateData(new ArrayList<>());
+                        showEmpty(true);
+                    }
                 });
             }
         }
@@ -256,28 +326,5 @@ public class BrandPageFragment extends Fragment {
                 }
             }
         }
-    }
-
-    private void filterBrands(String region) {
-        List<Brand> filteredList = new ArrayList<>();
-        String allText = getString(R.string.filter_all);
-
-        if (region.equals(allText)) {
-            filteredList.addAll(fullBrandList);
-        } else {
-            for (Brand brand : fullBrandList) {
-                // Currently backend doesn't have region, so we check the UI property we might have set or null
-                if (brand.getRegion() != null && brand.getRegion().equals(region)) {
-                    filteredList.add(brand);
-                }
-            }
-        }
-
-        if (filteredList.isEmpty() && !fullBrandList.isEmpty() && !region.equals(allText)) {
-            // Optional: Show a "No brands found in this region" message
-        }
-        
-        adapter.updateData(filteredList);
-        showEmpty(filteredList.isEmpty());
     }
 }

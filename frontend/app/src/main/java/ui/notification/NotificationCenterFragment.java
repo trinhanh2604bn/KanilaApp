@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
+import com.example.frontend.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,11 @@ public class NotificationCenterFragment extends Fragment {
     private View layoutNotifEmpty;
     private NotificationAdapter adapter;
     private NotificationViewModel viewModel;
+
+    // Header views
+    private ImageButton btnBack;
+    private TextView tvTitle;
+    private ImageButton btnCart;
 
     private int colorActiveText, colorActiveBg;
     private int colorInactiveText, colorInactiveBg;
@@ -46,6 +53,7 @@ public class NotificationCenterFragment extends Fragment {
 
         initColors();
         initViews(view);
+        setupHeader();
         setupRecyclerView();
         setupViewModel();
         setupListeners();
@@ -59,6 +67,12 @@ public class NotificationCenterFragment extends Fragment {
     }
 
     private void initViews(View view) {
+        // Toolbar views
+        btnBack = view.findViewById(R.id.btnTopBarBack);
+        tvTitle = view.findViewById(R.id.tvTopBarTitle);
+        btnCart = view.findViewById(R.id.btnTopBarSearch);
+
+        // Filters
         tvFilterAll = view.findViewById(R.id.tvFilterAll);
         tvFilterOrders = view.findViewById(R.id.tvFilterOrders);
         tvFilterOffers = view.findViewById(R.id.tvFilterOffers);
@@ -73,6 +87,25 @@ public class NotificationCenterFragment extends Fragment {
 
         rvNotifications = view.findViewById(R.id.rvNotifications);
         layoutNotifEmpty = view.findViewById(R.id.layoutNotifEmpty);
+    }
+
+    private void setupHeader() {
+        if (tvTitle != null) {
+            tvTitle.setText(R.string.notification_title);
+            // Cài đặt title không click được và không có hiệu ứng hover
+            tvTitle.setClickable(false);
+            tvTitle.setFocusable(false);
+            tvTitle.setOnClickListener(null);
+        }
+
+        if (btnCart != null) {
+            // Thay icon kính lúp bằng icon giỏ hàng theo yêu cầu
+            btnCart.setImageResource(R.drawable.ic_cart);
+            btnCart.setContentDescription(getString(R.string.cart));
+            btnCart.setVisibility(View.VISIBLE);
+        }
+        
+        // Nút back kế thừa từ view_app_top_bar đã có icon ic_back
     }
 
     private void setupRecyclerView() {
@@ -93,12 +126,18 @@ public class NotificationCenterFragment extends Fragment {
     }
 
     private void setupListeners() {
-        View btnBack = getView().findViewById(R.id.btnBack);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
                 if (getActivity() != null) {
-                    // Trở về trang trước đó (thường là MainActivity nếu navigate từ đó)
                     getActivity().getOnBackPressedDispatcher().onBackPressed();
+                }
+            });
+        }
+
+        if (btnCart != null) {
+            btnCart.setOnClickListener(v -> {
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).navigateToCart();
                 }
             });
         }

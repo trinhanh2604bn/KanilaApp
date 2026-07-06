@@ -42,10 +42,11 @@ import com.example.frontend.model.HomeShortcutItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import ui.account.AccountFragment;
 import ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
 import ui.commerce.CheckoutFragment;
-import com.example.frontend.ui.common.BottomNavigationHelper;
+import ui.common.BottomNavigationHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -126,6 +127,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void navigateToCart() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main, new CartFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
     private void initViews() {
         vpHomeBanner = findViewById(R.id.vpHomeBanner);
         layoutSearchBar = findViewById(R.id.layoutSearchBar);
@@ -155,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
         btnExpandedSearchBack = findViewById(R.id.btnExpandedSearchBack);
         
         findViewById(R.id.btnViewAllRecommended).setOnClickListener(v -> {
-            // TODO: Navigate to recommended product listing screen
             Toast.makeText(this, "See All Recommended", Toast.LENGTH_SHORT).show();
         });
     }
@@ -166,12 +173,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        btnCart.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, new ui.commerce.CartFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        btnCart.setOnClickListener(v -> navigateToCart());
 
         btnNotification.setOnClickListener(v -> {
             getSupportFragmentManager().beginTransaction()
@@ -191,46 +193,35 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Setup bottom nav for Home Activity (as per layout)
-        View bottomNav = findViewById(R.id.layoutBottomNavigation);
-        if (bottomNav != null) {
-            BottomNavigationHelper.setup(bottomNav, tabIndex -> {
-                if (tabIndex == BottomNavigationHelper.TAB_ACCOUNT) {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new ui.account.AccountFragment())
-                            .addToBackStack(null)
-                            .commit();
-                } else if (tabIndex == BottomNavigationHelper.TAB_CATEGORY) {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new ui.category.ProductCategoryFragment())
-                            .addToBackStack(null)
-                            .commit();
-                }
-            });
-            BottomNavigationHelper.setSelectedTab(bottomNav, BottomNavigationHelper.TAB_HOME);
-        }
-
         setupHomeShortcuts();
         setupSocialSection();
     }
 
     private void setupBottomNavigation() {
-        BottomNavigationHelper.setup(findViewById(R.id.main), tabIndex -> {
-            if (tabIndex == BottomNavigationHelper.TAB_CATEGORY) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ui.category.ProductCategoryFragment())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-        BottomNavigationHelper.setSelectedTab(findViewById(R.id.main), BottomNavigationHelper.TAB_HOME);
+        View bottomNav = findViewById(R.id.layoutBottomNavigation);
+        if (bottomNav != null) {
+            BottomNavigationHelper.setup(bottomNav, tabIndex -> {
+                if (tabIndex == BottomNavigationHelper.TAB_ACCOUNT) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new AccountFragment())
+                            .commit();
+                } else if (tabIndex == BottomNavigationHelper.TAB_CATEGORY) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ProductCategoryFragment())
+                            .commit();
+                } else if (tabIndex == BottomNavigationHelper.TAB_HOME) {
+                    // Refresh current activity to show home content again
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+            });
+            BottomNavigationHelper.setSelectedTab(bottomNav, BottomNavigationHelper.TAB_HOME);
+        }
     }
 
     private void setupProductLists() {
-        // Recommended Products (Horizontal)
         recommendedProductAdapter = new HomeProductAdapter();
-        
-        // Premium feel: width around 46% of screen
         int screenWidth = getResources().getDisplayMetrics().widthPixels;
         recommendedProductAdapter.setItemWidth((int) (screenWidth * 0.46));
 
@@ -264,8 +255,7 @@ public class MainActivity extends AppCompatActivity {
 
         rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvRecommendedProducts.setAdapter(recommendedProductAdapter);
-        
-        // All Products (Vertical Grid)
+
         allProductAdapter = new HomeProductAdapter();
         allProductAdapter.setOnProductClickListener(product -> {
             getSupportFragmentManager().beginTransaction()

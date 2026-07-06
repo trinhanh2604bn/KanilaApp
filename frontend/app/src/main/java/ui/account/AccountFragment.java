@@ -128,7 +128,9 @@ public class AccountFragment extends Fragment {
     private void setupBottomNavigation(View view) {
         BottomNavigationHelper.setup(view, tabIndex -> {
             if (tabIndex == BottomNavigationHelper.TAB_HOME) {
-                if (getActivity() != null) getActivity().onBackPressed();
+                if (getActivity() != null) {
+                    getActivity().getOnBackPressedDispatcher().onBackPressed();
+                }
             }
         });
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_ACCOUNT);
@@ -151,17 +153,17 @@ public class AccountFragment extends Fragment {
     private void bindData(ProfileHubDto data) {
         if (data == null) return;
 
-        if (data.getAccount() != null) {
-            tvName.setText(data.getAccount().getFullName());
+        if (data.getProfile() != null) {
+            tvName.setText(data.getProfile().getFullName());
             Glide.with(this)
-                    .load(data.getAccount().getAvatarUrl())
+                    .load(data.getProfile().getAvatarUrl())
                     .placeholder(R.drawable.ic_account)
                     .error(R.drawable.ic_account)
                     .into(ivAvatar);
         }
 
         if (data.getLoyalty() != null) {
-            String points = String.format(Locale.US, "%,d", data.getLoyalty().getPoints());
+            String points = String.format(Locale.US, "%,d", data.getLoyalty().getPointsBalance());
             tvPointsHeader.setText(points);
             tvPointsVal.setText(points);
             tvRankName.setText(data.getLoyalty().getTierName());

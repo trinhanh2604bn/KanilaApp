@@ -20,7 +20,7 @@ public class ProductDetailFragment extends Fragment {
     
     private ProductDetailViewModel viewModel;
     private String productId;
-    
+
     private TextView tvName, tvBrand, tvPrice, tvComparePrice, tvDesc, tvGalleryCounter;
     private ViewPager2 vpGallery;
 
@@ -50,7 +50,7 @@ public class ProductDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ProductDetailViewModel.class);
-        
+
         initViews(view);
         observeViewModel();
         

@@ -38,6 +38,7 @@ public class CartFragment extends Fragment {
 
     private CartViewModel viewModel;
     private boolean useCoins = false;
+    private boolean isUpdatingSelectAll = false;
 
     @Nullable
     @Override
@@ -120,12 +121,21 @@ public class CartFragment extends Fragment {
             @Override
             public void onItemSelectedChanged(CartItemDto item, boolean isSelected) {
                 if (item == null || item.getId() == null) return;
+
+                item.setSelected(isSelected);
+                updateSelectAllState();
+                updateSummaryLocal();
+
                 viewModel.toggleItemSelection(item.getId(), isSelected);
             }
 
             @Override
             public void onQuantityChanged(CartItemDto item, int newQuantity) {
                 if (item == null || item.getId() == null) return;
+
+                item.setQuantity(newQuantity);
+                updateSummaryLocal();
+
                 viewModel.updateItemQuantity(item.getId(), newQuantity);
             }
 
@@ -313,17 +323,46 @@ public class CartFragment extends Fragment {
 
     private void setupSelectAll() {
         View root = getView();
-        if (root == null) return;
+        if (root == null || cbSelectAll == null) return;
 
         View layoutSelectAll = root.findViewById(R.id.layoutCartSelectAll);
+
         if (layoutSelectAll != null) {
             layoutSelectAll.setOnClickListener(v -> {
-                if (cbSelectAll == null) return;
-                boolean isChecked = !cbSelectAll.isChecked();
-                cbSelectAll.setChecked(isChecked);
-                viewModel.selectAllItems(isChecked);
+                boolean newCheckedState = !cbSelectAll.isChecked();
+                applySelectAllState(newCheckedState);
             });
         }
+
+        cbSelectAll.setOnClickListener(v -> {
+            boolean newCheckedState = cbSelectAll.isChecked();
+            applySelectAllState(newCheckedState);
+        });
+    }
+
+    private void applySelectAllState(boolean isChecked) {
+        if (isUpdatingSelectAll) return;
+
+        isUpdatingSelectAll = true;
+
+        if (cbSelectAll != null && cbSelectAll.isChecked() != isChecked) {
+            cbSelectAll.setChecked(isChecked);
+        }
+
+        if (adapter != null && adapter.getItems() != null) {
+            for (CartItemDto item : adapter.getItems()) {
+                if (item != null) {
+                    item.setSelected(isChecked);
+                }
+            }
+
+            adapter.notifyDataSetChanged();
+            updateSummaryLocal();
+        }
+
+        isUpdatingSelectAll = false;
+
+        viewModel.selectAllItems(isChecked);
     }
 
     private void updateSelectAllState() {
@@ -333,7 +372,7 @@ public class CartFragment extends Fragment {
         List<CartItemDto> items = adapter.getItems();
 
         if (items == null || items.isEmpty()) {
-            cbSelectAll.setChecked(false);
+            setSelectAllCheckedSilently(false);
             return;
         }
 
@@ -344,7 +383,15 @@ public class CartFragment extends Fragment {
             }
         }
 
-        cbSelectAll.setChecked(allSelected);
+        setSelectAllCheckedSilently(allSelected);
+    }
+
+    private void setSelectAllCheckedSilently(boolean checked) {
+        if (cbSelectAll == null) return;
+
+        isUpdatingSelectAll = true;
+        cbSelectAll.setChecked(checked);
+        isUpdatingSelectAll = false;
     }
 
     private void setupCoinToggle(View view) {
@@ -438,9 +485,7 @@ public class CartFragment extends Fragment {
             tvDiscountValue.setText(formatPrice(0));
         }
 
-        if (cbSelectAll != null) {
-            cbSelectAll.setChecked(false);
-        }
+        setSelectAllCheckedSilently(false);
 
         if (ivUseCoinsCheck != null) {
             ivUseCoinsCheck.setSelected(false);
@@ -450,7 +495,6 @@ public class CartFragment extends Fragment {
     }
 
     private void updateSummaryLocal() {
-        // Simple local update for preview/mock mode
         if (adapter == null || adapter.getItems() == null) return;
 
         double subtotal = 0;
@@ -461,7 +505,7 @@ public class CartFragment extends Fragment {
         }
 
         double discount = subtotal > 0 ? 100000 : 0;
-        double coins = useCoins ? 20000 : 0; // Mock coins
+        double coins = useCoins ? 20000 : 0;
         double total = subtotal - discount - coins;
         if (total < 0) total = 0;
 

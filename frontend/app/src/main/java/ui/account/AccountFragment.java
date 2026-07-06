@@ -1,5 +1,6 @@
 package ui.account;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import com.example.frontend.feature.account.AccountViewModel;
 
 import java.util.Locale;
 
+import ui.commerce.PaymentMethodFragment;
 import ui.common.BottomNavigationHelper;
 
 public class AccountFragment extends Fragment {
@@ -27,7 +29,10 @@ public class AccountFragment extends Fragment {
     private AccountViewModel viewModel;
     
     private ImageView ivAvatar;
-    private TextView tvName, tvRankName, tvPointsHeader, tvPointsVal, tvOrderCount, tvVoucherCount, tvSavedCount;
+    private TextView tvName, tvRankName, tvPointsHeader;
+    
+    private View itemOrders, itemVouchers, itemPoints, itemSaved;
+    private View menuBeautyProfile, menuSkinJourney, menuAddress, menuPayment, menuSettings, menuSupport;
 
     @Nullable
     @Override
@@ -42,6 +47,7 @@ public class AccountFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
         
         initViews(view);
+        setupHeader(view);
         setupBottomNavigation(view);
         observeViewModel();
         
@@ -53,51 +59,101 @@ public class AccountFragment extends Fragment {
         tvName = view.findViewById(R.id.tvName);
         tvRankName = view.findViewById(R.id.tvRankName);
         tvPointsHeader = view.findViewById(R.id.tvPointsHeader);
-        tvPointsVal = view.findViewById(R.id.tvPointsVal);
         
-        tvOrderCount = view.findViewById(R.id.tvOrderCount);
-        tvVoucherCount = view.findViewById(R.id.tvVoucherCount);
-        tvSavedCount = view.findViewById(R.id.tvSavedCount);
+        // Stat Cards (using includes)
+        itemOrders = view.findViewById(R.id.itemOrders);
+        itemVouchers = view.findViewById(R.id.itemVouchers);
+        itemPoints = view.findViewById(R.id.itemPoints);
+        itemSaved = view.findViewById(R.id.itemSaved);
         
-        view.findViewById(R.id.btnEdit).setOnClickListener(v -> {
-            // Navigate to Edit Profile
-        });
+        setupStatCard(itemOrders, "Đơn hàng", R.drawable.ic_cart);
+        setupStatCard(itemVouchers, "Ví voucher", R.drawable.ic_coupon);
+        setupStatCard(itemPoints, "Điểm thưởng", R.drawable.ic_star);
+        setupStatCard(itemSaved, "Đã lưu", R.drawable.ic_heart);
+
+        // Menu Items (using includes)
+        menuBeautyProfile = view.findViewById(R.id.menuBeautyProfile);
+        menuSkinJourney = view.findViewById(R.id.menuSkinJourney);
+        menuAddress = view.findViewById(R.id.menuAddress);
+        menuPayment = view.findViewById(R.id.menuPayment);
+        menuSettings = view.findViewById(R.id.menuSettings);
+        menuSupport = view.findViewById(R.id.menuSupport);
         
-        // Menu item clicks
-        View menuBeautyProfile = view.findViewById(R.id.ivMenu1).getParent() instanceof View ? (View) view.findViewById(R.id.ivMenu1).getParent() : view.findViewById(R.id.ivMenu1);
-        menuBeautyProfile.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
+        setupMenuItem(menuBeautyProfile, "Beauty Profile", R.drawable.ic_account);
+        setupMenuItem(menuSkinJourney, "Skin Journey", R.drawable.ic_drops);
+        setupMenuItem(menuAddress, "Địa chỉ giao hàng", R.drawable.ic_location);
+        setupMenuItem(menuPayment, "Phương thức thanh toán", R.drawable.ic_paymeny_card);
+        setupMenuItem(menuSettings, "Cài đặt", R.drawable.ic_settings);
+        setupMenuItem(menuSupport, "Trung tâm hỗ trợ", R.drawable.ic_support);
+
+        setupClickListeners();
+    }
+
+    private void setupStatCard(View card, String title, int iconRes) {
+        if (card == null) return;
+        TextView tvTitle = card.findViewById(R.id.tvStatTitle);
+        ImageView ivIcon = card.findViewById(R.id.ivStatIcon);
+        if (tvTitle != null) tvTitle.setText(title);
+        if (ivIcon != null) ivIcon.setImageResource(iconRes);
+    }
+
+    private void setupMenuItem(View item, String title, int iconRes) {
+        if (item == null) return;
+        TextView tvTitle = item.findViewById(R.id.tvMenuTitle);
+        ImageView ivIcon = item.findViewById(R.id.ivMenuIcon);
+        if (tvTitle != null) tvTitle.setText(title);
+        if (ivIcon != null) ivIcon.setImageResource(iconRes);
+    }
+
+    private void setupClickListeners() {
+        if (menuBeautyProfile != null) {
+            menuBeautyProfile.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
                     .replace(R.id.main, new BeautyProfileOverviewFragment())
                     .addToBackStack(null)
-                    .commit();
-        });
+                    .commit());
+        }
 
-        view.findViewById(R.id.btnAccountOrders).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.order.OrderListFragment())
+        if (menuPayment != null) {
+            menuPayment.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, new PaymentMethodFragment())
                     .addToBackStack(null)
-                    .commit();
-        });
+                    .commit());
+        }
 
-        view.findViewById(R.id.btnAccountVouchers).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.voucher.VoucherListFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
-
-        view.findViewById(R.id.btnAccountSaved).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
+        if (itemOrders != null) {
+            itemOrders.setOnClickListener(v -> {
+                // Navigate to Order List
+            });
+        }
+        
+        if (itemSaved != null) {
+            itemSaved.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
                     .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
                     .addToBackStack(null)
-                    .commit();
-        });
+                    .commit());
+        }
+    }
+
+    private void setupHeader(View view) {
+        View btnNotification = view.findViewById(R.id.btnNotification);
+        if (btnNotification != null) {
+            btnNotification.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, new ui.notification.NotificationCenterFragment())
+                    .addToBackStack(null)
+                    .commit());
+        }
     }
 
     private void setupBottomNavigation(View view) {
         BottomNavigationHelper.setup(view, tabIndex -> {
             if (tabIndex == BottomNavigationHelper.TAB_HOME) {
-                if (getActivity() != null) getActivity().onBackPressed();
+                Intent intent = new Intent(requireContext(), com.example.frontend.MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            } else if (tabIndex == BottomNavigationHelper.TAB_CATEGORY) {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.category.ProductCategoryFragment())
+                        .commit();
             }
         });
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_ACCOUNT);
@@ -132,14 +188,27 @@ public class AccountFragment extends Fragment {
         if (data.getLoyalty() != null) {
             String points = String.format(Locale.US, "%,d", data.getLoyalty().getPoints());
             tvPointsHeader.setText(points);
-            tvPointsVal.setText(points);
             tvRankName.setText(data.getLoyalty().getTierName());
+            
+            if (itemPoints != null) {
+                TextView tvVal = itemPoints.findViewById(R.id.tvStatValue);
+                if (tvVal != null) tvVal.setText(points);
+            }
         }
 
         if (data.getStats() != null) {
-            tvOrderCount.setText(String.valueOf(data.getStats().getOrderCount()));
-            tvVoucherCount.setText(String.valueOf(data.getStats().getVoucherCount()));
-            tvSavedCount.setText(String.valueOf(data.getStats().getWishlistCount()));
+            if (itemOrders != null) {
+                TextView tvVal = itemOrders.findViewById(R.id.tvStatValue);
+                if (tvVal != null) tvVal.setText(String.valueOf(data.getStats().getOrderCount()));
+            }
+            if (itemVouchers != null) {
+                TextView tvVal = itemVouchers.findViewById(R.id.tvStatValue);
+                if (tvVal != null) tvVal.setText(String.valueOf(data.getStats().getVoucherCount()));
+            }
+            if (itemSaved != null) {
+                TextView tvVal = itemSaved.findViewById(R.id.tvStatValue);
+                if (tvVal != null) tvVal.setText(String.valueOf(data.getStats().getWishlistCount()));
+            }
         }
     }
 }

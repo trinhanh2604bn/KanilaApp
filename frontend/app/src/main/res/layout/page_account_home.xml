@@ -27,7 +27,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Tài khoản của tôi"
-            android:textAppearance="@style/H2"
+            android:textAppearance="@style/Text.Kanila.H2"
             android:textColor="@color/accent_dark" />
 
         <ImageView
@@ -39,261 +39,281 @@
             app:tint="@color/text_main" />
     </LinearLayout>
 
-    <androidx.core.widget.NestedScrollView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingBottom="16dp">
+        android:layout_weight="1">
 
-        <LinearLayout
+        <!-- Loading State -->
+        <include
+            android:id="@+id/layoutLoading"
+            layout="@layout/view_loading_state"
+            android:visibility="gone" />
+
+        <!-- Error State -->
+        <include
+            android:id="@+id/layoutError"
+            layout="@layout/view_error_generic"
+            android:visibility="gone" />
+
+        <!-- Success Content -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/layoutContent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="16dp">
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp">
 
-            <!-- Profile Header Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_account_header_card"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="20dp">
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp">
 
-                <ImageView
-                    android:id="@+id/ivAvatar"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:background="@drawable/bg_avatar_circle"
-                    android:contentDescription="Ảnh đại diện"
-                    android:padding="2dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_account"
-                    app:tint="@color/accent_dark" />
-
+                <!-- Profile Header Card -->
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_account_header_card"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:id="@+id/ivAvatar"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:background="@drawable/bg_avatar_circle"
+                        android:contentDescription="Ảnh đại diện"
+                        android:padding="2dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_account"
+                        app:tint="@color/accent_dark" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvName"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Nguyễn Minh Anh"
+                                android:textAppearance="@style/Text.Kanila.H2"
+                                android:textColor="@color/accent_dark" />
+
+                            <ImageView
+                                android:id="@+id/btnEdit"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:background="@drawable/bg_card"
+                                android:contentDescription="Chỉnh sửa"
+                                android:padding="4dp"
+                                android:src="@drawable/ic_edit"
+                                app:tint="@color/accent_dark" />
+                        </LinearLayout>
+
+                        <!-- Rank Chip -->
+                        <LinearLayout
+                            android:id="@+id/layoutRank"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_status_pending"
+                            android:backgroundTint="#FFF4E5"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="4dp">
+
+                            <ImageView
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:src="@drawable/ic_crown"
+                                app:tint="#FF9800" />
+
+                            <TextView
+                                android:id="@+id/tvRankName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:text="Gold Member"
+                                android:textAppearance="@style/Text.Kanila.Caption"
+                                android:textColor="#FF9800" />
+                        </LinearLayout>
+
+                        <!-- Points -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_star"
+                                app:tint="#FF9800" />
+
+                            <TextView
+                                android:id="@+id/tvPointsHeader"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:text="2.450"
+                                android:textAppearance="@style/Text.Kanila.BodyMedium"
+                                android:textStyle="bold"
+                                android:textColor="@color/button" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:text="điểm"
+                                android:textAppearance="@style/Text.Kanila.Caption"
+                                android:textColor="@color/accent_dark" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Stats Grid -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:orientation="vertical">
 
+                    <!-- Row 1 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/tvName"
+                        <include
+                            android:id="@+id/itemOrders"
+                            layout="@layout/view_account_stat_card"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Nguyễn Minh Anh"
-                            android:textAppearance="@style/H2"
-                            android:textColor="@color/accent_dark" />
+                            android:layout_marginEnd="6dp"
+                            android:layout_marginBottom="12dp"
+                            android:layout_weight="1" />
 
-                        <ImageView
-                            android:id="@+id/btnEdit"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:background="@drawable/bg_card"
-                            android:contentDescription="Chỉnh sửa"
-                            android:padding="4dp"
-                            android:src="@drawable/ic_edit"
-                            app:tint="@color/accent_dark" />
-                    </LinearLayout>
-
-                    <!-- Rank Chip -->
-                    <LinearLayout
-                        android:id="@+id/layoutRank"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_status_pending"
-                        android:backgroundTint="#FFF4E5"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="4dp">
-
-                        <ImageView
-                            android:layout_width="14dp"
-                            android:layout_height="14dp"
-                            android:src="@drawable/ic_crown"
-                            app:tint="#FF9800" />
-
-                        <TextView
-                            android:id="@+id/tvRankName"
-                            android:layout_width="wrap_content"
+                        <include
+                            android:id="@+id/itemVouchers"
+                            layout="@layout/view_account_stat_card"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
-                            android:text="Gold Member"
-                            android:textAppearance="@style/Caption"
-                            android:textColor="#FF9800" />
+                            android:layout_marginBottom="12dp"
+                            android:layout_weight="1" />
                     </LinearLayout>
 
-                    <!-- Points -->
+                    <!-- Row 2 -->
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_star"
-                            app:tint="#FF9800" />
+                        <include
+                            android:id="@+id/itemPoints"
+                            layout="@layout/view_account_stat_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1" />
 
-                        <TextView
-                            android:id="@+id/tvPointsHeader"
-                            android:layout_width="wrap_content"
+                        <include
+                            android:id="@+id/itemSaved"
+                            layout="@layout/view_account_stat_card"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
-                            android:text="2.450"
-                            android:textAppearance="@style/Text.Kanila.BodyMedium"
-                            android:textStyle="bold"
-                            android:textColor="@color/button" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:text="điểm"
-                            android:textAppearance="@style/Caption"
-                            android:textColor="@color/accent_dark" />
+                            android:layout_weight="1" />
                     </LinearLayout>
                 </LinearLayout>
 
-            </LinearLayout>
-
-            <!-- Stats Grid -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical">
-
-                <!-- Row 1 -->
+                <!-- Menu List -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical"
+                    android:paddingVertical="8dp">
 
                     <include
-                        android:id="@+id/itemOrders"
-                        layout="@layout/view_account_stat_card"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="6dp"
-                        android:layout_marginBottom="12dp"
-                        android:layout_weight="1" />
+                        android:id="@+id/menuBeautyProfile"
+                        layout="@layout/view_account_menu_item" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="56dp"
+                        android:background="@color/border_divider" />
 
                     <include
-                        android:id="@+id/itemVouchers"
-                        layout="@layout/view_account_stat_card"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:layout_marginBottom="12dp"
-                        android:layout_weight="1" />
+                        android:id="@+id/menuSkinJourney"
+                        layout="@layout/view_account_menu_item" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="56dp"
+                        android:background="@color/border_divider" />
+
+                    <include
+                        android:id="@+id/menuAddress"
+                        layout="@layout/view_account_menu_item" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="56dp"
+                        android:background="@color/border_divider" />
+
+                    <include
+                        android:id="@+id/menuPayment"
+                        layout="@layout/view_account_menu_item" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="56dp"
+                        android:background="@color/border_divider" />
+
+                    <include
+                        android:id="@+id/menuSettings"
+                        layout="@layout/view_account_menu_item" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="56dp"
+                        android:background="@color/border_divider" />
+
+                    <include
+                        android:id="@+id/menuSupport"
+                        layout="@layout/view_account_menu_item" />
+
                 </LinearLayout>
 
-                <!-- Row 2 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <include
-                        android:id="@+id/itemPoints"
-                        layout="@layout/view_account_stat_card"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="6dp"
-                        android:layout_weight="1" />
-
-                    <include
-                        android:id="@+id/itemSaved"
-                        layout="@layout/view_account_stat_card"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:layout_weight="1" />
-                </LinearLayout>
             </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
-            <!-- Menu List -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:background="@drawable/bg_card"
-                android:orientation="vertical"
-                android:paddingVertical="8dp">
-
-                <include
-                    android:id="@+id/menuBeautyProfile"
-                    layout="@layout/view_account_menu_item" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="56dp"
-                    android:background="@color/border_divider" />
-
-                <include
-                    android:id="@+id/menuSkinJourney"
-                    layout="@layout/view_account_menu_item" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="56dp"
-                    android:background="@color/border_divider" />
-
-                <include
-                    android:id="@+id/menuAddress"
-                    layout="@layout/view_account_menu_item" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="56dp"
-                    android:background="@color/border_divider" />
-
-                <include
-                    android:id="@+id/menuPayment"
-                    layout="@layout/view_account_menu_item" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="56dp"
-                    android:background="@color/border_divider" />
-
-                <include
-                    android:id="@+id/menuSettings"
-                    layout="@layout/view_account_menu_item" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="56dp"
-                    android:background="@color/border_divider" />
-
-                <include
-                    android:id="@+id/menuSupport"
-                    layout="@layout/view_account_menu_item" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
 
     <!-- Bottom Navigation -->
     <include

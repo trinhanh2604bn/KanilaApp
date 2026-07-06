@@ -244,6 +244,37 @@
     <string name="address_book_list_header">Danh sách địa chỉ</string>
     <string name="address_book_add_new">Thêm địa chỉ mới</string>
 
+    <string name="payment_method_title">Phương thức thanh toán</string>
+    <string name="payment_method_choose">Chọn phương thức thanh toán</string>
+    <string name="payment_method_cod">Thanh toán khi nhận hàng (COD)</string>
+    <string name="payment_method_cod_desc">Thanh toán bằng tiền mặt khi nhận hàng</string>
+    <string name="payment_method_vnpay">VNPay</string>
+    <string name="payment_method_vnpay_desc">Thanh toán qua ứng dụng hoặc thẻ</string>
+    <string name="payment_method_momo">MoMo</string>
+    <string name="payment_method_momo_desc">Thanh toán qua ví MoMo</string>
+    <string name="payment_method_zalopay">ZaloPay</string>
+    <string name="payment_method_zalopay_desc">Thanh toán qua ví ZaloPay</string>
+    <string name="payment_method_bank">Thẻ ngân hàng</string>
+    <string name="payment_method_bank_desc">Visa, Mastercard, JCB, ATM nội địa</string>
+    <string name="payment_method_apple_google">Apple Pay / Google Pay</string>
+    <string name="payment_method_apple_google_desc">Thanh toán nhanh với Apple Pay hoặc Google Pay</string>
+    <string name="invoice_title">Xuất hóa đơn</string>
+    <string name="invoice_checkbox">Xuất hóa đơn cho đơn hàng này</string>
+    <string name="invoice_company_label">Tên công ty / cá nhân</string>
+    <string name="invoice_tax_label">Mã số thuế (tuỳ chọn)</string>
+    <string name="invoice_email_label">Email nhận hoá đơn</string>
+    <string name="action_agree">Đồng ý</string>
+    <string name="saved_title">Đã lưu của bạn</string>
+    <string name="tab_wishlist">Wishlist</string>
+    <string name="tab_look_ar">Look AR</string>
+    <string name="section_wishlist">Sản phẩm đã lưu</string>
+    <string name="section_look_ar">Look AR đã lưu</string>
+    <string name="action_sort">Sắp xếp</string>
+    <string name="action_retry_ar">Thử lại Look AR</string>
+    <string name="action_rebuy">Mua lại</string>
+    <string name="action_share">Chia sẻ</string>
+    <string name="look_ar_sample_name">Rosy Peach Glow</string>
+    <string name="look_ar_sample_date">Tạo ngày 12/05/2025</string>
 
     <string name="search_ingredients_hint">Tìm kiếm thành phần…</string>
     <string name="no_ingredients_found">Không tìm thấy thành phần phù hợp</string>

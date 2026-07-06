@@ -83,40 +83,57 @@
         <item name="android:fontFamily">@font/nunito_semibold</item>
         <item name="android:textAllCaps">false</item>
     </style>
-    <!-- ================================================= -->
-    <!-- BEAUTY PROFILE - GRID SELECTION COMPONENTS        -->
-    <!-- ================================================= -->
 
-    <style
-        name="GridItemCard"
-        parent="Widget.MaterialComponents.CardView">
-
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">112dp</item>
-        <item name="android:layout_margin">4dp</item>
-        <item name="android:layout_columnWeight">1</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-
-        <item name="cardBackgroundColor">@color/background_main</item>
-        <item name="cardCornerRadius">12dp</item>
-        <item name="cardElevation">0dp</item>
-        <item name="strokeColor">@color/border_divider</item>
-        <item name="strokeWidth">1dp</item>
+    <style name="Widget.Kanila.Button.Pill" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_height">@dimen/chip_height</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">@dimen/radius_pill</item>
+        <item name="backgroundTint">@color/button</item>
+        <item name="android:textColor">@color/background_main</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/nunito_medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:paddingLeft">@dimen/spacing_l</item>
+        <item name="android:paddingRight">@dimen/spacing_l</item>
     </style>
 
-    <style
-        name="GridItemCard.Selected"
-        parent="GridItemCard">
+    <style name="Widget.Kanila.Button.Icon" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:layout_width">@dimen/touch_target_min</item>
+        <item name="android:layout_height">@dimen/touch_target_min</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="iconSize">@dimen/icon_size</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconTint">@color/text_main</item>
+    </style>
 
-        <item name="cardBackgroundColor">@color/background_sub</item>
+    <!-- Grid Selection Items -->
+    <style name="GridItemCard" parent="Widget.MaterialComponents.CardView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">100dp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">#F0F0F0</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cardBackgroundColor">@color/background_main</item>
+    </style>
+
+    <style name="GridItemCard.Selected">
+        <item name="cardBackgroundColor">@color/icon_bg_pink</item>
         <item name="strokeColor">@color/button</item>
         <item name="strokeWidth">1dp</item>
     </style>
 
     <style name="GridItemFrame">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">112dp</item>
+        <item name="android:layout_height">match_parent</item>
     </style>
 
     <style name="GridItemContent">
@@ -124,51 +141,26 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:gravity">center</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:padding">8dp</item>
+        <item name="android:padding">4dp</item>
     </style>
 
     <style name="GridItemIcon">
         <item name="android:layout_width">36dp</item>
         <item name="android:layout_height">36dp</item>
-        <item name="android:scaleType">centerInside</item>
+        <item name="tint">@color/text_main</item>
     </style>
 
-    <style
-        name="GridItemLabel"
-        parent="Text.Kanila.Micro">
-
-        <item name="android:layout_width">match_parent</item>
+    <style name="GridItemLabel">
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">8dp</item>
-        <item name="android:ellipsize">end</item>
         <item name="android:gravity">center</item>
-        <item name="android:includeFontPadding">false</item>
-        <item name="android:maxLines">2</item>
         <item name="android:textColor">@color/text_main</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">@font/nunito_semibold</item>
     </style>
 
-    <style name="GridItemTick">
-        <item name="android:layout_width">22dp</item>
-        <item name="android:layout_height">22dp</item>
-        <item name="android:layout_gravity">top|end</item>
-        <item name="android:layout_margin">6dp</item>
-        <item name="android:background">@drawable/bg_circle</item>
-        <item name="android:backgroundTint">@color/button</item>
-        <item name="android:contentDescription">@string/app_name</item>
-        <item name="android:padding">4dp</item>
-        <item name="android:src">@drawable/ic_tick</item>
-        <item name="android:tint">@color/background_main</item>
-    </style>
-
-
-    <!-- ================================================= -->
-    <!-- BEAUTY PROFILE - METRIC COMPONENTS                -->
-    <!-- ================================================= -->
-
-    <style
-        name="MetricCard"
-        parent="Widget.MaterialComponents.CardView">
-
+    <style name="MetricCard" parent="Widget.MaterialComponents.CardView">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginEnd">8dp</item>
@@ -182,62 +174,38 @@
     </style>
 
     <style name="MetricIcon">
-        <item name="android:layout_width">40dp</item>
-        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_width">32dp</item>
+        <item name="android:layout_height">32dp</item>
         <item name="android:background">@drawable/bg_circle</item>
-        <item name="android:padding">9dp</item>
-        <item name="android:scaleType">centerInside</item>
+        <item name="android:padding">6dp</item>
     </style>
 
-    <style
-        name="MetricLabel"
-        parent="Text.Kanila.Micro">
-
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center</item>
-        <item name="android:includeFontPadding">false</item>
+    <style name="MetricLabel" parent="Text.Kanila.Caption">
         <item name="android:textColor">@color/text_main</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
-    <style
-        name="MetricValue"
-        parent="Text.Kanila.H3">
-
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center</item>
-        <item name="android:includeFontPadding">false</item>
-    </style>
-    <!-- Compact pill-shaped button -->
-    <style
-        name="Widget.Kanila.Button.Pill"
-        parent="Widget.Kanila.Button.Secondary">
-
-        <item name="android:minHeight">36dp</item>
-        <item name="android:minWidth">0dp</item>
-
-
-        <item name="android:paddingStart">16dp</item>
-        <item name="android:paddingEnd">16dp</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="android:includeFontPadding">false</item>
-        <item name="cornerRadius">18dp</item>
-        <item name="iconPadding">6dp</item>
+    <style name="MetricValue" parent="Text.Kanila.H3">
+        <item name="android:textSize">18sp</item>
     </style>
 
-    <style
-        name="MetricFooter"
-        parent="Text.Kanila.Micro">
-
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:alpha">0.6</item>
-        <item name="android:gravity">center</item>
-        <item name="android:includeFontPadding">false</item>
-        <item name="android:maxLines">2</item>
-        <item name="android:textColor">@color/text_main</item>
+    <style name="MetricFooter" parent="Text.Kanila.Micro">
+        <item name="android:textColor">@color/text_tertiary</item>
     </style>
+
+    <style name="GridItemTick">
+        <item name="android:layout_width">16dp</item>
+        <item name="android:layout_height">16dp</item>
+        <item name="android:layout_gravity">top|end</item>
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:background">@drawable/bg_circle_pink</item>
+        <item name="android:backgroundTint">@color/button</item>
+        <item name="android:padding">3dp</item>
+        <item name="android:src">@drawable/ic_tick</item>
+        <item name="tint">@android:color/white</item>
+    </style>
+
+
 
     <!-- ================================================= -->
     <!-- SUITABLE INGREDIENTS COMPONENTS                   -->

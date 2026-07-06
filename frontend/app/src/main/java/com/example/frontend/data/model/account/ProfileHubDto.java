@@ -87,7 +87,7 @@ public class ProfileHubDto {
         public int getProcessingOrderCount() { return processingOrderCount; }
         public int getWishlistCount() { return wishlistCount; }
         public int getCouponCount() { return couponCount; }
-        public int getVoucherCount() { return couponCount; } // Alias for UI
+        public int getVoucherCount() { return couponCount; } // Alias for UI consistency
         public int getExpiringCouponCount() { return expiringCouponCount; }
         public int getAddressCount() { return addressCount; }
     }

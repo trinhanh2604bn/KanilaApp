@@ -14,13 +14,12 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.data.model.account.ProfileHubDto;
 import com.example.frontend.feature.account.AccountViewModel;
 
 import java.util.Locale;
-
-import ui.common.BottomNavigationHelper;
 
 public class AccountFragment extends Fragment {
 
@@ -43,8 +42,6 @@ public class AccountFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
         
         initViews(view);
-        setupBottomNavigation(view);
-        
         checkLoginStatus();
     }
 
@@ -63,17 +60,15 @@ public class AccountFragment extends Fragment {
 
     private void setupGuestState() {
         layoutGuestState.findViewById(R.id.btnLoginNow).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.auth.LoginFragment())
-                    .addToBackStack(null)
-                    .commit();
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).loadFragment(new com.example.frontend.feature.auth.LoginFragment(), true);
+            }
         });
         
         layoutGuestState.findViewById(R.id.tvCreateAccount).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.auth.RegisterFragment())
-                    .addToBackStack(null)
-                    .commit();
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).loadFragment(new com.example.frontend.feature.auth.RegisterFragment(), true);
+            }
         });
     }
 
@@ -85,7 +80,7 @@ public class AccountFragment extends Fragment {
         tvRankName = view.findViewById(R.id.tvRankName);
         tvPointsHeader = view.findViewById(R.id.tvPointsHeader);
         tvPointsVal = view.findViewById(R.id.tvPointsVal);
-        
+
         tvOrderCount = view.findViewById(R.id.tvOrderCount);
         tvVoucherCount = view.findViewById(R.id.tvVoucherCount);
         tvSavedCount = view.findViewById(R.id.tvSavedCount);
@@ -97,43 +92,35 @@ public class AccountFragment extends Fragment {
         // Menu item clicks
         View menuBeautyProfile = view.findViewById(R.id.ivMenu1).getParent() instanceof View ? (View) view.findViewById(R.id.ivMenu1).getParent() : view.findViewById(R.id.ivMenu1);
         menuBeautyProfile.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new BeautyProfileOverviewFragment())
-                    .addToBackStack(null)
-                    .commit();
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).loadFragment(new BeautyProfileOverviewFragment(), true);
+            }
         });
 
         view.findViewById(R.id.btnAccountOrders).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.order.OrderListFragment())
-                    .addToBackStack(null)
-                    .commit();
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).loadFragment(new com.example.frontend.feature.order.OrderListFragment(), true);
+            }
         });
 
         view.findViewById(R.id.btnAccountVouchers).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.voucher.VoucherListFragment())
-                    .addToBackStack(null)
-                    .commit();
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).loadFragment(new com.example.frontend.feature.voucher.VoucherListFragment(), true);
+            }
         });
 
         view.findViewById(R.id.btnAccountSaved).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
-    }
-
-    private void setupBottomNavigation(View view) {
-        BottomNavigationHelper.setup(view, tabIndex -> {
-            if (tabIndex == BottomNavigationHelper.TAB_HOME) {
-                if (getActivity() != null) {
-                    getActivity().getOnBackPressedDispatcher().onBackPressed();
-                }
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).loadFragment(new com.example.frontend.feature.wishlist.WishlistFragment(), true);
             }
         });
-        BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_ACCOUNT);
+        
+        // Notification button in toolbar
+        view.findViewById(R.id.btnNotification).setOnClickListener(v -> {
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).loadFragment(new ui.notification.NotificationCenterFragment(), true);
+            }
+        });
     }
 
     private void observeViewModel() {
@@ -165,7 +152,7 @@ public class AccountFragment extends Fragment {
         if (data.getLoyalty() != null) {
             String points = String.format(Locale.US, "%,d", data.getLoyalty().getPointsBalance());
             tvPointsHeader.setText(points);
-            tvPointsVal.setText(points);
+            if (tvPointsVal != null) tvPointsVal.setText(points);
             tvRankName.setText(data.getLoyalty().getTierName());
         }
 

@@ -13,6 +13,51 @@
         android:paddingTop="@dimen/spacing_m"
         android:paddingBottom="@dimen/spacing_xl">
 
+        <!-- Home Top Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/spacing_m"
+            android:paddingBottom="@dimen/spacing_s">
+
+            <include
+                android:id="@+id/layoutSearchBar"
+                layout="@layout/view_search_bar"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/btnNotification"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="@dimen/spacing_s"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Thông báo"
+                android:src="@drawable/ic_notification"
+                app:tint="@color/accent_dark" />
+
+            <ImageButton
+                android:id="@+id/btnCart"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Giỏ hàng"
+                android:src="@drawable/ic_cart"
+                app:tint="@color/accent_dark" />
+
+            <ImageButton
+                android:id="@+id/btnWishlist"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Yêu thích"
+                android:src="@drawable/ic_heart"
+                app:tint="@color/accent_dark" />
+        </LinearLayout>
+
         <!-- Banner Slider Container -->
         <FrameLayout
             android:layout_width="match_parent"

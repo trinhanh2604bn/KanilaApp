@@ -1,6 +1,5 @@
 package ui.category;
 
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,14 +18,12 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.model.HomeBannerItem;
 
-import ui.category.BrandPageFragment;
 import java.util.ArrayList;
 import java.util.List;
-
-import ui.common.BottomNavigationHelper;
 
 public class ProductCategoryFragment extends Fragment {
 
@@ -51,30 +48,8 @@ public class ProductCategoryFragment extends Fragment {
         setupStaticCategories(view);
         setupStaticBrands(view);
 
-        BottomNavigationHelper.setup(view, tabIndex -> {
-            if (tabIndex == BottomNavigationHelper.TAB_HOME) {
-                Intent intent = new Intent(requireContext(), com.example.frontend.MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            } else if (tabIndex == BottomNavigationHelper.TAB_ACCOUNT) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ui.account.AccountFragment())
-                        .commit();
-            }
-        });
-        BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
-
-        TextView tvSeeAllBrands = view.findViewById(R.id.tvSeeAllBrands);
-        if (tvSeeAllBrands != null) {
-            tvSeeAllBrands.setOnClickListener(v -> {
-                if (getActivity() != null) {
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new BrandPageFragment())
-                            .addToBackStack(null)
-                            .commit();
-                }
-            });
-        }
+        // Thêm
+// đến đây
     }
 
     private void setupTopBar(View root) {
@@ -87,7 +62,7 @@ public class ProductCategoryFragment extends Fragment {
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
                 if (getActivity() != null) {
-                    getActivity().getSupportFragmentManager().popBackStack();
+                    getActivity().getOnBackPressedDispatcher().onBackPressed();
                 }
             });
         }
@@ -130,11 +105,11 @@ public class ProductCategoryFragment extends Fragment {
         });
     }
 
-    private void updateIndicators(int position) {
+    private void updateIndicators(int realPos) {
         for (int i = 0; i < indicators.size(); i++) {
             View indicator = indicators.get(i);
             if (indicator != null) {
-                int color = (i == position) ? R.color.accent_dark : R.color.border_divider;
+                int color = (i == realPos) ? R.color.accent_dark : R.color.border_divider;
                 indicator.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), color)));
             }
         }
@@ -152,23 +127,14 @@ public class ProductCategoryFragment extends Fragment {
     }
 
     private void setupStaticCategories(View root) {
-        // Face
         setupCategoryCard(root.findViewById(R.id.cardCategoryFace), R.string.category_face, R.drawable.ic_face, R.drawable.img_foudation, new FaceFragment());
-        // Lips
         setupCategoryCard(root.findViewById(R.id.cardCategoryLips), R.string.category_lips, R.drawable.ic_lipstick, R.drawable.img_lipstick, ProductListingFragment.newCategoryInstance("Lips"));
-        // Eyes
         setupCategoryCard(root.findViewById(R.id.cardCategoryEyes), R.string.category_eyes, R.drawable.ic_eye, R.drawable.img_eyeshadow, ProductListingFragment.newCategoryInstance("Eyes"));
-        // Cheeks
         setupCategoryCard(root.findViewById(R.id.cardCategoryCheeks), R.string.category_cheeks, R.drawable.ic_blush, R.drawable.img_blush, ProductListingFragment.newCategoryInstance("Cheeks"));
-        // Gift
         setupCategoryCard(root.findViewById(R.id.cardCategoryGift), R.string.category_gift, R.drawable.ic_gift, R.drawable.img_gift, ProductListingFragment.newCategoryInstance("Gift"));
-        // New
         setupCategoryCard(root.findViewById(R.id.cardCategoryNew), R.string.category_new, R.drawable.ic_new, R.drawable.img_new, ProductListingFragment.newCategoryInstance("New Arrivals"));
-        // Hot
         setupCategoryCard(root.findViewById(R.id.cardCategoryHot), R.string.category_hot, R.drawable.ic_hot, R.drawable.img_hot, ProductListingFragment.newCategoryInstance("Hot Products"));
-        // Brushes -> Mini & Travel
         setupCategoryCard(root.findViewById(R.id.cardCategoryBrushes), R.string.category_brushes, R.drawable.ic_brush, R.drawable.img_brush, ProductListingFragment.newCategoryInstance("Mini & Travel"));
-        // AR
         setupCategoryCard(root.findViewById(R.id.cardCategoryAR), R.string.category_ar, R.drawable.ic_ar, R.drawable.img_ar, null);
     }
 
@@ -183,11 +149,8 @@ public class ProductCategoryFragment extends Fragment {
         if (ivProduct != null) ivProduct.setImageResource(imgRes);
 
         card.setOnClickListener(v -> {
-            if (destination != null && getActivity() != null) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, destination)
-                        .addToBackStack(null)
-                        .commit();
+            if (destination != null && getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).loadFragment(destination, true);
             } else {
                 Toast.makeText(getContext(), getString(titleRes), Toast.LENGTH_SHORT).show();
             }
@@ -207,18 +170,17 @@ public class ProductCategoryFragment extends Fragment {
         ImageView ivLogo = card.findViewById(R.id.ivBrandLogo);
         if (ivLogo != null) ivLogo.setImageResource(logoRes);
         card.setOnClickListener(v -> {
-            if (getActivity() != null) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, ProductListingFragment.newBrandInstance(brandName))
-                        .addToBackStack(null)
-                        .commit();
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).loadFragment(ProductListingFragment.newBrandInstance(brandName), true);
             }
         });
     }
 
     @Override
     public void onDestroyView() {
+        if (autoSlideHandler != null && autoSlideRunnable != null) {
+            autoSlideHandler.removeCallbacks(autoSlideRunnable);
+        }
         super.onDestroyView();
-        autoSlideHandler.removeCallbacks(autoSlideRunnable);
     }
 }

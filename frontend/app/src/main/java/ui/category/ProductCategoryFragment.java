@@ -16,14 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.bumptech.glide.Glide;
 import com.example.frontend.R;
-import com.example.frontend.data.remote.NetworkResult;
-import com.example.frontend.model.Brand;
-import com.example.frontend.model.Category;
 import com.example.frontend.model.HomeBannerItem;
 
 import ui.category.BrandPageFragment;
@@ -35,13 +30,10 @@ import ui.common.BottomNavigationHelper;
 public class ProductCategoryFragment extends Fragment {
 
     private ViewPager2 vpCategoryBanner;
-    private CategoryBannerAdapter bannerAdapter;
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
     private final List<View> indicators = new ArrayList<>();
     
-    private CatalogViewModel viewModel;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -52,12 +44,11 @@ public class ProductCategoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(this).get(CatalogViewModel.class);
-
         setupTopBar(view);
         setupHeroSlider(view);
         
-        observeViewModel(view);
+        setupStaticCategories(view);
+        setupStaticBrands(view);
 
         BottomNavigationHelper.setup(view, tabIndex -> {
             if (tabIndex == BottomNavigationHelper.TAB_HOME) {
@@ -97,22 +88,6 @@ public class ProductCategoryFragment extends Fragment {
         }
     }
 
-    private void observeViewModel(View root) {
-        viewModel.getCategories().observe(getViewLifecycleOwner(), result -> {
-            if (result == null) return;
-            if (result.status == NetworkResult.Status.SUCCESS) {
-                bindCategoryCards(root, result.data);
-            }
-        });
-
-        viewModel.getBrands().observe(getViewLifecycleOwner(), result -> {
-            if (result == null) return;
-            if (result.status == NetworkResult.Status.SUCCESS) {
-                bindBrandCards(root, result.data);
-            }
-        });
-    }
-
     private void setupHeroSlider(View root) {
         vpCategoryBanner = root.findViewById(R.id.vpCategoryBanner);
         if (vpCategoryBanner == null) return;
@@ -122,7 +97,7 @@ public class ProductCategoryFragment extends Fragment {
         indicators.add(root.findViewById(R.id.indicator1));
         indicators.add(root.findViewById(R.id.indicator2));
 
-        bannerAdapter = new CategoryBannerAdapter();
+        CategoryBannerAdapter bannerAdapter = new CategoryBannerAdapter();
         vpCategoryBanner.setAdapter(bannerAdapter);
 
         List<HomeBannerItem> items = new ArrayList<>();
@@ -171,59 +146,56 @@ public class ProductCategoryFragment extends Fragment {
         autoSlideHandler.postDelayed(autoSlideRunnable, 4000);
     }
 
-    private void bindCategoryCards(View root, List<Category> categories) {
-        if (categories == null || categories.isEmpty()) return;
-
-        int[] cardIds = {
-            R.id.cardCategoryFace, R.id.cardCategoryLips, R.id.cardCategoryEyes,
-            R.id.cardCategoryCheeks, R.id.cardCategoryGift, R.id.cardCategoryNew,
-            R.id.cardCategoryHot, R.id.cardCategoryBrushes, R.id.cardCategoryAR
-        };
-
-        for (int i = 0; i < Math.min(categories.size(), cardIds.length); i++) {
-            Category category = categories.get(i);
-            View card = root.findViewById(cardIds[i]);
-            if (card != null) {
-                TextView titleView = card.findViewById(R.id.tvCategoryName);
-                if (titleView != null) titleView.setText(category.getCategoryName());
-                
-                ImageView image = card.findViewById(R.id.ivCategoryProductImage);
-                // Assume category might have an icon/image URL in future, or use dynamic mapping
-                // Glide.with(this).load(category.getImageUrl()).into(image);
-
-                card.setOnClickListener(v -> {
-                    // Navigate to category details
-                    Toast.makeText(getContext(), category.getCategoryName(), Toast.LENGTH_SHORT).show();
-                });
-            }
-        }
+    private void setupStaticCategories(View root) {
+        // Face
+        setupCategoryCard(root.findViewById(R.id.cardCategoryFace), R.string.category_face, R.drawable.ic_face, R.drawable.img_foudation);
+        // Lips
+        setupCategoryCard(root.findViewById(R.id.cardCategoryLips), R.string.category_lips, R.drawable.ic_lipstick, R.drawable.img_lipstick);
+        // Eyes
+        setupCategoryCard(root.findViewById(R.id.cardCategoryEyes), R.string.category_eyes, R.drawable.ic_eye, R.drawable.img_eyeshadow);
+        // Cheeks
+        setupCategoryCard(root.findViewById(R.id.cardCategoryCheeks), R.string.category_cheeks, R.drawable.ic_blush, R.drawable.img_blush);
+        // Gift
+        setupCategoryCard(root.findViewById(R.id.cardCategoryGift), R.string.category_gift, R.drawable.ic_gift, R.drawable.img_gift);
+        // New
+        setupCategoryCard(root.findViewById(R.id.cardCategoryNew), R.string.category_new, R.drawable.ic_new, R.drawable.img_new);
+        // Hot
+        setupCategoryCard(root.findViewById(R.id.cardCategoryHot), R.string.category_hot, R.drawable.ic_hot, R.drawable.img_hot);
+        // Brushes
+        setupCategoryCard(root.findViewById(R.id.cardCategoryBrushes), R.string.category_brushes, R.drawable.ic_brush, R.drawable.img_brush);
+        // AR
+        setupCategoryCard(root.findViewById(R.id.cardCategoryAR), R.string.category_ar, R.drawable.ic_ar, R.drawable.img_ar);
     }
 
-    private void bindBrandCards(View root, List<Brand> brands) {
-        if (brands == null || brands.isEmpty()) return;
+    private void setupCategoryCard(View card, int titleRes, int iconRes, int imgRes) {
+        if (card == null) return;
+        TextView tvName = card.findViewById(R.id.tvCategoryName);
+        ImageView ivIcon = card.findViewById(R.id.ivCategoryIcon);
+        ImageView ivProduct = card.findViewById(R.id.ivCategoryProductImage);
 
-        int[] brandCardIds = {
-            R.id.cardBrandMaybelline, R.id.cardBrandHuda, R.id.cardBrandFwee,
-            R.id.cardBrandJudydoll, R.id.cardBrandAnastasia
-        };
+        if (tvName != null) tvName.setText(titleRes);
+        if (ivIcon != null) ivIcon.setImageResource(iconRes);
+        if (ivProduct != null) ivProduct.setImageResource(imgRes);
 
-        for (int i = 0; i < Math.min(brands.size(), brandCardIds.length); i++) {
-            Brand brand = brands.get(i);
-            View card = root.findViewById(brandCardIds[i]);
-            if (card != null) {
-                ImageView logo = card.findViewById(R.id.ivBrandLogo);
-                if (logo != null) {
-                    Glide.with(this)
-                            .load(brand.getLogoUrl())
-                            .placeholder(R.drawable.ic_product)
-                            .into(logo);
-                }
-                card.setOnClickListener(v -> {
-                    // Navigate to brand details
-                    Toast.makeText(getContext(), brand.getBrandName(), Toast.LENGTH_SHORT).show();
-                });
-            }
-        }
+        card.setOnClickListener(v -> {
+            // Static navigation or toast
+            Toast.makeText(getContext(), getString(titleRes), Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void setupStaticBrands(View root) {
+        setupBrandCard(root.findViewById(R.id.cardBrandMaybelline), R.drawable.brand_mbl, "Maybelline");
+        setupBrandCard(root.findViewById(R.id.cardBrandHuda), R.drawable.brand_hdbt, "Huda Beauty");
+        setupBrandCard(root.findViewById(R.id.cardBrandFwee), R.drawable.brand_fee, "Fwee");
+        setupBrandCard(root.findViewById(R.id.cardBrandJudydoll), R.drawable.brand_jd, "Judydoll");
+        setupBrandCard(root.findViewById(R.id.cardBrandAnastasia), R.drawable.brand_nars, "Anastasia");
+    }
+
+    private void setupBrandCard(View card, int logoRes, String brandName) {
+        if (card == null) return;
+        ImageView ivLogo = card.findViewById(R.id.ivBrandLogo);
+        if (ivLogo != null) ivLogo.setImageResource(logoRes);
+        card.setOnClickListener(v -> Toast.makeText(getContext(), brandName, Toast.LENGTH_SHORT).show());
     }
 
     @Override

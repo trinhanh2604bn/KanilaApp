@@ -56,6 +56,7 @@ public class ShippingMethodAdapter extends RecyclerView.Adapter<ShippingMethodAd
         private final ImageView ivRadio;
         private final ImageView ivIcon;
         private final TextView tvName;
+        private final TextView tvTag;
         private final TextView tvEstimate;
         private final TextView tvDescription;
         private final TextView tvPrice;
@@ -66,6 +67,7 @@ public class ShippingMethodAdapter extends RecyclerView.Adapter<ShippingMethodAd
             ivRadio = itemView.findViewById(R.id.ivShippingMethodRadio);
             ivIcon = itemView.findViewById(R.id.ivShippingMethodIcon);
             tvName = itemView.findViewById(R.id.tvShippingMethodName);
+            tvTag = itemView.findViewById(R.id.tvShippingMethodTag);
             tvEstimate = itemView.findViewById(R.id.tvShippingMethodEstimate);
             tvDescription = itemView.findViewById(R.id.tvShippingMethodDescription);
             tvPrice = itemView.findViewById(R.id.tvShippingMethodPrice);
@@ -84,6 +86,15 @@ public class ShippingMethodAdapter extends RecyclerView.Adapter<ShippingMethodAd
             tvDescription.setText(method.getDescription());
             tvPrice.setText(method.getPrice());
             ivIcon.setImageResource(method.getIconRes());
+
+            if (tvTag != null) {
+                if (method.getTag() != null) {
+                    tvTag.setText(method.getTag());
+                    tvTag.setVisibility(View.VISIBLE);
+                } else {
+                    tvTag.setVisibility(View.GONE);
+                }
+            }
 
             root.setSelected(method.isSelected());
             ivRadio.setSelected(method.isSelected());

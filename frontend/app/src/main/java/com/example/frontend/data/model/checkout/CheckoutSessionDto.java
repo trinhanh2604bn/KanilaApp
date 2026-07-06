@@ -6,6 +6,17 @@ import java.util.List;
 public class CheckoutSessionDto {
     @SerializedName("_id")
     private String id;
+    
+    public void setId(String id) { this.id = id; }
+    public void setSubtotalAmount(double subtotalAmount) { this.subtotalAmount = subtotalAmount; }
+    public void setShippingAmount(double shippingAmount) { this.shippingAmount = shippingAmount; }
+    public void setDiscountAmount(double discountAmount) { this.discountAmount = discountAmount; }
+    public void setPointsAmount(double pointsAmount) { this.pointsAmount = pointsAmount; }
+    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
+    public void setShippingAddress(CheckoutAddressDto shippingAddress) { this.shippingAddress = shippingAddress; }
+    public void setShippingMethod(String shippingMethod) { this.shippingMethod = shippingMethod; }
+    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+    public void setItems(List<CheckoutItemDto> items) { this.items = items; }
 
     @SerializedName("customer_id")
     private String customerId;
@@ -71,6 +82,12 @@ public class CheckoutSessionDto {
         public int getQuantity() { return quantity; }
         public double getPrice() { return price; }
         public String getImageUrl() { return imageUrl; }
+
+        public void setProductName(String productName) { this.productName = productName; }
+        public void setVariantName(String variantName) { this.variantName = variantName; }
+        public void setQuantity(int quantity) { this.quantity = quantity; }
+        public void setPrice(double price) { this.price = price; }
+        public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     }
 
     public static class CheckoutAddressDto {
@@ -84,5 +101,9 @@ public class CheckoutSessionDto {
         public String getFullName() { return fullName; }
         public String getPhone() { return phone; }
         public String getAddressLine() { return addressLine; }
+
+        public void setFullName(String fullName) { this.fullName = fullName; }
+        public void setPhone(String phone) { this.phone = phone; }
+        public void setAddressLine(String addressLine) { this.addressLine = addressLine; }
     }
 }

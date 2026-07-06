@@ -45,7 +45,7 @@ import java.util.List;
 import ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
 import ui.commerce.CheckoutFragment;
-import ui.common.BottomNavigationHelper;
+import com.example.frontend.ui.common.BottomNavigationHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -194,20 +194,20 @@ public class MainActivity extends AppCompatActivity {
         // Setup bottom nav for Home Activity (as per layout)
         View bottomNav = findViewById(R.id.layoutBottomNavigation);
         if (bottomNav != null) {
-            ui.common.BottomNavigationHelper.setup(bottomNav, tabIndex -> {
-                if (tabIndex == ui.common.BottomNavigationHelper.TAB_ACCOUNT) {
+            BottomNavigationHelper.setup(bottomNav, tabIndex -> {
+                if (tabIndex == BottomNavigationHelper.TAB_ACCOUNT) {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.main, new ui.account.AccountFragment())
                             .addToBackStack(null)
                             .commit();
-                } else if (tabIndex == ui.common.BottomNavigationHelper.TAB_CATEGORY) {
+                } else if (tabIndex == BottomNavigationHelper.TAB_CATEGORY) {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.main, new ui.category.ProductCategoryFragment())
                             .addToBackStack(null)
                             .commit();
                 }
             });
-            ui.common.BottomNavigationHelper.setSelectedTab(bottomNav, ui.common.BottomNavigationHelper.TAB_HOME);
+            BottomNavigationHelper.setSelectedTab(bottomNav, BottomNavigationHelper.TAB_HOME);
         }
 
         setupHomeShortcuts();

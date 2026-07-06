@@ -347,6 +347,43 @@ const deleteProduct = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// GET /api/products/:id/similar
+const getSimilarProducts = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!validateObjectId(id)) return res.status(400).json({ success: false, message: "Invalid product ID" });
+
+    const product = await Product.findById(id).lean();
+    if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+
+    const limit = parseInt(req.query.limit) || 10;
+
+    // Find similar products based on category and brand
+    // Exclude current product
+    const similarProducts = await Product.find({
+      _id: { $ne: id },
+      $or: [
+        { categoryId: product.categoryId },
+        { brandId: product.brandId }
+      ],
+      productStatus: "active"
+    })
+    .limit(limit)
+    .populate("brandId", "brandName")
+    .populate("categoryId", "categoryName")
+    .lean();
+
+    res.status(200).json({
+      success: true,
+      message: "Get similar products successfully",
+      count: similarProducts.length,
+      data: similarProducts
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 // PATCH /api/products/:id
 const patchProduct = async (req, res) => {
   try {
@@ -381,6 +418,7 @@ module.exports = {
   getAllProducts,
   getProductById,
   getProductBySlug,
+  getSimilarProducts,
   createProduct,
   updateProduct,
   patchProduct,

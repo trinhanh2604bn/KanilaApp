@@ -222,4 +222,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutSearchExpandedBar" />
 
+    <include
+        android:id="@+id/layoutSearchLoading"
+        layout="@layout/view_loading_state"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutSearchExpandedBar" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

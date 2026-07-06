@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
@@ -28,6 +29,7 @@ public class FaceFragment extends Fragment {
     private ProductAdapter adapter;
     private List<Product> allFaceProducts = new ArrayList<>();
     private View containerSearchNoResult;
+    private View loadingState;
     private LinearLayout layoutFaceFilterChips;
     private TextView selectedChipView;
 
@@ -40,6 +42,8 @@ public class FaceFragment extends Fragment {
     private TextView chipBbCcCream;
     private TextView chipTintedMoisturizer;
 
+    private ProductViewModel viewModel;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -50,11 +54,14 @@ public class FaceFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        viewModel = new ViewModelProvider(this).get(ProductViewModel.class);
+
         initViews(view);
         setupSearch(view);
         setupFilterChips();
         setupProductList();
         setupActions(view);
+        observeViewModel();
 
         BottomNavigationHelper.setup(view, tabIndex -> {
             // Handle bottom nav
@@ -65,6 +72,7 @@ public class FaceFragment extends Fragment {
     private void initViews(View root) {
         rvFaceProducts = root.findViewById(R.id.rvFaceProducts);
         containerSearchNoResult = root.findViewById(R.id.containerSearchNoResult);
+        loadingState = root.findViewById(R.id.viewFaceLoading);
         layoutFaceFilterChips = root.findViewById(R.id.layoutFaceFilterChips);
 
         chipAllFace = root.findViewById(R.id.chipAllFace);
@@ -167,51 +175,59 @@ public class FaceFragment extends Fragment {
 
     private void setupProductList() {
         adapter = new ProductAdapter();
+        adapter.setOnProductClickListener(product -> {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         rvFaceProducts.setLayoutManager(new GridLayoutManager(getContext(), 2));
         rvFaceProducts.setAdapter(adapter);
-
-        loadMockData();
-        
-        // Initial state: "Tất cả" selected and all products shown
-        selectChip(chipAllFace);
-        showProducts(allFaceProducts);
     }
 
-    private void loadMockData() {
-        allFaceProducts.clear();
-        
-        // Foundation
-        Product p1 = new Product("f1", "BeautyBlender", "Bounce Liquid Foundation", "450000", "4.5", "1.2k", R.drawable.img_foudation, "New", "Foundation");
-        p1.setHasAr(true);
-        allFaceProducts.add(p1);
+    private void observeViewModel() {
+        // Fetch products for "Face" category. Using "face" as slug/id placeholder.
+        viewModel.getProducts(null, "face", null).observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
 
-        Product p2 = new Product("f2", "Maybelline", "Fit Me Matte + Poreless", "250000", "4.8", "5.1k", R.drawable.img_brand_1, "Best Seller", "Foundation");
-        p2.setHasAr(false);
-        allFaceProducts.add(p2);
-        
-        // Powder
-        Product p3 = new Product("f3", "BeautyBlender", "Phấn phủ BOUNCE Soft Focus", "450000", "4.2", "800", R.drawable.img_foudation, "", "Powder");
-        p3.setHasAr(true);
-        allFaceProducts.add(p3);
+            switch (result.status) {
+                case LOADING:
+                    showLoading(true);
+                    break;
+                case SUCCESS:
+                    showLoading(false);
+                    if (result.data != null) {
+                        allFaceProducts = result.data;
+                        selectChip(chipAllFace);
+                        showProducts(allFaceProducts);
+                    }
+                    break;
+                case EMPTY:
+                    showLoading(false);
+                    showProducts(new ArrayList<>());
+                    break;
+                case ERROR:
+                    showLoading(false);
+                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    break;
+                case NO_INTERNET:
+                    showLoading(false);
+                    Toast.makeText(getContext(), R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
+    }
 
-        Product p4 = new Product("f4", "Huda Beauty", "Easy Bake Loose Powder", "950000", "4.9", "12k", R.drawable.img_brand_2, "Hot", "Powder");
-        p4.setHasAr(false);
-        allFaceProducts.add(p4);
-        
-        // Concealer
-        Product p5 = new Product("f5", "Nars", "Radiant Creamy Concealer", "850000", "4.8", "3.2k", R.drawable.brand_nars, "Essential", "Concealer");
-        p5.setHasAr(true);
-        allFaceProducts.add(p5);
-        
-        // Primer
-        Product p6 = new Product("f6", "Benefit", "The POREfessional Face Primer", "750000", "4.7", "2.1k", R.drawable.img_brand_3, "", "Primer");
-        p6.setHasAr(false);
-        allFaceProducts.add(p6);
-
-        // Setting Spray (Mock)
-        Product p7 = new Product("f7", "MAC", "Prep + Prime Fix+", "650000", "4.6", "4.5k", R.drawable.ic_product, "", "Setting Spray");
-        p7.setHasAr(false);
-        allFaceProducts.add(p7);
+    private void showLoading(boolean isLoading) {
+        if (loadingState != null) loadingState.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        if (isLoading) {
+            rvFaceProducts.setVisibility(View.GONE);
+            containerSearchNoResult.setVisibility(View.GONE);
+        } else {
+            rvFaceProducts.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setupActions(View root) {
@@ -220,9 +236,7 @@ public class FaceFragment extends Fragment {
             layoutFilter.setOnClickListener(v -> {
                 FilterBottomSheetDialog dialog = new FilterBottomSheetDialog();
                 dialog.setOnFilterAppliedListener(filterState -> {
-                    // Logic lọc demo
                     Toast.makeText(getContext(), "Đã áp dụng bộ lọc", Toast.LENGTH_SHORT).show();
-                    // In a real app, we would use filterState to filter the list
                 });
                 dialog.show(getChildFragmentManager(), "FilterBottomSheet");
             });

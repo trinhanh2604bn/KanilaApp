@@ -9,4 +9,6 @@ const wishlistItemSchema = new mongoose.Schema(
   { timestamps: true, collection: "wishlist_items" }
 );
 
+wishlistItemSchema.index({ wishlistId: 1, productId: 1, variantId: 1 }, { unique: true });
+
 module.exports = mongoose.model("WishlistItem", wishlistItemSchema);

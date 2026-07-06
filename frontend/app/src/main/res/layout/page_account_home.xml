@@ -124,6 +124,7 @@
                             app:tint="#FF9800" />
 
                         <TextView
+                            android:id="@+id/tvRankName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
@@ -147,6 +148,7 @@
                             app:tint="#FF9800" />
 
                         <TextView
+                            android:id="@+id/tvPointsHeader"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
@@ -182,6 +184,7 @@
 
                     <!-- Đơn hàng -->
                     <LinearLayout
+                        android:id="@+id/btnAccountOrders"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="6dp"
@@ -190,7 +193,9 @@
                         android:background="@drawable/bg_card"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="16dp">
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true">
 
                         <ImageView
                             android:id="@+id/ivOrder"
@@ -236,6 +241,7 @@
 
                     <!-- Ví voucher -->
                     <LinearLayout
+                        android:id="@+id/btnAccountVouchers"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
@@ -244,7 +250,9 @@
                         android:background="@drawable/bg_card"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="16dp">
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true">
 
                         <ImageView
                             android:id="@+id/ivVoucher"
@@ -297,6 +305,7 @@
 
                     <!-- Điểm thưởng -->
                     <LinearLayout
+                        android:id="@+id/btnAccountPoints"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="6dp"
@@ -304,7 +313,9 @@
                         android:background="@drawable/bg_card"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="16dp">
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true">
 
                         <ImageView
                             android:id="@+id/ivPoints"
@@ -350,6 +361,7 @@
 
                     <!-- Đã lưu -->
                     <LinearLayout
+                        android:id="@+id/btnAccountSaved"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
@@ -357,7 +369,9 @@
                         android:background="@drawable/bg_card"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="16dp">
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true">
 
                         <ImageView
                             android:id="@+id/ivSaved"

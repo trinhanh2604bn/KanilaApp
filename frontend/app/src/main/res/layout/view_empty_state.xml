@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_xl">
+
+    <ImageView
+        android:id="@+id/ivEmptyStateIcon"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_marginBottom="@dimen/spacing_l"
+        android:src="@drawable/no_result"
+        android:scaleType="fitCenter"
+        android:contentDescription="@null" />
+
+    <TextView
+        android:id="@+id/tvEmptyStateTitle"
+        style="@style/Text.Kanila.H2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_s"
+        android:text="@string/empty_state_title" />
+
+    <TextView
+        android:id="@+id/tvEmptyStateDescription"
+        style="@style/Text.Kanila.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/empty_state_description" />
+</LinearLayout>

@@ -2,32 +2,52 @@
 <resources>
 
     <!-- Typography -->
-    <style name="Text.Kanila.H1" parent="H1">
+    <style name="Text.Kanila.H1" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:fontFamily">@font/nunito_bold</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/text_main</item>
         <item name="lineHeight">32dp</item>
     </style>
 
-    <style name="Text.Kanila.H2" parent="H2">
+    <style name="Text.Kanila.H2" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:fontFamily">@font/nunito_bold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/text_main</item>
         <item name="lineHeight">28dp</item>
     </style>
 
-    <style name="Text.Kanila.H3" parent="H3">
+    <style name="Text.Kanila.H3" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">@font/nunito_semibold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/text_main</item>
         <item name="lineHeight">24dp</item>
     </style>
 
-    <style name="Text.Kanila.Body" parent="Body">
+    <style name="Text.Kanila.Body" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">@font/nunito_regular</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_main</item>
         <item name="lineHeight">22dp</item>
     </style>
 
-    <style name="Text.Kanila.BodyMedium" parent="Body">
+    <style name="Text.Kanila.BodyMedium" parent="TextAppearance.Material3.BodyLarge">
         <item name="android:fontFamily">@font/nunito_medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_main</item>
         <item name="lineHeight">22dp</item>
     </style>
 
-    <style name="Text.Kanila.Caption" parent="Caption">
+    <style name="Text.Kanila.Caption" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">@font/nunito_regular</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_main</item>
         <item name="lineHeight">18dp</item>
     </style>
 
-    <style name="Text.Kanila.Micro" parent="Micro">
+    <style name="Text.Kanila.Micro" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:fontFamily">@font/nunito_medium</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/text_main</item>
         <item name="lineHeight">14dp</item>
     </style>
 
@@ -143,8 +163,10 @@
     <style name="MetricCard" parent="Widget.MaterialComponents.CardView">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
         <item name="android:layout_weight">1</item>
+
+        <item name="cardBackgroundColor">@color/background_main</item>
         <item name="cardCornerRadius">12dp</item>
         <item name="cardElevation">0dp</item>
         <item name="strokeColor">@color/border_divider</item>
@@ -183,45 +205,83 @@
         <item name="tint">@android:color/white</item>
     </style>
 
-    <style name="IngredientChip" parent="Widget.MaterialComponents.CardView">
+
+
+    <!-- ================================================= -->
+    <!-- SUITABLE INGREDIENTS COMPONENTS                   -->
+    <!-- ================================================= -->
+
+    <!-- Hai thẻ Thiết lập nhanh: Ưu tiên / Cần tránh -->
+    <style
+        name="QuickSetupCard"
+        parent="Widget.MaterialComponents.CardView">
+
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">48dp</item>
-        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_height">124dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+
+        <item name="cardBackgroundColor">@color/background_main</item>
+        <item name="cardCornerRadius">14dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/border_divider</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+
+    <!-- Chip thành phần ở trạng thái mặc định -->
+    <style
+        name="IngredientChip"
+        parent="Widget.MaterialComponents.CardView">
+
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">52dp</item>
         <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_gravity">fill_horizontal</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+
+        <item name="cardBackgroundColor">@color/background_main</item>
         <item name="cardCornerRadius">12dp</item>
         <item name="cardElevation">0dp</item>
         <item name="strokeColor">@color/border_divider</item>
         <item name="strokeWidth">1dp</item>
-        <item name="cardBackgroundColor">@color/background_main</item>
     </style>
 
-    <style name="IngredientChip.Selected">
-        <item name="cardBackgroundColor">@color/icon_bg_pink</item>
+
+    <!-- Chip thành phần đang được chọn -->
+    <style
+        name="IngredientChip.Selected"
+        parent="IngredientChip">
+
+        <item name="cardBackgroundColor">@color/background_sub</item>
         <item name="strokeColor">@color/button</item>
         <item name="strokeWidth">1dp</item>
     </style>
 
-    <style name="IngredientChipLabel" parent="Text.Kanila.Micro">
-        <item name="android:textColor">@color/text_main</item>
-        <item name="android:fontFamily">@font/nunito_semibold</item>
-        <item name="android:textSize">10sp</item>
-        <item name="android:maxLines">2</item>
+
+    <!-- Tên thành phần mặc định -->
+    <style
+        name="IngredientChipLabel"
+        parent="Text.Kanila.Micro">
+
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">end</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textColor">@color/text_main</item>
     </style>
 
-    <style name="IngredientChipLabel.Selected">
+
+    <!-- Tên thành phần đang được chọn -->
+    <style
+        name="IngredientChipLabel.Selected"
+        parent="IngredientChipLabel">
+
         <item name="android:textColor">@color/button</item>
-    </style>
-
-    <style name="QuickSetupCard" parent="Widget.MaterialComponents.CardView">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">120dp</item>
-        <item name="android:layout_margin">4dp</item>
-        <item name="android:layout_weight">1</item>
-        <item name="cardCornerRadius">16dp</item>
-        <item name="cardElevation">0dp</item>
-        <item name="strokeColor">#F5F5F5</item>
-        <item name="strokeWidth">1dp</item>
     </style>
 
 </resources>

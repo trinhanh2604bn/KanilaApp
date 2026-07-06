@@ -28,35 +28,58 @@ public class HomeViewModel extends AndroidViewModel {
 
     public void loadHomeData() {
         HomeUiState current = uiState.getValue();
-        if (current != null) {
-            current.loading = true;
-            uiState.setValue(current);
-        }
+        if (current == null) current = new HomeUiState();
+        current.loading = true;
+        uiState.setValue(current);
 
-        MutableLiveData<NetworkResult<List<Product>>> productResult = new MutableLiveData<>();
-        productResult.observeForever(result -> {
+        // Load recommended products
+        MutableLiveData<NetworkResult<List<Product>>> recommendedResult = new MutableLiveData<>();
+        recommendedResult.observeForever(result -> {
             HomeUiState state = uiState.getValue();
             if (state == null) state = new HomeUiState();
             
-            state.loading = (result.status == NetworkResult.Status.LOADING);
-            
             if (result.status == NetworkResult.Status.SUCCESS) {
-                state.products = result.data;
-                state.error = null;
+                state.recommendedProducts = result.data;
+                checkLoadingState(state);
             } else if (result.status == NetworkResult.Status.ERROR) {
                 state.error = result.message;
+                state.loading = false;
+                uiState.setValue(state);
             }
+        });
+
+        // Load all products
+        MutableLiveData<NetworkResult<List<Product>>> allProductsResult = new MutableLiveData<>();
+        allProductsResult.observeForever(result -> {
+            HomeUiState state = uiState.getValue();
+            if (state == null) state = new HomeUiState();
             
-            uiState.setValue(state);
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                state.allProducts = result.data;
+                checkLoadingState(state);
+            } else if (result.status == NetworkResult.Status.ERROR) {
+                state.error = result.message;
+                state.loading = false;
+                uiState.setValue(state);
+            }
         });
 
         if (tokenManager.isLoggedIn()) {
-            homeRepository.getHomepageRecommendations(productResult);
+            homeRepository.getHomepageRecommendations(recommendedResult);
         } else {
-            homeRepository.getProducts(null, productResult);
+            // If not logged in, we can fallback to popular products for recommendations
+            homeRepository.getProducts("popular", recommendedResult);
         }
         
-        // Load other counts if needed
+        homeRepository.getProducts(null, allProductsResult);
+    }
+
+    private void checkLoadingState(HomeUiState state) {
+        if (state.recommendedProducts != null && state.allProducts != null) {
+            state.loading = false;
+            state.error = null;
+            uiState.setValue(state);
+        }
     }
     
     public boolean isLoggedIn() {

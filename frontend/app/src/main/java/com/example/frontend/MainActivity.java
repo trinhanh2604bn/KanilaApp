@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -52,20 +51,20 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 vpHomeBanner;
     private View layoutSearchBar;
-    private View layoutSearchExpandedBar;
     private ImageButton btnNotification, btnCart, btnWishlist;
     private RecyclerView rvHomeShortcuts;
     private RecyclerView rvRecommendedProducts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
 
+    private View layoutSearchExpandedBar;
+    private EditText edtExpandedSearchQuery;
+    private ImageButton btnExpandedSearchBack;
+
     private View layoutKanilaReelsCard, layoutReelThumbOne, layoutReelThumbTwo;
     private ImageView ivReelThumbOne, ivReelThumbTwo;
     private View layoutKanilaChallengeCard, btnJoinChallenge;
     private TextView tvChallengeProgress, tvChallengeParticipants, tvChallengeReward;
-
-    private EditText edtExpandedSearchQuery;
-    private ImageButton btnExpandedSearchBack;
 
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
@@ -161,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         layoutSearchExpandedBar = findViewById(R.id.layoutSearchExpandedBar);
         edtExpandedSearchQuery = findViewById(R.id.edtExpandedSearchQuery);
         btnExpandedSearchBack = findViewById(R.id.btnExpandedSearchBack);
-        
+
         findViewById(R.id.btnViewAllRecommended).setOnClickListener(v -> {
             Toast.makeText(this, "See All Recommended", Toast.LENGTH_SHORT).show();
         });
@@ -176,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
         btnCart.setOnClickListener(v -> navigateToCart());
 
         btnNotification.setOnClickListener(v -> {
+            // Mở NotificationCenterFragment
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main, new ui.notification.NotificationCenterFragment())
                     .addToBackStack(null)
@@ -218,10 +218,29 @@ public class MainActivity extends AppCompatActivity {
             });
             BottomNavigationHelper.setSelectedTab(bottomNav, BottomNavigationHelper.TAB_HOME);
         }
+
+
+
+        setupHomeShortcuts();
+        setupSocialSection();
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationHelper.setup(findViewById(R.id.main), tabIndex -> {
+            if (tabIndex == BottomNavigationHelper.TAB_CATEGORY) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.category.ProductCategoryFragment())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+        BottomNavigationHelper.setSelectedTab(findViewById(R.id.main), BottomNavigationHelper.TAB_HOME);
     }
 
     private void setupProductLists() {
         recommendedProductAdapter = new HomeProductAdapter();
+
+        // Premium feel: width around 46% of screen
         int screenWidth = getResources().getDisplayMetrics().widthPixels;
         recommendedProductAdapter.setItemWidth((int) (screenWidth * 0.46));
 
@@ -256,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
         rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvRecommendedProducts.setAdapter(recommendedProductAdapter);
 
+        // All Products (Vertical Grid)
         allProductAdapter = new HomeProductAdapter();
         allProductAdapter.setOnProductClickListener(product -> {
             getSupportFragmentManager().beginTransaction()
@@ -381,7 +401,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupHomeShortcuts() {
         shortcutAdapter = new HomeShortcutAdapter();
-        shortcutAdapter.setOnShortcutClickListener(item -> Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show());
+        shortcutAdapter.setOnShortcutClickListener(item -> {
+            if ("orders".equals(item.getId())) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.account.BeautyProfileOverviewFragment())
+                        .addToBackStack(null)
+                        .commit();
+            } else {
+                Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         rvHomeShortcuts.setAdapter(shortcutAdapter);
 

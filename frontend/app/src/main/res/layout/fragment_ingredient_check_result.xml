@@ -76,7 +76,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingHorizontal="16dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="16dp">
 
             <!-- Advisor Header -->
             <LinearLayout
@@ -539,7 +541,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
                     app:cardCornerRadius="20dp"
-                    app:cardElevation="0dp"
+                    app:cardElevation="2dp"
                     app:strokeColor="@color/border_divider"
                     app:strokeWidth="1dp">
                     <LinearLayout
@@ -547,30 +549,40 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="16dp">
+                        android:padding="20dp">
+
                         <FrameLayout
-                            android:layout_width="64dp"
-                            android:layout_height="64dp">
-                            <View
+                            android:layout_width="72dp"
+                            android:layout_height="72dp">
+
+                            <ProgressBar
+                                android:id="@+id/progressMatchScore"
+                                style="?android:attr/progressBarStyleHorizontal"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:background="@drawable/custom_progress_circle" />
+                                android:indeterminate="false"
+                                android:max="100"
+                                android:progress="86"
+                                android:progressDrawable="@drawable/bg_match_score_ring" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:text="86%"
                                 android:textColor="@color/text_main"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/nunito_bold" />
                         </FrameLayout>
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginStart="20dp"
                             android:orientation="vertical">
                             <TextView
-                                style="@style/Text.Kanila.BodyMedium"
+                                style="@style/Text.Kanila.H3"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/match_score_label"
@@ -588,60 +600,60 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Action Buttons -->
-                <!-- Action Buttons -->
                 <LinearLayout
-                    android:id="@+id/layoutAnalysisActions"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/button_height"
-                    android:layout_marginBottom="@dimen/spacing_m"
-                    android:gravity="center_vertical"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="32dp"
                     android:orientation="horizontal">
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnSaveAnalysis"
-                        style="@style/Widget.Kanila.Button.Secondary"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="@dimen/spacing_s"
+                        android:layout_height="48dp"
                         android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/save_analysis"
+                        android:textSize="12sp"
+                        android:textColor="@color/button"
+                        android:fontFamily="@font/nunito_semibold"
+                        android:textAllCaps="false"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
-                        android:minWidth="0dp"
-                        android:maxLines="1"
-                        android:text="@string/save_analysis"
-                        android:textAllCaps="false"
-                        app:backgroundTint="@color/background_main"
-                        app:cornerRadius="@dimen/radius_m"
-                        app:icon="@drawable/ic_bookmark_outline"
-                        app:iconGravity="textStart"
-                        app:iconPadding="@dimen/spacing_xs"
-                        app:iconTint="@color/button"
+                        android:padding="0dp"
+                        app:backgroundTint="@android:color/transparent"
                         app:strokeColor="@color/button"
-                        app:strokeWidth="1dp" />
+                        app:strokeWidth="1dp"
+                        app:cornerRadius="12dp"
+                        app:icon="@drawable/ic_bookmark_outline"
+                        app:iconSize="18dp"
+                        app:iconTint="@color/button"
+                        app:iconGravity="textStart"
+                        app:iconPadding="8dp"
+                        app:rippleColor="@color/secondary"
+                        app:elevation="0dp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnFindSimilar"
-                        style="@style/Widget.Kanila.Button.Primary"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="48dp"
                         android:layout_weight="1"
-                        android:elevation="0dp"
+                        android:text="@string/find_similar"
+                        android:textSize="12sp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/nunito_semibold"
+                        android:textAllCaps="false"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
-                        android:maxLines="1"
-                        android:minWidth="0dp"
-                        android:stateListAnimator="@null"
-                        android:text="@string/find_similar"
-                        android:textAllCaps="false"
+                        android:padding="0dp"
                         app:backgroundTint="@color/button"
-                        app:cornerRadius="@dimen/radius_m"
-                        app:elevation="0dp"
+                        app:cornerRadius="12dp"
                         app:icon="@drawable/ic_search"
+                        app:iconSize="18dp"
+                        app:iconTint="@color/white"
                         app:iconGravity="textStart"
-                        app:iconPadding="@dimen/spacing_xs"
-                        app:iconTint="@color/background_main"
-                        app:strokeWidth="0dp" />
-
+                        app:iconPadding="8dp"
+                        app:elevation="0dp" />
                 </LinearLayout>
 
             </LinearLayout>

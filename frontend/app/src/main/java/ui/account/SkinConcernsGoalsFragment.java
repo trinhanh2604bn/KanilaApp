@@ -1,236 +1,239 @@
 package ui.account;
 
 import android.app.Dialog;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.frontend.R;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import ui.common.ViewUtils;
 
 public class SkinConcernsGoalsFragment extends Fragment {
 
+    private final List<SelectableItem> selectableItems = new ArrayList<>();
+    private MaterialButton btnSaveBottom;
+    private boolean isDirty = false;
+
     public SkinConcernsGoalsFragment() {
-        // Kết nối với fragment_skin_concerns_goals.xml
         super(R.layout.fragment_skin_concerns_goals);
     }
 
     @Override
-    public void onViewCreated(
-            @NonNull View view,
-            @Nullable Bundle savedInstanceState
-    ) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupViews(view);
+        initViews(view);
         setupEvents(view);
+        updateSaveButtonsState(false);
     }
 
-    private void setupViews(@NonNull View view) {
-        // Ánh xạ các View khác tại đây khi cần.
+    private void initViews(View view) {
+        selectableItems.clear();
+
+        // 1. Skin Concerns
+        addSelectableItem(view, R.id.cardConcernAcne, R.id.iconAcne, R.id.labelAcne, R.id.tickAcne, true);
+        addSelectableItem(view, R.id.cardConcernSpots, R.id.iconSpots, R.id.labelSpots, R.id.tickSpots, true);
+        addSelectableItem(view, R.id.cardConcernPores, R.id.iconPores, R.id.labelPores, R.id.tickPores, false);
+        addSelectableItem(view, R.id.cardConcernRedness, R.id.iconRedness, R.id.labelRedness, R.id.tickRedness, false);
+        addSelectableItem(view, R.id.cardConcernDullness, R.id.iconDullness, R.id.labelDullness, R.id.tickDullness, false);
+        addSelectableItem(view, R.id.cardConcernDehydration, R.id.iconDehydration, R.id.labelDehydration, R.id.tickDehydration, true);
+        addSelectableItem(view, R.id.cardConcernAging, R.id.iconAging, R.id.labelAging, R.id.tickAging, false);
+        addSelectableItem(view, R.id.cardConcernSensitive, R.id.iconSensitive, R.id.labelSensitive, R.id.tickSensitive, false);
+
+        // 2. Care Goals
+        addSelectableItem(view, R.id.cardGoalReduceAcne, R.id.iconGoalAcne, R.id.labelGoalAcne, R.id.tickGoalAcne, true);
+        addSelectableItem(view, R.id.cardGoalFadeSpots, R.id.iconGoalSpots, R.id.labelGoalSpots, R.id.tickGoalSpots, true);
+        addSelectableItem(view, R.id.cardGoalRecovery, R.id.iconGoalRecovery, R.id.labelGoalRecovery, R.id.tickGoalRecovery, false);
+        addSelectableItem(view, R.id.cardGoalHydrate, R.id.iconGoalHydrate, R.id.labelGoalHydrate, R.id.tickGoalHydrate, true);
+        addSelectableItem(view, R.id.cardGoalBrighten, R.id.iconGoalBrighten, R.id.labelGoalBrighten, R.id.tickGoalBrighten, false);
+        addSelectableItem(view, R.id.cardGoalSun, R.id.iconGoalSun, R.id.labelGoalSun, R.id.tickGoalSun, false);
     }
 
-    private void setupEvents(@NonNull View view) {
+    private void addSelectableItem(View root, int cardId, int iconId, int labelId, int tickId, boolean selected) {
+        MaterialCardView card = root.findViewById(cardId);
+        ImageView icon = root.findViewById(iconId);
+        TextView label = root.findViewById(labelId);
+        ImageView tick = root.findViewById(tickId);
 
-        /*
-         * Nút quay lại ở góc trên bên trái.
-         */
+        if (card == null) return;
+
+        SelectableItem item = new SelectableItem(card, icon, label, tick, selected);
+        selectableItems.add(item);
+        updateItemUI(item, false);
+
+        ViewUtils.applyClickAnimation(card);
+        card.setOnClickListener(v -> {
+            item.selected = !item.selected;
+            updateItemUI(item, true);
+            onDataChanged();
+        });
+    }
+
+    private void updateItemUI(SelectableItem item, boolean animate) {
+        int pinkColor = ContextCompat.getColor(requireContext(), R.color.button);
+        int softPinkBg = Color.parseColor("#FFF0F3");
+        int normalTextColor = ContextCompat.getColor(requireContext(), R.color.text_main);
+        int borderDivider = ContextCompat.getColor(requireContext(), R.color.border_divider);
+
+        if (item.selected) {
+            item.card.setStrokeColor(pinkColor);
+            item.card.setStrokeWidth(dpToPx(1.5f));
+            item.card.setCardBackgroundColor(softPinkBg);
+            if (item.label != null) item.label.setTextColor(normalTextColor);
+            if (item.tick != null) {
+                item.tick.setVisibility(View.VISIBLE);
+                if (animate) {
+                    item.tick.setAlpha(0f);
+                    item.tick.setScaleX(0.5f);
+                    item.tick.setScaleY(0.5f);
+                    item.tick.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(200).start();
+                }
+            }
+        } else {
+            item.card.setStrokeColor(borderDivider);
+            item.card.setStrokeWidth(dpToPx(1));
+            item.card.setCardBackgroundColor(Color.WHITE);
+            if (item.label != null) item.label.setTextColor(normalTextColor);
+            if (item.tick != null) item.tick.setVisibility(View.GONE);
+        }
+    }
+
+    private void setupEvents(View view) {
         View btnBack = view.findViewById(R.id.btnBack);
-
         if (btnBack != null) {
-            // Thêm hiệu ứng vòng tròn khi click
-            TypedValue outValue = new TypedValue();
-            requireContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, outValue, true);
-            btnBack.setBackgroundResource(outValue.resourceId);
-
-            btnBack.setOnClickListener(v ->
-                    handleBackNavigation()
-            );
+            ViewUtils.applyClickAnimation(btnBack);
+            btnBack.setOnClickListener(v -> handleBackNavigation());
         }
 
-        /*
-         * Nút dấu tích ở góc trên bên phải.
-         * Hiện tại chưa xử lý chức năng.
-         */
-        View btnEdit = view.findViewById(R.id.btnEdit);
-
-        if (btnEdit != null) {
-            // Thêm hiệu ứng vòng tròn cho nút edit/tick
-            TypedValue outValue = new TypedValue();
-            requireContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, outValue, true);
-            btnEdit.setBackgroundResource(outValue.resourceId);
-
-            btnEdit.setOnClickListener(v -> {
-                // Thêm chức năng lưu thay đổi tại đây khi cần.
+        btnSaveBottom = view.findViewById(R.id.btnSaveProfile);
+        if (btnSaveBottom != null) {
+            ViewUtils.applyClickAnimation(btnSaveBottom);
+            btnSaveBottom.setOnClickListener(v -> {
+                if (isDirty) saveProfile();
             });
         }
 
-        /*
-         * Nút Cập nhật hồ sơ.
-         *
-         * Nhấn nút:
-         * 1. Hiện hộp thoại xác nhận.
-         * 2. Chọn Cập nhật.
-         * 3. Hiện overview_popup.xml.
-         */
-        MaterialButton btnUpdateProfile =
-                view.findViewById(R.id.btnUpdateProfile);
-
-        if (btnUpdateProfile != null) {
-            btnUpdateProfile.setOnClickListener(v ->
-                    showUpdateConfirmDialog()
-            );
-        }
-
-        /*
-         * Nút Xem Look đề xuất.
-         *
-         * Nhấn nút sẽ mở RecommendationLookFragment.
-         */
-        MaterialButton btnViewRoutine =
-                view.findViewById(R.id.btnViewRoutine);
-
+        MaterialButton btnViewRoutine = view.findViewById(R.id.btnViewRoutine);
         if (btnViewRoutine != null) {
-            btnViewRoutine.setOnClickListener(v ->
-                    openRecommendationLook()
-            );
+            ViewUtils.applyClickAnimation(btnViewRoutine);
+            btnViewRoutine.setOnClickListener(v -> openAnalysis());
         }
     }
 
-    /**
-     * Quay lại màn hình trước.
-     */
-    private void handleBackNavigation() {
-
-        FragmentManager fragmentManager =
-                getParentFragmentManager();
-
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack();
-        } else {
-            requireActivity()
-                    .getOnBackPressedDispatcher()
-                    .onBackPressed();
+    private void onDataChanged() {
+        if (!isDirty) {
+            updateSaveButtonsState(true);
         }
     }
 
-    /**
-     * Hiển thị hộp thoại xác nhận cập nhật hồ sơ.
-     */
-    private void showUpdateConfirmDialog() {
+    private void updateSaveButtonsState(boolean dirty) {
+        this.isDirty = dirty;
+        if (btnSaveBottom != null) {
+            btnSaveBottom.setEnabled(dirty);
+            btnSaveBottom.setAlpha(dirty ? 1.0f : 0.4f);
+        }
+    }
 
+    private void saveProfile() {
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Xác nhận cập nhật")
-                .setMessage(
-                        "Bạn có chắc chắn muốn cập nhật hồ sơ làm đẹp của mình không?"
-                )
-                .setNegativeButton("Hủy", (dialog, which) -> {
+                .setTitle("Lưu hồ sơ làm đẹp")
+                .setMessage("Bạn có muốn lưu các thay đổi này vào hồ sơ của mình không?")
+                .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
+                .setPositiveButton("Lưu", (dialog, which) -> {
                     dialog.dismiss();
-                })
-                .setPositiveButton("Cập nhật", (dialog, which) -> {
-
-                    dialog.dismiss();
-
-                    // Sau khi xác nhận, hiện popup cập nhật thành công.
-                    showUpdateSuccessPopup();
+                    showSaveSuccessPopup();
                 })
                 .show();
     }
 
-    /**
-     * Hiển thị popup thành công bằng overview_popup.xml.
-     */
-    private void showUpdateSuccessPopup() {
-
+    private void showSaveSuccessPopup() {
         Dialog dialog = new Dialog(requireContext());
-
-        // Bỏ thanh tiêu đề mặc định của Dialog.
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-        // Kết nối Dialog với overview_popup.xml.
         dialog.setContentView(R.layout.overview_popup);
-
-        // Cho phép đóng popup bằng nút Back.
         dialog.setCancelable(true);
-
-        // Không đóng popup khi nhấn ra vùng bên ngoài.
         dialog.setCanceledOnTouchOutside(false);
 
-        // Nút "Tuyệt vời" trong overview_popup.xml.
-        MaterialButton btnPopupOk =
-                dialog.findViewById(R.id.btnPopupOk);
+        TextView tvTitle = dialog.findViewById(R.id.tvPopupTitle);
+        TextView tvMessage = dialog.findViewById(R.id.tvPopupMessage);
+        
+        if (tvTitle != null) tvTitle.setText("Lưu thành công!");
+        if (tvMessage != null) tvMessage.setText("Mối quan tâm và mục tiêu của bạn đã được cập nhật.");
 
+        MaterialButton btnPopupOk = dialog.findViewById(R.id.btnPopupOk);
         if (btnPopupOk != null) {
-            btnPopupOk.setOnClickListener(v ->
-                    dialog.dismiss()
-            );
+            btnPopupOk.setOnClickListener(v -> {
+                dialog.dismiss();
+                updateSaveButtonsState(false);
+            });
         }
 
-        // Hiển thị popup.
         dialog.show();
 
         Window window = dialog.getWindow();
-
         if (window != null) {
-
-            // Xóa nền trắng mặc định bên ngoài popup.
-            window.setBackgroundDrawable(
-                    new ColorDrawable(Color.TRANSPARENT)
-            );
-
-            // Làm tối màn hình phía sau popup.
-            window.addFlags(
-                    WindowManager.LayoutParams.FLAG_DIM_BEHIND
-            );
-
-            WindowManager.LayoutParams layoutParams =
-                    window.getAttributes();
-
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            WindowManager.LayoutParams layoutParams = window.getAttributes();
             layoutParams.dimAmount = 0.5f;
             window.setAttributes(layoutParams);
-
-            // Sử dụng kích thước từ overview_popup.xml.
-            window.setLayout(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT
-            );
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
         }
     }
 
-    /**
-     * Mở màn hình Look trang điểm đề xuất.
-     */
-    private void openRecommendationLook() {
-
-        getParentFragmentManager()
-                .beginTransaction()
-                .setReorderingAllowed(true)
-                .setCustomAnimations(
-                        android.R.anim.fade_in,
-                        android.R.anim.fade_out,
-                        android.R.anim.fade_in,
-                        android.R.anim.fade_out
-                )
-                .replace(
-                        R.id.main,
-                        new RecommendationLookFragment()
-                )
-
-                /*
-                 * Lưu màn hình hiện tại để khi bấm Back
-                 * trong RecommendationLookFragment sẽ quay lại đây.
-                 */
-                .addToBackStack("skin_concerns_goals")
+    private void openAnalysis() {
+        getParentFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.main, new SkinAnalysisFragment())
+                .addToBackStack(null)
                 .commit();
+    }
+
+    private void handleBackNavigation() {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        } else {
+            requireActivity().getOnBackPressedDispatcher().onBackPressed();
+        }
+    }
+
+    private int dpToPx(float dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
+    }
+
+    private static class SelectableItem {
+        MaterialCardView card;
+        ImageView icon;
+        TextView label;
+        ImageView tick;
+        boolean selected;
+
+        SelectableItem(MaterialCardView card, ImageView icon, TextView label, ImageView tick, boolean selected) {
+            this.card = card;
+            this.icon = icon;
+            this.label = label;
+            this.tick = tick;
+            this.selected = selected;
+        }
     }
 }

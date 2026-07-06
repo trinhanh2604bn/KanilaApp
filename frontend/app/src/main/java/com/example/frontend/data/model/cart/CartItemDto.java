@@ -1,8 +1,9 @@
 package com.example.frontend.data.model.cart;
 
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 
-public class CartItemDto {
+public class CartItemDto implements Serializable {
     @SerializedName("_id")
     private String id;
 
@@ -59,4 +60,19 @@ public class CartItemDto {
     public double getLineTotalAmount() { return lineTotalAmount; }
     public boolean isSelected() { return selected; }
     public String getStockStatus() { return stockStatus; }
+
+    public static CartItemDto createMock(String id, String name, String variant, double price, int quantity, boolean selected, String imageUrl) {
+        CartItemDto item = new CartItemDto();
+        item.id = id;
+        item.productNameSnapshot = name;
+        item.variantNameSnapshot = variant;
+        item.finalUnitPriceAmount = price;
+        item.unitPriceAmount = price;
+        item.quantity = quantity;
+        item.selected = selected;
+        item.imageUrlSnapshot = imageUrl;
+        item.lineTotalAmount = price * quantity;
+        item.stockStatus = "in_stock";
+        return item;
+    }
 }

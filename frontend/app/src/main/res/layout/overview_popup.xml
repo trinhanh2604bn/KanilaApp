@@ -25,6 +25,7 @@
             app:tint="@color/success" />
 
         <TextView
+            android:id="@+id/tvPopupTitle"
             style="@style/Text.Kanila.H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,6 +35,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvPopupMessage"
             style="@style/Text.Kanila.Body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Tuyệt vời"
+            android:text="Đóng"
             app:cornerRadius="12dp" />
 
     </LinearLayout>

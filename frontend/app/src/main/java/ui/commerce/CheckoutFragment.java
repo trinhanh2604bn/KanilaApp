@@ -149,6 +149,16 @@ public class CheckoutFragment extends Fragment {
 
         tvPrimary.setText(method != null ? method : "Giao hàng tiêu chuẩn");
         tvValue.setText(formatPrice(amount));
+
+        View btnEdit = card.findViewById(R.id.tvCheckoutOptionEdit);
+        if (btnEdit != null) {
+            btnEdit.setOnClickListener(v -> {
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new CheckoutShippingFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
     }
 
     private void setupPayment(String method) {

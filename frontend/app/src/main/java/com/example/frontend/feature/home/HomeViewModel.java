@@ -41,6 +41,9 @@ public class HomeViewModel extends AndroidViewModel {
             if (result.status == NetworkResult.Status.SUCCESS) {
                 state.recommendedProducts = result.data;
                 checkLoadingState(state);
+            } else if (result.status == NetworkResult.Status.EMPTY) {
+                state.recommendedProducts = new java.util.ArrayList<>();
+                checkLoadingState(state);
             } else if (result.status == NetworkResult.Status.ERROR) {
                 state.error = result.message;
                 state.loading = false;
@@ -56,6 +59,9 @@ public class HomeViewModel extends AndroidViewModel {
             
             if (result.status == NetworkResult.Status.SUCCESS) {
                 state.allProducts = result.data;
+                checkLoadingState(state);
+            } else if (result.status == NetworkResult.Status.EMPTY) {
+                state.allProducts = new java.util.ArrayList<>();
                 checkLoadingState(state);
             } else if (result.status == NetworkResult.Status.ERROR) {
                 state.error = result.message;

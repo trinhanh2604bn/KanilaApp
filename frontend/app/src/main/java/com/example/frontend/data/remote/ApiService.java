@@ -17,6 +17,11 @@ import com.example.frontend.data.model.address.AddressDto;
 import com.example.frontend.data.model.coupon.CouponDto;
 import com.example.frontend.data.model.product.ProductVariantDto;
 import com.example.frontend.data.model.product.ProductMediaDto;
+import com.example.frontend.data.model.wishlist.BulkDeleteRequest;
+import com.example.frontend.data.model.wishlist.WishlistActionRequest;
+import com.example.frontend.data.model.wishlist.WishlistActionResponse;
+import com.example.frontend.data.model.wishlist.WishlistItemResponse;
+import com.example.frontend.data.model.common.PaginatedData;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -63,7 +68,7 @@ public interface ApiService {
     Call<ApiResponse<List<ProductVariantDto>>> getProductVariants(@Path("productId") String productId);
 
     @GET("api/products/{id}/similar")
-    Call<ApiResponse<List<Product>>> getSimilarProducts(@Path("id") String id, @Query("limit") Integer limit);
+    Call<ApiResponse<PaginatedData<Product>>> getSimilarProducts(@Path("id") String id, @Query("limit") Integer limit);
 
     @GET("api/brands")
     Call<ApiResponse<List<com.example.frontend.model.Brand>>> getBrands();
@@ -75,7 +80,7 @@ public interface ApiService {
     Call<ApiResponse<Object>> getCatalogBundle();
 
     @GET("api/recommendations/me/homepage")
-    Call<ApiResponse<List<Product>>> getHomepageRecommendations();
+    Call<ApiResponse<PaginatedData<Product>>> getHomepageRecommendations();
 
     @GET("api/carts/me")
     Call<ApiResponse<CartDto>> getMyCart();
@@ -144,16 +149,22 @@ public interface ApiService {
     Call<ApiResponse<List<CouponDto>>> getAvailableCoupons();
 
     @GET("api/wishlists/me/items")
-    Call<ApiResponse<List<com.example.frontend.data.model.wishlist.WishlistItemResponse>>> getMyWishlistItems(@Query("sort") String sort);
+    Call<ApiResponse<PaginatedData<WishlistItemResponse>>> getMyWishlistItems(@Query("sort") String sort);
+
+    @GET("api/wishlists/me/status")
+    Call<ApiResponse<java.util.Map<String, Boolean>>> getWishlistStatus(@Query("productIds") String productIds);
 
     @POST("api/wishlists")
-    Call<ApiResponse<com.example.frontend.data.model.wishlist.WishlistActionResponse>> addToWishlist(@Body com.example.frontend.data.model.wishlist.WishlistActionRequest request);
+    Call<ApiResponse<WishlistActionResponse>> addToWishlist(@Body WishlistActionRequest request);
 
     @DELETE("api/wishlists/{productId}")
     Call<ApiResponse<Void>> removeFromWishlist(@Path("productId") String productId);
 
+    @DELETE("api/wishlists/me/items")
+    Call<ApiResponse<Object>> clearWishlist();
+
     @POST("api/wishlists/me/items/bulk-delete")
-    Call<ApiResponse<Object>> bulkDeleteWishlistItems(@Body com.example.frontend.data.model.wishlist.BulkDeleteRequest request);
+    Call<ApiResponse<Object>> bulkDeleteWishlistItems(@Body BulkDeleteRequest request);
 
     @GET("api/orders/me/summary")
     Call<ApiResponse<Object>> getMyOrderSummary();

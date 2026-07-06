@@ -7,6 +7,7 @@ import com.example.frontend.data.remote.ApiResponse;
 import com.example.frontend.data.remote.ApiService;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.model.Product;
+import com.example.frontend.data.model.common.PaginatedData;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,13 +30,15 @@ public class HomeRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<List<Product>> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
-                        if (apiResponse.getData() == null || apiResponse.getData().isEmpty()) {
+                        List<Product> items = apiResponse.getData();
+                        if (items == null || items.isEmpty()) {
                             result.setValue(NetworkResult.empty());
                         } else {
-                            result.setValue(NetworkResult.success(apiResponse.getData()));
+                            result.setValue(NetworkResult.success(items));
                         }
                     } else {
-                        result.setValue(NetworkResult.error(apiResponse.getError()));
+                        String errorMsg = apiResponse.getError() != null ? apiResponse.getError() : apiResponse.getMessage();
+                        result.setValue(NetworkResult.error(errorMsg != null ? errorMsg : "Unknown error"));
                     }
                 } else if (response.code() == 401) {
                     result.setValue(NetworkResult.unauthorized());
@@ -46,26 +49,30 @@ public class HomeRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<List<Product>>> call, Throwable t) {
-                result.setValue(NetworkResult.error(t.getLocalizedMessage()));
+                String message = t.getLocalizedMessage() != null ? t.getLocalizedMessage() : "Network error";
+                result.setValue(NetworkResult.error(message));
             }
         });
     }
 
     public void getHomepageRecommendations(MutableLiveData<NetworkResult<List<Product>>> result) {
         result.setValue(NetworkResult.loading());
-        apiService.getHomepageRecommendations().enqueue(new Callback<ApiResponse<List<Product>>>() {
+        apiService.getHomepageRecommendations().enqueue(new Callback<ApiResponse<PaginatedData<Product>>>() {
             @Override
-            public void onResponse(Call<ApiResponse<List<Product>>> call, Response<ApiResponse<List<Product>>> response) {
+            public void onResponse(Call<ApiResponse<PaginatedData<Product>>> call, Response<ApiResponse<PaginatedData<Product>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<List<Product>> apiResponse = response.body();
+                    ApiResponse<PaginatedData<Product>> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
-                        if (apiResponse.getData() == null || apiResponse.getData().isEmpty()) {
+                        PaginatedData<Product> paginatedData = apiResponse.getData();
+                        List<Product> items = paginatedData != null ? paginatedData.getItems() : null;
+                        if (items == null || items.isEmpty()) {
                             result.setValue(NetworkResult.empty());
                         } else {
-                            result.setValue(NetworkResult.success(apiResponse.getData()));
+                            result.setValue(NetworkResult.success(items));
                         }
                     } else {
-                        result.setValue(NetworkResult.error(apiResponse.getError()));
+                        String errorMsg = apiResponse.getError() != null ? apiResponse.getError() : apiResponse.getMessage();
+                        result.setValue(NetworkResult.error(errorMsg != null ? errorMsg : "Unknown error"));
                     }
                 } else if (response.code() == 401) {
                     result.setValue(NetworkResult.unauthorized());
@@ -75,8 +82,9 @@ public class HomeRepository {
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<List<Product>>> call, Throwable t) {
-                result.setValue(NetworkResult.error(t.getLocalizedMessage()));
+            public void onFailure(Call<ApiResponse<PaginatedData<Product>>> call, Throwable t) {
+                String message = t.getLocalizedMessage() != null ? t.getLocalizedMessage() : "Network error";
+                result.setValue(NetworkResult.error(message));
             }
         });
     }

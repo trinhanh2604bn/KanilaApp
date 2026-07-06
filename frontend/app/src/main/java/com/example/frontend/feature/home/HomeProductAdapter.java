@@ -41,6 +41,10 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         notifyDataSetChanged();
     }
 
+    public List<Product> getProducts() {
+        return products;
+    }
+
     public void setItemWidth(int width) {
         this.itemWidth = width;
     }

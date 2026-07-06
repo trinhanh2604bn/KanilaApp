@@ -310,14 +310,56 @@ public class MainActivity extends AppCompatActivity {
                 showError(state.error);
             } else {
                 showContent();
+                List<com.example.frontend.model.Product> allProductsToUpdate = new java.util.ArrayList<>();
                 if (state.recommendedProducts != null) {
                     recommendedProductAdapter.setProducts(state.recommendedProducts);
+                    allProductsToUpdate.addAll(state.recommendedProducts);
                 }
                 if (state.allProducts != null) {
                     allProductAdapter.setProducts(state.allProducts);
+                    allProductsToUpdate.addAll(state.allProducts);
+                }
+                
+                if (!allProductsToUpdate.isEmpty() && com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                    List<String> productIds = new java.util.ArrayList<>();
+                    for (com.example.frontend.model.Product p : allProductsToUpdate) {
+                        productIds.add(p.getId());
+                    }
+                    wishlistViewModel.loadWishlistStatus(productIds);
                 }
             }
         });
+
+        wishlistViewModel.getStatusResult().observe(this, result -> {
+            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && result.data != null) {
+                updateProductFavoriteStates(result.data);
+            }
+        });
+
+        wishlistViewModel.getToggleResult().observe(this, result -> {
+            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.ERROR) {
+                Toast.makeText(this, "Lỗi: " + result.message, Toast.LENGTH_SHORT).show();
+                // We might need to refresh status to rollback UI accurately
+                viewModel.loadHomeData();
+            }
+        });
+    }
+
+    private void updateProductFavoriteStates(java.util.Map<String, Boolean> statusMap) {
+        if (recommendedProductAdapter.getProducts() != null) {
+            for (com.example.frontend.model.Product p : recommendedProductAdapter.getProducts()) {
+                Boolean isFav = statusMap.get(p.getId());
+                if (isFav != null) p.setFavorite(isFav);
+            }
+            recommendedProductAdapter.notifyDataSetChanged();
+        }
+        if (allProductAdapter.getProducts() != null) {
+            for (com.example.frontend.model.Product p : allProductAdapter.getProducts()) {
+                Boolean isFav = statusMap.get(p.getId());
+                if (isFav != null) p.setFavorite(isFav);
+            }
+            allProductAdapter.notifyDataSetChanged();
+        }
     }
 
     private void showLoginPrompt() {

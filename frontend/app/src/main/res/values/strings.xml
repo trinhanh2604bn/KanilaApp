@@ -380,6 +380,7 @@
     <string name="error_password_mismatch">Mật khẩu xác nhận không khớp.</string>
     <string name="error_password_weak">Mật khẩu phải có ít nhất 8 ký tự.</string>
 
+    <string name="auth_otp_channel_label">Nhận mã xác minh qua:</string>
     <string name="error_no_internet">Không có kết nối Internet</string>
     <string name="empty_state_title">Chưa có dữ liệu</string>
     <string name="empty_state_description">Hiện tại chưa có thông tin để hiển thị.</string>

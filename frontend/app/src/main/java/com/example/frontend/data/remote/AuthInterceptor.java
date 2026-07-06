@@ -1,7 +1,9 @@
 package com.example.frontend.data.remote;
 
 import androidx.annotation.NonNull;
+
 import java.io.IOException;
+
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -20,12 +22,12 @@ public class AuthInterceptor implements Interceptor {
         Request.Builder builder = originalRequest.newBuilder();
 
         String token = tokenManager.getAccessToken();
-        if (token != null) {
+        if (token != null && !token.trim().isEmpty()) {
             builder.header("Authorization", "Bearer " + token);
         }
 
         String guestSessionId = tokenManager.getGuestSession();
-        if (guestSessionId != null) {
+        if (guestSessionId != null && !guestSessionId.trim().isEmpty()) {
             builder.header("X-Guest-Session-Id", guestSessionId);
         }
 

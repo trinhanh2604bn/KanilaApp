@@ -30,9 +30,7 @@ public class Brand {
     @SerializedName("updatedAt")
     private String updatedAt;
 
-    private int logoRes;
     private boolean isFavorite;
-    private String region;
 
     public Brand() {}
 
@@ -46,10 +44,6 @@ public class Brand {
     public String getCreatedAt() { return createdAt; }
     public String getUpdatedAt() { return updatedAt; }
 
-    public int getLogoRes() { return logoRes; }
-    public void setLogoRes(int logoRes) { this.logoRes = logoRes; }
     public boolean isFavorite() { return isFavorite; }
     public void setFavorite(boolean favorite) { isFavorite = favorite; }
-    public String getRegion() { return region; }
-    public void setRegion(String region) { this.region = region; }
 }

@@ -148,26 +148,26 @@ public class ProductCategoryFragment extends Fragment {
 
     private void setupStaticCategories(View root) {
         // Face
-        setupCategoryCard(root.findViewById(R.id.cardCategoryFace), R.string.category_face, R.drawable.ic_face, R.drawable.img_foudation);
+        setupCategoryCard(root.findViewById(R.id.cardCategoryFace), R.string.category_face, R.drawable.ic_face, R.drawable.img_foudation, new FaceFragment());
         // Lips
-        setupCategoryCard(root.findViewById(R.id.cardCategoryLips), R.string.category_lips, R.drawable.ic_lipstick, R.drawable.img_lipstick);
+        setupCategoryCard(root.findViewById(R.id.cardCategoryLips), R.string.category_lips, R.drawable.ic_lipstick, R.drawable.img_lipstick, ProductListingFragment.newCategoryInstance("Lips"));
         // Eyes
-        setupCategoryCard(root.findViewById(R.id.cardCategoryEyes), R.string.category_eyes, R.drawable.ic_eye, R.drawable.img_eyeshadow);
+        setupCategoryCard(root.findViewById(R.id.cardCategoryEyes), R.string.category_eyes, R.drawable.ic_eye, R.drawable.img_eyeshadow, ProductListingFragment.newCategoryInstance("Eyes"));
         // Cheeks
-        setupCategoryCard(root.findViewById(R.id.cardCategoryCheeks), R.string.category_cheeks, R.drawable.ic_blush, R.drawable.img_blush);
+        setupCategoryCard(root.findViewById(R.id.cardCategoryCheeks), R.string.category_cheeks, R.drawable.ic_blush, R.drawable.img_blush, ProductListingFragment.newCategoryInstance("Cheeks"));
         // Gift
-        setupCategoryCard(root.findViewById(R.id.cardCategoryGift), R.string.category_gift, R.drawable.ic_gift, R.drawable.img_gift);
+        setupCategoryCard(root.findViewById(R.id.cardCategoryGift), R.string.category_gift, R.drawable.ic_gift, R.drawable.img_gift, ProductListingFragment.newCategoryInstance("Gift"));
         // New
-        setupCategoryCard(root.findViewById(R.id.cardCategoryNew), R.string.category_new, R.drawable.ic_new, R.drawable.img_new);
+        setupCategoryCard(root.findViewById(R.id.cardCategoryNew), R.string.category_new, R.drawable.ic_new, R.drawable.img_new, ProductListingFragment.newCategoryInstance("New Arrivals"));
         // Hot
-        setupCategoryCard(root.findViewById(R.id.cardCategoryHot), R.string.category_hot, R.drawable.ic_hot, R.drawable.img_hot);
-        // Brushes
-        setupCategoryCard(root.findViewById(R.id.cardCategoryBrushes), R.string.category_brushes, R.drawable.ic_brush, R.drawable.img_brush);
+        setupCategoryCard(root.findViewById(R.id.cardCategoryHot), R.string.category_hot, R.drawable.ic_hot, R.drawable.img_hot, ProductListingFragment.newCategoryInstance("Hot Products"));
+        // Brushes -> Mini & Travel
+        setupCategoryCard(root.findViewById(R.id.cardCategoryBrushes), R.string.category_brushes, R.drawable.ic_brush, R.drawable.img_brush, ProductListingFragment.newCategoryInstance("Mini & Travel"));
         // AR
-        setupCategoryCard(root.findViewById(R.id.cardCategoryAR), R.string.category_ar, R.drawable.ic_ar, R.drawable.img_ar);
+        setupCategoryCard(root.findViewById(R.id.cardCategoryAR), R.string.category_ar, R.drawable.ic_ar, R.drawable.img_ar, null);
     }
 
-    private void setupCategoryCard(View card, int titleRes, int iconRes, int imgRes) {
+    private void setupCategoryCard(View card, int titleRes, int iconRes, int imgRes, Fragment destination) {
         if (card == null) return;
         TextView tvName = card.findViewById(R.id.tvCategoryName);
         ImageView ivIcon = card.findViewById(R.id.ivCategoryIcon);
@@ -178,8 +178,14 @@ public class ProductCategoryFragment extends Fragment {
         if (ivProduct != null) ivProduct.setImageResource(imgRes);
 
         card.setOnClickListener(v -> {
-            // Static navigation or toast
-            Toast.makeText(getContext(), getString(titleRes), Toast.LENGTH_SHORT).show();
+            if (destination != null && getActivity() != null) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, destination)
+                        .addToBackStack(null)
+                        .commit();
+            } else {
+                Toast.makeText(getContext(), getString(titleRes), Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -195,7 +201,14 @@ public class ProductCategoryFragment extends Fragment {
         if (card == null) return;
         ImageView ivLogo = card.findViewById(R.id.ivBrandLogo);
         if (ivLogo != null) ivLogo.setImageResource(logoRes);
-        card.setOnClickListener(v -> Toast.makeText(getContext(), brandName, Toast.LENGTH_SHORT).show());
+        card.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, ProductListingFragment.newBrandInstance(brandName))
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
     }
 
     @Override

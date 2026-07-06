@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_sub"
+    android:orientation="vertical">
+
+    <!-- Header -->
+    <include
+        android:id="@+id/layoutTopBar"
+        layout="@layout/view_app_top_bar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/spacing_m">
+
+        <TextView
+            android:id="@+id/tvShippingMethodSectionTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/spacing_l"
+            android:layout_marginBottom="@dimen/spacing_m"
+            android:fontFamily="@font/nunito_bold"
+            android:textColor="@color/text_main"
+            android:textSize="16sp"
+            tools:text="Chọn phương thức vận chuyển" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvShippingMethods"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/spacing_m"
+            tools:listitem="@layout/item_shipping_method" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_main"
+        android:padding="@dimen/spacing_l">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnConfirmShippingMethod"
+            style="@style/Widget.Kanila.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Xác nhận phương thức vận chuyển" />
+    </FrameLayout>
+
+</LinearLayout>

@@ -13,10 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
+import com.example.frontend.data.repository.ProductRepository;
 import com.example.frontend.feature.search.SearchActivity;
 import com.example.frontend.model.Product;
 import java.util.ArrayList;
@@ -31,7 +31,6 @@ public class FaceFragment extends Fragment {
     private View containerSearchNoResult;
     private View loadingState;
     private LinearLayout layoutFaceFilterChips;
-    private TextView selectedChipView;
 
     private TextView chipAllFace;
     private TextView chipFoundation;
@@ -42,7 +41,7 @@ public class FaceFragment extends Fragment {
     private TextView chipBbCcCream;
     private TextView chipTintedMoisturizer;
 
-    private ProductViewModel viewModel;
+    private ProductRepository productRepository;
 
     @Nullable
     @Override
@@ -54,14 +53,14 @@ public class FaceFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(this).get(ProductViewModel.class);
+        productRepository = new ProductRepository(requireContext());
 
         initViews(view);
         setupSearch(view);
         setupFilterChips();
         setupProductList();
         setupActions(view);
-        observeViewModel();
+        loadProductsFromRepository();
 
         BottomNavigationHelper.setup(view, tabIndex -> {
             // Handle bottom nav
@@ -150,7 +149,6 @@ public class FaceFragment extends Fragment {
         selectedChip.setSelected(true);
         selectedChip.setBackgroundResource(R.drawable.bg_chip_selected);
         selectedChip.setTextColor(ContextCompat.getColor(requireContext(), R.color.background_main));
-        selectedChipView = selectedChip;
     }
 
     private void resetAllFaceChips() {
@@ -187,9 +185,9 @@ public class FaceFragment extends Fragment {
         rvFaceProducts.setAdapter(adapter);
     }
 
-    private void observeViewModel() {
+    private void loadProductsFromRepository() {
         // Fetch products for "Face" category. Using "face" as slug/id placeholder.
-        viewModel.getProducts(null, "face", null).observe(getViewLifecycleOwner(), result -> {
+        productRepository.getProducts(null, "face", null).observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
 
             switch (result.status) {

@@ -9,6 +9,7 @@ import com.example.frontend.data.remote.ApiService;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.model.Brand;
 import com.example.frontend.model.Category;
+import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,7 +34,17 @@ public class CatalogRepository {
                     if (apiResponse.isSuccess()) {
                         List<Brand> data = apiResponse.getData();
                         if (data != null && !data.isEmpty()) {
-                            result.setValue(NetworkResult.success(data));
+                            List<Brand> activeBrands = new ArrayList<>();
+                            for (Brand b : data) {
+                                if (b.isActive() && "active".equals(b.getBrandStatus())) {
+                                    activeBrands.add(b);
+                                }
+                            }
+                            if (!activeBrands.isEmpty()) {
+                                result.setValue(NetworkResult.success(activeBrands));
+                            } else {
+                                result.setValue(NetworkResult.empty());
+                            }
                         } else {
                             result.setValue(NetworkResult.empty());
                         }

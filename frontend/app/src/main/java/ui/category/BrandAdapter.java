@@ -54,7 +54,7 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHol
                     .error(R.drawable.bg_circle)
                     .into(holder.ivBrandLogo);
         } else {
-            holder.ivBrandLogo.setImageResource(brand.getLogoRes());
+            holder.ivBrandLogo.setImageResource(R.drawable.bg_circle); // Reusing bg_circle as placeholder
         }
 
         holder.tvBrandName.setText(brand.getBrandName());

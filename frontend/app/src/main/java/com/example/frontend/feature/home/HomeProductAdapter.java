@@ -17,14 +17,23 @@ import java.util.List;
 public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.ViewHolder> {
     private List<Product> products = new ArrayList<>();
     private OnProductClickListener listener;
+    private OnWishlistToggleListener wishlistToggleListener;
     private int itemWidth = -1;
 
     public interface OnProductClickListener {
         void onProductClick(Product product);
     }
 
+    public interface OnWishlistToggleListener {
+        void onWishlistToggle(Product product, boolean isWishlisted);
+    }
+
     public void setOnProductClickListener(OnProductClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setOnWishlistToggleListener(OnWishlistToggleListener listener) {
+        this.wishlistToggleListener = listener;
     }
 
     public void setProducts(List<Product> products) {
@@ -64,6 +73,9 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
                 boolean newState = !product.isFavorite();
                 product.setFavorite(newState);
                 v.setSelected(newState);
+                if (wishlistToggleListener != null) {
+                    wishlistToggleListener.onWishlistToggle(product, !newState); // passing old state
+                }
             });
         }
 

@@ -26,6 +26,7 @@ public class AccountFragment extends Fragment {
 
     private AccountViewModel viewModel;
     
+    private View scrollAccountContent, layoutGuestState;
     private ImageView ivAvatar;
     private TextView tvName, tvRankName, tvPointsHeader, tvPointsVal, tvOrderCount, tvVoucherCount, tvSavedCount;
 
@@ -43,12 +44,42 @@ public class AccountFragment extends Fragment {
         
         initViews(view);
         setupBottomNavigation(view);
-        observeViewModel();
         
-        viewModel.loadProfileHub();
+        checkLoginStatus();
+    }
+
+    private void checkLoginStatus() {
+        if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+            scrollAccountContent.setVisibility(View.VISIBLE);
+            layoutGuestState.setVisibility(View.GONE);
+            observeViewModel();
+            viewModel.loadProfileHub();
+        } else {
+            scrollAccountContent.setVisibility(View.GONE);
+            layoutGuestState.setVisibility(View.VISIBLE);
+            setupGuestState();
+        }
+    }
+
+    private void setupGuestState() {
+        layoutGuestState.findViewById(R.id.btnLoginNow).setOnClickListener(v -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.auth.LoginFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+        
+        layoutGuestState.findViewById(R.id.tvCreateAccount).setOnClickListener(v -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.auth.RegisterFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     private void initViews(View view) {
+        scrollAccountContent = view.findViewById(R.id.scrollAccountContent);
+        layoutGuestState = view.findViewById(R.id.layoutGuestState);
         ivAvatar = view.findViewById(R.id.ivAvatar);
         tvName = view.findViewById(R.id.tvName);
         tvRankName = view.findViewById(R.id.tvRankName);
@@ -97,7 +128,9 @@ public class AccountFragment extends Fragment {
     private void setupBottomNavigation(View view) {
         BottomNavigationHelper.setup(view, tabIndex -> {
             if (tabIndex == BottomNavigationHelper.TAB_HOME) {
-                if (getActivity() != null) getActivity().onBackPressed();
+                if (getActivity() != null) {
+                    getActivity().getOnBackPressedDispatcher().onBackPressed();
+                }
             }
         });
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_ACCOUNT);
@@ -120,17 +153,17 @@ public class AccountFragment extends Fragment {
     private void bindData(ProfileHubDto data) {
         if (data == null) return;
 
-        if (data.getAccount() != null) {
-            tvName.setText(data.getAccount().getFullName());
+        if (data.getProfile() != null) {
+            tvName.setText(data.getProfile().getFullName());
             Glide.with(this)
-                    .load(data.getAccount().getAvatarUrl())
+                    .load(data.getProfile().getAvatarUrl())
                     .placeholder(R.drawable.ic_account)
                     .error(R.drawable.ic_account)
                     .into(ivAvatar);
         }
 
         if (data.getLoyalty() != null) {
-            String points = String.format(Locale.US, "%,d", data.getLoyalty().getPoints());
+            String points = String.format(Locale.US, "%,d", data.getLoyalty().getPointsBalance());
             tvPointsHeader.setText(points);
             tvPointsVal.setText(points);
             tvRankName.setText(data.getLoyalty().getTierName());

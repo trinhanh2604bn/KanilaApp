@@ -11,24 +11,109 @@
         android:id="@+id/layoutTopBar"
         layout="@layout/view_app_top_bar" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvWishlist"
+    <LinearLayout
+        android:id="@+id/layoutWishlistControls"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/spacing_m"
+        android:paddingVertical="@dimen/spacing_s">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSort"
+            style="@style/Widget.MaterialComponents.Chip.Action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mới thêm"
+            app:chipIcon="@drawable/ic_sort"
+            app:chipSurfaceColor="@color/white"
+            android:textColor="@color/text_main" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/tvSelectAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito_bold"
+            android:text="Chọn"
+            android:textColor="@color/pink_primary"
+            android:textSize="14sp"
+            android:clickable="true"
+            android:focusable="true" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvWishlist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="@dimen/spacing_s"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2"
+            tools:listitem="@layout/item_product_card" />
+
+        <include
+            android:id="@+id/layoutWishlistLoading"
+            layout="@layout/view_loading_state"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/layoutWishlistEmpty"
+            layout="@layout/view_empty_wishlist"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutBulkAction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:elevation="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:padding="@dimen/spacing_m"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="2"
-        tools:listitem="@layout/item_product_card" />
+        android:visibility="gone">
 
-    <include
-        android:id="@+id/layoutWishlistLoading"
-        layout="@layout/view_loading_state"
-        android:visibility="gone" />
+        <TextView
+            android:id="@+id/tvSelectedCount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/nunito_regular"
+            android:text="Đã chọn 0"
+            android:textColor="@color/text_main"
+            android:textSize="14sp" />
 
-    <include
-        android:id="@+id/layoutWishlistEmpty"
-        layout="@layout/view_empty_wishlist"
-        android:visibility="gone" />
+        <TextView
+            android:id="@+id/btnCancelSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/spacing_m"
+            android:fontFamily="@font/nunito_bold"
+            android:text="Hủy"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBulkRemove"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bỏ thích"
+            android:textColor="@color/pink_primary"
+            app:rippleColor="@color/pink_light" />
+    </LinearLayout>
 
 </LinearLayout>

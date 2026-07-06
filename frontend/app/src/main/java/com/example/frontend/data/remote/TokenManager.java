@@ -50,14 +50,38 @@ public class TokenManager {
     }
 
     public boolean isLoggedIn() {
-        return getAccessToken() != null;
+        String accessToken = getAccessToken();
+        return accessToken != null && !accessToken.trim().isEmpty();
     }
 
     public void saveGuestSession(String guestSessionId) {
-        prefs.edit().putString(KEY_GUEST_SESSION_ID, guestSessionId).apply();
+        if (guestSessionId == null || guestSessionId.trim().isEmpty()) return;
+
+        prefs.edit()
+                .putString(KEY_GUEST_SESSION_ID, guestSessionId)
+                .apply();
     }
 
     public String getGuestSession() {
         return prefs.getString(KEY_GUEST_SESSION_ID, null);
+    }
+
+    public boolean hasGuestSession() {
+        String guestSessionId = getGuestSession();
+        return guestSessionId != null && !guestSessionId.trim().isEmpty();
+    }
+
+    public void clearGuestSession() {
+        prefs.edit()
+                .remove(KEY_GUEST_SESSION_ID)
+                .apply();
+    }
+
+    public void clearAll() {
+        prefs.edit()
+                .remove(KEY_ACCESS_TOKEN)
+                .remove(KEY_REFRESH_TOKEN)
+                .remove(KEY_GUEST_SESSION_ID)
+                .apply();
     }
 }

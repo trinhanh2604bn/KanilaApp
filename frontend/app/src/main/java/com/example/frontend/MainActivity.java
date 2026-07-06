@@ -41,6 +41,7 @@ import com.example.frontend.model.HomeShortcutItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import ui.account.AccountFragment;
 import ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
 import ui.commerce.CheckoutFragment;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private HomeProductAdapter recommendedProductAdapter;
     private HomeProductAdapter allProductAdapter;
     private HomeViewModel viewModel;
+    private com.example.frontend.feature.wishlist.WishlistViewModel wishlistViewModel;
 
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        wishlistViewModel = new ViewModelProvider(this).get(com.example.frontend.feature.wishlist.WishlistViewModel.class);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -95,6 +98,39 @@ public class MainActivity extends AppCompatActivity {
 
         observeViewModel();
         viewModel.loadHomeData();
+        
+        checkAuthStatus();
+    }
+
+    private void checkAuthStatus() {
+        com.example.frontend.data.remote.TokenManager tm = com.example.frontend.data.remote.TokenManager.getInstance(this);
+        if (tm.isLoggedIn()) {
+            // Validate token by calling /me
+            com.example.frontend.data.remote.ApiClient.getClient(this)
+                .create(com.example.frontend.data.remote.ApiService.class)
+                .getMe()
+                .enqueue(new retrofit2.Callback<com.example.frontend.data.remote.ApiResponse<Object>>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, retrofit2.Response<com.example.frontend.data.remote.ApiResponse<Object>> response) {
+                        if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
+                            tm.clearToken();
+                            Toast.makeText(MainActivity.this, "Phiên đăng nhập hết hạn", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, Throwable t) {
+                        // Network error, maybe don't clear token yet
+                    }
+                });
+        }
+    }
+
+    public void navigateToCart() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main, new CartFragment())
+                .addToBackStack(null)
+                .commit();
     }
 
     private void initViews() {
@@ -126,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
         btnExpandedSearchBack = findViewById(R.id.btnExpandedSearchBack);
 
         findViewById(R.id.btnViewAllRecommended).setOnClickListener(v -> {
-            // TODO: Navigate to recommended product listing screen
             Toast.makeText(this, "See All Recommended", Toast.LENGTH_SHORT).show();
         });
     }
@@ -137,12 +172,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        btnCart.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, new ui.commerce.CartFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        btnCart.setOnClickListener(v -> navigateToCart());
 
         btnNotification.setOnClickListener(v -> {
             // Mở NotificationCenterFragment
@@ -153,29 +183,40 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnWishlist.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
-                    .addToBackStack(null)
-                    .commit();
+            if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
+                        .addToBackStack(null)
+                        .commit();
+            } else {
+                showLoginPrompt();
+            }
         });
 
-        // Setup bottom nav for Home Activity (as per layout)
+        setupHomeShortcuts();
+        setupSocialSection();
+    }
+
+    private void setupBottomNavigation() {
         View bottomNav = findViewById(R.id.layoutBottomNavigation);
         if (bottomNav != null) {
-            ui.common.BottomNavigationHelper.setup(bottomNav, tabIndex -> {
-                if (tabIndex == ui.common.BottomNavigationHelper.TAB_ACCOUNT) {
+            BottomNavigationHelper.setup(bottomNav, tabIndex -> {
+                if (tabIndex == BottomNavigationHelper.TAB_ACCOUNT) {
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new ui.account.AccountFragment())
-                            .addToBackStack(null)
+                            .replace(R.id.main, new AccountFragment())
                             .commit();
-                } else if (tabIndex == ui.common.BottomNavigationHelper.TAB_CATEGORY) {
+                } else if (tabIndex == BottomNavigationHelper.TAB_CATEGORY) {
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new ui.category.ProductCategoryFragment())
-                            .addToBackStack(null)
+                            .replace(R.id.main, new ProductCategoryFragment())
                             .commit();
+                } else if (tabIndex == BottomNavigationHelper.TAB_HOME) {
+                    // Refresh current activity to show home content again
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                 }
             });
-            ui.common.BottomNavigationHelper.setSelectedTab(bottomNav, ui.common.BottomNavigationHelper.TAB_HOME);
+            BottomNavigationHelper.setSelectedTab(bottomNav, BottomNavigationHelper.TAB_HOME);
         }
 
 
@@ -197,7 +238,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupProductLists() {
-        // Recommended Products (Horizontal)
         recommendedProductAdapter = new HomeProductAdapter();
 
         // Premium feel: width around 46% of screen
@@ -209,6 +249,27 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
                     .addToBackStack(null)
                     .commit();
+        });
+
+        recommendedProductAdapter.setOnWishlistToggleListener((product, wasWishlisted) -> {
+            if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                wishlistViewModel.toggleWishlist(product.getId(), wasWishlisted);
+            } else {
+                product.setFavorite(wasWishlisted); // rollback UI
+                recommendedProductAdapter.notifyDataSetChanged();
+                
+                Bundle extras = new Bundle();
+                extras.putString("productId", product.getId());
+                extras.putBoolean("wasWishlisted", wasWishlisted);
+                
+                com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                    com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
+                    "Home",
+                    0,
+                    extras
+                );
+                com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
+            }
         });
 
         rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -223,6 +284,27 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         });
 
+        allProductAdapter.setOnWishlistToggleListener((product, wasWishlisted) -> {
+            if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                wishlistViewModel.toggleWishlist(product.getId(), wasWishlisted);
+            } else {
+                product.setFavorite(wasWishlisted); // rollback UI
+                allProductAdapter.notifyDataSetChanged();
+                
+                Bundle extras = new Bundle();
+                extras.putString("productId", product.getId());
+                extras.putBoolean("wasWishlisted", wasWishlisted);
+
+                com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                    com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
+                    "Home",
+                    0,
+                    extras
+                );
+                com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
+            }
+        });
+        
         rvAllProducts.setLayoutManager(new GridLayoutManager(this, 2));
         rvAllProducts.setAdapter(allProductAdapter);
         rvAllProducts.setNestedScrollingEnabled(false);
@@ -246,6 +328,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void showLoginPrompt() {
+        com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+            com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT,
+            "Home",
+            0,
+            null
+        );
+        com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
     }
 
     private void showLoading() {

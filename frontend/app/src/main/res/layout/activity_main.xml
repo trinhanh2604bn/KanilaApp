@@ -148,18 +148,18 @@
                     android:textColor="@color/pink_primary"
                     android:textSize="14sp" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvRecommendedProducts"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="@dimen/spacing_m"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/item_product_card" />
             </RelativeLayout>
 
             <!-- Recommended Products RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvRecommendedProducts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/spacing_m"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_product_card" />
 
             <!-- Loading / Error States -->
             <FrameLayout

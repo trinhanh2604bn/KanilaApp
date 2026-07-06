@@ -26,6 +26,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.example.frontend.R;
 import com.google.android.material.button.MaterialButton;
+import ui.common.ViewUtils;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -156,25 +157,39 @@ public class BeautyProfileOverviewFragment extends Fragment {
     private void setupEvents(@NonNull View view) {
         View btnBack = view.findViewById(R.id.btnBack);
         if (btnBack != null) {
-            // MaterialCardView đã có ripple mặc định qua app:rippleColor trong XML
-            // Không gán background mới để tránh làm mất icon/style của Card
+            ViewUtils.applyClickAnimation(btnBack);
             btnBack.setOnClickListener(v -> handleBackNavigation());
         }
 
         View btnEdit = view.findViewById(R.id.btnEdit);
         if (btnEdit != null) {
-            applyRipple(btnEdit);
-            btnEdit.setOnClickListener(v -> showUpdateConfirmDialog());
+            ViewUtils.applyClickAnimation(btnEdit);
+            btnEdit.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(R.id.main, new EditSkinProfileFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
         }
 
         MaterialButton btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         if (btnUpdateProfile != null) {
+            ViewUtils.applyClickAnimation(btnUpdateProfile);
             btnUpdateProfile.setOnClickListener(v -> showUpdateConfirmDialog());
         }
 
         MaterialButton btnViewRoutine = view.findViewById(R.id.btnViewRoutine);
         if (btnViewRoutine != null) {
-            btnViewRoutine.setOnClickListener(v -> openRecommendationLook());
+            ViewUtils.applyClickAnimation(btnViewRoutine);
+            btnViewRoutine.setOnClickListener(v -> {
+                // Thay thế openRecommendationLook bằng màn hình Phân tích mới
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(R.id.main, new SkinAnalysisFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
         }
 
         setupGoalClickEvents();
@@ -210,41 +225,87 @@ public class BeautyProfileOverviewFragment extends Fragment {
         updateSelectedGoalsSummary();
     }
 
+    private void animateCardTransition(MaterialCardView card, int fromBg, int toBg, int fromStroke, int toStroke, boolean selected) {
+        float scale = selected ? 1.05f : 1.0f;
+        float elevation = selected ? dpToPx(4) : 0;
+        
+        card.animate()
+                .scaleX(scale)
+                .scaleY(scale)
+                .translationZ(elevation)
+                .setDuration(350)
+                .setInterpolator(new androidx.interpolator.view.animation.FastOutSlowInInterpolator())
+                .start();
+
+        android.animation.ValueAnimator colorAnim = android.animation.ValueAnimator.ofFloat(0f, 1f);
+        colorAnim.setDuration(350);
+        colorAnim.setInterpolator(new androidx.interpolator.view.animation.FastOutSlowInInterpolator());
+        android.animation.ArgbEvaluator evaluator = new android.animation.ArgbEvaluator();
+        
+        colorAnim.addUpdateListener(animation -> {
+            float fraction = animation.getAnimatedFraction();
+            int bg = (int) evaluator.evaluate(fraction, fromBg, toBg);
+            int stroke = (int) evaluator.evaluate(fraction, fromStroke, toStroke);
+            
+            card.setCardBackgroundColor(bg);
+            card.setStrokeColor(stroke);
+            if (selected) {
+                card.setStrokeWidth(Math.round(dpToPx(1) * (1 - fraction)));
+            } else {
+                card.setStrokeWidth(Math.round(dpToPx(1) * fraction));
+            }
+        });
+        colorAnim.start();
+    }
+
     private void updateGoalView(@NonNull GoalItem item) {
-        int pink = ContextCompat.getColor(requireContext(), R.color.button);
-        int lightPinkStroke = ContextCompat.getColor(requireContext(), R.color.primary);
-        int lightPinkBg = ContextCompat.getColor(requireContext(), R.color.background_sub);
-        int dark = ContextCompat.getColor(requireContext(), R.color.accent_dark);
+        int brandPink = ContextCompat.getColor(requireContext(), R.color.button);
+        int softPinkBg = Color.parseColor("#FFF9FA"); // Hồng cực nhẹ và sạch
+        int darkText = ContextCompat.getColor(requireContext(), R.color.accent_dark);
+        int grayBorder = ContextCompat.getColor(requireContext(), R.color.border_divider);
 
         if (item.selected) {
-            item.card.setStrokeColor(pink);
-            item.card.setStrokeWidth(dpToPx(1)); // Giảm độ dày viền
-            item.card.setCardBackgroundColor(lightPinkBg); // Sử dụng nền cực nhạt
-            item.label.setTextColor(pink);
+            animateCardTransition(item.card, Color.WHITE, softPinkBg, grayBorder, Color.TRANSPARENT, true);
+            item.label.setTextColor(brandPink);
+            item.icon.setImageTintList(ColorStateList.valueOf(brandPink));
             item.tick.setVisibility(View.VISIBLE);
+            item.tick.setAlpha(0f);
+            item.tick.setScaleX(0.7f);
+            item.tick.setScaleY(0.7f);
+            item.tick.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(300).start();
         } else {
-            item.card.setStrokeColor(ContextCompat.getColor(requireContext(), R.color.border_divider));
-            item.card.setStrokeWidth(dpToPx(1));
-            item.card.setCardBackgroundColor(Color.WHITE);
-            item.label.setTextColor(dark);
-            item.tick.setVisibility(View.GONE);
+            animateCardTransition(item.card, softPinkBg, Color.WHITE, Color.TRANSPARENT, grayBorder, false);
+            item.label.setTextColor(darkText);
+            item.icon.setImageTintList(ColorStateList.valueOf(darkText));
+            item.tick.animate().alpha(0f).scaleX(0.7f).scaleY(0.7f).setDuration(200).withEndAction(() -> item.tick.setVisibility(View.GONE)).start();
         }
     }
 
     private void updateIndicatorView(@NonNull IndicatorItem item) {
-        int pink = ContextCompat.getColor(requireContext(), R.color.button);
-        int lightPinkBg = ContextCompat.getColor(requireContext(), R.color.background_sub);
+        int brandPink = ContextCompat.getColor(requireContext(), R.color.button);
+        int softPinkBg = Color.parseColor("#FFF9FA");
+        int darkText = ContextCompat.getColor(requireContext(), R.color.accent_dark);
+        int grayBorder = ContextCompat.getColor(requireContext(), R.color.border_divider);
+        int mainText = ContextCompat.getColor(requireContext(), R.color.text_main);
 
         if (item.selected) {
-            item.card.setStrokeColor(pink);
-            item.card.setStrokeWidth(dpToPx(1)); // Giảm độ dày viền
-            item.card.setCardBackgroundColor(lightPinkBg); // Sử dụng nền cực nhạt
+            animateCardTransition(item.card, Color.WHITE, softPinkBg, grayBorder, Color.TRANSPARENT, true);
+            item.score.setTextColor(brandPink);
+            item.name.setTextColor(brandPink);
+            item.status.setTextColor(brandPink);
+            item.icon.setImageTintList(ColorStateList.valueOf(brandPink));
             item.tick.setVisibility(View.VISIBLE);
+            item.tick.setAlpha(0f);
+            item.tick.setScaleX(0.7f);
+            item.tick.setScaleY(0.7f);
+            item.tick.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(300).start();
         } else {
-            item.card.setStrokeColor(ContextCompat.getColor(requireContext(), R.color.border_divider));
-            item.card.setStrokeWidth(dpToPx(1));
-            item.card.setCardBackgroundColor(Color.WHITE);
-            item.tick.setVisibility(View.GONE);
+            animateCardTransition(item.card, softPinkBg, Color.WHITE, Color.TRANSPARENT, grayBorder, false);
+            item.score.setTextColor(brandPink);
+            item.name.setTextColor(darkText);
+            item.status.setTextColor(mainText);
+            item.icon.setImageTintList(ColorStateList.valueOf(brandPink));
+            item.tick.animate().alpha(0f).scaleX(0.7f).scaleY(0.7f).setDuration(200).withEndAction(() -> item.tick.setVisibility(View.GONE)).start();
         }
     }
 

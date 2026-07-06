@@ -47,7 +47,6 @@
 
         </LinearLayout>
 
-        <!-- Product Section Header -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -57,25 +56,23 @@
 
             <TextView
                 android:id="@+id/tvProductSectionTitle"
+                style="@style/Text.Kanila.H3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:fontFamily="@font/nunito_bold"
                 android:text="Gợi ý riêng cho bạn"
-                android:textColor="@color/text_main"
-                android:textSize="18sp" />
+                android:textColor="@color/text_main" />
 
             <TextView
                 android:id="@+id/btnViewAllProducts"
+                style="@style/Text.Kanila.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:fontFamily="@font/nunito_medium"
                 android:text="Xem tất cả"
-                android:textColor="@color/pink_primary"
-                android:textSize="14sp" />
+                android:textColor="@color/pink_primary" />
         </RelativeLayout>
 
         <!-- Recommended Products RecyclerView -->

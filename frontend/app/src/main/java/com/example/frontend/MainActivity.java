@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -49,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 vpHomeBanner;
     private View layoutSearchBar;
-    private View layoutSearchExpandedBar;
     private ImageButton btnNotification, btnCart, btnWishlist;
     private RecyclerView rvHomeShortcuts;
     private RecyclerView rvRecommendedProducts;
@@ -59,9 +57,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageView ivReelThumbOne, ivReelThumbTwo;
     private View layoutKanilaChallengeCard, btnJoinChallenge;
     private TextView tvChallengeProgress, tvChallengeParticipants, tvChallengeReward;
-
-    private EditText edtExpandedSearchQuery;
-    private ImageButton btnExpandedSearchBack;
 
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
@@ -115,10 +110,6 @@ public class MainActivity extends AppCompatActivity {
         tvChallengeProgress = findViewById(R.id.tvChallengeProgress);
         tvChallengeParticipants = findViewById(R.id.tvChallengeParticipants);
         tvChallengeReward = findViewById(R.id.tvChallengeReward);
-
-        layoutSearchExpandedBar = findViewById(R.id.layoutSearchExpandedBar);
-        edtExpandedSearchQuery = findViewById(R.id.edtExpandedSearchQuery);
-        btnExpandedSearchBack = findViewById(R.id.btnExpandedSearchBack);
     }
 
     private void setupSearchBehavior() {
@@ -137,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnNotification.setOnClickListener(v -> {
-            // Tạm thời thay thế bằng việc mở CheckoutFragment để xem giao diện
+            // Mở NotificationCenterFragment
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main, new ui.notification.NotificationCenterFragment())
                     .addToBackStack(null)
@@ -149,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
                     .addToBackStack(null)
                     .commit();
         });
+
+
 
         setupHomeShortcuts();
         setupSocialSection();
@@ -237,7 +230,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupHomeShortcuts() {
         shortcutAdapter = new HomeShortcutAdapter();
-        shortcutAdapter.setOnShortcutClickListener(item -> Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show());
+        shortcutAdapter.setOnShortcutClickListener(item -> {
+            if ("orders".equals(item.getId())) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.account.BeautyProfileOverviewFragment())
+                        .addToBackStack(null)
+                        .commit();
+            } else {
+                Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         rvHomeShortcuts.setAdapter(shortcutAdapter);
 

@@ -48,7 +48,10 @@ public interface ApiService {
     @GET("product-variants/product/{productId}")
     Call<ApiResponse<List<ProductVariantDto>>> getProductVariants(@Path("productId") String productId);
 
-    @GET("brands")
+    @GET("api/products/{id}/similar")
+    Call<ApiResponse<List<Product>>> getSimilarProducts(@Path("id") String id, @Query("limit") Integer limit);
+
+    @GET("api/brands")
     Call<ApiResponse<List<com.example.frontend.model.Brand>>> getBrands();
 
     @GET("categories")
@@ -123,8 +126,18 @@ public interface ApiService {
     @GET("coupons/available")
     Call<ApiResponse<List<CouponDto>>> getAvailableCoupons();
 
-    @GET("wishlists/me/items")
-    Call<ApiResponse<List<Object>>> getMyWishlistItems();
+
+    @GET("api/wishlists/me/items")
+    Call<ApiResponse<List<com.example.frontend.data.model.wishlist.WishlistItemResponse>>> getMyWishlistItems(@Query("sort") String sort);
+
+    @POST("api/wishlists")
+    Call<ApiResponse<com.example.frontend.data.model.wishlist.WishlistActionResponse>> addToWishlist(@Body com.example.frontend.data.model.wishlist.WishlistActionRequest request);
+
+    @DELETE("api/wishlists/{productId}")
+    Call<ApiResponse<Void>> removeFromWishlist(@Path("productId") String productId);
+
+    @POST("api/wishlists/me/items/bulk-delete")
+    Call<ApiResponse<Object>> bulkDeleteWishlistItems(@Body com.example.frontend.data.model.wishlist.BulkDeleteRequest request);
 
     @GET("orders/me/summary")
     Call<ApiResponse<Object>> getMyOrderSummary();

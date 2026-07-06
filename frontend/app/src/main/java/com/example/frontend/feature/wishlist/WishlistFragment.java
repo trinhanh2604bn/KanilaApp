@@ -8,17 +8,30 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
+import com.example.frontend.data.model.wishlist.WishlistItemResponse;
+import com.example.frontend.model.Product;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.chip.Chip;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import ui.category.ProductAdapter;
+import ui.common.BottomNavigationHelper;
 
-public class WishlistFragment extends Fragment {
+public class WishlistFragment extends Fragment implements ProductAdapter.OnSelectionChangeListener {
     private WishlistViewModel viewModel;
     private ProductAdapter adapter;
     private RecyclerView rvWishlist;
-    private View layoutLoading, layoutEmpty;
+    private View layoutLoading, layoutEmpty, layoutControls, layoutBulkAction;
+    private TextView tvSelectAction, tvSelectedCount;
+    private Chip chipSort;
+    private List<WishlistItemResponse> currentItems = new ArrayList<>();
 
     @Nullable
     @Override
@@ -50,10 +63,112 @@ public class WishlistFragment extends Fragment {
         rvWishlist = view.findViewById(R.id.rvWishlist);
         layoutLoading = view.findViewById(R.id.layoutWishlistLoading);
         layoutEmpty = view.findViewById(R.id.layoutWishlistEmpty);
+        layoutControls = view.findViewById(R.id.layoutWishlistControls);
+        layoutBulkAction = view.findViewById(R.id.layoutBulkAction);
+        tvSelectAction = view.findViewById(R.id.tvSelectAction);
+        tvSelectedCount = view.findViewById(R.id.tvSelectedCount);
+        chipSort = view.findViewById(R.id.chipSort);
 
         adapter = new ProductAdapter();
-        // Clicks could navigate to product detail
+        adapter.setShowSimilarAction(true);
+        adapter.setOnProductClickListener(product -> {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
+        adapter.setOnWishlistClickListener((product, position) -> {
+            viewModel.removeFromWishlist(product.getId());
+            currentItems.removeIf(item -> item.getProduct().getId().equals(product.getId()));
+            updateList();
+        });
+
+        adapter.setOnSimilarClickListener(product -> {
+            // Navigate to similar products (e.g. search with query or category)
+            Toast.makeText(getContext(), "Finding similar products for " + product.getName(), Toast.LENGTH_SHORT).show();
+            // Implement navigation to a product listing with category filter if possible
+        });
+
+        rvWishlist.setLayoutManager(new GridLayoutManager(getContext(), 2));
         rvWishlist.setAdapter(adapter);
+
+        tvSelectAction.setOnClickListener(v -> toggleSelectionMode());
+        view.findViewById(R.id.btnCancelSelect).setOnClickListener(v -> toggleSelectionMode());
+        view.findViewById(R.id.btnBulkRemove).setOnClickListener(v -> confirmBulkRemove());
+        
+        chipSort.setOnClickListener(v -> showSortBottomSheet());
+
+        if (layoutEmpty != null) {
+            View btnExplore = layoutEmpty.findViewById(R.id.btnEmptyAction);
+            if (btnExplore != null) {
+                btnExplore.setOnClickListener(v -> {
+                   if (getActivity() != null) {
+                       getActivity().getSupportFragmentManager().popBackStack();
+                   }
+                });
+            }
+        }
+    }
+
+    private void toggleSelectionMode() {
+        boolean isMode = !adapter.isSelectionMode();
+        adapter.setSelectionMode(isMode);
+        layoutBulkAction.setVisibility(isMode ? View.VISIBLE : View.GONE);
+        layoutControls.setVisibility(isMode ? View.GONE : View.VISIBLE);
+        tvSelectAction.setText(isMode ? "Hủy" : "Chọn");
+        if (!isMode) {
+            onSelectionChanged(0);
+        }
+    }
+
+    private void confirmBulkRemove() {
+        int count = adapter.getSelectedProductIds().size();
+        if (count == 0) return;
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Bỏ thích sản phẩm")
+                .setMessage("Bạn có chắc chắn muốn bỏ thích " + count + " sản phẩm đã chọn?")
+                .setPositiveButton("Bỏ thích", (dialog, which) -> {
+                    List<String> productIds = new ArrayList<>(adapter.getSelectedProductIds());
+                    // We need itemIds for bulk delete API, or we find them from currentItems
+                    List<String> itemIds = currentItems.stream()
+                            .filter(item -> productIds.contains(item.getProduct().getId()))
+                            .map(WishlistItemResponse::getWishlistItemId)
+                            .collect(Collectors.toList());
+                    viewModel.bulkDelete(itemIds);
+                    toggleSelectionMode();
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    private void showSortBottomSheet() {
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_arrange, null);
+        dialog.setContentView(view);
+
+        view.findViewById(R.id.btnCloseArrange).setOnClickListener(v -> dialog.dismiss());
+        
+        view.findViewById(R.id.layoutSortNewest).setOnClickListener(v -> {
+            viewModel.setSort("latest");
+            chipSort.setText("Mới nhất");
+            dialog.dismiss();
+        });
+        view.findViewById(R.id.layoutSortPriceLowToHigh).setOnClickListener(v -> {
+            viewModel.setSort("price_asc");
+            chipSort.setText("Giá thấp - cao");
+            dialog.dismiss();
+        });
+        view.findViewById(R.id.layoutSortPriceHighToLow).setOnClickListener(v -> {
+            viewModel.setSort("price_desc");
+            chipSort.setText("Giá cao - thấp");
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void observeViewModel() {
@@ -67,14 +182,8 @@ public class WishlistFragment extends Fragment {
                     break;
                 case SUCCESS:
                     layoutLoading.setVisibility(View.GONE);
-                    // Mapping Object to Product might be needed here depending on real API response
-                    // For now keeping it empty if data is not correctly typed
-                    layoutEmpty.setVisibility(View.VISIBLE);
-                    break;
-                case EMPTY:
-                    layoutLoading.setVisibility(View.GONE);
-                    layoutEmpty.setVisibility(View.VISIBLE);
-                    rvWishlist.setVisibility(View.GONE);
+                    currentItems = result.data;
+                    updateList();
                     break;
                 case ERROR:
                     layoutLoading.setVisibility(View.GONE);
@@ -82,5 +191,39 @@ public class WishlistFragment extends Fragment {
                     break;
             }
         });
+
+        viewModel.getBulkDeleteResult().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS) {
+                Toast.makeText(getContext(), "Đã xóa sản phẩm khỏi danh sách yêu thích", Toast.LENGTH_SHORT).show();
+                viewModel.loadWishlist();
+            }
+        });
+    }
+
+    private void updateList() {
+        if (currentItems == null || currentItems.isEmpty()) {
+            layoutEmpty.setVisibility(View.VISIBLE);
+            rvWishlist.setVisibility(View.GONE);
+            layoutControls.setVisibility(View.GONE);
+        } else {
+            layoutEmpty.setVisibility(View.GONE);
+            rvWishlist.setVisibility(View.VISIBLE);
+            layoutControls.setVisibility(View.VISIBLE);
+            
+            List<Product> products = currentItems.stream().map(item -> {
+                Product p = item.getProduct();
+                if (p != null) {
+                    p.setFavorite(true);
+                }
+                return p;
+            }).filter(p -> p != null).collect(Collectors.toList());
+            
+            adapter.setProducts(products);
+        }
+    }
+
+    @Override
+    public void onSelectionChanged(int count) {
+        tvSelectedCount.setText("Đã chọn " + count);
     }
 }

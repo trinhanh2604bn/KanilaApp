@@ -4,6 +4,7 @@ const {
   getAllProducts,
   getProductById,
   getProductBySlug,
+  getSimilarProducts,
   createProduct,
   updateProduct,
   patchProduct,
@@ -12,6 +13,7 @@ const {
 
 router.get("/", getAllProducts);
 router.get("/slug/:slug", getProductBySlug);
+router.get("/:id/similar", getSimilarProducts);
 router.get("/:id", getProductById);
 router.post("/", createProduct);
 router.put("/:id", updateProduct);

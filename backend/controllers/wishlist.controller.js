@@ -103,11 +103,60 @@ const getMyWishlistItems = async (req, res) => {
       return res.status(200).json({ success: true, message: "Get my wishlist items successfully", data: { items: [], count: 0 } });
     }
 
-    const items = await WishlistItem.find({ wishlistId: { $in: wishlistIds } })
-      .populate("productId", "productName imageUrl price")
-      .populate("variantId", "variantName sku")
-      .sort({ createdAt: -1 })
-      .lean();
+    const { sort } = req.query;
+    let sortObj = { createdAt: -1 };
+    if (sort === "price_asc") sortObj = { "productId.price": 1 };
+    else if (sort === "price_desc") sortObj = { "productId.price": -1 };
+    else if (sort === "rating_desc") sortObj = { "productId.rating": -1 };
+    // Note: Population based sorting in Mongoose is tricky if not using aggregate.
+    // For simple MVP, we might just sort by createdAt or do in-memory sort if needed,
+    // but better to use aggregate if complex.
+    // Let's stick to createdAt for now and maybe add price if we use aggregation.
+
+    // Improved with aggregation for better sorting
+    const items = await WishlistItem.aggregate([
+      { $match: { wishlistId: { $in: wishlistIds } } },
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "product"
+        }
+      },
+      { $unwind: "$product" },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "product.brandId",
+          foreignField: "_id",
+          as: "brand"
+        }
+      },
+      { $unwind: { path: "$brand", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          wishlistItemId: "$_id",
+          wishlistId: 1,
+          productId: 1,
+          variantId: 1,
+          createdAt: 1,
+          product: {
+            id: "$product._id",
+            name: "$product.productName",
+            imageUrl: "$product.imageUrl",
+            price: "$product.price",
+            compareAtPrice: "$product.compareAtPrice",
+            rating: "$product.rating",
+            reviewCount: "$product.reviewCount",
+            brandName: "$brand.brandName",
+            isWishlisted: { $literal: true }
+          }
+        }
+      },
+      { $sort: sort === "price_asc" ? { "product.price": 1 } : sort === "price_desc" ? { "product.price": -1 } : sort === "rating_desc" ? { "product.rating": -1 } : { createdAt: -1 } }
+    ]);
+
     return res.status(200).json({
       success: true,
       message: "Get my wishlist items successfully",
@@ -267,6 +316,35 @@ const deleteWishlist = async (req, res) => {
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 };
 
+// POST /api/wishlists/me/items/bulk-delete
+const bulkDeleteMyWishlistItems = async (req, res) => {
+  try {
+    const customer = await resolveAuthCustomer(req);
+    if (!customer) return res.status(401).json({ success: false, message: "Invalid or missing account identity" });
+
+    const itemIds = req.body?.itemIds;
+    if (!Array.isArray(itemIds) || itemIds.length === 0) {
+      return res.status(400).json({ success: false, message: "itemIds must be a non-empty array" });
+    }
+
+    const wishlists = await Wishlist.find({ customer_id: customer._id }).select("_id").lean();
+    const wishlistIds = wishlists.map((w) => w._id);
+
+    const result = await WishlistItem.deleteMany({
+      _id: { $in: itemIds },
+      wishlistId: { $in: wishlistIds }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `${result.deletedCount} items removed from wishlist`,
+      data: { deletedCount: result.deletedCount }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getAllWishlists,
   getWishlistById,
@@ -276,6 +354,7 @@ module.exports = {
   deleteMyWishlistItem,
   addMyWishlistProduct,
   deleteMyWishlistProductByProductId,
+  bulkDeleteMyWishlistItems,
   createWishlist,
   updateWishlist,
   deleteWishlist,

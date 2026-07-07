@@ -18,6 +18,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.frontend.R;
+import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.data.model.cart.AddToCartRequest;
+import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.model.HomeBannerItem;
 import com.example.frontend.model.HomeShortcutItem;
 import com.example.frontend.model.Product;
@@ -36,6 +39,7 @@ public class HomeFragment extends Fragment {
     private HomeProductAdapter recommendedProductAdapter;
     private HomeProductAdapter allProductAdapter;
     private HomeViewModel viewModel;
+    private CartViewModel cartViewModel;
     
     private View layoutHomeStateContainer;
     private View viewHomeLoading;
@@ -53,6 +57,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
         
         viewPagerBanner = view.findViewById(R.id.viewPagerBanner);
         rvHomeShortcuts = view.findViewById(R.id.rvHomeShortcuts);
@@ -78,9 +83,17 @@ public class HomeFragment extends Fragment {
         int screenWidth = getResources().getDisplayMetrics().widthPixels;
         recommendedProductAdapter.setItemWidth((int) (screenWidth * 0.46));
         
-        recommendedProductAdapter.setOnProductClickListener(product -> {
-            // Navigate to Product Detail
-            Toast.makeText(requireContext(), "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
+        recommendedProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                // Navigate to Product Detail
+                Toast.makeText(requireContext(), "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
+            }
         });
         
         if (rvRecommendedProducts != null) {
@@ -90,8 +103,16 @@ public class HomeFragment extends Fragment {
 
         // All Products
         allProductAdapter = new HomeProductAdapter();
-        allProductAdapter.setOnProductClickListener(product -> {
-            Toast.makeText(requireContext(), "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
+        allProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                Toast.makeText(requireContext(), "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
+            }
         });
 
         if (rvAllProducts != null) {
@@ -99,6 +120,30 @@ public class HomeFragment extends Fragment {
             rvAllProducts.setAdapter(allProductAdapter);
             rvAllProducts.setNestedScrollingEnabled(false);
         }
+    }
+
+    private void handleAddToCart(Product product) {
+        if (product.getId() == null) return;
+
+        // Simple add to cart with quantity 1
+        // Variants are ignored for now if not selected, or backend might pick default
+        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
+        cartViewModel.addToCart(request);
+        
+        // Observe once for feedback
+        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
+            @Override
+            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
+                if (result == null) return;
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                }
+            }
+        });
     }
 
     private void observeViewModel() {

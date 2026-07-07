@@ -35,6 +35,9 @@ import com.example.frontend.feature.home.HomeBannerAdapter;
 import com.example.frontend.feature.home.HomeProductAdapter;
 import com.example.frontend.feature.home.HomeShortcutAdapter;
 import com.example.frontend.feature.home.HomeViewModel;
+import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.data.model.cart.AddToCartRequest;
+import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.search.SearchActivity;
 import com.example.frontend.model.HomeBannerItem;
 import com.example.frontend.model.HomeShortcutItem;
@@ -72,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private HomeProductAdapter allProductAdapter;
     private HomeViewModel viewModel;
     private com.example.frontend.feature.wishlist.WishlistViewModel wishlistViewModel;
+    private CartViewModel cartViewModel;
 
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
@@ -83,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         wishlistViewModel = new ViewModelProvider(this).get(com.example.frontend.feature.wishlist.WishlistViewModel.class);
+        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -234,11 +239,19 @@ public class MainActivity extends AppCompatActivity {
         int screenWidth = getResources().getDisplayMetrics().widthPixels;
         recommendedProductAdapter.setItemWidth((int) (screenWidth * 0.46));
 
-        recommendedProductAdapter.setOnProductClickListener(product -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
-                    .addToBackStack(null)
-                    .commit();
+        recommendedProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(com.example.frontend.model.Product product) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+            @Override
+            public void onAddToCartClick(com.example.frontend.model.Product product) {
+                handleAddToCart(product);
+            }
         });
 
         recommendedProductAdapter.setOnWishlistToggleListener((product, wasWishlisted) -> {
@@ -267,11 +280,19 @@ public class MainActivity extends AppCompatActivity {
         
         // All Products (Vertical Grid)
         allProductAdapter = new HomeProductAdapter();
-        allProductAdapter.setOnProductClickListener(product -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
-                    .addToBackStack(null)
-                    .commit();
+        allProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(com.example.frontend.model.Product product) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+            @Override
+            public void onAddToCartClick(com.example.frontend.model.Product product) {
+                handleAddToCart(product);
+            }
         });
 
         allProductAdapter.setOnWishlistToggleListener((product, wasWishlisted) -> {
@@ -464,6 +485,28 @@ public class MainActivity extends AppCompatActivity {
                 super.onPageSelected(position);
                 autoSlideHandler.removeCallbacks(autoSlideRunnable);
                 autoSlideHandler.postDelayed(autoSlideRunnable, 4000);
+            }
+        });
+    }
+
+    private void handleAddToCart(com.example.frontend.model.Product product) {
+        if (product.getId() == null) return;
+
+        // Use empty string instead of null for variant_id as some backends require it
+        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
+        cartViewModel.addToCart(request);
+
+        cartViewModel.getCartResult().observe(this, new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
+            @Override
+            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
+                if (result == null) return;
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    Toast.makeText(MainActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                }
             }
         });
     }

@@ -24,6 +24,13 @@ public class CartRepository {
     }
 
     public void getCart(MutableLiveData<NetworkResult<CartDto>> result) {
+        // If not logged in and no guest session yet, return empty cart immediately
+        // to avoid 400 Bad Request from server (it doesn't know "me" yet)
+        if (!tokenManager.isLoggedIn() && !tokenManager.hasGuestSession()) {
+            result.setValue(NetworkResult.success(CartDto.createEmptyGuestCart()));
+            return;
+        }
+
         result.setValue(NetworkResult.loading());
         
         Call<ApiResponse<CartDto>> call;
@@ -44,13 +51,19 @@ public class CartRepository {
                         result.setValue(NetworkResult.error(apiResponse.getMessage()));
                     }
                 } else {
-                    result.setValue(NetworkResult.error("Failed to load cart"));
+                    String errorMsg = "Failed to load cart";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMsg += " (" + response.code() + ")";
+                        }
+                    } catch (Exception ignored) {}
+                    result.setValue(NetworkResult.error(errorMsg));
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<CartDto>> call, Throwable t) {
-                result.setValue(NetworkResult.error(t.getMessage()));
+                result.setValue(NetworkResult.error("Network error: " + t.getMessage()));
             }
         });
     }
@@ -93,13 +106,19 @@ public class CartRepository {
                         result.setValue(NetworkResult.error(apiResponse.getMessage()));
                     }
                 } else {
-                    result.setValue(NetworkResult.error("Failed to update quantity"));
+                    String errorMsg = "Failed to update quantity";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMsg += " (" + response.code() + ")";
+                        }
+                    } catch (Exception ignored) {}
+                    result.setValue(NetworkResult.error(errorMsg));
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<CartDto>> call, Throwable t) {
-                result.setValue(NetworkResult.error(t.getMessage()));
+                result.setValue(NetworkResult.error("Network error: " + t.getMessage()));
             }
         });
     }
@@ -142,6 +161,50 @@ public class CartRepository {
                     }
                 } else {
                     result.setValue(NetworkResult.error("Failed to remove item"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<CartDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void addToCart(AddToCartRequest request, MutableLiveData<NetworkResult<CartDto>> result) {
+        result.setValue(NetworkResult.loading());
+        
+        Call<ApiResponse<CartDto>> call;
+        if (tokenManager.isLoggedIn()) {
+            call = apiService.addToCart(request);
+        } else {
+            call = apiService.addToGuestCart(request);
+        }
+
+        call.enqueue(new Callback<ApiResponse<CartDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<CartDto>> call, Response<ApiResponse<CartDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<CartDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        CartDto cart = apiResponse.getData();
+                        if (cart != null && cart.getGuestSessionId() != null) {
+                            tokenManager.saveGuestSession(cart.getGuestSessionId());
+                        }
+                        result.setValue(NetworkResult.success(cart));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    String errorMsg = "Failed to add to cart";
+                    try {
+                        if (response.errorBody() != null) {
+                            String errorJson = response.errorBody().string();
+                            // Optional: Parse errorJson if it follows ApiResponse format
+                            errorMsg += ": " + response.code();
+                        }
+                    } catch (Exception ignored) {}
+                    result.setValue(NetworkResult.error(errorMsg));
                 }
             }
 

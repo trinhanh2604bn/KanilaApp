@@ -63,7 +63,13 @@ public class TokenManager {
     }
 
     public String getGuestSession() {
-        return prefs.getString(KEY_GUEST_SESSION_ID, null);
+        String sessionId = prefs.getString(KEY_GUEST_SESSION_ID, null);
+        if (sessionId == null || sessionId.trim().isEmpty()) {
+            // Tự tạo một session ID ngẫu nhiên nếu chưa có để tránh lỗi 400 từ server
+            sessionId = "guest_" + java.util.UUID.randomUUID().toString();
+            saveGuestSession(sessionId);
+        }
+        return sessionId;
     }
 
     public boolean hasGuestSession() {

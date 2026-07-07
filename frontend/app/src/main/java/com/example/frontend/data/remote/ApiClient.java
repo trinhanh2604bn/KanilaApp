@@ -9,7 +9,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    private static final String BASE_URL = "http://10.0.2.2:5000/"; // Emulator host mapping to localhost on the development machine
+    private static final String BASE_URL = "http://192.168.171.212:5000/"; // Emulator host mapping to localhost on the development machine
 
     private static Retrofit retrofit;
 
@@ -23,8 +23,8 @@ public class ApiClient {
             AuthInterceptor authInterceptor = new AuthInterceptor(tokenManager);
 
             OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(logging)
                     .addInterceptor(authInterceptor)
+                    .addInterceptor(logging)
                     .connectTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)
                     .writeTimeout(30, TimeUnit.SECONDS)

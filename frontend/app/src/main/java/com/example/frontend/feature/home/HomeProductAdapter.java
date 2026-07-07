@@ -22,6 +22,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
 
     public interface OnProductClickListener {
         void onProductClick(Product product);
+        void onAddToCartClick(Product product);
     }
 
     public interface OnWishlistToggleListener {
@@ -99,6 +100,12 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onProductClick(product);
         });
+
+        if (holder.btnAddToCart != null) {
+            holder.btnAddToCart.setOnClickListener(v -> {
+                if (listener != null) listener.onAddToCartClick(product);
+            });
+        }
     }
 
     @Override
@@ -110,7 +117,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         ImageView ivImage;
         TextView tvName, tvBrand, tvPrice, tvReviewCount, tvBadge;
         View layoutBadge;
-        ImageButton btnWishlist;
+        ImageButton btnWishlist, btnAddToCart;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -122,6 +129,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
             tvBadge = itemView.findViewById(R.id.tvProductBadge);
             layoutBadge = itemView.findViewById(R.id.layoutProductStatusBadge);
             btnWishlist = itemView.findViewById(R.id.btnWishlist);
+            btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
         }
     }
 }

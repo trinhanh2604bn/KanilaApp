@@ -89,6 +89,9 @@ public interface ApiService {
     @POST("api/carts/me/items")
     Call<ApiResponse<CartDto>> addToCart(@Body AddToCartRequest itemRequest);
 
+    @POST("api/carts/guest/items")
+    Call<ApiResponse<CartDto>> addToGuestCart(@Body AddToCartRequest itemRequest);
+
     @PATCH("api/carts/me/items/{itemId}/quantity")
     Call<ApiResponse<CartDto>> updateCartItemQuantity(@Path("itemId") String itemId, @Body UpdateCartItemRequest updateRequest);
 

@@ -15,6 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
 import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.data.model.cart.AddToCartRequest;
+import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.model.Product;
 
 import java.util.ArrayList;
@@ -44,6 +47,7 @@ public class SearchActivity extends AppCompatActivity {
     private SearchSuggestedProductAdapter productAdapter;
 
     private SearchViewModel viewModel;
+    private CartViewModel cartViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,7 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         viewModel = new ViewModelProvider(this).get(SearchViewModel.class);
+        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
         
         initViews();
         setupSearchHeader();
@@ -180,8 +185,16 @@ public class SearchActivity extends AppCompatActivity {
         recommendAdapter = new SearchRecommendProductAdapter();
         rvRecommendProducts.setAdapter(recommendAdapter);
         // This should eventually come from API as well
-        recommendAdapter.setOnProductClickListener(product -> {
-            Toast.makeText(this, "Sản phẩm: " + product.getName(), Toast.LENGTH_SHORT).show();
+        recommendAdapter.setOnProductClickListener(new SearchRecommendProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                Toast.makeText(SearchActivity.this, "Sản phẩm: " + product.getName(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
+            }
         });
     }
 
@@ -201,11 +214,19 @@ public class SearchActivity extends AppCompatActivity {
     private void setupSuggestedProducts() {
         productAdapter = new SearchSuggestedProductAdapter();
         rvSuggestedProducts.setAdapter(productAdapter);
-        productAdapter.setOnProductClickListener(product -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
-                    .addToBackStack(null)
-                    .commit();
+        productAdapter.setOnProductClickListener(new SearchSuggestedProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
+            }
         });
     }
 
@@ -250,5 +271,26 @@ public class SearchActivity extends AppCompatActivity {
             layoutSearchNoResult.setVisibility(View.GONE);
             productAdapter.setItems(results);
         }
+    }
+
+    private void handleAddToCart(Product product) {
+        if (product.getId() == null) return;
+
+        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
+        cartViewModel.addToCart(request);
+
+        cartViewModel.getCartResult().observe(this, new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
+            @Override
+            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
+                if (result == null) return;
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    Toast.makeText(SearchActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    Toast.makeText(SearchActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                }
+            }
+        });
     }
 }

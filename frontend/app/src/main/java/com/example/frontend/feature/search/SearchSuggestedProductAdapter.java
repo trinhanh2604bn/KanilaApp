@@ -26,6 +26,7 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
 
     public interface OnProductClickListener {
         void onProductClick(Product product);
+        void onAddToCartClick(Product product);
     }
 
     public void setOnProductClickListener(OnProductClickListener listener) {
@@ -89,6 +90,12 @@ public class SearchSuggestedProductAdapter extends RecyclerView.Adapter<SearchSu
                 boolean newState = !product.isFavorite();
                 product.setFavorite(newState);
                 v.setSelected(newState);
+            });
+        }
+
+        if (holder.btnAddToCart != null) {
+            holder.btnAddToCart.setOnClickListener(v -> {
+                if (listener != null) listener.onAddToCartClick(product);
             });
         }
     }

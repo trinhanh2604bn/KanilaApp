@@ -109,9 +109,19 @@
     <string name="discovery_new_arrivals_desc">Cập nhật sản phẩm mới mỗi tuần</string>
 
     <string name="home_social_reels_title">Kanila Reels</string>
+    <string name="reels_title">Reels</string>
+    <string name="reels_products_title">Sản phẩm trong video</string>
+    <string name="reels_add_to_cart">Thêm</string>
+    <string name="reels_buy_now">Mua</string>
+    <string name="reels_view_detail">Chi tiết</string>
+    <string name="reels_comment_demo">Bình luận sẽ được làm ở phase sau</string>
+    <string name="reels_share_demo">Chia sẻ demo</string>
+    <string name="reels_added_to_cart">Đã thêm vào giỏ hàng demo</string>
+    <string name="reels_mvp_payment_demo">MVP demo - chưa kết nối thanh toán</string>
     <string name="home_social_challenge_title">Kanila Challenge</string>
     <string name="home_social_reel_1_title">Routine da dầu</string>
     <string name="home_social_reel_2_title">Makeup nhẹ nhàng</string>
+    <string name="home_social_reel_3_title">Mẹo đánh son lì</string>
     <string name="home_social_challenge_hot">HOT</string>
     <string name="home_social_challenge_name">14 ngày da sáng khỏe</string>
     <string name="home_social_challenge_subtitle">Cùng Kanila</string>

@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
 import com.example.frontend.data.model.wishlist.WishlistItemResponse;
 import com.example.frontend.model.Product;
+import com.example.frontend.utils.ToastHelper;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 import java.util.ArrayList;
@@ -89,7 +89,7 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
 
         adapter.setOnSimilarClickListener(product -> {
             // Navigate to similar products (e.g. search with query or category)
-            Toast.makeText(getContext(), "Finding similar products for " + product.getName(), Toast.LENGTH_SHORT).show();
+            ToastHelper.showShort(getContext(), "Finding similar products for " + product.getName());
             // Implement navigation to a product listing with category filter if possible
         });
 
@@ -201,14 +201,14 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
                     break;
                 case ERROR:
                     layoutLoading.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), result.message);
                     break;
             }
         });
 
         viewModel.getBulkDeleteResult().observe(getViewLifecycleOwner(), result -> {
             if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS) {
-                Toast.makeText(getContext(), "Đã xóa sản phẩm khỏi danh sách yêu thích", Toast.LENGTH_SHORT).show();
+                ToastHelper.showShort(getContext(), "Đã xóa sản phẩm khỏi danh sách yêu thích");
                 viewModel.loadWishlist();
             }
         });

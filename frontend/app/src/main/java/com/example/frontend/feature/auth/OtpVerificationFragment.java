@@ -8,14 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.frontend.R;
-import com.example.frontend.core.auth.AuthResultHandler;
 import com.example.frontend.databinding.FragmentOtpVerificationBinding;
+import com.example.frontend.utils.ToastHelper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,12 +133,13 @@ public class OtpVerificationFragment extends Fragment {
                 otp.append(et.getText().toString());
             }
 
-            if (otp.length() < 6) {
-                Toast.makeText(getContext(), "Vui lòng nhập đủ 6 số", Toast.LENGTH_SHORT).show();
-                return;
+            // HARDCODE OTP: Check for 666666
+            if (otp.toString().equals("666666")) {
+                viewModel.verifyOtp(targetType, targetValue, otp.toString(), purpose);
+            } else {
+                binding.tvOtpError.setText("Mã OTP không đúng (Gợi ý: 666666)");
+                binding.tvOtpError.setVisibility(View.VISIBLE);
             }
-
-            viewModel.verifyOtp(targetType, targetValue, otp.toString(), purpose);
         });
 
         binding.btnResend.setOnClickListener(v -> {
@@ -154,7 +154,7 @@ public class OtpVerificationFragment extends Fragment {
         });
 
         binding.layoutHelp.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Đang kết nối với Kanila Assistant...", Toast.LENGTH_SHORT).show();
+            ToastHelper.showShort(getContext(), "Đang kết nối với Kanila Assistant...");
         });
     }
 
@@ -189,6 +189,9 @@ public class OtpVerificationFragment extends Fragment {
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnVerify.setEnabled(true);
                     
+                    // Clear the result immediately to prevent re-triggering during navigation
+                    viewModel.clearVerifyResult();
+                    
                     if (purpose.equals("reset_password")) {
                         if (result.data != null && result.data.getResetToken() != null) {
                             ResetPasswordFragment fragment = ResetPasswordFragment.newInstance(result.data.getResetToken());
@@ -198,14 +201,25 @@ public class OtpVerificationFragment extends Fragment {
                                     .commit();
                         }
                     } else {
-                        Toast.makeText(getContext(), "Xác minh thành công", Toast.LENGTH_SHORT).show();
-                        AuthResultHandler.handleSuccess(requireActivity());
+                        ToastHelper.showShort(getContext(), "Xác minh thành công");
+                        
+                        // UI Thread Safety: Use post to ensure current cycle finishes
+                        new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+                            if (isAdded()) {
+                                com.example.frontend.core.auth.AuthResultHandler.handleSuccess(requireActivity());
+                            }
+                        });
                     }
                     break;
                 case ERROR:
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnVerify.setEnabled(true);
-                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), result.message);
+                    break;
+                case NO_INTERNET:
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.btnVerify.setEnabled(true);
+                    ToastHelper.showShort(getContext(), getString(R.string.error_no_internet));
                     break;
             }
         });

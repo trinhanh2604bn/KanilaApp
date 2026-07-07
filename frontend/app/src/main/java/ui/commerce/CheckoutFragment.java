@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +19,7 @@ import com.example.frontend.R;
 import com.example.frontend.data.model.checkout.CheckoutSessionDto;
 import com.example.frontend.data.remote.UrlUtils;
 import com.example.frontend.feature.checkout.CheckoutViewModel;
+import com.example.frontend.utils.ToastHelper;
 
 import java.util.Locale;
 
@@ -127,7 +127,7 @@ public class CheckoutFragment extends Fragment {
                     bindCheckoutData(result.data);
                     break;
                 case ERROR:
-                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), result.message);
                     break;
             }
         });
@@ -178,7 +178,7 @@ public class CheckoutFragment extends Fragment {
         View btnOrder = getView().findViewById(R.id.btnPlaceOrder);
         if (btnOrder != null) {
             btnOrder.setOnClickListener(v -> {
-                Toast.makeText(getContext(), "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
+                ToastHelper.showLong(getContext(), "Đặt hàng thành công!");
                 if (getActivity() != null) {
                     getActivity().getSupportFragmentManager().popBackStack();
                 }

@@ -4,13 +4,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.frontend.R;
 import com.example.frontend.databinding.FragmentResetPasswordBinding;
+import com.example.frontend.utils.ToastHelper;
 
 public class ResetPasswordFragment extends Fragment {
     private static final String ARG_TOKEN = "reset_token";
@@ -92,7 +92,7 @@ public class ResetPasswordFragment extends Fragment {
         });
 
         binding.layoutHelp.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Đang kết nối với Kanila Assistant...", Toast.LENGTH_SHORT).show();
+            ToastHelper.showShort(getContext(), "Đang kết nối với Kanila Assistant...");
         });
     }
 
@@ -107,14 +107,35 @@ public class ResetPasswordFragment extends Fragment {
                 case SUCCESS:
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnReset.setEnabled(true);
-                    Toast.makeText(getContext(), R.string.auth_reset_success, Toast.LENGTH_SHORT).show();
-                    // Go back to login
-                    requireActivity().getOnBackPressedDispatcher().onBackPressed();
+                    ToastHelper.showShort(getContext(), getString(R.string.auth_reset_success));
+                    
+                    // Immediately redirect to Login screen after success message
+                    if (isAdded()) {
+                        // CRITICAL: Clear the result so it doesn't trigger again if fragment is recreated or during transition
+                        viewModel.clearResetPasswordResult();
+                        
+                        // Use a small delay or post to main looper to ensure UI finishes current cycle
+                        new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+                            if (isAdded()) {
+                                // Requirement 6: Clear forgot password back stack.
+                                getParentFragmentManager().popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                                getParentFragmentManager().beginTransaction()
+                                        .replace(R.id.main, new LoginFragment())
+                                        .commit();
+                            }
+                        });
+                    }
                     break;
                 case ERROR:
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnReset.setEnabled(true);
-                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), result.message);
+                    break;
+                case NO_INTERNET:
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.btnReset.setEnabled(true);
+                    ToastHelper.showShort(getContext(), getString(R.string.error_no_internet));
                     break;
             }
         });

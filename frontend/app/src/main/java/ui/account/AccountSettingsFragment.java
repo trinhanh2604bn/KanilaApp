@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +17,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.frontend.R;
 import com.example.frontend.data.remote.TokenManager;
+import com.example.frontend.utils.ToastHelper;
 
 import ui.commerce.CheckoutAddressFragment;
 import ui.commerce.PaymentMethodFragment;
@@ -175,6 +175,6 @@ public class AccountSettingsFragment extends Fragment {
                 .replace(R.id.main, new AccountFragment())
                 .commit();
 
-        Toast.makeText(getContext(), "Đã đăng xuất thành công", Toast.LENGTH_SHORT).show();
+        ToastHelper.showShort(getContext(), "Đã đăng xuất thành công");
     }
 }

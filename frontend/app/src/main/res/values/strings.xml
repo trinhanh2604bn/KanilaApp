@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">frontend</string>
+    <string name="error_load_failed">Lỗi tải dữ liệu</string>
+    <string name="action_retry">Thử lại</string>
     <string name="post_gallery">Gallery</string>
     <string name="post_image_1">Image 1</string>
     <string name="post_image_2">Image 2</string>
@@ -385,7 +387,7 @@
     <string name="auth_reset_password_confirm_label">Xác nhận mật khẩu mới</string>
     <string name="auth_reset_password_subtitle">Tạo mật khẩu mới để bảo vệ tài khoản của bạn.</string>
     <string name="auth_btn_reset_password">Đặt lại mật khẩu</string>
-    <string name="auth_reset_success">Đặt lại mật khẩu thành công</string>
+    <string name="auth_reset_success">Đổi mật khẩu thành công. Vui lòng đăng nhập lại.</string>
     <string name="error_password_mismatch">Mật khẩu xác nhận không khớp.</string>
     <string name="error_password_weak">Mật khẩu phải có ít nhất 8 ký tự.</string>
 

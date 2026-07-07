@@ -5,12 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.frontend.R;
+import com.example.frontend.utils.ToastHelper;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -155,7 +155,7 @@ public class FilterBottomSheetDialog extends BottomSheetDialogFragment {
             }
         }
         
-        Toast.makeText(getContext(), R.string.filter_reset, Toast.LENGTH_SHORT).show();
+        ToastHelper.showShort(getContext(), R.string.filter_reset);
     }
 
     private void applyFilters(View root) {
@@ -170,7 +170,7 @@ public class FilterBottomSheetDialog extends BottomSheetDialogFragment {
                 long min = Long.parseLong(minStr);
                 long max = Long.parseLong(maxStr);
                 if (min > max) {
-                    Toast.makeText(getContext(), "Giá tối thiểu không thể lớn hơn giá tối đa", Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), "Giá tối thiểu không thể lớn hơn giá tối đa");
                     return;
                 }
             } catch (NumberFormatException ignored) {}

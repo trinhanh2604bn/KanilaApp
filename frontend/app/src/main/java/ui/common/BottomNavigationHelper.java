@@ -6,7 +6,6 @@ import android.content.res.ColorStateList;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -15,8 +14,10 @@ import androidx.fragment.app.Fragment;
 
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
+import com.example.frontend.utils.ToastHelper;
 import ui.account.AccountFragment;
 import ui.category.ProductCategoryFragment;
+import com.example.frontend.feature.home.HomeFragment;
 
 public class BottomNavigationHelper {
 
@@ -62,9 +63,11 @@ public class BottomNavigationHelper {
     public static void setupStandardNavigation(Fragment fragment, View root) {
         setup(root, tabIndex -> {
             if (tabIndex == TAB_HOME) {
-                Intent intent = new Intent(fragment.requireContext(), MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                fragment.startActivity(intent);
+                if (!(fragment instanceof HomeFragment)) {
+                    fragment.getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main, new HomeFragment())
+                            .commit();
+                }
             } else if (tabIndex == TAB_CATEGORY) {
                 if (!(fragment instanceof ProductCategoryFragment)) {
                     fragment.getParentFragmentManager().beginTransaction()
@@ -78,9 +81,9 @@ public class BottomNavigationHelper {
                             .commit();
                 }
             } else if (tabIndex == TAB_REELS) {
-                Toast.makeText(fragment.getContext(), "Reels coming soon!", Toast.LENGTH_SHORT).show();
+                ToastHelper.showShort(fragment.getContext(), "Reels coming soon!");
             } else if (tabIndex == TAB_COMMUNITY) {
-                Toast.makeText(fragment.getContext(), "Community coming soon!", Toast.LENGTH_SHORT).show();
+                ToastHelper.showShort(fragment.getContext(), "Community coming soon!");
             }
         });
     }
@@ -88,7 +91,11 @@ public class BottomNavigationHelper {
     public static void setupStandardNavigation(AppCompatActivity activity, View root) {
         setup(root, tabIndex -> {
             if (tabIndex == TAB_HOME) {
-                if (!(activity instanceof MainActivity)) {
+                if (activity instanceof MainActivity) {
+                    activity.getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new HomeFragment())
+                            .commit();
+                } else {
                     Intent intent = new Intent(activity, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     activity.startActivity(intent);
@@ -102,9 +109,9 @@ public class BottomNavigationHelper {
                         .replace(R.id.main, new AccountFragment())
                         .commit();
             } else if (tabIndex == TAB_REELS) {
-                Toast.makeText(activity, "Reels coming soon!", Toast.LENGTH_SHORT).show();
+                ToastHelper.showShort(activity, "Reels coming soon!");
             } else if (tabIndex == TAB_COMMUNITY) {
-                Toast.makeText(activity, "Community coming soon!", Toast.LENGTH_SHORT).show();
+                ToastHelper.showShort(activity, "Community coming soon!");
             }
         });
     }

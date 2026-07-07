@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +21,7 @@ import com.example.frontend.R;
 import com.example.frontend.data.model.cart.CartDto;
 import com.example.frontend.data.model.cart.CartItemDto;
 import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.utils.ToastHelper;
 
 import java.util.List;
 import java.util.Locale;
@@ -266,7 +266,7 @@ public class CartFragment extends Fragment {
         }
 
         if (message != null && !message.trim().isEmpty()) {
-            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+            ToastHelper.showShort(getContext(), message);
         }
     }
 
@@ -388,7 +388,7 @@ public class CartFragment extends Fragment {
                 }
 
                 if (!hasSelection) {
-                    Toast.makeText(getContext(), "Vui lòng chọn ít nhất 1 sản phẩm", Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), "Vui lòng chọn ít nhất 1 sản phẩm");
                     return;
                 }
 

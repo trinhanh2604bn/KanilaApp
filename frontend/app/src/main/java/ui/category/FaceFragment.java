@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -19,6 +18,7 @@ import com.example.frontend.R;
 import com.example.frontend.data.repository.ProductRepository;
 import com.example.frontend.feature.search.SearchActivity;
 import com.example.frontend.model.Product;
+import com.example.frontend.utils.ToastHelper;
 import java.util.ArrayList;
 import java.util.List;
 import ui.common.BottomNavigationHelper;
@@ -206,11 +206,11 @@ public class FaceFragment extends Fragment {
                     break;
                 case ERROR:
                     showLoading(false);
-                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), result.message);
                     break;
                 case NO_INTERNET:
                     showLoading(false);
-                    Toast.makeText(getContext(), R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), R.string.error_no_internet);
                     break;
             }
         });
@@ -232,7 +232,7 @@ public class FaceFragment extends Fragment {
             layoutFilter.setOnClickListener(v -> {
                 FilterBottomSheetDialog dialog = new FilterBottomSheetDialog();
                 dialog.setOnFilterAppliedListener(filterState -> {
-                    Toast.makeText(getContext(), "Đã áp dụng bộ lọc", Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), "Đã áp dụng bộ lọc");
                 });
                 dialog.show(getChildFragmentManager(), "FilterBottomSheet");
             });
@@ -240,7 +240,7 @@ public class FaceFragment extends Fragment {
 
         View layoutSort = root.findViewById(R.id.layoutSortAction);
         if (layoutSort != null) {
-            layoutSort.setOnClickListener(v -> Toast.makeText(getContext(), "Mở sắp xếp", Toast.LENGTH_SHORT).show());
+            layoutSort.setOnClickListener(v -> ToastHelper.showShort(getContext(), "Mở sắp xếp"));
         }
     }
 

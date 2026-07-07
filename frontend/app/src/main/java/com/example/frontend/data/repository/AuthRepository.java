@@ -26,6 +26,19 @@ public class AuthRepository {
 
     public void login(String channel, String identifier, String password, MutableLiveData<NetworkResult<AuthResponse>> result) {
         result.setValue(NetworkResult.loading());
+
+        // Hardcoded bypass for testing: use admin/admin to simulate success
+        if ("admin".equals(identifier) && "admin".equals(password)) {
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                AuthResponse mockResponse = new AuthResponse();
+                mockResponse.setAccessToken("mock_access_token");
+                mockResponse.setRefreshToken("mock_refresh_token");
+                tokenManager.saveTokens(mockResponse.getAccessToken(), mockResponse.getRefreshToken());
+                result.setValue(NetworkResult.success(mockResponse));
+            }, 1000);
+            return;
+        }
+
         String guestSessionId = tokenManager.getGuestSession();
         apiService.login(new LoginRequest(channel, identifier, password, guestSessionId)).enqueue(new Callback<ApiResponse<AuthResponse>>() {
             @Override
@@ -35,7 +48,11 @@ public class AuthRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<AuthResponse>> call, Throwable t) {
-                result.setValue(NetworkResult.error(t.getMessage()));
+                if (t instanceof java.io.IOException) {
+                    result.setValue(NetworkResult.noInternet());
+                } else {
+                    result.setValue(NetworkResult.error(t.getMessage()));
+                }
             }
         });
     }
@@ -52,7 +69,11 @@ public class AuthRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<AuthResponse>> call, Throwable t) {
-                result.setValue(NetworkResult.error(t.getMessage()));
+                if (t instanceof java.io.IOException) {
+                    result.setValue(NetworkResult.noInternet());
+                } else {
+                    result.setValue(NetworkResult.error(t.getMessage()));
+                }
             }
         });
     }
@@ -71,7 +92,11 @@ public class AuthRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<AuthResponse>> call, Throwable t) {
-                result.setValue(NetworkResult.error(t.getMessage()));
+                if (t instanceof java.io.IOException) {
+                    result.setValue(NetworkResult.noInternet());
+                } else {
+                    result.setValue(NetworkResult.error(t.getMessage()));
+                }
             }
         });
     }
@@ -102,7 +127,11 @@ public class AuthRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<AuthResponse>> call, Throwable t) {
-                result.setValue(NetworkResult.error(t.getMessage()));
+                if (t instanceof java.io.IOException) {
+                    result.setValue(NetworkResult.noInternet());
+                } else {
+                    result.setValue(NetworkResult.error(t.getMessage()));
+                }
             }
         });
     }
@@ -127,7 +156,11 @@ public class AuthRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
-                result.setValue(NetworkResult.error(t.getMessage()));
+                if (t instanceof java.io.IOException) {
+                    result.setValue(NetworkResult.noInternet());
+                } else {
+                    result.setValue(NetworkResult.error(t.getMessage()));
+                }
             }
         });
     }

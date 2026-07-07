@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.example.frontend.data.remote.TokenManager;
 import com.example.frontend.feature.wishlist.WishlistViewModel;
@@ -20,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.model.Product;
+import com.example.frontend.utils.ToastHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +133,7 @@ public class SearchActivity extends AppCompatActivity {
                     break;
                 case ERROR:
                     hideLoading();
-                    Toast.makeText(this, result.message, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(this, result.message);
                     break;
             }
         });
@@ -198,7 +198,7 @@ public class SearchActivity extends AppCompatActivity {
                 product.setFavorite(!product.isFavorite());
                 recommendAdapter.notifyItemChanged(position);
                 String msg = product.isFavorite() ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích";
-                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                ToastHelper.showShort(this, msg);
             } else {
                 Bundle extras = new Bundle();
                 extras.putString("productId", product.getId());
@@ -237,7 +237,7 @@ public class SearchActivity extends AppCompatActivity {
                 product.setFavorite(!product.isFavorite());
                 productAdapter.notifyItemChanged(position);
                 String msg = product.isFavorite() ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích";
-                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                ToastHelper.showShort(this, msg);
             } else {
                 Bundle extras = new Bundle();
                 extras.putString("productId", product.getId());

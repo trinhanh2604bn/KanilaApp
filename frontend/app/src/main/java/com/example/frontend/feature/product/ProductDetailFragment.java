@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -13,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 import com.example.frontend.R;
 import com.example.frontend.model.Product;
+import com.example.frontend.utils.ToastHelper;
 import java.util.Locale;
 
 public class ProductDetailFragment extends Fragment {
@@ -88,7 +88,7 @@ public class ProductDetailFragment extends Fragment {
 
         view.findViewById(R.id.btnAddToCart).setOnClickListener(v -> {
             // TODO: Add to cart
-            Toast.makeText(getContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            ToastHelper.showShort(getContext(), "Đã thêm vào giỏ hàng");
         });
     }
 
@@ -100,7 +100,7 @@ public class ProductDetailFragment extends Fragment {
                     bindProductData(result.data);
                     break;
                 case ERROR:
-                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), result.message);
                     break;
             }
         });

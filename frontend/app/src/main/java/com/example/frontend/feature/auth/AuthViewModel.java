@@ -55,4 +55,16 @@ public class AuthViewModel extends AndroidViewModel {
     public void resetPassword(String resetToken, String newPassword, String confirmPassword) {
         repository.resetPassword(resetToken, newPassword, confirmPassword, resetPasswordResult);
     }
+
+    public void clearAuthResult() {
+        authResult.setValue(null);
+    }
+
+    public void clearResetPasswordResult() {
+        resetPasswordResult.setValue(null);
+    }
+
+    public void clearVerifyResult() {
+        verifyResult.setValue(null);
+    }
 }

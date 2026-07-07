@@ -4,17 +4,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.frontend.R;
 import com.example.frontend.databinding.FragmentForgotPasswordBinding;
+import com.example.frontend.utils.ToastHelper;
 
 public class ForgotPasswordFragment extends Fragment {
     private FragmentForgotPasswordBinding binding;
     private AuthViewModel viewModel;
+    private String selectedChannel;
+    private String selectedIdentifier;
 
     @Nullable
     @Override
@@ -49,26 +51,30 @@ public class ForgotPasswordFragment extends Fragment {
         binding.btnBackToLogin.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
 
         binding.btnSubmit.setOnClickListener(v -> {
-            String identifier = binding.inputEmail.getText().trim().toLowerCase();
-            if (identifier.isEmpty()) {
+            String input = binding.inputEmail.getText().trim();
+            if (input.isEmpty()) {
                 binding.inputEmail.setErrorState(getString(R.string.error_required_field));
                 return;
             }
 
-            String channel = "email";
-            if (android.util.Patterns.PHONE.matcher(identifier).matches()) {
-                channel = "phone";
-            } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(identifier).matches()) {
-                binding.inputEmail.setErrorState(getString(R.string.error_invalid_email));
+            if (android.util.Patterns.EMAIL_ADDRESS.matcher(input).matches()) {
+                selectedChannel = "email";
+                selectedIdentifier = input.toLowerCase();
+            } else if (input.replaceAll("[^\\d]", "").length() >= 9) {
+                selectedChannel = "phone";
+                selectedIdentifier = normalizePhone(input);
+            } else {
+                binding.inputEmail.setErrorState("Email hoặc số điện thoại không hợp lệ");
                 return;
             }
+            binding.inputEmail.clearMessage();
 
-            viewModel.forgotPassword(channel, identifier);
+            viewModel.forgotPassword(selectedChannel, selectedIdentifier);
         });
 
         binding.tvContactSupport.setOnClickListener(v -> {
             // Logic to contact support/assistant
-            Toast.makeText(getContext(), "Đang kết nối với Kanila Assistant...", Toast.LENGTH_SHORT).show();
+            ToastHelper.showShort(getContext(), "Đang kết nối với Kanila Assistant...");
         });
     }
 
@@ -84,15 +90,17 @@ public class ForgotPasswordFragment extends Fragment {
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnSubmit.setEnabled(true);
                     
-                    String identifier = binding.inputEmail.getText().trim().toLowerCase();
-                    String channel = android.util.Patterns.PHONE.matcher(identifier).matches() ? "phone" : "email";
-                    
-                    navigateToOtp(channel, channel.equals("phone") ? normalizePhone(identifier) : identifier);
+                    navigateToOtp(selectedChannel, selectedIdentifier);
                     break;
                 case ERROR:
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnSubmit.setEnabled(true);
-                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), result.message);
+                    break;
+                case NO_INTERNET:
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.btnSubmit.setEnabled(true);
+                    ToastHelper.showShort(getContext(), getString(R.string.error_no_internet));
                     break;
             }
         });

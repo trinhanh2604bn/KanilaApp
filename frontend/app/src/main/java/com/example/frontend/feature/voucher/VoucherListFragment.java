@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
 import com.example.frontend.data.model.coupon.CouponDto;
+import com.example.frontend.utils.ToastHelper;
 
 public class VoucherListFragment extends Fragment {
     private CouponViewModel viewModel;
@@ -92,7 +92,7 @@ public class VoucherListFragment extends Fragment {
                     break;
                 case ERROR:
                     layoutLoading.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), result.message);
                     break;
             }
         });
@@ -102,6 +102,6 @@ public class VoucherListFragment extends Fragment {
         ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("Voucher Code", text);
         clipboard.setPrimaryClip(clip);
-        Toast.makeText(getContext(), "Đã sao chép mã: " + text, Toast.LENGTH_SHORT).show();
+        ToastHelper.showShort(getContext(), "Đã sao chép mã: " + text);
     }
 }

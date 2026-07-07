@@ -31,7 +31,7 @@ public class TokenManager {
         prefs.edit()
                 .putString(KEY_ACCESS_TOKEN, accessToken)
                 .putString(KEY_REFRESH_TOKEN, refreshToken)
-                .apply();
+                .commit();
     }
 
     public String getAccessToken() {

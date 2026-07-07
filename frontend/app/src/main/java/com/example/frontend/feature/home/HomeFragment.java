@@ -13,10 +13,18 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Intent;
+import com.example.frontend.feature.search.SearchActivity;
+import ui.support.ChatSupportFragment;
+import ui.notification.NotificationCenterFragment;
+import com.example.frontend.feature.wishlist.WishlistFragment;
+import com.example.frontend.data.remote.TokenManager;
+import com.example.frontend.feature.wishlist.WishlistViewModel;
 import android.widget.TextView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import ui.common.BottomNavigationHelper;
 import com.example.frontend.R;
 import com.example.frontend.model.HomeBannerItem;
 import com.example.frontend.model.HomeShortcutItem;
@@ -36,10 +44,14 @@ public class HomeFragment extends Fragment {
     private HomeProductAdapter recommendedProductAdapter;
     private HomeProductAdapter allProductAdapter;
     private HomeViewModel viewModel;
+    private WishlistViewModel wishlistViewModel;
     
     private View layoutHomeStateContainer;
     private View viewHomeLoading;
     private View viewHomeError;
+    private View layoutSearchBar;
+    private View btnNotification, btnCart, btnWishlist;
+    private View ivChatbot;
 
     private View layoutRecommendedError;
     private TextView tvRecommendedError;
@@ -57,6 +69,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
         
         viewPagerBanner = view.findViewById(R.id.viewPagerBanner);
         rvHomeShortcuts = view.findViewById(R.id.rvHomeShortcuts);
@@ -79,8 +92,70 @@ public class HomeFragment extends Fragment {
         setupProductLists();
         
         observeViewModel();
+        setupBottomNavigation(view);
+        setupSearchBehavior(view);
         
         viewModel.loadHomeData();
+    }
+
+    private void setupSearchBehavior(View root) {
+        layoutSearchBar = root.findViewById(R.id.layoutSearchBar);
+        btnNotification = root.findViewById(R.id.btnNotification);
+        btnCart = root.findViewById(R.id.btnCart);
+        btnWishlist = root.findViewById(R.id.btnWishlist);
+        ivChatbot = root.findViewById(R.id.ivChatbot);
+
+        if (layoutSearchBar != null) {
+            layoutSearchBar.setOnClickListener(v -> {
+                Intent intent = new Intent(requireContext(), SearchActivity.class);
+                startActivity(intent);
+            });
+        }
+
+        if (btnCart != null) {
+            btnCart.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.commerce.CartFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+
+        if (btnNotification != null) {
+            btnNotification.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new NotificationCenterFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+
+        if (btnWishlist != null) {
+            btnWishlist.setOnClickListener(v -> {
+                if (TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main, new WishlistFragment())
+                            .addToBackStack(null)
+                            .commit();
+                } else {
+                    Toast.makeText(requireContext(), "Vui lòng đăng nhập để xem yêu thích", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        if (ivChatbot != null) {
+            ivChatbot.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ChatSupportFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+    }
+
+    private void setupBottomNavigation(View view) {
+        BottomNavigationHelper.setupStandardNavigation(this, view);
+        BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_HOME);
     }
 
     private void setupProductLists() {

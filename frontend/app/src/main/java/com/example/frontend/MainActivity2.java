@@ -9,6 +9,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import ui.common.BottomNavigationHelper;
+
 public class MainActivity2 extends AppCompatActivity {
 
     @Override
@@ -25,6 +27,13 @@ public class MainActivity2 extends AppCompatActivity {
             });
         }
 
-        // setupNavigation();
+        setupNavigation();
+    }
+
+    private void setupNavigation() {
+        View mainView = findViewById(R.id.main);
+        if (mainView != null) {
+            BottomNavigationHelper.setupStandardNavigation(this, mainView);
+        }
     }
 }

@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -13,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
 import com.example.frontend.data.model.order.OrderDto;
+import com.example.frontend.utils.ToastHelper;
 import java.util.List;
 
 public class OrderListFragment extends Fragment {
@@ -75,7 +75,7 @@ public class OrderListFragment extends Fragment {
                     break;
                 case ERROR:
                     layoutLoading.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), result.message);
                     break;
             }
         });

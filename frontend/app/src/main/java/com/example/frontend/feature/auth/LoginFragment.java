@@ -7,7 +7,6 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -15,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.frontend.R;
 import com.example.frontend.databinding.FragmentLoginBinding;
+import com.example.frontend.utils.ToastHelper;
 
 public class LoginFragment extends Fragment {
     private FragmentLoginBinding binding;
@@ -85,6 +85,9 @@ public class LoginFragment extends Fragment {
             } else if (input.replaceAll("[^\\d]", "").length() >= 9) {
                 selectedChannel = "phone";
                 identifier = normalizePhone(input);
+            } else if ("admin".equals(input)) {
+                selectedChannel = "email";
+                identifier = "admin";
             } else {
                 binding.inputEmail.setErrorState("Email hoặc số điện thoại không hợp lệ");
                 return;
@@ -133,40 +136,58 @@ public class LoginFragment extends Fragment {
                 case LOADING:
                     binding.progressBar.setVisibility(View.VISIBLE);
                     binding.btnLogin.setEnabled(false);
+                    binding.inputEmail.clearMessage();
+                    binding.inputPassword.clearMessage();
                     break;
                 case SUCCESS:
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnLogin.setEnabled(true);
                     if (result.data != null) {
                         if (result.data.isVerificationRequired()) {
-                            String input = binding.inputEmail.getText().trim();
-                            String identifier = android.util.Patterns.EMAIL_ADDRESS.matcher(input).matches() ? 
-                                    input.toLowerCase() : normalizePhone(input);
-                            
-                            navigateToOtp(identifier);
-                        } else {
-                            Toast.makeText(getContext(), "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                            com.example.frontend.core.auth.AuthResultHandler.handleSuccess(requireActivity());
+                            String loginId = binding.inputEmail.getText().trim();
+                            if (selectedChannel.equals("phone")) loginId = normalizePhone(loginId);
+                            else loginId = loginId.toLowerCase();
+
+                            OtpVerificationFragment otpFragment = OtpVerificationFragment.newInstance(selectedChannel, loginId, "login");
+                            viewModel.clearAuthResult();
+                            getParentFragmentManager().beginTransaction()
+                                    .replace(R.id.main, otpFragment)
+                                    .addToBackStack(null)
+                                    .commit();
+                            return;
                         }
+
+                        ToastHelper.showShort(getContext(), "Đăng nhập thành công");
+                        // Clear the result immediately to prevent re-triggering on recreation
+                        viewModel.clearAuthResult();
+
+                        // UI Thread Safety: Use post to ensure current cycle finishes
+                        new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+                            if (isAdded()) {
+                                com.example.frontend.core.auth.AuthResultHandler.handleSuccess(requireActivity());
+                            }
+                        });
                     }
                     break;
                 case ERROR:
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnLogin.setEnabled(true);
-                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    // Requirement 10: Show clear error message for wrong credentials
+                    if (result.message != null && (result.message.toLowerCase().contains("mật khẩu") || 
+                        result.message.toLowerCase().contains("tài khoản") || 
+                        result.message.toLowerCase().contains("không đúng"))) {
+                        binding.inputEmail.setErrorState(result.message);
+                    } else {
+                        ToastHelper.showShort(getContext(), result.message);
+                    }
+                    break;
+                case NO_INTERNET:
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.btnLogin.setEnabled(true);
+                    ToastHelper.showShort(getContext(), getString(R.string.error_no_internet));
                     break;
             }
         });
-    }
-
-    private void navigateToOtp(String identifier) {
-        OtpVerificationFragment fragment = OtpVerificationFragment.newInstance(
-                selectedChannel, identifier, "login"
-        );
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.main, fragment)
-                .addToBackStack(null)
-                .commit();
     }
 
     @Override

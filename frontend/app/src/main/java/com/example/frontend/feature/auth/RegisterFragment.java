@@ -7,7 +7,6 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -15,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.frontend.R;
 import com.example.frontend.databinding.FragmentRegisterBinding;
+import com.example.frontend.utils.ToastHelper;
 
 public class RegisterFragment extends Fragment {
     private FragmentRegisterBinding binding;
@@ -172,7 +172,7 @@ public class RegisterFragment extends Fragment {
             binding.inputPhone.clearMessage();
 
             if (!binding.cbTerms.isChecked()) {
-                Toast.makeText(getContext(), "Vui lòng đồng ý với điều khoản", Toast.LENGTH_SHORT).show();
+                ToastHelper.showShort(getContext(), "Vui lòng đồng ý với điều khoản");
                 return;
             }
 
@@ -205,18 +205,23 @@ public class RegisterFragment extends Fragment {
                 case SUCCESS:
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnRegister.setEnabled(true);
-                    if (result.data != null && result.data.isVerificationRequired()) {
-                        String email = binding.inputEmail.getText().trim().toLowerCase();
-                        String rawPhone = binding.inputPhone.getText().trim();
-                        String identifier = selectedChannel.equals("email") ? email : normalizePhone(rawPhone);
-                        
-                        navigateToOtp(identifier);
+                    if (result.data != null) {
+                        if (result.data.isVerificationRequired()) {
+                            String email = binding.inputEmail.getText().trim().toLowerCase();
+                            String rawPhone = binding.inputPhone.getText().trim();
+                            String identifier = selectedChannel.equals("email") ? email : normalizePhone(rawPhone);
+
+                            navigateToOtp(identifier);
+                        } else {
+                            ToastHelper.showShort(getContext(), "Đăng ký thành công");
+                            com.example.frontend.core.auth.AuthResultHandler.handleSuccess(requireActivity());
+                        }
                     }
                     break;
                 case ERROR:
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnRegister.setEnabled(true);
-                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showShort(getContext(), result.message);
                     break;
             }
         });

@@ -64,6 +64,12 @@ public class OtpVerificationFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
+        // Hide floating chatbot if exists in parent activity
+        if (getActivity() != null) {
+            View chatbot = getActivity().findViewById(R.id.ivChatbot);
+            if (chatbot != null) chatbot.setVisibility(View.GONE);
+        }
+
         setupUI();
         setupOtpBoxes();
         setupActions();
@@ -75,11 +81,9 @@ public class OtpVerificationFragment extends Fragment {
         if (targetType.equals("email")) {
             binding.tvSubtitle.setText(getString(R.string.auth_otp_verify_email_subtitle, maskEmail(targetValue)));
             binding.btnChangeTarget.setText(R.string.auth_otp_change_email);
-            binding.tvSupportNote.setText(R.string.auth_otp_no_code_email);
         } else {
             binding.tvSubtitle.setText(getString(R.string.auth_otp_verify_phone_subtitle, maskPhone(targetValue)));
             binding.btnChangeTarget.setText(R.string.auth_otp_change_phone);
-            binding.tvSupportNote.setText(R.string.auth_otp_no_code_phone);
         }
     }
 
@@ -142,13 +146,15 @@ public class OtpVerificationFragment extends Fragment {
             if (purpose.equals("login")) {
                 viewModel.login(targetType, targetValue);
             } else {
-                // For register, we don't have all data here, might need another approach
-                // but usually login endpoint also works to re-issue OTP if account exists
                 viewModel.login(targetType, targetValue);
             }
             startResendTimer();
             binding.btnResend.setVisibility(View.GONE);
             binding.tvResendCountdown.setVisibility(View.VISIBLE);
+        });
+
+        binding.layoutHelp.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Đang kết nối với Kanila Assistant...", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -220,6 +226,11 @@ public class OtpVerificationFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        // Show floating chatbot back
+        if (getActivity() != null) {
+            View chatbot = getActivity().findViewById(R.id.ivChatbot);
+            if (chatbot != null) chatbot.setVisibility(View.VISIBLE);
+        }
         super.onDestroyView();
         if (countDownTimer != null) countDownTimer.cancel();
         binding = null;

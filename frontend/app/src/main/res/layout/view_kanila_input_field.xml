@@ -35,7 +35,7 @@
             android:layout_marginEnd="@dimen/spacing_s"
             android:contentDescription="@null"
             android:visibility="gone"
-            app:tint="@color/text_main"
+            app:tint="@color/button"
             tools:src="@drawable/ic_search"
             tools:visibility="visible" />
 
@@ -61,7 +61,7 @@
             android:clickable="true"
             android:focusable="true"
             android:visibility="gone"
-            app:tint="@color/text_main"
+            app:tint="@color/button"
             tools:src="@drawable/ic_eye"
             tools:visibility="visible" />
 

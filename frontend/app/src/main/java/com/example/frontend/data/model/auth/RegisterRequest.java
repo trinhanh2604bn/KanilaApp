@@ -24,12 +24,21 @@ public class RegisterRequest {
     @SerializedName("guest_session_id")
     private String guestSessionId;
 
+    @SerializedName("username")
+    private String username;
+
+    @SerializedName("password")
+    private String password;
+
     public RegisterRequest(String registrationChannel, String fullName, String email, String phone, 
+                           String username, String password,
                            boolean termsAccepted, boolean marketingOptIn, String guestSessionId) {
         this.registrationChannel = registrationChannel;
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
+        this.username = username;
+        this.password = password;
         this.termsAccepted = termsAccepted;
         this.marketingOptIn = marketingOptIn;
         this.guestSessionId = guestSessionId;

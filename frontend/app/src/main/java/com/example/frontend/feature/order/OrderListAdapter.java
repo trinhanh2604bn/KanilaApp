@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.data.model.order.OrderDto;
+import com.example.frontend.data.remote.UrlUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -49,7 +50,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
             OrderDto.OrderItemDto firstItem = order.getItems().get(0);
             holder.tvOrderFirstProductName.setText(firstItem.getProductName());
             Glide.with(holder.ivOrderFirstProduct.getContext())
-                    .load(firstItem.getImageUrl())
+                    .load(UrlUtils.getFullUrl(firstItem.getImageUrl()))
                     .placeholder(R.drawable.ic_product)
                     .into(holder.ivOrderFirstProduct);
 

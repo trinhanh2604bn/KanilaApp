@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.data.model.cart.CartItemDto;
-
+import com.example.frontend.data.remote.UrlUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -97,7 +97,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             tvQuantity.setText(String.valueOf(item.getQuantity()));
             
             Glide.with(ivProduct.getContext())
-                    .load(item.getImageUrlSnapshot())
+                    .load(UrlUtils.getFullUrl(item.getImageUrlSnapshot()))
                     .placeholder(R.drawable.ic_product)
                     .error(R.drawable.ic_product)
                     .into(ivProduct);

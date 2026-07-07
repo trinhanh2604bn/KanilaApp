@@ -35,6 +35,12 @@ public class GuestPromptBottomSheet extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
+        // Hide floating chatbot if exists in parent activity
+        if (getActivity() != null) {
+            View chatbot = getActivity().findViewById(R.id.ivChatbot);
+            if (chatbot != null) chatbot.setVisibility(View.GONE);
+        }
+
         setupContent();
 
         binding.btnLogin.setOnClickListener(v -> {
@@ -85,6 +91,11 @@ public class GuestPromptBottomSheet extends BottomSheetDialogFragment {
 
     @Override
     public void onDestroyView() {
+        // Show floating chatbot back
+        if (getActivity() != null) {
+            View chatbot = getActivity().findViewById(R.id.ivChatbot);
+            if (chatbot != null) chatbot.setVisibility(View.VISIBLE);
+        }
         super.onDestroyView();
         binding = null;
     }

@@ -10,127 +10,295 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/spacing_xl">
+        android:paddingHorizontal="@dimen/spacing_xl"
+        android:paddingBottom="40dp">
+
+        <!-- Logo -->
 
         <ImageButton
             android:id="@+id/btnBack"
             style="@style/Widget.Kanila.Button.Icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="24dp"
+            android:contentDescription="@string/content_desc_back"
             android:src="@drawable/ic_back"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvLogoText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/nunito_bold"
+            android:text="Kanila"
+            android:textColor="@color/accent_dark"
+            android:textSize="34sp"
+            android:letterSpacing="-0.02"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/text_main" />
+            tools:ignore="HardcodedText" />
+
+        <!-- Hero Image -->
+        <ImageView
+            android:id="@+id/ivHero"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_marginTop="5dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/login_8"
+            android:contentDescription="@null"
+            app:layout_constraintTop_toBottomOf="@id/tvLogoText" />
 
         <TextView
             android:id="@+id/tvTitle"
             style="@style/Text.Kanila.H1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_xl"
+            android:layout_marginTop="8dp"
             android:text="@string/auth_login_title"
+            android:textColor="@color/accent_dark"
+            android:textSize="28sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.517"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnBack" />
+            app:layout_constraintTop_toBottomOf="@id/ivHero" />
 
         <TextView
             android:id="@+id/tvSubtitle"
             style="@style/Text.Kanila.Body"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_s"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
             android:text="@string/auth_login_subtitle"
             android:textColor="@color/text_secondary"
+            android:lineSpacingExtra="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintWidth_percent="0.9" />
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayoutAuth"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="32dp"
-            android:background="@drawable/bg_chip_default"
-            app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
-            app:tabIndicatorHeight="0dp"
-            app:tabRippleColor="@null"
-            app:tabSelectedTextColor="@color/white"
-            app:tabTextColor="@color/text_secondary"
-            app:tabMode="fixed">
-            <com.google.android.material.tabs.TabItem android:text="@string/auth_tab_email" />
-            <com.google.android.material.tabs.TabItem android:text="@string/auth_tab_phone" />
-        </com.google.android.material.tabs.TabLayout>
-
-        <FrameLayout
-            android:id="@+id/login_input_container"
+        <LinearLayout
+            android:id="@+id/layoutForm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            app:layout_constraintTop_toBottomOf="@id/tabLayoutAuth">
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/tvSubtitle">
+
+            <!-- Hidden TabLayout to preserve ID -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayoutAuth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
 
             <ui.common.KanilaInputField
                 android:id="@+id/inputEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:kanilaLabel="@string/auth_email_label"
-                app:kanilaHint="@string/auth_email_hint"
-                app:kanilaShowLeadingIcon="true" />
+                app:kanilaHint="Email / Số điện thoại"
+                app:kanilaShowLeadingIcon="true"
+                app:kanilaLeadingIcon="@drawable/ic_mail" />
 
+            <!-- Hidden Phone Input to preserve ID -->
             <ui.common.KanilaInputField
                 android:id="@+id/inputPhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:kanilaLabel="@string/auth_phone_label"
-                app:kanilaHint="@string/auth_phone_hint"
-                app:kanilaShowLeadingIcon="true" />
+                android:visibility="gone" />
 
-        </FrameLayout>
+            <ui.common.KanilaInputField
+                android:id="@+id/inputPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                app:kanilaHint="Mật khẩu"
+                app:kanilaShowLeadingIcon="true"
+                app:kanilaLeadingIcon="@drawable/ic_lock"
+                app:kanilaMode="1" />
 
-        <TextView
-            android:id="@+id/tvForgotPassword"
-            style="@style/Text.Kanila.Caption"
-            android:layout_width="wrap_content"
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutRememberForgot"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_m"
-            android:text="@string/auth_forgot_password"
-            android:textColor="@color/text_tertiary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/login_input_container" />
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/layoutForm">
+
+            <CheckBox
+                android:id="@+id/cbRemember"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/auth_remember_me"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary"
+                android:buttonTint="@color/button"
+                android:fontFamily="@font/nunito_regular"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvForgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/auth_forgot_password"
+                android:textColor="@color/button"
+                android:textSize="13sp"
+                android:fontFamily="@font/nunito_medium"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogin"
-            style="@style/Widget.Kanila.Button.Primary"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
-            android:layout_marginTop="40dp"
-            android:text="@string/auth_btn_send_otp_email"
-            app:layout_constraintTop_toBottomOf="@id/tvForgotPassword" />
+            android:layout_height="56dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/bg_auth_primary_gradient"
+            app:backgroundTint="@null"
+            android:text="@string/auth_login_title"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:fontFamily="@font/nunito_bold"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:cornerRadius="28dp"
+            app:layout_constraintTop_toBottomOf="@id/layoutRememberForgot" />
 
-        <LinearLayout
-            android:id="@+id/layoutRegisterRow"
+        <!-- Social Login -->
+        <TextView
+            android:id="@+id/tvSocialDivider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:orientation="horizontal"
+            android:text="@string/auth_social_divider"
+            android:textColor="@color/text_tertiary"
+            android:textSize="13sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnLogin">
+            app:layout_constraintTop_toBottomOf="@id/btnLogin" />
 
-            <TextView
-                style="@style/Text.Kanila.Caption"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chưa có tài khoản? "
-                android:textColor="@color/text_secondary" />
+        <View
+            android:id="@+id/vDividerLeft"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/border_divider"
+            app:layout_constraintBottom_toBottomOf="@id/tvSocialDivider"
+            app:layout_constraintEnd_toStartOf="@id/tvSocialDivider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvSocialDivider" />
 
-            <TextView
-                android:id="@+id/tvGoToRegister"
-                style="@style/Text.Kanila.BodyMedium"
+        <View
+            android:id="@+id/vDividerRight"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="16dp"
+            android:background="@color/border_divider"
+            app:layout_constraintBottom_toBottomOf="@id/tvSocialDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvSocialDivider"
+            app:layout_constraintTop_toTopOf="@id/tvSocialDivider" />
+
+        <LinearLayout
+            android:id="@+id/layoutSocialButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/tvSocialDivider">
+
+            <!-- Social placeholders -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardGoogle"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tạo tài khoản"
-                android:textColor="@color/button" />
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#FFD6DE"
+                app:strokeWidth="1dp">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingHorizontal="20dp"
+                    android:gravity="center"
+                    tools:ignore="UseCompoundDrawables">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_google"
+                        android:contentDescription="@null" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Google"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/nunito_semibold"
+                        android:textColor="@color/text_main"
+                        tools:ignore="HardcodedText" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardFacebook"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#FFD6DE"
+                app:strokeWidth="1dp">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingHorizontal="20dp"
+                    android:gravity="center"
+                    tools:ignore="UseCompoundDrawables">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_facebook"
+                        android:contentDescription="@null" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Facebook"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/nunito_semibold"
+                        android:textColor="@color/text_main"
+                        tools:ignore="HardcodedText" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvGoToRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:padding="8dp"
+            android:text="@string/auth_footer_register"
+            android:textColor="@color/text_secondary"
+            android:textSize="15sp"
+            android:fontFamily="@font/nunito_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutSocialButtons" />
+
 
         <ProgressBar
             android:id="@+id/progressBar"

@@ -24,10 +24,10 @@ public class AuthRepository {
         this.tokenManager = TokenManager.getInstance(context);
     }
 
-    public void login(String channel, String identifier, MutableLiveData<NetworkResult<AuthResponse>> result) {
+    public void login(String channel, String identifier, String password, MutableLiveData<NetworkResult<AuthResponse>> result) {
         result.setValue(NetworkResult.loading());
         String guestSessionId = tokenManager.getGuestSession();
-        apiService.login(new LoginRequest(channel, identifier, guestSessionId)).enqueue(new Callback<ApiResponse<AuthResponse>>() {
+        apiService.login(new LoginRequest(channel, identifier, password, guestSessionId)).enqueue(new Callback<ApiResponse<AuthResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<AuthResponse>> call, Response<ApiResponse<AuthResponse>> response) {
                 handleAuthResponse(response, result);
@@ -43,7 +43,8 @@ public class AuthRepository {
     public void forgotPassword(String channel, String identifier, MutableLiveData<NetworkResult<AuthResponse>> result) {
         result.setValue(NetworkResult.loading());
         String guestSessionId = tokenManager.getGuestSession();
-        apiService.forgotPassword(new LoginRequest(channel, identifier, guestSessionId)).enqueue(new Callback<ApiResponse<AuthResponse>>() {
+        // Forgot password doesn't need password yet
+        apiService.forgotPassword(new LoginRequest(channel, identifier, null, guestSessionId)).enqueue(new Callback<ApiResponse<AuthResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<AuthResponse>> call, Response<ApiResponse<AuthResponse>> response) {
                 handleAuthResponse(response, result);
@@ -57,10 +58,11 @@ public class AuthRepository {
     }
 
     public void register(String channel, String fullName, String email, String phone, 
+                         String username, String password,
                          boolean termsAccepted, boolean marketingOptIn, MutableLiveData<NetworkResult<AuthResponse>> result) {
         result.setValue(NetworkResult.loading());
         String guestSessionId = tokenManager.getGuestSession();
-        apiService.register(new RegisterRequest(channel, fullName, email, phone, termsAccepted, marketingOptIn, guestSessionId))
+        apiService.register(new RegisterRequest(channel, fullName, email, phone, username, password, termsAccepted, marketingOptIn, guestSessionId))
                 .enqueue(new Callback<ApiResponse<AuthResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<AuthResponse>> call, Response<ApiResponse<AuthResponse>> response) {

@@ -39,8 +39,8 @@ require('dotenv').config();
 const path = require('path');
 const mongoose = require('mongoose');
 
-const IMAGE_BASE_URL = process.env.KANILA_IMAGE_BASE_URL || 'https://example.com/kanila/makeup-products';
-const LOGO_BASE_URL = process.env.KANILA_LOGO_BASE_URL || 'https://example.com/kanila/makeup-brands';
+const IMAGE_BASE_URL = process.env.KANILA_IMAGE_BASE_URL || 'http://localhost:5000/kanila/makeup-products';
+const LOGO_BASE_URL = process.env.KANILA_LOGO_BASE_URL || 'http://localhost:5000/kanila/makeup-brands';
 const SHOULD_RESET = process.argv.includes('--reset');
 
 function objectIdFromNumber(n) {

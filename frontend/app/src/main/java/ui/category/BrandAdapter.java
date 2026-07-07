@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.frontend.R;
+import com.example.frontend.data.remote.UrlUtils;
 import com.example.frontend.model.Brand;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHol
         
         if (brand.getLogoUrl() != null && !brand.getLogoUrl().isEmpty()) {
             Glide.with(holder.ivBrandLogo.getContext())
-                    .load(brand.getLogoUrl())
+                    .load(UrlUtils.getFullUrl(brand.getLogoUrl()))
                     .placeholder(R.drawable.bg_circle)
                     .error(R.drawable.bg_circle)
                     .into(holder.ivBrandLogo);

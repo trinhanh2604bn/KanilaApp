@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.frontend.R;
 import com.example.frontend.databinding.FragmentRegisterBinding;
-import com.google.android.material.tabs.TabLayout;
 
 public class RegisterFragment extends Fragment {
     private FragmentRegisterBinding binding;
@@ -34,38 +33,32 @@ public class RegisterFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
-        setupTabs();
+        // Hide floating chatbot if exists in parent activity
+        if (getActivity() != null) {
+            View chatbot = getActivity().findViewById(R.id.ivChatbot);
+            if (chatbot != null) chatbot.setVisibility(View.GONE);
+        }
+
         setupInputs();
         setupTerms();
         setupActions();
         observeViewModel();
     }
 
-    private void setupTabs() {
-        binding.tabLayoutAuth.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 0) {
-                    selectedChannel = "email";
-                } else {
-                    selectedChannel = "phone";
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
-        });
+    private void switchRegistrationMode(String mode) {
+        selectedChannel = mode;
+        if (mode.equals("email")) {
+            binding.tvSwitchMode.setText("Số điện thoại");
+            binding.inputEmail.setVisibility(View.VISIBLE);
+            binding.inputPhone.setVisibility(View.GONE);
+        } else {
+            binding.tvSwitchMode.setText("Email");
+            binding.inputEmail.setVisibility(View.GONE);
+            binding.inputPhone.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setupInputs() {
-        // Full Name Input
-        binding.inputFullName.setLabelText(getString(R.string.auth_full_name_label));
-        binding.inputFullName.getEditText().setHint(R.string.auth_full_name_hint);
-        binding.inputFullName.setLeadingIcon(R.drawable.ic_account);
-
         // Email Input
         binding.inputEmail.setLabelText(getString(R.string.auth_email_label));
         binding.inputEmail.getEditText().setHint(R.string.auth_email_hint);
@@ -77,7 +70,32 @@ public class RegisterFragment extends Fragment {
         binding.inputPhone.setLeadingIcon(R.drawable.ic_account);
         binding.inputPhone.getEditText().setInputType(android.text.InputType.TYPE_CLASS_PHONE);
 
+        // Password Input
+        binding.inputPassword.setLabelText("Mật khẩu");
+        binding.inputPassword.getEditText().setHint("••••••••");
+        binding.inputPassword.setLeadingIcon(R.drawable.ic_lock);
+        binding.inputPassword.showMessage("Ít nhất 8 ký tự");
+
+        // Confirm Password Input
+        binding.inputConfirmPassword.setLabelText("Xác nhận mật khẩu");
+        binding.inputConfirmPassword.getEditText().setHint("••••••••");
+        binding.inputConfirmPassword.setLeadingIcon(R.drawable.ic_lock);
+
+        switchRegistrationMode("email");
+
         binding.btnRegister.setText(R.string.auth_register_title);
+
+        // Style GoToLogin footer
+        String footerText = getString(R.string.auth_footer_login);
+        SpannableString footerSpannable = new SpannableString(footerText);
+        int loginStart = footerText.indexOf("Đăng nhập");
+        if (loginStart != -1) {
+            footerSpannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.button)),
+                    loginStart, loginStart + "Đăng nhập".length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            footerSpannable.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
+                    loginStart, loginStart + "Đăng nhập".length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        binding.tvGoToLogin.setText(footerSpannable);
     }
 
     private void setupTerms() {
@@ -103,34 +121,50 @@ public class RegisterFragment extends Fragment {
     private void setupActions() {
         binding.btnBack.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
 
+        binding.tvSwitchMode.setOnClickListener(v -> {
+            if (selectedChannel.equals("email")) {
+                switchRegistrationMode("phone");
+            } else {
+                switchRegistrationMode("email");
+            }
+        });
+
         binding.btnRegister.setOnClickListener(v -> {
-            String fullName = binding.inputFullName.getText().trim();
-            if (fullName.isEmpty()) {
-                binding.inputFullName.setErrorState(getString(R.string.error_required_field));
+            String password = binding.inputPassword.getText().trim();
+            String confirmPassword = binding.inputConfirmPassword.getText().trim();
+
+            if (password.length() < 8) {
+                binding.inputPassword.setErrorState(getString(R.string.error_password_weak));
                 return;
             }
-            binding.inputFullName.clearMessage();
+            binding.inputPassword.clearMessage();
+
+            if (!password.equals(confirmPassword)) {
+                binding.inputConfirmPassword.setErrorState(getString(R.string.error_password_mismatch));
+                return;
+            }
+            binding.inputConfirmPassword.clearMessage();
 
             String email = binding.inputEmail.getText().trim().toLowerCase();
             String rawPhone = binding.inputPhone.getText().trim();
             String phone = rawPhone.isEmpty() ? null : normalizePhone(rawPhone);
+
+            // Auto generate username and fullName since they are hidden
+            String identifier = selectedChannel.equals("email") ? email : phone;
+            String base = (identifier != null && identifier.contains("@")) ? identifier.split("@")[0] : identifier;
+            if (base != null) base = base.replaceAll("[^a-zA-Z0-9]", "");
+            
+            String username = "user_" + (base != null ? base : "") + "_" + (System.currentTimeMillis() % 1000);
+            String fullName = base != null ? base : "Kanila User";
 
             if (selectedChannel.equals("email")) {
                 if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     binding.inputEmail.setErrorState(getString(R.string.error_invalid_email));
                     return;
                 }
-                if (!rawPhone.isEmpty() && rawPhone.length() < 9) {
-                    binding.inputPhone.setErrorState(getString(R.string.error_invalid_phone));
-                    return;
-                }
             } else {
                 if (rawPhone.isEmpty() || rawPhone.length() < 9) {
                     binding.inputPhone.setErrorState(getString(R.string.error_invalid_phone));
-                    return;
-                }
-                if (!email.isEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    binding.inputEmail.setErrorState(getString(R.string.error_invalid_email));
                     return;
                 }
             }
@@ -142,7 +176,7 @@ public class RegisterFragment extends Fragment {
                 return;
             }
 
-            viewModel.register(selectedChannel, fullName, email.isEmpty() ? null : email, phone, true, binding.cbMarketing.isChecked());
+            viewModel.register(selectedChannel, fullName, email.isEmpty() ? null : email, phone, username, password, true, binding.cbMarketing.isChecked());
         });
 
         binding.tvGoToLogin.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
@@ -200,6 +234,11 @@ public class RegisterFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        // Show floating chatbot back
+        if (getActivity() != null) {
+            View chatbot = getActivity().findViewById(R.id.ivChatbot);
+            if (chatbot != null) chatbot.setVisibility(View.VISIBLE);
+        }
         super.onDestroyView();
         binding = null;
     }

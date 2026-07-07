@@ -11,12 +11,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.frontend.R;
 import com.example.frontend.databinding.FragmentForgotPasswordBinding;
-import com.google.android.material.tabs.TabLayout;
 
 public class ForgotPasswordFragment extends Fragment {
     private FragmentForgotPasswordBinding binding;
     private AuthViewModel viewModel;
-    private String selectedChannel = "email";
 
     @Nullable
     @Override
@@ -30,68 +28,47 @@ public class ForgotPasswordFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
-        setupTabs();
+        // Hide floating chatbot if exists in parent activity
+        if (getActivity() != null) {
+            View chatbot = getActivity().findViewById(R.id.ivChatbot);
+            if (chatbot != null) chatbot.setVisibility(View.GONE);
+        }
+
         setupInputs();
         setupActions();
         observeViewModel();
     }
 
-    private void setupTabs() {
-        binding.tabLayoutAuth.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 0) {
-                    selectedChannel = "email";
-                    binding.inputEmail.setVisibility(View.VISIBLE);
-                    binding.inputPhone.setVisibility(View.GONE);
-                    binding.btnSubmit.setText(R.string.auth_btn_send_otp_email);
-                } else {
-                    selectedChannel = "phone";
-                    binding.inputEmail.setVisibility(View.GONE);
-                    binding.inputPhone.setVisibility(View.VISIBLE);
-                    binding.btnSubmit.setText(R.string.auth_btn_send_otp_phone);
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
-        });
-    }
-
     private void setupInputs() {
-        binding.inputEmail.setLabelText(getString(R.string.auth_email_label));
-        binding.inputEmail.getEditText().setHint(R.string.auth_email_hint);
+        binding.inputEmail.getEditText().setHint("Email / Số điện thoại");
         binding.inputEmail.setLeadingIcon(R.drawable.ic_mail);
-
-        binding.inputPhone.setLabelText(getString(R.string.auth_phone_label));
-        binding.inputPhone.getEditText().setHint(R.string.auth_phone_hint);
-        binding.inputPhone.setLeadingIcon(R.drawable.ic_account);
-        binding.inputPhone.getEditText().setInputType(android.text.InputType.TYPE_CLASS_PHONE);
     }
 
     private void setupActions() {
-        binding.btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
+        binding.btnBack.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
+        binding.btnBackToLogin.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
 
         binding.btnSubmit.setOnClickListener(v -> {
-            String identifier;
-            if (selectedChannel.equals("email")) {
-                identifier = binding.inputEmail.getText().trim().toLowerCase();
-                if (identifier.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(identifier).matches()) {
-                    binding.inputEmail.setErrorState(getString(R.string.error_invalid_email));
-                    return;
-                }
-            } else {
-                identifier = binding.inputPhone.getText().trim();
-                if (identifier.isEmpty() || identifier.length() < 9) {
-                    binding.inputPhone.setErrorState(getString(R.string.error_invalid_phone));
-                    return;
-                }
+            String identifier = binding.inputEmail.getText().trim().toLowerCase();
+            if (identifier.isEmpty()) {
+                binding.inputEmail.setErrorState(getString(R.string.error_required_field));
+                return;
             }
-            // Use forgot-password endpoint to issue OTP with "reset_password" purpose
-            viewModel.forgotPassword(selectedChannel, identifier);
+
+            String channel = "email";
+            if (android.util.Patterns.PHONE.matcher(identifier).matches()) {
+                channel = "phone";
+            } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(identifier).matches()) {
+                binding.inputEmail.setErrorState(getString(R.string.error_invalid_email));
+                return;
+            }
+
+            viewModel.forgotPassword(channel, identifier);
+        });
+
+        binding.tvContactSupport.setOnClickListener(v -> {
+            // Logic to contact support/assistant
+            Toast.makeText(getContext(), "Đang kết nối với Kanila Assistant...", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -106,10 +83,11 @@ public class ForgotPasswordFragment extends Fragment {
                 case SUCCESS:
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnSubmit.setEnabled(true);
-                    String email = binding.inputEmail.getText().trim().toLowerCase();
-                    String rawPhone = binding.inputPhone.getText().trim();
-                    String identifier = selectedChannel.equals("email") ? email : normalizePhone(rawPhone);
-                    navigateToOtp(identifier);
+                    
+                    String identifier = binding.inputEmail.getText().trim().toLowerCase();
+                    String channel = android.util.Patterns.PHONE.matcher(identifier).matches() ? "phone" : "email";
+                    
+                    navigateToOtp(channel, channel.equals("phone") ? normalizePhone(identifier) : identifier);
                     break;
                 case ERROR:
                     binding.progressBar.setVisibility(View.GONE);
@@ -131,9 +109,9 @@ public class ForgotPasswordFragment extends Fragment {
         return digits;
     }
 
-    private void navigateToOtp(String identifier) {
+    private void navigateToOtp(String channel, String identifier) {
         OtpVerificationFragment fragment = OtpVerificationFragment.newInstance(
-                selectedChannel, identifier, "reset_password"
+                channel, identifier, "reset_password"
         );
         getParentFragmentManager().beginTransaction()
                 .replace(R.id.main, fragment)
@@ -143,6 +121,11 @@ public class ForgotPasswordFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        // Show floating chatbot back
+        if (getActivity() != null) {
+            View chatbot = getActivity().findViewById(R.id.ivChatbot);
+            if (chatbot != null) chatbot.setVisibility(View.VISIBLE);
+        }
         super.onDestroyView();
         binding = null;
     }

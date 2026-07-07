@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.data.model.account.ProfileHubDto;
+import com.example.frontend.data.remote.UrlUtils;
 import com.example.frontend.feature.account.AccountViewModel;
 
 import java.util.Locale;
@@ -150,7 +151,7 @@ public class AccountFragment extends Fragment {
         if (data.getProfile() != null) {
             tvName.setText(data.getProfile().getFullName());
             Glide.with(this)
-                    .load(data.getProfile().getAvatarUrl())
+                    .load(UrlUtils.getFullUrl(data.getProfile().getAvatarUrl()))
                     .placeholder(R.drawable.ic_account)
                     .error(R.drawable.ic_account)
                     .into(ivAvatar);

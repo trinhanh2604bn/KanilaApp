@@ -12,9 +12,13 @@ public class LoginRequest {
     @SerializedName("guest_session_id")
     private String guestSessionId;
 
-    public LoginRequest(String loginChannel, String identifier, String guestSessionId) {
+    @SerializedName("password")
+    private String password;
+
+    public LoginRequest(String loginChannel, String identifier, String password, String guestSessionId) {
         this.loginChannel = loginChannel;
         this.identifier = identifier;
+        this.password = password;
         this.guestSessionId = guestSessionId;
     }
 

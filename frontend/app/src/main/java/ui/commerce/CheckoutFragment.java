@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.data.model.checkout.CheckoutSessionDto;
+import com.example.frontend.data.remote.UrlUtils;
 import com.example.frontend.feature.checkout.CheckoutViewModel;
 
 import java.util.Locale;
@@ -287,7 +288,7 @@ public class CheckoutFragment extends Fragment {
             tvPrice.setText(formatPrice(item.getPrice()));
             tvQuantity.setText("Số lượng: " + item.getQuantity());
 
-            Glide.with(this).load(item.getImageUrl()).placeholder(R.drawable.ic_product).into(ivProduct);
+            Glide.with(this).load(UrlUtils.getFullUrl(item.getImageUrl())).placeholder(R.drawable.ic_product).into(ivProduct);
             
             layoutCheckoutItemsList.addView(itemView);
         }

@@ -168,11 +168,11 @@ const generateTokens = (account) => {
 
 const register = async (req, res) => {
   try {
-    const { registration_channel, full_name, email, phone } = req.body;
-    console.log(`[AUTH] Register request: channel=${registration_channel}, name=${full_name}, email=${email}, phone=${phone}`);
+    const { registration_channel, full_name, email, phone, username, password } = req.body;
+    console.log(`[AUTH] Register request: channel=${registration_channel}, name=${full_name}, email=${email}, phone=${phone}, username=${username}`);
 
-    if (!registration_channel || !full_name) {
-      return res.status(400).json({ success: false, message: "registration_channel and full_name are required" });
+    if (!registration_channel || !full_name || !username || !password) {
+      return res.status(400).json({ success: false, message: "registration_channel, full_name, username and password are required" });
     }
 
     const target_type = registration_channel;
@@ -185,20 +185,33 @@ const register = async (req, res) => {
 
     // Check duplicate
     const query = target_type === "email" ? { email: target_value } : { phone: target_value };
-    let account = await Account.findOne(query);
+    let account = await Account.findOne({ $or: [query, { username }] });
 
     if (account) {
-      console.log(`[AUTH] Account exists: id=${account._id}, status=${account.account_status}`);
+      console.log(`[AUTH] Account or username exists: id=${account._id}, status=${account.account_status}`);
+      if (account.username === username) {
+         return res.status(400).json({ success: false, message: "Tên đăng nhập đã được sử dụng." });
+      }
       if (account.account_status !== "pending") {
         return res.status(400).json({ success: false, message: `${target_type === 'email' ? 'Email' : 'Số điện thoại'} đã được đăng ký.` });
       }
-      // If pending, continue to issue new OTP and update name
+      // If pending, continue to issue new OTP and update name/password/username
+      const salt = await bcrypt.genSalt(10);
+      account.password_hash = await bcrypt.hash(password, salt);
+      account.username = username;
+      await account.save();
       await Customer.findOneAndUpdate({ account_id: account._id }, { full_name: String(full_name).trim() });
     } else {
       console.log(`[AUTH] Creating new pending account for ${target_value}`);
+
+      const salt = await bcrypt.genSalt(10);
+      const password_hash = await bcrypt.hash(password, salt);
+
       // Create pending account
       const accountData = {
         registration_channel,
+        username,
+        password_hash,
         account_status: "pending",
         account_type: "customer",
       };
@@ -237,7 +250,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { login_channel, identifier } = req.body;
+    const { login_channel, identifier, password } = req.body;
     console.log(`[AUTH] Login request: channel=${login_channel}, identifier=${identifier}`);
 
     if (!login_channel || !identifier) {
@@ -248,20 +261,42 @@ const login = async (req, res) => {
     console.log(`[AUTH] Normalized target: ${target_value}`);
     const query = login_channel === "email" ? { email: target_value } : { phone: target_value };
 
-    const account = await Account.findOne(query);
+    const account = await Account.findOne(query).select("+password_hash");
 
-    if (account && account.account_status !== "locked") {
-      console.log(`[AUTH] Account found: id=${account._id}, issuing OTP`);
-      const otp = await issueOtp(login_channel, target_value, "login", account._id, req);
-      await sendOtp(login_channel, target_value, otp, "login");
-    } else {
-      console.log(`[AUTH] Account not found or locked for ${target_value}`);
+    if (!account) {
+      return res.status(404).json({ success: false, message: "Tài khoản không tồn tại." });
     }
 
-    // Generic response
+    if (account.account_status === "locked") {
+      return res.status(403).json({ success: false, message: "Tài khoản đang bị khóa." });
+    }
+
+    // If password is provided, check it. If not, it's likely a resend OTP request for a pending/unverified account
+    if (password) {
+      const isMatch = await bcrypt.compare(password, account.password_hash);
+      if (!isMatch) {
+        account.failed_login_count += 1;
+        if (account.failed_login_count >= 5) {
+          account.account_status = "locked";
+          account.locked_until = new Date(Date.now() + 30 * 60 * 1000); // 30 mins
+        }
+        await account.save();
+        return res.status(400).json({ success: false, message: "Mật khẩu không chính xác." });
+      }
+    } else if (account.account_status !== "pending") {
+      // Password is required for active accounts
+      return res.status(400).json({ success: false, message: "Mật khẩu là bắt buộc." });
+    }
+
+    // For pending accounts or successful password match, issue OTP if needed
+    // In this refactored flow, we always go through OTP verification for demo purposes or unverified state
+    console.log(`[AUTH] Issuing OTP for id=${account._id}`);
+    const otp = await issueOtp(login_channel, target_value, "login", account._id, req);
+    await sendOtp(login_channel, target_value, otp, "login");
+
     return res.status(200).json({
       success: true,
-      message: "Nếu thông tin hợp lệ, Kanila sẽ gửi mã xác minh.",
+      message: "Mã xác minh đã được gửi.",
       data: {
         verification_required: true,
       }
@@ -271,6 +306,7 @@ const login = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 const forgotPassword = async (req, res) => {
   try {
@@ -382,6 +418,8 @@ const verifyOtp = async (req, res) => {
     if (account.account_status === "pending") account.account_status = "active";
     account.last_login_at = new Date();
     account.failed_login_count = 0;
+    // Activate account
+    account.account_status = "active";
     await account.save();
 
     const { accessToken, refreshToken } = generateTokens(account);

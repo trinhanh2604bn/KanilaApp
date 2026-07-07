@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
+import com.example.frontend.data.remote.UrlUtils;
 import com.example.frontend.model.Product;
 
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class SearchRecommendProductAdapter extends RecyclerView.Adapter<SearchRe
 
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
             Glide.with(holder.ivProductImage.getContext())
-                    .load(product.getImageUrl())
+                    .load(UrlUtils.getFullUrl(product.getImageUrl()))
                     .placeholder(R.drawable.ic_product)
                     .error(R.drawable.ic_product)
                     .into(holder.ivProductImage);

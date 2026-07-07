@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const routes = require("./routes");
 const notFound = require("./middlewares/notFound.middleware");
 const errorHandler = require("./middlewares/error.middleware");
@@ -12,6 +13,16 @@ app.use(cors());
 // The product form sends base64 in JSON; large images can exceed Express' default limit.
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+
+// Static files
+app.use("/kanila", express.static(path.join(__dirname, "public/kanila")));
+
+// Fallback for missing product images to avoid 404 in Glide
+app.get("/kanila/products/*", (req, res) => {
+  // Return a generic placeholder if the specific image is not found
+  // You can also send a local file: res.sendFile(path.join(__dirname, "public/placeholder.jpg"));
+  res.redirect("https://placehold.co/600x600?text=Kanila+Product");
+});
 
 // Health check endpoint
 app.get("/api/health", async (req, res) => {

@@ -23,6 +23,7 @@ public class ProductDetailFragment extends Fragment {
     
     private TextView tvName, tvBrand, tvPrice, tvComparePrice, tvDesc, tvGalleryCounter;
     private ViewPager2 vpGallery;
+    private ProductGalleryAdapter galleryAdapter;
 
     public static ProductDetailFragment newInstance(String productId) {
         ProductDetailFragment fragment = new ProductDetailFragment();
@@ -76,6 +77,15 @@ public class ProductDetailFragment extends Fragment {
         tvGalleryCounter = view.findViewById(R.id.tvProductGalleryCounter);
         vpGallery = view.findViewById(R.id.vpProductGallery);
 
+        galleryAdapter = new ProductGalleryAdapter();
+        vpGallery.setAdapter(galleryAdapter);
+        vpGallery.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                updateGalleryCounter(position);
+            }
+        });
+
         view.findViewById(R.id.btnAddToCart).setOnClickListener(v -> {
             // TODO: Add to cart
             Toast.makeText(getContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
@@ -94,6 +104,22 @@ public class ProductDetailFragment extends Fragment {
                     break;
             }
         });
+
+        viewModel.getMediaResult().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && result.data != null) {
+                galleryAdapter.setMediaList(result.data);
+                updateGalleryCounter(vpGallery.getCurrentItem());
+            }
+        });
+    }
+
+    private void updateGalleryCounter(int position) {
+        if (galleryAdapter != null && galleryAdapter.getItemCount() > 0) {
+            tvGalleryCounter.setText(String.format(Locale.US, "%d/%d", position + 1, galleryAdapter.getItemCount()));
+            tvGalleryCounter.setVisibility(View.VISIBLE);
+        } else {
+            tvGalleryCounter.setVisibility(View.GONE);
+        }
     }
 
     private void bindProductData(Product product) {

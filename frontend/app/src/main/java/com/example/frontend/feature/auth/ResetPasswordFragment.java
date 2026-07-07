@@ -46,6 +46,12 @@ public class ResetPasswordFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
+        // Hide floating chatbot if exists in parent activity
+        if (getActivity() != null) {
+            View chatbot = getActivity().findViewById(R.id.ivChatbot);
+            if (chatbot != null) chatbot.setVisibility(View.GONE);
+        }
+
         setupInputs();
         setupActions();
         observeViewModel();
@@ -53,14 +59,18 @@ public class ResetPasswordFragment extends Fragment {
 
     private void setupInputs() {
         binding.inputNewPassword.setLabelText(getString(R.string.auth_reset_password_new_label));
-        binding.inputNewPassword.setLeadingIcon(R.drawable.ic_mail); // Should be lock icon
+        binding.inputNewPassword.getEditText().setHint("••••••••");
+        binding.inputNewPassword.setLeadingIcon(R.drawable.ic_lock);
+        binding.inputNewPassword.showMessage("Ít nhất 8 ký tự");
         
         binding.inputConfirmPassword.setLabelText(getString(R.string.auth_reset_password_confirm_label));
-        binding.inputConfirmPassword.setLeadingIcon(R.drawable.ic_mail); // Should be lock icon
+        binding.inputConfirmPassword.getEditText().setHint("••••••••");
+        binding.inputConfirmPassword.setLeadingIcon(R.drawable.ic_lock);
     }
 
     private void setupActions() {
-        binding.btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
+        binding.btnBack.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
+        binding.tvBackToLogin.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
 
         binding.btnReset.setOnClickListener(v -> {
             String newPass = binding.inputNewPassword.getText().trim();
@@ -70,13 +80,19 @@ public class ResetPasswordFragment extends Fragment {
                 binding.inputNewPassword.setErrorState(getString(R.string.error_password_weak));
                 return;
             }
+            binding.inputNewPassword.clearMessage();
 
             if (!newPass.equals(confirmPass)) {
                 binding.inputConfirmPassword.setErrorState(getString(R.string.error_password_mismatch));
                 return;
             }
+            binding.inputConfirmPassword.clearMessage();
 
             viewModel.resetPassword(resetToken, newPass, confirmPass);
+        });
+
+        binding.layoutHelp.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Đang kết nối với Kanila Assistant...", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -93,9 +109,7 @@ public class ResetPasswordFragment extends Fragment {
                     binding.btnReset.setEnabled(true);
                     Toast.makeText(getContext(), R.string.auth_reset_success, Toast.LENGTH_SHORT).show();
                     // Go back to login
-                    getParentFragmentManager().popBackStack(); // Pop Reset
-                    getParentFragmentManager().popBackStack(); // Pop Otp
-                    getParentFragmentManager().popBackStack(); // Pop Forgot
+                    requireActivity().getOnBackPressedDispatcher().onBackPressed();
                     break;
                 case ERROR:
                     binding.progressBar.setVisibility(View.GONE);
@@ -108,6 +122,11 @@ public class ResetPasswordFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        // Show floating chatbot back
+        if (getActivity() != null) {
+            View chatbot = getActivity().findViewById(R.id.ivChatbot);
+            if (chatbot != null) chatbot.setVisibility(View.VISIBLE);
+        }
         super.onDestroyView();
         binding = null;
     }

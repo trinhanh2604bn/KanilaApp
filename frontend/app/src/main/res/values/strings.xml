@@ -355,9 +355,13 @@
     <string name="auth_otp_verify_title">Xác minh tài khoản</string>
     <string name="auth_otp_verify_email_subtitle">Nhập mã OTP gồm 6 số đã được gửi đến email %s.</string>
     <string name="auth_otp_verify_phone_subtitle">Nhập mã OTP gồm 6 số đã được gửi đến số điện thoại %s.</string>
-    <string name="auth_otp_resend_countdown">Gửi lại mã sau %02d:%02d</string>
+    <string name="auth_otp_resend_countdown">Gửi lại mã sau %1$02d:%2$02d</string>
     <string name="auth_otp_btn_resend">Gửi lại mã</string>
     <string name="auth_otp_btn_verify">Xác minh</string>
+    <string name="auth_otp_notice_title">Bảo mật tài khoản bằng xác minh nhanh chóng</string>
+    <string name="auth_otp_notice_desc">Thông tin của bạn được mã hóa và bảo vệ an toàn tuyệt đối.</string>
+    <string name="auth_otp_help_question">Không nhận được mã OTP?</string>
+    <string name="auth_otp_help_action">Chat với Kanila Assistant để được hỗ trợ ngay!</string>
     <string name="auth_otp_change_email">Đổi email</string>
     <string name="auth_otp_change_phone">Đổi số điện thoại</string>
     <string name="auth_otp_no_code_email">Không nhận được mã? Kiểm tra hộp thư rác hoặc chat với Kanila Assistant.</string>
@@ -370,16 +374,25 @@
 
     <string name="auth_forgot_password">Quên mật khẩu?</string>
     <string name="auth_forgot_password_title">Quên mật khẩu?</string>
-    <string name="auth_forgot_password_subtitle">Nhập email hoặc số điện thoại để nhận mã đặt lại mật khẩu.</string>
+    <string name="auth_forgot_password_subtitle">Nhập email hoặc số điện thoại để nhận hướng dẫn đặt lại mật khẩu.</string>
+    <string name="auth_forgot_password_notice">Chúng tôi sẽ gửi mã xác minh để bảo vệ tài khoản của bạn</string>
+    <string name="auth_btn_back_to_login">Quay lại đăng nhập</string>
+    <string name="auth_help_not_remember">Không nhớ thông tin?</string>
+    <string name="auth_help_contact_assistant">Liên hệ Kanila AI Assistant ></string>
+    <string name="auth_btn_send_otp">Gửi mã xác minh</string>
     <string name="auth_reset_password_title">Đặt lại mật khẩu</string>
     <string name="auth_reset_password_new_label">Mật khẩu mới</string>
     <string name="auth_reset_password_confirm_label">Xác nhận mật khẩu mới</string>
+    <string name="auth_reset_password_subtitle">Tạo mật khẩu mới để bảo vệ tài khoản của bạn.</string>
     <string name="auth_btn_reset_password">Đặt lại mật khẩu</string>
     <string name="auth_reset_success">Đặt lại mật khẩu thành công</string>
     <string name="error_password_mismatch">Mật khẩu xác nhận không khớp.</string>
     <string name="error_password_weak">Mật khẩu phải có ít nhất 8 ký tự.</string>
 
     <string name="auth_otp_channel_label">Nhận mã xác minh qua:</string>
+    <string name="auth_remember_me">Ghi nhớ đăng nhập</string>
+    <string name="auth_social_divider">Hoặc tiếp tục với</string>
+    <string name="auth_need_help">Cần hỗ trợ?</string>
     <string name="error_no_internet">Không có kết nối Internet</string>
     <string name="empty_state_title">Chưa có dữ liệu</string>
     <string name="empty_state_description">Hiện tại chưa có thông tin để hiển thị.</string>

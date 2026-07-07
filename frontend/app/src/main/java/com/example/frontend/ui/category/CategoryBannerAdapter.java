@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.frontend.R;
+import com.example.frontend.data.remote.UrlUtils;
 import com.example.frontend.model.HomeBannerItem;
 import com.google.android.material.button.MaterialButton;
 
@@ -80,7 +81,7 @@ public class CategoryBannerAdapter extends RecyclerView.Adapter<CategoryBannerAd
 
             if (item.getBackgroundImageUrl() != null && !item.getBackgroundImageUrl().isEmpty()) {
                 Glide.with(ivBackground.getContext())
-                        .load(item.getBackgroundImageUrl())
+                        .load(UrlUtils.getFullUrl(item.getBackgroundImageUrl()))
                         .placeholder(item.getBackgroundDrawableRes())
                         .error(item.getBackgroundDrawableRes())
                         .into(ivBackground);

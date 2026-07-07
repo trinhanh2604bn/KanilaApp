@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.frontend.R;
+import ui.common.ViewUtils;
 import ui.common.helper.ChatbotLoadingAnimator;
 
 public class ChatSupportFragment extends Fragment {
@@ -28,6 +29,22 @@ public class ChatSupportFragment extends Fragment {
 
         chatbotLoadingAnimator = new ChatbotLoadingAnimator(view);
         chatbotLoadingAnimator.start();
+
+        setupEvents(view);
+    }
+
+    private void setupEvents(View view) {
+        View btnBack = view.findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            ViewUtils.applyClickAnimation(btnBack);
+            btnBack.setOnClickListener(v -> {
+                if (getParentFragmentManager().getBackStackEntryCount() > 0) {
+                    getParentFragmentManager().popBackStack();
+                } else {
+                    requireActivity().getOnBackPressedDispatcher().onBackPressed();
+                }
+            });
+        }
     }
 
     @Override

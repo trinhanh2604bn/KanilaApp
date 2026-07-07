@@ -159,6 +159,39 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_product_card" />
 
+            <!-- Personalized Recommendation Error State -->
+            <LinearLayout
+                android:id="@+id/layoutRecommendedError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvRecommendedError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="Không thể tải gợi ý sản phẩm. Vui lòng thử lại."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/btnRecommendedRetry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_chip_outline"
+                    android:fontFamily="@font/nunito_bold"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp"
+                    android:text="Thử lại"
+                    android:textColor="@color/pink_primary"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
         </LinearLayout>
 
         <!-- Loading / Error States -->

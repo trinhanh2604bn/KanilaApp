@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main"
@@ -38,11 +39,14 @@
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollAccountContent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingBottom="16dp">
+        android:paddingBottom="16dp"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -89,7 +93,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Nguyễn Minh Anh"
+                            android:text="..."
                             android:textAppearance="@style/H2"
                             android:textColor="@color/accent_dark" />
 
@@ -128,7 +132,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
-                            android:text="Gold Member"
+                            android:text="..."
                             android:textAppearance="@style/Caption"
                             android:textColor="#FF9800" />
                     </LinearLayout>
@@ -152,7 +156,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
-                            android:text="2.450"
+                            android:text="0"
                             android:textAppearance="@style/Text.Kanila.BodyMedium"
                             android:textStyle="bold"
                             android:textColor="@color/button" />
@@ -227,7 +231,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="18"
+                                android:text="0"
                                 android:textAppearance="@style/H2"
                                 android:textColor="@color/button" />
                         </LinearLayout>
@@ -284,7 +288,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="6"
+                                android:text="0"
                                 android:textAppearance="@style/H2"
                                 android:textColor="@color/button" />
                         </LinearLayout>
@@ -347,7 +351,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="2.450"
+                                android:text="0"
                                 android:textAppearance="@style/H2"
                                 android:textColor="@color/button" />
                         </LinearLayout>
@@ -403,7 +407,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="32"
+                                android:text="0"
                                 android:textAppearance="@style/H2"
                                 android:textColor="@color/button" />
                         </LinearLayout>
@@ -584,11 +588,15 @@
 
                 <!-- Cài đặt -->
                 <LinearLayout
+                    android:id="@+id/menuSettings"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="16dp">
+                    android:paddingHorizontal="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
 
                     <ImageView
                         android:id="@+id/ivMenu5"
@@ -658,6 +666,15 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/layoutGuestState"
+        layout="@layout/view_not_logged_in_state"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <!-- Bottom Navigation -->
     <include

@@ -11,6 +11,7 @@ import com.example.frontend.model.Product;
 import com.example.frontend.data.model.product.ProductVariantDto;
 import com.example.frontend.data.model.product.ProductMediaDto;
 import com.example.frontend.data.model.product.ProductDetailResponse;
+import com.example.frontend.data.model.common.PaginatedData;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;

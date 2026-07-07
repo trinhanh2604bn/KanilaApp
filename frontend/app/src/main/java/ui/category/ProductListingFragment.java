@@ -100,9 +100,7 @@ public class ProductListingFragment extends Fragment {
         setupModeLogic();
         setupActions(view);
 
-        BottomNavigationHelper.setup(view, tabIndex -> {
-            // Navigation handled by helper
-        });
+        BottomNavigationHelper.setupStandardNavigation(this, view);
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
     }
 

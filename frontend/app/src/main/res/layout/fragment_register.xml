@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/background_main">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_xl">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            style="@style/Widget.Kanila.Button.Icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="@string/content_desc_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/text_main" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            style="@style/Text.Kanila.H1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xl"
+            android:text="@string/auth_register_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnBack" />
+
+        <TextView
+            android:id="@+id/tvSubtitle"
+            style="@style/Text.Kanila.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_s"
+            android:text="@string/auth_register_subtitle"
+            android:textColor="@color/text_secondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+        <ui.common.KanilaInputField
+            android:id="@+id/inputFullName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:kanilaLabel="@string/auth_full_name_label"
+            app:kanilaHint="@string/auth_full_name_hint"
+            app:kanilaShowLeadingIcon="true"
+            app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
+
+        <ui.common.KanilaInputField
+            android:id="@+id/inputEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:kanilaLabel="@string/auth_email_label"
+            app:kanilaHint="@string/auth_email_hint"
+            app:kanilaShowLeadingIcon="true"
+            app:layout_constraintTop_toBottomOf="@id/inputFullName" />
+
+        <ui.common.KanilaInputField
+            android:id="@+id/inputPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:kanilaLabel="@string/auth_phone_label"
+            app:kanilaHint="@string/auth_phone_hint"
+            app:kanilaShowLeadingIcon="true"
+            app:layout_constraintTop_toBottomOf="@id/inputEmail" />
+
+        <TextView
+            android:id="@+id/tvOtpChannelLabel"
+            style="@style/Text.Kanila.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/auth_otp_channel_label"
+            android:textColor="@color/text_secondary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/inputPhone" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayoutAuth"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_chip_default"
+            app:layout_constraintTop_toBottomOf="@id/tvOtpChannelLabel"
+            app:tabIndicatorHeight="0dp"
+            app:tabRippleColor="@null"
+            app:tabSelectedTextColor="@color/white"
+            app:tabBackground="@drawable/selector_auth_tab_bg"
+            app:tabTextColor="@color/text_secondary"
+            app:tabMode="fixed">
+            <com.google.android.material.tabs.TabItem android:text="@string/auth_tab_email" />
+            <com.google.android.material.tabs.TabItem android:text="@string/auth_tab_phone" />
+        </com.google.android.material.tabs.TabLayout>
+
+        <CheckBox
+            android:id="@+id/cbTerms"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/nunito_regular"
+            android:text="@string/auth_terms_prefix"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tabLayoutAuth" />
+
+
+        <CheckBox
+            android:id="@+id/cbMarketing"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/nunito_regular"
+            android:text="@string/auth_marketing_opt_in"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cbTerms" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRegister"
+            style="@style/Widget.Kanila.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:layout_marginTop="32dp"
+            android:text="@string/auth_btn_register_email"
+            app:layout_constraintTop_toBottomOf="@id/cbMarketing" />
+
+        <TextView
+            android:id="@+id/tvGoToLogin"
+            style="@style/Text.Kanila.BodyMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/auth_footer_login"
+            android:textColor="@color/button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnRegister" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

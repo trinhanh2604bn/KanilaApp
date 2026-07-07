@@ -3,14 +3,22 @@ package com.example.frontend.data.model.auth;
 import com.google.gson.annotations.SerializedName;
 
 public class LoginRequest {
-    @SerializedName("email")
-    private String email;
+    @SerializedName("login_channel")
+    private String loginChannel; // "email" or "phone"
 
-    @SerializedName("password")
-    private String password;
+    @SerializedName("identifier")
+    private String identifier;
 
-    public LoginRequest(String email, String password) {
-        this.email = email;
-        this.password = password;
+    @SerializedName("guest_session_id")
+    private String guestSessionId;
+
+    public LoginRequest(String loginChannel, String identifier, String guestSessionId) {
+        this.loginChannel = loginChannel;
+        this.identifier = identifier;
+        this.guestSessionId = guestSessionId;
     }
+
+    public String getLoginChannel() { return loginChannel; }
+    public String getIdentifier() { return identifier; }
+    public String getGuestSessionId() { return guestSessionId; }
 }

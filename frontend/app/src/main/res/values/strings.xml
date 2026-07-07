@@ -63,7 +63,7 @@
     <string name="product_image_desc">Ảnh sản phẩm</string>
     <string name="category_hero_small_title">Khám phá sản phẩm</string>
     <string name="category_hero_title">Làm sạch dịu nhẹ cho làn da khỏe đẹp</string>
-    <string name="category_hero_description">Bắt đầu chu trình dưỡng da khoa học với bước làm sạch chuẩn</string>
+    <string name="category_hero_description">Bắt đầu quy trình dưỡng da khoa học với bước làm sạch chuẩn</string>
     <string name="category_section_demand">Mua theo nhu cầu</string>
     <string name="category_section_brand">Thương hiệu nổi bật</string>
     <string name="action_see_all">Xem tất cả ></string>
@@ -238,7 +238,6 @@
     <string name="chip_tinted_moisturizer">Tinted Moisturizer</string>
 
 
-
     <string name="notification_title">Thông báo</string>
     <string name="notification_filter_all">Tất cả</string>
     <string name="notification_filter_orders">Đơn hàng</string>
@@ -330,7 +329,127 @@
     <string name="content_desc_selected">Đã chọn</string>
     <string name="default_quantity">1</string>
     <string name="log_today_progress" />
+
+    <!-- Auth -->
+    <string name="auth_login_title">Đăng nhập</string>
+    <string name="auth_login_subtitle">Chào mừng bạn quay lại! Đăng nhập để tiếp tục mua sắm và theo dõi đơn hàng.</string>
+    <string name="auth_register_title">Tạo tài khoản</string>
+    <string name="auth_register_subtitle">Tham gia Kanila để lưu wishlist, nhận ưu đãi và cá nhân hóa trải nghiệm làm đẹp.</string>
+    <string name="auth_tab_email">Email</string>
+    <string name="auth_tab_phone">Số điện thoại</string>
+    <string name="auth_email_label">Email</string>
+    <string name="auth_email_hint">Nhập email của bạn</string>
+    <string name="auth_phone_label">Số điện thoại</string>
+    <string name="auth_phone_hint">Nhập số điện thoại của bạn</string>
+    <string name="auth_full_name_label">Họ và tên</string>
+    <string name="auth_full_name_hint">Nhập họ và tên của bạn</string>
+    <string name="auth_btn_send_otp_email">Gửi mã xác minh</string>
+    <string name="auth_btn_send_otp_phone">Gửi mã OTP</string>
+    <string name="auth_btn_register_email">Tạo tài khoản bằng email</string>
+    <string name="auth_btn_register_phone">Tạo tài khoản bằng số điện thoại</string>
+    <string name="auth_terms_prefix">Tôi đồng ý với </string>
+    <string name="auth_terms_link">Điều khoản sử dụng</string>
+    <string name="auth_privacy_link">Chính sách bảo mật</string>
+    <string name="auth_marketing_opt_in">Nhận ưu đãi và thông tin khuyến mãi</string>
+    <string name="auth_footer_login">Đã có tài khoản? Đăng nhập</string>
+    <string name="auth_footer_register">Chưa có tài khoản? Đăng ký</string>
+    <string name="auth_error_account_exists">Tài khoản đã tồn tại. Bạn có thể đăng nhập hoặc khôi phục quyền truy cập.</string>
+    <string name="auth_otp_verify_title">Xác minh tài khoản</string>
+    <string name="auth_otp_verify_email_subtitle">Nhập mã OTP gồm 6 số đã được gửi đến email %s.</string>
+    <string name="auth_otp_verify_phone_subtitle">Nhập mã OTP gồm 6 số đã được gửi đến số điện thoại %s.</string>
+    <string name="auth_otp_resend_countdown">Gửi lại mã sau %02d:%02d</string>
+    <string name="auth_otp_btn_resend">Gửi lại mã</string>
+    <string name="auth_otp_btn_verify">Xác minh</string>
+    <string name="auth_otp_change_email">Đổi email</string>
+    <string name="auth_otp_change_phone">Đổi số điện thoại</string>
+    <string name="auth_otp_no_code_email">Không nhận được mã? Kiểm tra hộp thư rác hoặc chat với Kanila Assistant.</string>
+    <string name="auth_otp_no_code_phone">Không nhận được mã SMS? Kiểm tra sóng điện thoại hoặc chat với Kanila Assistant.</string>
+    <string name="auth_guest_prompt_title">Đăng nhập để cá nhân hóa trải nghiệm</string>
+    <string name="auth_guest_prompt_subtitle">Lưu wishlist, theo dõi đơn hàng, nhận voucher và xem gợi ý phù hợp với làn da của bạn.</string>
+    <string name="auth_guest_btn_login">Đăng nhập</string>
+    <string name="auth_guest_btn_register">Tạo tài khoản</string>
+    <string name="auth_guest_btn_later">Để sau</string>
+
+    <string name="auth_forgot_password">Quên mật khẩu?</string>
+    <string name="auth_forgot_password_title">Quên mật khẩu?</string>
+    <string name="auth_forgot_password_subtitle">Nhập email hoặc số điện thoại để nhận mã đặt lại mật khẩu.</string>
+    <string name="auth_reset_password_title">Đặt lại mật khẩu</string>
+    <string name="auth_reset_password_new_label">Mật khẩu mới</string>
+    <string name="auth_reset_password_confirm_label">Xác nhận mật khẩu mới</string>
+    <string name="auth_btn_reset_password">Đặt lại mật khẩu</string>
+    <string name="auth_reset_success">Đặt lại mật khẩu thành công</string>
+    <string name="error_password_mismatch">Mật khẩu xác nhận không khớp.</string>
+    <string name="error_password_weak">Mật khẩu phải có ít nhất 8 ký tự.</string>
+
+    <string name="auth_otp_channel_label">Nhận mã xác minh qua:</string>
     <string name="error_no_internet">Không có kết nối Internet</string>
     <string name="empty_state_title">Chưa có dữ liệu</string>
     <string name="empty_state_description">Hiện tại chưa có thông tin để hiển thị.</string>
+
+    <!-- Support Center -->
+    <string name="support_center_title">Trung tâm hỗ trợ</string>
+    <string name="support_search_hint">Tìm câu trả lời, đơn hàng, chính sách...</string>
+    <string name="popular_topics">Chủ đề phổ biến</string>
+    <string name="track_order">Tra cứu đơn hàng</string>
+    <string name="return_refund">Đổi trả &amp; hoàn tiền</string>
+    <string name="product_consult">Tư vấn sản phẩm</string>
+    <string name="shipping_policy">Chính sách giao hàng</string>
+    <string name="need_help_now">Cần hỗ trợ ngay?</string>
+    <string name="chat_ai">Chat với\nKanila AI</string>
+    <string name="call_support">Gọi\nCSKH</string>
+    <string name="send_request">Gửi\nyêu cầu</string>
+    <string name="recent_requests">Yêu cầu gần đây</string>
+    <string name="see_all_requests">Xem tất cả yêu cầu</string>
+    <string name="status_processing">Đang xử lý</string>
+    <string name="last_updated_format">Cập nhật lần cuối: %s</string>
+
+    <!-- Chat Conversation -->
+    <string name="chat_assistant_title">Kanila AI Assistant</string>
+    <string name="chat_welcome_title">Xin chào bạn! 👋</string>
+    <string name="chat_welcome_desc">Mình là Kanila AI Assistant. Mình có thể giúp bạn tư vấn sản phẩm, thành phần, đơn hàng và chính sách của Kanila Beauty.</string>
+    <string name="chat_suggestion_header">Bạn muốn hỏi điều gì?</string>
+    <string name="chat_suggest_oily">Da dầu nên dùng gì?</string>
+    <string name="chat_suggest_order">Đơn hàng của tôi tới đâu?</string>
+    <string name="chat_suggest_sensitive">Sản phẩm có hợp da nhạy cảm?</string>
+    <string name="chat_suggest_return">Hướng dẫn đổi trả</string>
+    <string name="chat_ai_status">AI hoạt động\n24/7</string>
+    <string name="chat_input_hint">Nhập câu hỏi của bạn...</string>
+    <string name="chat_disclaimer">AI có thể mắc lỗi. Vui lòng kiểm tra lại thông tin quan trọng.</string>
+
+    <!-- Chatbot Quick Menu -->
+    <string name="quick_menu_title">Tác vụ nhanh</string>
+    <string name="track_order_subtitle">Xem tình trạng đơn hàng của bạn</string>
+    <string name="ingredients_check">Kiểm tra thành phần</string>
+    <string name="ingredients_check_subtitle">Tra cứu thành phần sản phẩm</string>
+    <string name="skin_routine">Chọn routine theo da</string>
+    <string name="skin_routine_subtitle">Gợi ý routine phù hợp cho bạn</string>
+    <string name="create_support">Tạo yêu cầu hỗ trợ</string>
+    <string name="create_support_subtitle">Gửi yêu cầu và theo dõi tiến độ</string>
+    <string name="menu_talk_human">Liên hệ nhân viên</string>
+    <string name="menu_talk_human_subtitle">Kết nối với đội ngũ Kanila</string>
+    <string name="support_banner_title">Hỗ trợ luôn sẵn sàng</string>
+    <string name="support_banner_subtitle">Phản hồi trung bình: <![CDATA[<font color="#E83E72"><b>5 phút</b></font>]]></string>
+    <string name="choose_contact_channel">Chọn kênh liên hệ</string>
+    <string name="channel_chat">Chat</string>
+    <string name="channel_chat_recommend">(Khuyến nghị)</string>
+    <string name="channel_call">Call</string>
+    <string name="channel_call_desc">(Gọi điện)</string>
+    <string name="channel_email">Email</string>
+    <string name="channel_zalo">Zalo</string>
+    <string name="menu_clear_chat">Xóa lịch sử trò chuyện</string>
+
+    <!-- Ingredient Analysis -->
+    <string name="ingredient_check_title">Kiểm tra thành phần</string>
+    <string name="advisor_name">Kanila Beauty Advisor</string>
+    <string name="online_status">Đang online</string>
+    <string name="analysis_intro">Kanila đã phân tích thành phần cho bạn ⚡</string>
+    <string name="match_score_label">Độ phù hợp</string>
+    <string name="match_score_desc">Thành phần nhìn chung phù hợp với da dầu mụn của bạn.</string>
+    <string name="save_analysis">Lưu phân tích</string>
+    <string name="find_similar">Xem gợi ý</string>
+    <string name="status_good">Tốt</string>
+    <string name="status_consider">Cần cân nhắc</string>
+    <string name="match_yes">Phù hợp với bạn</string>
+    <string name="match_no">Có thể không phù hợp</string>
+    <string name="action_find_similar">Tìm tương tự</string>
 </resources>

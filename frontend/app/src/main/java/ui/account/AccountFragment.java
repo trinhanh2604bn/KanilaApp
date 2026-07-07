@@ -123,6 +123,16 @@ public class AccountFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+
+        View menuSettings = view.findViewById(R.id.menuSettings);
+        if (menuSettings != null) {
+            menuSettings.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new AccountSettingsFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
     }
 
     private void setupBottomNavigation(View view) {

@@ -94,7 +94,7 @@ public class AuthRepository {
                         result.setValue(NetworkResult.error(apiResponse.getMessage()));
                     }
                 } else {
-                    result.setValue(NetworkResult.error("Verification failed"));
+                    result.setValue(NetworkResult.error(getErrorMessage(response)));
                 }
             }
 
@@ -119,7 +119,7 @@ public class AuthRepository {
                         result.setValue(NetworkResult.error(apiResponse.getMessage()));
                     }
                 } else {
-                    result.setValue(NetworkResult.error("Reset password failed"));
+                    result.setValue(NetworkResult.error(getErrorMessage(response)));
                 }
             }
 
@@ -134,12 +134,41 @@ public class AuthRepository {
         if (response.isSuccessful() && response.body() != null) {
             ApiResponse<AuthResponse> apiResponse = response.body();
             if (apiResponse.isSuccess()) {
-                result.setValue(NetworkResult.success(apiResponse.getData()));
+                AuthResponse data = apiResponse.getData();
+                if (data != null) {
+                    if (data.getAccessToken() != null) {
+                        tokenManager.saveTokens(data.getAccessToken(), data.getRefreshToken());
+                    }
+                    result.setValue(NetworkResult.success(data));
+                } else {
+                    result.setValue(NetworkResult.error("Dữ liệu không hợp lệ"));
+                }
             } else {
                 result.setValue(NetworkResult.error(apiResponse.getMessage()));
             }
         } else {
-            result.setValue(NetworkResult.error("Request failed"));
+            result.setValue(NetworkResult.error(getErrorMessage(response)));
         }
+    }
+
+    private String getErrorMessage(Response<?> response) {
+        String errorMsg = "Yêu cầu thất bại";
+        try {
+            if (response.errorBody() != null) {
+                String errorStr = response.errorBody().string();
+                com.google.gson.Gson gson = new com.google.gson.Gson();
+                ApiResponse<?> errorResponse = gson.fromJson(errorStr, ApiResponse.class);
+                if (errorResponse != null) {
+                    if (errorResponse.getMessage() != null) {
+                        return errorResponse.getMessage();
+                    } else if (errorResponse.getError() != null) {
+                        return errorResponse.getError();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Ignore parsing error
+        }
+        return errorMsg;
     }
 }

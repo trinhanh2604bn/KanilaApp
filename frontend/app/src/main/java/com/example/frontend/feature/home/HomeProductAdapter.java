@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,6 +42,10 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         notifyDataSetChanged();
     }
 
+    public List<Product> getProducts() {
+        return products;
+    }
+
     public void setItemWidth(int width) {
         this.itemWidth = width;
     }
@@ -66,6 +71,9 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         holder.tvBrand.setText(product.getBrand());
         holder.tvPrice.setText(product.getPrice());
         holder.tvReviewCount.setText("(" + product.getReviewCount() + ")");
+        if (holder.rbRating != null) {
+            holder.rbRating.setRating((float) product.getAverageRatingValue());
+        }
 
         if (holder.btnWishlist != null) {
             holder.btnWishlist.setSelected(product.isFavorite());
@@ -109,6 +117,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivImage;
         TextView tvName, tvBrand, tvPrice, tvReviewCount, tvBadge;
+        RatingBar rbRating;
         View layoutBadge;
         ImageButton btnWishlist;
 
@@ -119,6 +128,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
             tvBrand = itemView.findViewById(R.id.tvProductBrand);
             tvPrice = itemView.findViewById(R.id.tvProductPrice);
             tvReviewCount = itemView.findViewById(R.id.tvProductReviewCount);
+            rbRating = itemView.findViewById(R.id.tvProductRating);
             tvBadge = itemView.findViewById(R.id.tvProductBadge);
             layoutBadge = itemView.findViewById(R.id.layoutProductStatusBadge);
             btnWishlist = itemView.findViewById(R.id.btnWishlist);

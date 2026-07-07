@@ -47,14 +47,8 @@ public class RegisterFragment extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
                     selectedChannel = "email";
-                    binding.inputEmail.setVisibility(View.VISIBLE);
-                    binding.inputPhone.setVisibility(View.GONE);
-                    binding.btnRegister.setText(R.string.auth_btn_register_email);
                 } else {
                     selectedChannel = "phone";
-                    binding.inputEmail.setVisibility(View.GONE);
-                    binding.inputPhone.setVisibility(View.VISIBLE);
-                    binding.btnRegister.setText(R.string.auth_btn_register_phone);
                 }
             }
 
@@ -73,13 +67,17 @@ public class RegisterFragment extends Fragment {
         binding.inputFullName.setLeadingIcon(R.drawable.ic_account);
 
         // Email Input
+        binding.inputEmail.setLabelText(getString(R.string.auth_email_label));
         binding.inputEmail.getEditText().setHint(R.string.auth_email_hint);
         binding.inputEmail.setLeadingIcon(R.drawable.ic_mail);
 
         // Phone Input
+        binding.inputPhone.setLabelText(getString(R.string.auth_phone_label));
         binding.inputPhone.getEditText().setHint(R.string.auth_phone_hint);
         binding.inputPhone.setLeadingIcon(R.drawable.ic_account);
         binding.inputPhone.getEditText().setInputType(android.text.InputType.TYPE_CLASS_PHONE);
+
+        binding.btnRegister.setText(R.string.auth_register_title);
     }
 
     private void setupTerms() {
@@ -113,32 +111,38 @@ public class RegisterFragment extends Fragment {
             }
             binding.inputFullName.clearMessage();
 
-            String email = null;
-            String phone = null;
+            String email = binding.inputEmail.getText().trim().toLowerCase();
+            String rawPhone = binding.inputPhone.getText().trim();
+            String phone = rawPhone.isEmpty() ? null : normalizePhone(rawPhone);
 
             if (selectedChannel.equals("email")) {
-                email = binding.inputEmail.getText().trim().toLowerCase();
                 if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     binding.inputEmail.setErrorState(getString(R.string.error_invalid_email));
                     return;
                 }
-                binding.inputEmail.clearMessage();
+                if (!rawPhone.isEmpty() && rawPhone.length() < 9) {
+                    binding.inputPhone.setErrorState(getString(R.string.error_invalid_phone));
+                    return;
+                }
             } else {
-                String rawPhone = binding.inputPhone.getText().trim();
                 if (rawPhone.isEmpty() || rawPhone.length() < 9) {
                     binding.inputPhone.setErrorState(getString(R.string.error_invalid_phone));
                     return;
                 }
-                phone = normalizePhone(rawPhone);
-                binding.inputPhone.clearMessage();
+                if (!email.isEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    binding.inputEmail.setErrorState(getString(R.string.error_invalid_email));
+                    return;
+                }
             }
+            binding.inputEmail.clearMessage();
+            binding.inputPhone.clearMessage();
 
             if (!binding.cbTerms.isChecked()) {
                 Toast.makeText(getContext(), "Vui lòng đồng ý với điều khoản", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            viewModel.register(selectedChannel, fullName, email, phone, true, binding.cbMarketing.isChecked());
+            viewModel.register(selectedChannel, fullName, email.isEmpty() ? null : email, phone, true, binding.cbMarketing.isChecked());
         });
 
         binding.tvGoToLogin.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());

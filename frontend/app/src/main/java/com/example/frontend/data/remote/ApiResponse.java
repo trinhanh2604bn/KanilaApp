@@ -15,6 +15,9 @@ public class ApiResponse<T> {
     @SerializedName("data")
     private T data;
 
+    @SerializedName("pagination")
+    private PaginationInfo pagination;
+
     @SerializedName("error")
     private String error;
 
@@ -34,7 +37,27 @@ public class ApiResponse<T> {
         return data;
     }
 
+    public PaginationInfo getPagination() {
+        return pagination;
+    }
+
     public String getError() {
         return error;
+    }
+
+    public static class PaginationInfo {
+        @SerializedName("page")
+        private int page;
+        @SerializedName("limit")
+        private int limit;
+        @SerializedName("total")
+        private int total;
+        @SerializedName("totalPages")
+        private int totalPages;
+
+        public int getPage() { return page; }
+        public int getLimit() { return limit; }
+        public int getTotal() { return total; }
+        public int getTotalPages() { return totalPages; }
     }
 }

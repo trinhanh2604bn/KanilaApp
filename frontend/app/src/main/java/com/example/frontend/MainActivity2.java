@@ -1,6 +1,5 @@
 package com.example.frontend;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -26,16 +25,6 @@ public class MainActivity2 extends AppCompatActivity {
             });
         }
 
-        setupNavigation();
-    }
-
-    private void setupNavigation() {
-        View navSupport = findViewById(R.id.navSupport);
-        if (navSupport != null) {
-            navSupport.setOnClickListener(v -> {
-                Intent intent = new Intent(MainActivity2.this, MainActivity3.class);
-                startActivity(intent);
-            });
-        }
+        // setupNavigation();
     }
 }

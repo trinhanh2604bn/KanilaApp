@@ -23,13 +23,22 @@ public class SearchRecommendProductAdapter extends RecyclerView.Adapter<SearchRe
 
     private List<Product> productList = new ArrayList<>();
     private OnProductClickListener listener;
+    private OnWishlistClickListener wishlistListener;
 
     public interface OnProductClickListener {
         void onProductClick(Product product);
     }
 
+    public interface OnWishlistClickListener {
+        void onWishlistClick(Product product, int position);
+    }
+
     public void setOnProductClickListener(OnProductClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setOnWishlistClickListener(OnWishlistClickListener listener) {
+        this.wishlistListener = listener;
     }
 
     public void setItems(List<Product> items) {
@@ -91,8 +100,15 @@ public class SearchRecommendProductAdapter extends RecyclerView.Adapter<SearchRe
         });
         
         if (holder.btnWishlist != null) {
+            holder.btnWishlist.setSelected(product.isFavorite());
             holder.btnWishlist.setOnClickListener(v -> {
-                // TODO: Handle wishlist
+                if (wishlistListener != null) {
+                    wishlistListener.onWishlistClick(product, position);
+                } else {
+                    boolean newState = !product.isFavorite();
+                    product.setFavorite(newState);
+                    v.setSelected(newState);
+                }
             });
         }
         

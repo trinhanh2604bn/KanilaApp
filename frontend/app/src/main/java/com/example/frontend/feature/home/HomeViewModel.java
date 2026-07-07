@@ -40,11 +40,17 @@ public class HomeViewModel extends AndroidViewModel {
             
             if (result.status == NetworkResult.Status.SUCCESS) {
                 state.recommendedProducts = result.data;
+                state.recommendedError = null;
+                checkLoadingState(state);
+            } else if (result.status == NetworkResult.Status.EMPTY) {
+                state.recommendedProducts = new java.util.ArrayList<>();
+                state.recommendedError = null;
                 checkLoadingState(state);
             } else if (result.status == NetworkResult.Status.ERROR) {
-                state.error = result.message;
-                state.loading = false;
-                uiState.setValue(state);
+                state.recommendedError = result.message;
+                // If it's a personalized recommendation failure, we don't necessarily want to fail the whole page
+                // But we still need to stop loading state if this was the last thing
+                checkLoadingState(state);
             }
         });
 
@@ -56,11 +62,15 @@ public class HomeViewModel extends AndroidViewModel {
             
             if (result.status == NetworkResult.Status.SUCCESS) {
                 state.allProducts = result.data;
+                state.allProductsError = null;
+                checkLoadingState(state);
+            } else if (result.status == NetworkResult.Status.EMPTY) {
+                state.allProducts = new java.util.ArrayList<>();
+                state.allProductsError = null;
                 checkLoadingState(state);
             } else if (result.status == NetworkResult.Status.ERROR) {
-                state.error = result.message;
-                state.loading = false;
-                uiState.setValue(state);
+                state.allProductsError = result.message;
+                checkLoadingState(state);
             }
         });
 
@@ -75,9 +85,17 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private void checkLoadingState(HomeUiState state) {
-        if (state.recommendedProducts != null && state.allProducts != null) {
+        boolean recommendedDone = state.recommendedProducts != null || state.recommendedError != null;
+        boolean allProductsDone = state.allProducts != null || state.allProductsError != null;
+        
+        if (recommendedDone && allProductsDone) {
             state.loading = false;
-            state.error = null;
+            // General error is only set if everything fails or if we want to show a page-level error
+            if (state.allProductsError != null && state.recommendedError != null) {
+                state.error = "Không thể tải dữ liệu trang chủ. Vui lòng thử lại.";
+            } else {
+                state.error = null;
+            }
             uiState.setValue(state);
         }
     }

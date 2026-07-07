@@ -51,17 +51,7 @@ public class ProductCategoryFragment extends Fragment {
         setupStaticCategories(view);
         setupStaticBrands(view);
 
-        BottomNavigationHelper.setup(view, tabIndex -> {
-            if (tabIndex == BottomNavigationHelper.TAB_HOME) {
-                Intent intent = new Intent(requireContext(), com.example.frontend.MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            } else if (tabIndex == BottomNavigationHelper.TAB_ACCOUNT) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ui.account.AccountFragment())
-                        .commit();
-            }
-        });
+        BottomNavigationHelper.setupStandardNavigation(this, view);
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
 
         TextView tvSeeAllBrands = view.findViewById(R.id.tvSeeAllBrands);

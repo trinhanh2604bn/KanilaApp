@@ -138,11 +138,17 @@ public class LoginFragment extends Fragment {
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnLogin.setEnabled(true);
                     if (result.data != null) {
-                        String email = binding.inputEmail.getText().trim().toLowerCase();
-                        String rawPhone = binding.inputPhone.getText().trim();
-                        String identifier = selectedChannel.equals("email") ? email : normalizePhone(rawPhone);
-                        
-                        navigateToOtp(identifier);
+                        if (result.data.isVerificationRequired()) {
+                            String email = binding.inputEmail.getText().trim().toLowerCase();
+                            String rawPhone = binding.inputPhone.getText().trim();
+                            String identifier = selectedChannel.equals("email") ? email : normalizePhone(rawPhone);
+                            
+                            navigateToOtp(identifier);
+                        } else {
+                            // Direct success (e.g. if password was used or already authenticated)
+                            Toast.makeText(getContext(), "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                            com.example.frontend.core.auth.AuthResultHandler.handleSuccess(requireActivity());
+                        }
                     }
                     break;
                 case ERROR:

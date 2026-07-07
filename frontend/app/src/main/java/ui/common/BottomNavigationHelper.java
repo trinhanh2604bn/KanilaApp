@@ -1,13 +1,22 @@
 package ui.common;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
+import androidx.fragment.app.Fragment;
+
+import com.example.frontend.MainActivity;
 import com.example.frontend.R;
+import ui.account.AccountFragment;
+import ui.category.ProductCategoryFragment;
 
 public class BottomNavigationHelper {
 
@@ -16,7 +25,6 @@ public class BottomNavigationHelper {
     public static final int TAB_REELS = 2;
     public static final int TAB_COMMUNITY = 3;
     public static final int TAB_ACCOUNT = 4;
-    public static final int TAB_SUPPORT = 5;
 
     public interface OnTabSelectedListener {
         void onTabSelected(int tabIndex);
@@ -28,7 +36,6 @@ public class BottomNavigationHelper {
         View navReels = root.findViewById(R.id.navReels);
         View navCommunity = root.findViewById(R.id.navCommunity);
         View navAccount = root.findViewById(R.id.navAccount);
-        View navSupport = root.findViewById(R.id.navSupport);
 
         if (navHome != null) navHome.setOnClickListener(v -> {
             setSelectedTab(root, TAB_HOME);
@@ -50,17 +57,63 @@ public class BottomNavigationHelper {
             setSelectedTab(root, TAB_ACCOUNT);
             if (listener != null) listener.onTabSelected(TAB_ACCOUNT);
         });
-        if (navSupport != null) navSupport.setOnClickListener(v -> {
-            setSelectedTab(root, TAB_SUPPORT);
-            if (listener != null) listener.onTabSelected(TAB_SUPPORT);
+    }
+
+    public static void setupStandardNavigation(Fragment fragment, View root) {
+        setup(root, tabIndex -> {
+            if (tabIndex == TAB_HOME) {
+                Intent intent = new Intent(fragment.requireContext(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                fragment.startActivity(intent);
+            } else if (tabIndex == TAB_CATEGORY) {
+                if (!(fragment instanceof ProductCategoryFragment)) {
+                    fragment.getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ProductCategoryFragment())
+                            .commit();
+                }
+            } else if (tabIndex == TAB_ACCOUNT) {
+                if (!(fragment instanceof AccountFragment)) {
+                    fragment.getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main, new AccountFragment())
+                            .commit();
+                }
+            } else if (tabIndex == TAB_REELS) {
+                Toast.makeText(fragment.getContext(), "Reels coming soon!", Toast.LENGTH_SHORT).show();
+            } else if (tabIndex == TAB_COMMUNITY) {
+                Toast.makeText(fragment.getContext(), "Community coming soon!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public static void setupStandardNavigation(AppCompatActivity activity, View root) {
+        setup(root, tabIndex -> {
+            if (tabIndex == TAB_HOME) {
+                if (!(activity instanceof MainActivity)) {
+                    Intent intent = new Intent(activity, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    activity.startActivity(intent);
+                }
+            } else if (tabIndex == TAB_CATEGORY) {
+                activity.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ProductCategoryFragment())
+                        .commit();
+            } else if (tabIndex == TAB_ACCOUNT) {
+                activity.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new AccountFragment())
+                        .commit();
+            } else if (tabIndex == TAB_REELS) {
+                Toast.makeText(activity, "Reels coming soon!", Toast.LENGTH_SHORT).show();
+            } else if (tabIndex == TAB_COMMUNITY) {
+                Toast.makeText(activity, "Community coming soon!", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
     public static void setSelectedTab(View root, int tabIndex) {
-        int[] itemIds = {R.id.navHome, R.id.navCategory, R.id.navReels, R.id.navCommunity, R.id.navAccount, R.id.navSupport};
-        int[] iconIds = {R.id.ivHome, R.id.ivCategory, R.id.ivReels, R.id.ivCommunity, R.id.ivAccount, R.id.ivSupport};
-        int[] textIds = {R.id.tvHome, R.id.tvCategory, R.id.tvReels, R.id.tvCommunity, R.id.tvAccount, R.id.tvSupport};
-        int[] bgIds = {R.id.bgHome, R.id.bgCategory, R.id.bgReels, R.id.bgCommunity, R.id.bgAccount, R.id.bgSupport};
+        int[] itemIds = {R.id.navHome, R.id.navCategory, R.id.navReels, R.id.navCommunity, R.id.navAccount};
+        int[] iconIds = {R.id.ivHome, R.id.ivCategory, R.id.ivReels, R.id.ivCommunity, R.id.ivAccount};
+        int[] textIds = {R.id.tvHome, R.id.tvCategory, R.id.tvReels, R.id.tvCommunity, R.id.tvAccount};
+        int[] bgIds = {R.id.bgHome, R.id.bgCategory, R.id.bgReels, R.id.bgCommunity, R.id.bgAccount};
 
         Context context = root.getContext();
         int activeColor = ContextCompat.getColor(context, R.color.button);

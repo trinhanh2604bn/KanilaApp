@@ -36,19 +36,7 @@ public class MainActivity3 extends AppCompatActivity {
 
     private void setupBottomNavigation() {
         View root = findViewById(R.id.main);
-        BottomNavigationHelper.setup(root, tabIndex -> {
-            if (tabIndex == BottomNavigationHelper.TAB_HOME) {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-                finish();
-            } else if (tabIndex == BottomNavigationHelper.TAB_SUPPORT) {
-                // Already here
-            } else {
-                Toast.makeText(this, "Chức năng đang phát triển", Toast.LENGTH_SHORT).show();
-            }
-        });
-        BottomNavigationHelper.setSelectedTab(root, BottomNavigationHelper.TAB_SUPPORT);
+        BottomNavigationHelper.setupStandardNavigation(this, root);
     }
 
     private void setupClickListeners() {

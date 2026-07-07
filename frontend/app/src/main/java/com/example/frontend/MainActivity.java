@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvRecommendedProducts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
+    private ImageView ivChatbot;
 
     private View layoutSearchExpandedBar;
     private EditText edtExpandedSearchQuery;
@@ -145,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         layoutHomeStateContainer = findViewById(R.id.layoutHomeStateContainer);
         viewHomeLoading = findViewById(R.id.viewHomeLoading);
         viewHomeError = findViewById(R.id.viewHomeError);
+        ivChatbot = findViewById(R.id.ivChatbot);
 
         layoutKanilaReelsCard = findViewById(R.id.layoutKanilaReelsCard);
         layoutReelThumbOne = findViewById(R.id.layoutReelThumbOne);
@@ -193,6 +195,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        if (ivChatbot != null) {
+            ivChatbot.setOnClickListener(v -> {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.support.ChatSupportFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+
         setupHomeShortcuts();
         setupSocialSection();
     }
@@ -209,6 +220,10 @@ public class MainActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.main, new ProductCategoryFragment())
                             .commit();
+                } else if (tabIndex == BottomNavigationHelper.TAB_REELS) {
+                    Toast.makeText(this, "Reels coming soon!", Toast.LENGTH_SHORT).show();
+                } else if (tabIndex == BottomNavigationHelper.TAB_COMMUNITY) {
+                    Toast.makeText(this, "Community coming soon!", Toast.LENGTH_SHORT).show();
                 } else if (tabIndex == BottomNavigationHelper.TAB_HOME) {
                     // Refresh current activity to show home content again
                     Intent intent = new Intent(this, MainActivity.class);
@@ -218,31 +233,10 @@ public class MainActivity extends AppCompatActivity {
             });
             BottomNavigationHelper.setSelectedTab(bottomNav, BottomNavigationHelper.TAB_HOME);
         }
-
-
-
-        setupHomeShortcuts();
-        setupSocialSection();
-    }
-
-    private void setupBottomNavigation() {
-        BottomNavigationHelper.setup(findViewById(R.id.main), tabIndex -> {
-            if (tabIndex == BottomNavigationHelper.TAB_CATEGORY) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ui.category.ProductCategoryFragment())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-        BottomNavigationHelper.setSelectedTab(findViewById(R.id.main), BottomNavigationHelper.TAB_HOME);
     }
 
     private void setupProductLists() {
         recommendedProductAdapter = new HomeProductAdapter();
-
-        // Premium feel: width around 46% of screen
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        recommendedProductAdapter.setItemWidth((int) (screenWidth * 0.46));
 
         recommendedProductAdapter.setOnProductClickListener(product -> {
             getSupportFragmentManager().beginTransaction()
@@ -272,8 +266,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        rvRecommendedProducts.setLayoutManager(new GridLayoutManager(this, 2));
         rvRecommendedProducts.setAdapter(recommendedProductAdapter);
+        rvRecommendedProducts.setNestedScrollingEnabled(false);
 
         // All Products (Vertical Grid)
         allProductAdapter = new HomeProductAdapter();

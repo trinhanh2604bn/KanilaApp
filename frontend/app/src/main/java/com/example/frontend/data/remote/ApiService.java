@@ -80,7 +80,7 @@ public interface ApiService {
     Call<ApiResponse<Object>> getCatalogBundle();
 
     @GET("api/recommendations/me/homepage")
-    Call<ApiResponse<PaginatedData<Product>>> getHomepageRecommendations();
+    Call<ApiResponse<List<Product>>> getHomepageRecommendations();
 
     @GET("api/carts/me")
     Call<ApiResponse<CartDto>> getMyCart();

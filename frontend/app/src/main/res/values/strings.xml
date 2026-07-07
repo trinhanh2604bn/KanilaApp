@@ -449,4 +449,5 @@
     <string name="status_consider">Cần cân nhắc</string>
     <string name="match_yes">Phù hợp với bạn</string>
     <string name="match_no">Có thể không phù hợp</string>
+    <string name="action_find_similar">Tìm tương tự</string>
 </resources>

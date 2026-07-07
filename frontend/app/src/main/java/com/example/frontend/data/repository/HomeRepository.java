@@ -7,7 +7,6 @@ import com.example.frontend.data.remote.ApiResponse;
 import com.example.frontend.data.remote.ApiService;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.model.Product;
-import com.example.frontend.data.model.common.PaginatedData;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,14 +56,13 @@ public class HomeRepository {
 
     public void getHomepageRecommendations(MutableLiveData<NetworkResult<List<Product>>> result) {
         result.setValue(NetworkResult.loading());
-        apiService.getHomepageRecommendations().enqueue(new Callback<ApiResponse<PaginatedData<Product>>>() {
+        apiService.getHomepageRecommendations().enqueue(new Callback<ApiResponse<List<Product>>>() {
             @Override
-            public void onResponse(Call<ApiResponse<PaginatedData<Product>>> call, Response<ApiResponse<PaginatedData<Product>>> response) {
+            public void onResponse(Call<ApiResponse<List<Product>>> call, Response<ApiResponse<List<Product>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<PaginatedData<Product>> apiResponse = response.body();
+                    ApiResponse<List<Product>> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
-                        PaginatedData<Product> paginatedData = apiResponse.getData();
-                        List<Product> items = paginatedData != null ? paginatedData.getItems() : null;
+                        List<Product> items = apiResponse.getData();
                         if (items == null || items.isEmpty()) {
                             result.setValue(NetworkResult.empty());
                         } else {
@@ -82,7 +80,7 @@ public class HomeRepository {
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<PaginatedData<Product>>> call, Throwable t) {
+            public void onFailure(Call<ApiResponse<List<Product>>> call, Throwable t) {
                 String message = t.getLocalizedMessage() != null ? t.getLocalizedMessage() : "Network error";
                 result.setValue(NetworkResult.error(message));
             }

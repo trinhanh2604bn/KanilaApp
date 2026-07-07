@@ -22,8 +22,8 @@
     <string name="content_desc_category_product_image">Ảnh sản phẩm danh mục</string>
     <string name="category_concealing">Concealing</string>
     <string name="variant_title">Chọn phân loại</string>
-    <string name="variant_color_title">Màu son</string>
-    <string name="variant_size_title">Dung tích</string>
+    <string name="variant_color_title">Màu</string>
+    <string name="variant_size_title">Loại</string>
     <string name="variant_quantity_title">Số lượng</string>
     <string name="variant_apply">Áp dụng</string>
     <string name="variant_stock_format">Còn %d sản phẩm</string>
@@ -326,6 +326,8 @@
     <string name="goal_soothing">Làm dịu da</string>
     <string name="goal_sun">Chống nắng</string>
     <string name="goal_even_tone">Làm đều màu da</string>
+    <string name="content_desc_selected">Đã chọn</string>
+    <string name="default_quantity">1</string>
     <string name="log_today_progress" />
 
     <!-- Auth -->

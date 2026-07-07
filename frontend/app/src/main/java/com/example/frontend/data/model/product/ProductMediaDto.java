@@ -6,17 +6,21 @@ public class ProductMediaDto {
     @SerializedName("_id")
     private String id;
 
-    @SerializedName("media_type")
+    @SerializedName("mediaType")
     private String mediaType; // "image", "video"
 
-    @SerializedName("url")
+    @SerializedName("mediaUrl")
     private String url;
 
-    @SerializedName("display_order")
+    @SerializedName("sortOrder")
     private int displayOrder;
 
     public String getId() { return id; }
     public String getMediaType() { return mediaType; }
     public String getUrl() { return url; }
     public int getDisplayOrder() { return displayOrder; }
+
+    public void setMediaType(String mediaType) { this.mediaType = mediaType; }
+    public void setUrl(String url) { this.url = url; }
+    public void setDisplayOrder(int displayOrder) { this.displayOrder = displayOrder; }
 }

@@ -20,8 +20,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
+import com.example.frontend.data.repository.ProductRepository;
+import com.example.frontend.feature.product.ProductDetailFragment;
 import com.example.frontend.feature.search.SearchActivity;
 import com.example.frontend.model.Product;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +34,7 @@ import ui.common.BottomNavigationHelper;
 
 public class ProductListingFragment extends Fragment {
 
+    private static final String TAG = "ProductListing";
     private static final String ARG_LISTING_TYPE = "listingType";
     private static final String ARG_CATEGORY_NAME = "categoryName";
     private static final String ARG_BRAND_NAME = "brandName";
@@ -48,6 +52,8 @@ public class ProductListingFragment extends Fragment {
     private View containerSearchNoResult;
     private LinearLayout layoutCategoryFilterChips;
     private View hsvCategoryFilterChips;
+    private View layoutLoading;
+    private ProductRepository productRepository;
     private ArrangeBottomSheetDialog.SortOption currentSortOption = ArrangeBottomSheetDialog.SortOption.BEST_MATCH;
 
     public static ProductListingFragment newCategoryInstance(String categoryName) {
@@ -103,6 +109,8 @@ public class ProductListingFragment extends Fragment {
         containerSearchNoResult = root.findViewById(R.id.containerSearchNoResult);
         layoutCategoryFilterChips = root.findViewById(R.id.layoutCategoryFilterChips);
         hsvCategoryFilterChips = root.findViewById(R.id.hsvCategoryFilterChips);
+        layoutLoading = root.findViewById(R.id.layoutLoading);
+        productRepository = new ProductRepository(requireContext());
 
         ImageButton btnBack = root.findViewById(R.id.btnCategoryBack);
         if (btnBack != null) {
@@ -152,7 +160,7 @@ public class ProductListingFragment extends Fragment {
             chip.setOnClickListener(v -> {
                 selectChip(chip);
                 if ("Tất cả".equals(chipText)) {
-                    showProducts(baseProducts);
+                    filterAndShowProducts();
                 } else {
                     filterBySubcategory(chipText);
                 }
@@ -210,67 +218,63 @@ public class ProductListingFragment extends Fragment {
 
     private void setupProductList() {
         adapter = new ProductAdapter();
+        adapter.setOnProductClickListener(product -> {
+            String productId = product.getId();
+            Log.d(TAG, "Clicked product id = " + productId);
+            if (productId != null && productId.matches("^[a-fA-F0-9]{24}$")) {
+                ProductDetailFragment fragment = ProductDetailFragment.newInstance(productId);
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            } else {
+                Toast.makeText(getContext(), "Product ID không hợp lệ, không thể mở chi tiết sản phẩm", Toast.LENGTH_SHORT).show();
+            }
+        });
         rvCategoryProducts.setLayoutManager(new GridLayoutManager(getContext(), 2));
         rvCategoryProducts.setAdapter(adapter);
 
-        loadMockData();
-        showProducts(baseProducts);
+        loadRealData();
     }
 
-    private void loadMockData() {
-        baseProducts.clear();
-        // This is a mock implementation. In real app, this would call a repository.
-        List<Product> allMockProducts = getAllMockProducts();
+    private void loadRealData() {
+        if (layoutLoading != null) layoutLoading.setVisibility(View.VISIBLE);
         
-        for (Product p : allMockProducts) {
-            if (TYPE_CATEGORY.equals(listingType)) {
-                // For simplicity, we assume some products match the category
-                // In real mock, we would check p.getCategory()
-                if (categoryName.equals("Face") && p.getId().startsWith("f")) baseProducts.add(p);
-                else if (categoryName.equals("Eyes") && p.getId().startsWith("e")) baseProducts.add(p);
-                else if (categoryName.equals("Lips") && p.getId().startsWith("l")) baseProducts.add(p);
-                else if (categoryName.equals("Cheeks") && p.getId().startsWith("c")) baseProducts.add(p);
-                else if (categoryName.equals("Mini & Travel") && p.getId().startsWith("mt")) baseProducts.add(p);
-                else if (categoryName.equals("Gift") && p.getId().startsWith("g")) baseProducts.add(p);
-            } else if (TYPE_BRAND.equals(listingType)) {
-                if (brandName.equalsIgnoreCase(p.getBrand())) {
-                    baseProducts.add(p);
+        productRepository.getProducts(null, null, null).observe(getViewLifecycleOwner(), result -> {
+            if (layoutLoading != null) layoutLoading.setVisibility(View.GONE);
+            if (result == null) return;
+
+            switch (result.status) {
+                case SUCCESS:
+                    baseProducts = result.data;
+                    filterAndShowProducts();
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    break;
+                case EMPTY:
+                    showProducts(new ArrayList<>());
+                    break;
+            }
+        });
+    }
+
+    private void filterAndShowProducts() {
+        if (baseProducts == null) return;
+        
+        List<Product> filtered = new ArrayList<>();
+        for (Product p : baseProducts) {
+            if (TYPE_BRAND.equals(listingType)) {
+                if (brandName != null && brandName.equalsIgnoreCase(p.getBrand())) {
+                    filtered.add(p);
                 }
+            } else {
+                // If it's category listing, we show all products from the list-all query for now
+                // since we don't have categoryId to query the backend properly here.
+                filtered.add(p);
             }
         }
-    }
-
-    private List<Product> getAllMockProducts() {
-        List<Product> list = new ArrayList<>();
-        // Face
-        list.add(new Product("f1", "BeautyBlender", "Bounce Liquid Foundation", "450000", "4.5", "1.2k", R.drawable.img_foudation, "New", "Foundation"));
-        list.add(new Product("f2", "Maybelline", "Fit Me Matte + Poreless", "250000", "4.8", "5.1k", R.drawable.img_brand_1, "Best Seller", "Foundation"));
-        list.add(new Product("f3", "BeautyBlender", "Phấn phủ BOUNCE Soft Focus", "450000", "4.2", "800", R.drawable.img_foudation, "", "Powder"));
-        list.add(new Product("f4", "Huda Beauty", "Easy Bake Loose Powder", "950000", "4.9", "12k", R.drawable.img_brand_2, "Hot", "Powder"));
-        list.add(new Product("f5", "Nars", "Radiant Creamy Concealer", "850000", "4.8", "3.2k", R.drawable.brand_nars, "Essential", "Concealer"));
-        
-        // Eyes
-        list.add(new Product("e1", "L'Oreal", "Voluminous Lash Paradise", "350000", "4.7", "10k", R.drawable.ic_product, "Best Seller", "Mascara"));
-        list.add(new Product("e2", "NYX", "Epic Ink Liner", "200000", "4.6", "8k", R.drawable.ic_product, "Hot", "Eyeliner"));
-        
-        // Lips
-        list.add(new Product("l1", "MAC", "Matte Lipstick", "480000", "4.8", "25k", R.drawable.img_lipstick, "Classic", "Lipstick"));
-        list.add(new Product("l2", "Fwee", "Lip Suede", "350000", "4.9", "1k", R.drawable.img_lipstick, "New", "Lipstick"));
-        
-        // Brands specific
-        list.add(new Product("fwee1", "Fwee", "Blurry Pudding Pot", "420000", "4.9", "2k", R.drawable.img_brand_1, "Hot", "Blush"));
-        list.add(new Product("nars1", "Nars", "Light Reflecting Foundation", "1200000", "4.8", "5k", R.drawable.brand_nars, "Premium", "Foundation"));
-
-        // Mini & Travel
-        list.add(new Product("mt1", "Laneige", "Mini Foundation Tint", "320000", "4.7", "500", R.drawable.img_foudation, "Mini", "Mini Foundation"));
-        list.add(new Product("mt2", "Innisfree", "Travel Makeup Kit", "550000", "4.5", "300", R.drawable.img_gift, "Kit", "Trial Kits"));
-
-        // Gift
-        list.add(new Product("g1", "Judydoll", "All-in-one Face Palette", "450000", "4.9", "1.5k", R.drawable.img_blush, "Palette", "Face Palette"));
-        list.add(new Product("g2", "Huda Beauty", "Naughty Nude Eyeshadow", "1650000", "4.9", "2k", R.drawable.img_eyeshadow, "Premium", "Eyeshadow Palette"));
-
-        for (Product p : list) p.setHasAr(true);
-        return list;
+        showProducts(filtered);
     }
 
     private void filterBySubcategory(String subcategory) {

@@ -60,6 +60,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         notifyDataSetChanged();
     }
 
+    public List<Product> getProducts() {
+        return products;
+    }
+
     public void setSelectionMode(boolean selectionMode) {
         isSelectionMode = selectionMode;
         if (!selectionMode) {

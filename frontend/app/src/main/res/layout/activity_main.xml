@@ -134,14 +134,14 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/spacing_m">
+                    android:layout_marginHorizontal="@dimen/spacing_m"
+                    android:layout_marginBottom="@dimen/spacing_s">
 
                     <TextView
                         android:id="@+id/tvRecommendationTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
-                        android:layout_marginStart="4dp"
                         android:fontFamily="@font/nunito_bold"
                         android:text="Gợi ý riêng cho bạn"
                         android:textColor="@color/text_main"
@@ -169,27 +169,25 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tvRecommendationTitle"
                         android:layout_marginTop="2dp"
-                        android:layout_marginLeft="3dp"
                         android:fontFamily="@font/nunito_regular"
                         android:text="Dựa trên hồ sơ làm đẹp và sở thích của bạn"
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
                 </RelativeLayout>
 
-
-            <!-- Recommended Products RecyclerView -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvRecommendedProducts"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:orientation="horizontal"
-                android:paddingHorizontal="@dimen/spacing_m"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_product_card" />
+                <!-- Recommended Products RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvRecommendedProducts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="@dimen/spacing_s"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/item_product_card" />
 
             </LinearLayout>
-
 
             <!-- Shop Catalog Section -->
             <LinearLayout
@@ -203,7 +201,7 @@
                     android:id="@+id/tvTacasanpham"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
+                    android:layout_marginHorizontal="@dimen/spacing_m"
                     android:fontFamily="@font/nunito_bold"
                     android:text="Tất cả sản phẩm"
                     android:textColor="@color/text_main"
@@ -215,7 +213,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_s"
                     android:clipToPadding="false"
-                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:paddingHorizontal="@dimen/spacing_s"
                     android:nestedScrollingEnabled="false"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="2"
@@ -242,16 +240,6 @@
                     android:visibility="gone" />
             </FrameLayout>
 
-
-            <TextView
-                android:id="@+id/thunhe"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_bold"
-                android:text="Gợi ý riêng cho bạn"
-                android:textColor="@color/text_main"
-                android:textSize="18sp" />
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -262,5 +250,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView
+        android:id="@+id/ivChatbot"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/chatbotai"
+        android:elevation="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/support_center_title"
+        app:layout_constraintBottom_toTopOf="@id/layoutBottomNavigation"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

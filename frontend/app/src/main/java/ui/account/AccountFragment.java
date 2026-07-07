@@ -136,13 +136,7 @@ public class AccountFragment extends Fragment {
     }
 
     private void setupBottomNavigation(View view) {
-        BottomNavigationHelper.setup(view, tabIndex -> {
-            if (tabIndex == BottomNavigationHelper.TAB_HOME) {
-                if (getActivity() != null) {
-                    getActivity().getOnBackPressedDispatcher().onBackPressed();
-                }
-            }
-        });
+        BottomNavigationHelper.setupStandardNavigation(this, view);
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_ACCOUNT);
     }
 

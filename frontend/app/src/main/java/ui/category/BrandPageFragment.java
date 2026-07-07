@@ -68,9 +68,7 @@ public class BrandPageFragment extends Fragment {
         setupHeroSlider(view);
         loadBrandsFromRepository();
 
-        BottomNavigationHelper.setup(view, tabIndex -> {
-            // Handle tab navigation
-        });
+        BottomNavigationHelper.setupStandardNavigation(this, view);
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
     }
 

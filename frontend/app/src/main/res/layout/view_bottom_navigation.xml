@@ -312,48 +312,5 @@
                 android:text="Tài khoản"
                 android:textColor="@color/text_main" />
         </LinearLayout>
-
-        <!-- Hỗ trợ -->
-        <LinearLayout
-            android:id="@+id/navSupport"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:contentDescription="Mở Hỗ trợ">
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <View
-                    android:id="@+id/bgSupport"
-                    android:layout_width="48dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/bg_bottom_nav_item_selected"
-                    android:visibility="gone" />
-
-                <ImageView
-                    android:id="@+id/ivSupport"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_support"
-                    app:tint="@color/text_main" />
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/tvSupport"
-                style="@style/Text.Kanila.Micro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Hỗ trợ"
-                android:textColor="@color/text_main" />
-        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

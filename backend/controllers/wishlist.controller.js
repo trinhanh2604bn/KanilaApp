@@ -105,13 +105,12 @@ const getMyWishlistItems = async (req, res) => {
 
     const { sort } = req.query;
     let sortObj = { createdAt: -1 };
-    if (sort === "price_asc") sortObj = { "productId.price": 1 };
-    else if (sort === "price_desc") sortObj = { "productId.price": -1 };
-    else if (sort === "rating_desc") sortObj = { "productId.rating": -1 };
-    // Note: Population based sorting in Mongoose is tricky if not using aggregate.
-    // For simple MVP, we might just sort by createdAt or do in-memory sort if needed,
-    // but better to use aggregate if complex.
-    // Let's stick to createdAt for now and maybe add price if we use aggregation.
+    if (sort === "oldest") sortObj = { createdAt: 1 };
+    else if (sort === "price_asc") sortObj = { "product.price": 1 };
+    else if (sort === "price_desc") sortObj = { "product.price": -1 };
+    else if (sort === "rating_desc") sortObj = { "product.averageRating": -1 };
+    else if (sort === "name_asc") sortObj = { "product.productName": 1 };
+    else if (sort === "brand_asc") sortObj = { "product.brandName": 1 };
 
     // Improved with aggregation for better sorting
     const items = await WishlistItem.aggregate([
@@ -142,19 +141,19 @@ const getMyWishlistItems = async (req, res) => {
           variantId: 1,
           createdAt: 1,
           product: {
-            id: "$product._id",
-            name: "$product.productName",
+            _id: "$product._id",
+            productName: "$product.productName",
             imageUrl: "$product.imageUrl",
             price: "$product.price",
             compareAtPrice: "$product.compareAtPrice",
-            rating: "$product.rating",
-            reviewCount: "$product.reviewCount",
+            averageRating: "$product.averageRating",
+            bought: "$product.bought",
             brandName: "$brand.brandName",
-            isWishlisted: { $literal: true }
+            isFavorite: { $literal: true }
           }
         }
       },
-      { $sort: sort === "price_asc" ? { "product.price": 1 } : sort === "price_desc" ? { "product.price": -1 } : sort === "rating_desc" ? { "product.rating": -1 } : { createdAt: -1 } }
+      { $sort: sortObj }
     ]);
 
     return res.status(200).json({
@@ -345,6 +344,62 @@ const bulkDeleteMyWishlistItems = async (req, res) => {
   }
 };
 
+// GET /api/wishlist/me/status?productIds=id1,id2,id3
+const getMyWishlistStatus = async (req, res) => {
+  try {
+    const customer = await resolveAuthCustomer(req);
+    if (!customer) return res.status(401).json({ success: false, message: "Invalid or missing account identity" });
+
+    const productIdsRaw = req.query.productIds;
+    if (!productIdsRaw) return res.status(400).json({ success: false, message: "productIds query parameter is required" });
+
+    const productIds = productIdsRaw.split(",").filter(id => validateObjectId(id.trim()));
+
+    const wishlists = await Wishlist.find({ customer_id: customer._id }).select("_id").lean();
+    const wishlistIds = wishlists.map(w => w._id);
+
+    const items = await WishlistItem.find({
+      wishlistId: { $in: wishlistIds },
+      productId: { $in: productIds }
+    }).select("productId").lean();
+
+    const wishlistedIds = items.map(item => String(item.productId));
+    const statusMap = {};
+    productIds.forEach(id => {
+      statusMap[id] = wishlistedIds.includes(id);
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Get wishlist status successfully",
+      data: statusMap
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// DELETE /api/wishlist/me/items
+const clearMyWishlist = async (req, res) => {
+  try {
+    const customer = await resolveAuthCustomer(req);
+    if (!customer) return res.status(401).json({ success: false, message: "Invalid or missing account identity" });
+
+    const wishlists = await Wishlist.find({ customer_id: customer._id }).select("_id").lean();
+    const wishlistIds = wishlists.map((w) => w._id);
+
+    const result = await WishlistItem.deleteMany({ wishlistId: { $in: wishlistIds } });
+
+    return res.status(200).json({
+      success: true,
+      message: "All wishlist items cleared successfully",
+      data: { deletedCount: result.deletedCount }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getAllWishlists,
   getWishlistById,
@@ -355,6 +410,8 @@ module.exports = {
   addMyWishlistProduct,
   deleteMyWishlistProductByProductId,
   bulkDeleteMyWishlistItems,
+  clearMyWishlist,
+  getMyWishlistStatus,
   createWishlist,
   updateWishlist,
   deleteWishlist,

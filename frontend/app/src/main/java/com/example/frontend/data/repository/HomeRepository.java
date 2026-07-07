@@ -29,13 +29,15 @@ public class HomeRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<List<Product>> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
-                        if (apiResponse.getData() == null || apiResponse.getData().isEmpty()) {
+                        List<Product> items = apiResponse.getData();
+                        if (items == null || items.isEmpty()) {
                             result.setValue(NetworkResult.empty());
                         } else {
-                            result.setValue(NetworkResult.success(apiResponse.getData()));
+                            result.setValue(NetworkResult.success(items));
                         }
                     } else {
-                        result.setValue(NetworkResult.error(apiResponse.getError()));
+                        String errorMsg = apiResponse.getError() != null ? apiResponse.getError() : apiResponse.getMessage();
+                        result.setValue(NetworkResult.error(errorMsg != null ? errorMsg : "Unknown error"));
                     }
                 } else if (response.code() == 401) {
                     result.setValue(NetworkResult.unauthorized());
@@ -46,7 +48,8 @@ public class HomeRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<List<Product>>> call, Throwable t) {
-                result.setValue(NetworkResult.error(t.getLocalizedMessage()));
+                String message = t.getLocalizedMessage() != null ? t.getLocalizedMessage() : "Network error";
+                result.setValue(NetworkResult.error(message));
             }
         });
     }
@@ -59,13 +62,15 @@ public class HomeRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<List<Product>> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
-                        if (apiResponse.getData() == null || apiResponse.getData().isEmpty()) {
+                        List<Product> items = apiResponse.getData();
+                        if (items == null || items.isEmpty()) {
                             result.setValue(NetworkResult.empty());
                         } else {
-                            result.setValue(NetworkResult.success(apiResponse.getData()));
+                            result.setValue(NetworkResult.success(items));
                         }
                     } else {
-                        result.setValue(NetworkResult.error(apiResponse.getError()));
+                        String errorMsg = apiResponse.getError() != null ? apiResponse.getError() : apiResponse.getMessage();
+                        result.setValue(NetworkResult.error(errorMsg != null ? errorMsg : "Unknown error"));
                     }
                 } else if (response.code() == 401) {
                     result.setValue(NetworkResult.unauthorized());
@@ -76,7 +81,8 @@ public class HomeRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<List<Product>>> call, Throwable t) {
-                result.setValue(NetworkResult.error(t.getLocalizedMessage()));
+                String message = t.getLocalizedMessage() != null ? t.getLocalizedMessage() : "Network error";
+                result.setValue(NetworkResult.error(message));
             }
         });
     }

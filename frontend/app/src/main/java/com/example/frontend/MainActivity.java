@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvRecommendedProducts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
+    private ImageView ivChatbot;
 
     private View layoutSearchExpandedBar;
     private EditText edtExpandedSearchQuery;
@@ -145,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         layoutHomeStateContainer = findViewById(R.id.layoutHomeStateContainer);
         viewHomeLoading = findViewById(R.id.viewHomeLoading);
         viewHomeError = findViewById(R.id.viewHomeError);
+        ivChatbot = findViewById(R.id.ivChatbot);
 
         layoutKanilaReelsCard = findViewById(R.id.layoutKanilaReelsCard);
         layoutReelThumbOne = findViewById(R.id.layoutReelThumbOne);
@@ -193,6 +195,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        if (ivChatbot != null) {
+            ivChatbot.setOnClickListener(v -> {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.support.ChatSupportFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+
         setupHomeShortcuts();
         setupSocialSection();
     }
@@ -209,6 +220,10 @@ public class MainActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.main, new ProductCategoryFragment())
                             .commit();
+                } else if (tabIndex == BottomNavigationHelper.TAB_REELS) {
+                    Toast.makeText(this, "Reels coming soon!", Toast.LENGTH_SHORT).show();
+                } else if (tabIndex == BottomNavigationHelper.TAB_COMMUNITY) {
+                    Toast.makeText(this, "Community coming soon!", Toast.LENGTH_SHORT).show();
                 } else if (tabIndex == BottomNavigationHelper.TAB_HOME) {
                     // Refresh current activity to show home content again
                     Intent intent = new Intent(this, MainActivity.class);
@@ -222,10 +237,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupProductLists() {
         recommendedProductAdapter = new HomeProductAdapter();
-
-        // Premium feel: width around 46% of screen
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        recommendedProductAdapter.setItemWidth((int) (screenWidth * 0.46));
 
         recommendedProductAdapter.setOnProductClickListener(product -> {
             getSupportFragmentManager().beginTransaction()
@@ -255,8 +266,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        rvRecommendedProducts.setLayoutManager(new GridLayoutManager(this, 2));
         rvRecommendedProducts.setAdapter(recommendedProductAdapter);
+        rvRecommendedProducts.setNestedScrollingEnabled(false);
 
         // All Products (Vertical Grid)
         allProductAdapter = new HomeProductAdapter();
@@ -303,14 +315,56 @@ public class MainActivity extends AppCompatActivity {
                 showError(state.error);
             } else {
                 showContent();
+                List<com.example.frontend.model.Product> allProductsToUpdate = new java.util.ArrayList<>();
                 if (state.recommendedProducts != null) {
                     recommendedProductAdapter.setProducts(state.recommendedProducts);
+                    allProductsToUpdate.addAll(state.recommendedProducts);
                 }
                 if (state.allProducts != null) {
                     allProductAdapter.setProducts(state.allProducts);
+                    allProductsToUpdate.addAll(state.allProducts);
+                }
+                
+                if (!allProductsToUpdate.isEmpty() && com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                    List<String> productIds = new java.util.ArrayList<>();
+                    for (com.example.frontend.model.Product p : allProductsToUpdate) {
+                        productIds.add(p.getId());
+                    }
+                    wishlistViewModel.loadWishlistStatus(productIds);
                 }
             }
         });
+
+        wishlistViewModel.getStatusResult().observe(this, result -> {
+            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && result.data != null) {
+                updateProductFavoriteStates(result.data);
+            }
+        });
+
+        wishlistViewModel.getToggleResult().observe(this, result -> {
+            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.ERROR) {
+                Toast.makeText(this, "Lỗi: " + result.message, Toast.LENGTH_SHORT).show();
+                // We might need to refresh status to rollback UI accurately
+                viewModel.loadHomeData();
+            }
+        });
+    }
+
+    private void updateProductFavoriteStates(java.util.Map<String, Boolean> statusMap) {
+        if (recommendedProductAdapter.getProducts() != null) {
+            for (com.example.frontend.model.Product p : recommendedProductAdapter.getProducts()) {
+                Boolean isFav = statusMap.get(p.getId());
+                if (isFav != null) p.setFavorite(isFav);
+            }
+            recommendedProductAdapter.notifyDataSetChanged();
+        }
+        if (allProductAdapter.getProducts() != null) {
+            for (com.example.frontend.model.Product p : allProductAdapter.getProducts()) {
+                Boolean isFav = statusMap.get(p.getId());
+                if (isFav != null) p.setFavorite(isFav);
+            }
+            allProductAdapter.notifyDataSetChanged();
+        }
     }
 
     private void showLoginPrompt() {

@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/spacing_m"
     android:layout_marginVertical="@dimen/spacing_xs"
     app:cardBackgroundColor="@color/background_main"
     app:cardCornerRadius="@dimen/radius_m"
-    app:cardElevation="2dp"
+    app:cardElevation="0dp"
     app:strokeColor="@color/border_divider"
     app:strokeWidth="1dp">
 
@@ -15,92 +16,111 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/spacing_m">
+        android:paddingBottom="@dimen/spacing_m">
 
-        <RelativeLayout
+        <!-- Card Header: Store/Brand & Status -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/spacing_m"
+            android:paddingTop="@dimen/spacing_m">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/ic_routine"
+                app:tint="@color/text_main" />
 
             <TextView
-                android:id="@+id/tvOrderNumber"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvOrderBrandName"
+                style="@style/Text.Kanila.BodyMedium"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_bold"
-                android:textColor="@color/accent_dark"
-                android:textSize="14sp"
-                tools:text="#KN20458" />
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="Kanila Official"
+                android:textColor="@color/text_main" />
 
             <TextView
-                android:id="@+id/tvOrderStatus"
+                android:id="@+id/tvOrderHeaderStatus"
+                style="@style/Text.Kanila.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:background="@drawable/bg_status_success"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="2dp"
-                android:textColor="@color/success"
-                android:textSize="12sp"
-                tools:text="Đã giao" />
-        </RelativeLayout>
+                android:text="Hoàn thành"
+                android:textColor="@color/button" />
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginVertical="@dimen/spacing_s"
+            android:layout_marginTop="@dimen/spacing_s"
             android:background="@color/border_divider" />
 
-        <LinearLayout
-            android:id="@+id/layoutOrderItemsSummary"
+        <!-- Order Content: Inherit from item_cart_selected structure -->
+        <include
+            android:id="@+id/layoutOrderItemContent"
+            layout="@layout/item_cart_selected"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginHorizontal="@dimen/spacing_m" />
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/ivOrderFirstProduct"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:scaleType="centerCrop"
-                app:shapeAppearanceOverlay="@style/RoundedProductImage"
-                tools:src="@drawable/ic_product" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvOrderFirstProductName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:fontFamily="@font/nunito_semibold"
-                    android:maxLines="1"
-                    android:textColor="@color/text_main"
-                    android:textSize="13sp"
-                    tools:text="Kanila Sweet Lip For You" />
-
-                <TextView
-                    android:id="@+id/tvOrderItemsCount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:fontFamily="@font/nunito_regular"
-                    android:textColor="@color/text_tertiary"
-                    android:textSize="12sp"
-                    tools:text="và 3 sản phẩm khác" />
-            </LinearLayout>
+        <!-- Total Area -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/spacing_m">
 
             <TextView
-                android:id="@+id/tvOrderTotalAmount"
+                android:id="@+id/tvOrderTotalSummary"
+                style="@style/Text.Kanila.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:fontFamily="@font/nunito_bold"
-                android:textColor="@color/button"
-                android:textSize="15sp"
-                tools:text="810.000đ" />
+                android:text="Tổng số tiền (1 sản phẩm): "
+                android:textColor="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/tvOrderGrandTotal"
+                style="@style/Text.Kanila.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="245.000đ"
+                android:textColor="@color/button" />
+        </LinearLayout>
+
+        <!-- Action Area -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:gravity="end|center_vertical"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_m">
+
+            <TextView
+                android:id="@+id/tvOrderProcessingDisclaimer"
+                style="@style/Text.Kanila.Micro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Vui lòng chỉ nhấn Đã nhận được hàng khi đơn hàng đã được giao đến bạn và sản phẩm nhận được không có vấn đề nào."
+                android:textColor="@color/text_secondary"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOrderAction"
+                style="@style/Widget.Kanila.Button.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:minWidth="100dp"
+                android:paddingHorizontal="16dp"
+                android:text="Đánh giá"
+                android:textSize="12sp" />
         </LinearLayout>
 
     </LinearLayout>

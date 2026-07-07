@@ -549,11 +549,15 @@
 
                 <!-- Phương thức thanh toán -->
                 <LinearLayout
+                    android:id="@+id/menuPaymentMethod"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="16dp">
+                    android:paddingHorizontal="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
 
                     <ImageView
                         android:id="@+id/ivMenu4"

@@ -105,7 +105,7 @@ public class AccountFragment extends Fragment {
 
         view.findViewById(R.id.btnAccountOrders).setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.order.OrderListFragment())
+                    .replace(R.id.main, new ui.order.OrderListFragment())
                     .addToBackStack(null)
                     .commit();
         });
@@ -123,6 +123,16 @@ public class AccountFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+
+        View menuPaymentMethod = view.findViewById(R.id.menuPaymentMethod);
+        if (menuPaymentMethod != null) {
+            menuPaymentMethod.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.commerce.PaymentMethodFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
 
         View menuSettings = view.findViewById(R.id.menuSettings);
         if (menuSettings != null) {

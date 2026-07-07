@@ -137,6 +137,9 @@ public interface ApiService {
     Call<ApiResponse<Object>> deleteAddress(@Path("id") String id);
 
     @GET("api/orders/me")
+    Call<ApiResponse<List<com.example.frontend.data.model.order.OrderSummaryDto>>> getMyOrders(@Query("status") String status, @Query("page") Integer page);
+
+    @GET("api/orders/me")
     Call<ApiResponse<List<OrderDto>>> getMyOrders();
 
     @GET("api/orders/me/{id}")

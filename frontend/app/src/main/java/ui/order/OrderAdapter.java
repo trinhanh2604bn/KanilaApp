@@ -1,0 +1,164 @@
+package ui.order;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import com.example.frontend.R;
+import com.example.frontend.data.model.order.OrderSummaryDto;
+import com.google.android.material.button.MaterialButton;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
+
+    private final List<OrderSummaryDto> orders = new ArrayList<>();
+
+    public OrderAdapter() {
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void setOrders(List<OrderSummaryDto> newOrders) {
+        orders.clear();
+        if (newOrders != null) {
+            orders.addAll(newOrders);
+        }
+        notifyDataSetChanged();
+    }
+
+    @NonNull
+    @Override
+    public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_order_card, parent, false);
+        return new OrderViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
+        OrderSummaryDto order = orders.get(position);
+        holder.bind(order);
+    }
+
+    @Override
+    public int getItemCount() {
+        return orders.size();
+    }
+
+    static class OrderViewHolder extends RecyclerView.ViewHolder {
+        TextView tvBrandName, tvStatus, tvProductName, tvVariant, tvQuantity, tvPrice, tvTotalSummary, tvGrandTotal, tvDisclaimer;
+        ImageView ivProduct;
+        MaterialButton btnAction;
+
+        public OrderViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvBrandName = itemView.findViewById(R.id.tvOrderBrandName);
+            tvStatus = itemView.findViewById(R.id.tvOrderHeaderStatus);
+            
+            // Views inside item_cart_selected
+            tvProductName = itemView.findViewById(R.id.tvSelectedCartProductName);
+            tvVariant = itemView.findViewById(R.id.tvSelectedCartVariant);
+            tvQuantity = itemView.findViewById(R.id.tvSelectedCartQuantity);
+            tvPrice = itemView.findViewById(R.id.tvSelectedCartPrice);
+            ivProduct = itemView.findViewById(R.id.ivSelectedCartProductImage);
+
+            tvTotalSummary = itemView.findViewById(R.id.tvOrderTotalSummary);
+            tvGrandTotal = itemView.findViewById(R.id.tvOrderGrandTotal);
+            tvDisclaimer = itemView.findViewById(R.id.tvOrderProcessingDisclaimer);
+            btnAction = itemView.findViewById(R.id.btnOrderAction);
+        }
+
+        public void bind(OrderSummaryDto order) {
+            // Brand (Backend doesn't return, using default)
+            tvBrandName.setText("Kanila Beauty");
+
+            // Status mapping
+            String status = order.getOrderStatus();
+            tvStatus.setText(getStatusText(status));
+            
+            // Product info (Backend returns first item info)
+            tvProductName.setText(order.getFirstItemName());
+            tvVariant.setText(order.getFirstItemVariant());
+            
+            String qtyLabel = "Số lượng: x" + order.getTotalQuantity();
+            tvQuantity.setText(qtyLabel);
+            tvPrice.setText(formatPrice(order.getGrandTotalAmount()));
+            
+            // Placeholder image
+            ivProduct.setImageResource(R.drawable.ic_product);
+
+            // Summary
+            String summaryLabel = String.format(Locale.getDefault(), "Tổng số tiền (%d sản phẩm): ", order.getTotalQuantity());
+            tvTotalSummary.setText(summaryLabel);
+            tvGrandTotal.setText(formatPrice(order.getGrandTotalAmount()));
+
+            // Action Button & Disclaimer
+            setupActionArea(status);
+
+            itemView.setOnClickListener(v -> {
+                // TODO: Navigate to Order Detail
+            });
+        }
+
+        private void setupActionArea(String status) {
+            tvDisclaimer.setVisibility(View.GONE);
+            btnAction.setEnabled(true);
+            btnAction.setAlpha(1.0f);
+            btnAction.setVisibility(View.VISIBLE);
+
+            if (status == null) {
+                btnAction.setVisibility(View.GONE);
+                return;
+            }
+
+            switch (status) {
+                case "pending":
+                case "confirmed":
+                    btnAction.setText("Liên hệ shop");
+                    break;
+                case "processing":
+                    btnAction.setText("Đã nhận được hàng");
+                    btnAction.setEnabled(false);
+                    btnAction.setAlpha(0.5f);
+                    tvDisclaimer.setVisibility(View.VISIBLE);
+                    break;
+                case "completed":
+                    btnAction.setText("Đánh giá");
+                    break;
+                case "cancelled":
+                case "returned":
+                    btnAction.setText("Mua lại");
+                    break;
+                default:
+                    btnAction.setVisibility(View.GONE);
+                    break;
+            }
+            
+            btnAction.setOnClickListener(v -> {
+                // TODO: Handle action based on button text
+            });
+        }
+
+        private String getStatusText(String status) {
+            if (status == null) return "";
+            switch (status) {
+                case "pending": return "Chờ xác nhận";
+                case "confirmed": return "Chờ lấy hàng";
+                case "processing": return "Chờ giao hàng";
+                case "completed": return "Đã giao";
+                case "cancelled": return "Đã hủy";
+                case "returned": return "Trả hàng";
+                default: return status;
+            }
+        }
+
+        private String formatPrice(double price) {
+            return String.format(Locale.getDefault(), "%,.0fđ", price).replace(",", ".");
+        }
+    }
+}

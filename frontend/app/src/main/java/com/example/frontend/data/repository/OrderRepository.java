@@ -7,6 +7,7 @@ import com.example.frontend.data.remote.ApiResponse;
 import com.example.frontend.data.remote.ApiService;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.data.model.order.OrderDto;
+import com.example.frontend.data.model.order.OrderSummaryDto;
 import com.example.frontend.data.model.common.PaginatedData;
 import java.util.List;
 import retrofit2.Call;
@@ -18,6 +19,35 @@ public class OrderRepository {
 
     public OrderRepository(Context context) {
         this.apiService = ApiClient.getClient(context).create(ApiService.class);
+    }
+
+    public void getMyOrders(String status, Integer page, MutableLiveData<NetworkResult<List<OrderSummaryDto>>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.getMyOrders(status, page).enqueue(new Callback<ApiResponse<List<OrderSummaryDto>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<OrderSummaryDto>>> call, Response<ApiResponse<List<OrderSummaryDto>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<List<OrderSummaryDto>> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        List<OrderSummaryDto> items = apiResponse.getData();
+                        if (items != null && !items.isEmpty()) {
+                            result.setValue(NetworkResult.success(items));
+                        } else {
+                            result.setValue(NetworkResult.empty());
+                        }
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to load orders"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<List<OrderSummaryDto>>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
     }
 
     public void getMyOrders(MutableLiveData<NetworkResult<List<OrderDto>>> result) {

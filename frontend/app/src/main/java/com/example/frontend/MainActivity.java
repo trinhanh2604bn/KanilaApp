@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         observeViewModel();
         viewModel.loadHomeData();
-        
+
         checkAuthStatus();
     }
 
@@ -107,22 +107,22 @@ public class MainActivity extends AppCompatActivity {
         if (tm.isLoggedIn()) {
             // Validate token by calling /me
             com.example.frontend.data.remote.ApiClient.getClient(this)
-                .create(com.example.frontend.data.remote.ApiService.class)
-                .getMe()
-                .enqueue(new retrofit2.Callback<com.example.frontend.data.remote.ApiResponse<Object>>() {
-                    @Override
-                    public void onResponse(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, retrofit2.Response<com.example.frontend.data.remote.ApiResponse<Object>> response) {
-                        if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
-                            tm.clearToken();
-                            Toast.makeText(MainActivity.this, "Phiên đăng nhập hết hạn", Toast.LENGTH_SHORT).show();
+                    .create(com.example.frontend.data.remote.ApiService.class)
+                    .getMe()
+                    .enqueue(new retrofit2.Callback<com.example.frontend.data.remote.ApiResponse<Object>>() {
+                        @Override
+                        public void onResponse(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, retrofit2.Response<com.example.frontend.data.remote.ApiResponse<Object>> response) {
+                            if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
+                                tm.clearToken();
+                                Toast.makeText(MainActivity.this, "Phien dang nhap het han", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, Throwable t) {
-                        // Network error, maybe don't clear token yet
-                    }
-                });
+                        @Override
+                        public void onFailure(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, Throwable t) {
+                            // Network error, maybe don't clear token yet
+                        }
+                    });
         }
     }
 
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
         btnCart.setOnClickListener(v -> navigateToCart());
 
         btnNotification.setOnClickListener(v -> {
-            // Mở NotificationCenterFragment
+            // Mo NotificationCenterFragment
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main, new ui.notification.NotificationCenterFragment())
                     .addToBackStack(null)
@@ -218,23 +218,6 @@ public class MainActivity extends AppCompatActivity {
             });
             BottomNavigationHelper.setSelectedTab(bottomNav, BottomNavigationHelper.TAB_HOME);
         }
-
-
-
-        setupHomeShortcuts();
-        setupSocialSection();
-    }
-
-    private void setupBottomNavigation() {
-        BottomNavigationHelper.setup(findViewById(R.id.main), tabIndex -> {
-            if (tabIndex == BottomNavigationHelper.TAB_CATEGORY) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ui.category.ProductCategoryFragment())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-        BottomNavigationHelper.setSelectedTab(findViewById(R.id.main), BottomNavigationHelper.TAB_HOME);
     }
 
     private void setupProductLists() {
@@ -257,16 +240,16 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 product.setFavorite(wasWishlisted); // rollback UI
                 recommendedProductAdapter.notifyDataSetChanged();
-                
+
                 Bundle extras = new Bundle();
                 extras.putString("productId", product.getId());
                 extras.putBoolean("wasWishlisted", wasWishlisted);
-                
+
                 com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
-                    com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
-                    "Home",
-                    0,
-                    extras
+                        com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
+                        "Home",
+                        0,
+                        extras
                 );
                 com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
             }
@@ -290,21 +273,21 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 product.setFavorite(wasWishlisted); // rollback UI
                 allProductAdapter.notifyDataSetChanged();
-                
+
                 Bundle extras = new Bundle();
                 extras.putString("productId", product.getId());
                 extras.putBoolean("wasWishlisted", wasWishlisted);
 
                 com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
-                    com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
-                    "Home",
-                    0,
-                    extras
+                        com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
+                        "Home",
+                        0,
+                        extras
                 );
                 com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
             }
         });
-        
+
         rvAllProducts.setLayoutManager(new GridLayoutManager(this, 2));
         rvAllProducts.setAdapter(allProductAdapter);
         rvAllProducts.setNestedScrollingEnabled(false);
@@ -332,10 +315,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void showLoginPrompt() {
         com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
-            com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT,
-            "Home",
-            0,
-            null
+                com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT,
+                "Home",
+                0,
+                null
         );
         com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
     }
@@ -415,14 +398,14 @@ public class MainActivity extends AppCompatActivity {
         rvHomeShortcuts.setAdapter(shortcutAdapter);
 
         List<HomeShortcutItem> shortcuts = new ArrayList<>();
-        shortcuts.add(new HomeShortcutItem("orders", "Đơn hàng", R.drawable.ic_shortcut_order, "orders", "", false, false));
+        shortcuts.add(new HomeShortcutItem("orders", "Don hang", R.drawable.ic_shortcut_order, "orders", "", false, false));
         shortcuts.add(new HomeShortcutItem("voucher", "Voucher", R.drawable.ic_shortcut_voucher, "voucher", "", false, false));
         shortcuts.add(new HomeShortcutItem("ar", "AR", R.drawable.ic_shortcut_ar, "ar_try_on", "", false, false));
         shortcuts.add(new HomeShortcutItem("kanila_beauty", "Kanila Beauty", R.drawable.ic_shortcut_kanila_beauty, "beauty", "", false, false));
         shortcuts.add(new HomeShortcutItem("creator", "Creator", R.drawable.ic_shortcut_creator, "creator", "", false, false));
         shortcuts.add(new HomeShortcutItem("royalty", "Royalty", R.drawable.ic_shortcut_royalty, "loyalty", "", false, false));
-        shortcuts.add(new HomeShortcutItem("help", "Trợ giúp", R.drawable.ic_shortcut_help, "support", "", false, false));
-        shortcuts.add(new HomeShortcutItem("policy", "Chính sách", R.drawable.ic_shortcut_policy, "policy", "", false, false));
+        shortcuts.add(new HomeShortcutItem("help", "Tro giup", R.drawable.ic_shortcut_help, "support", "", false, false));
+        shortcuts.add(new HomeShortcutItem("policy", "Chinh sach", R.drawable.ic_shortcut_policy, "policy", "", false, false));
 
         shortcutAdapter.setItems(shortcuts);
     }
@@ -447,11 +430,11 @@ public class MainActivity extends AppCompatActivity {
         vpHomeBanner.setPageTransformer(compositePageTransformer);
 
         List<HomeBannerItem> items = new ArrayList<>();
-        items.add(new HomeBannerItem("1", "", "", "", "Khám phá ngay", null, R.drawable.bg_slide_1, "category", "123", true, 1));
+        items.add(new HomeBannerItem("1", "", "", "", "Kham pha ngay", null, R.drawable.bg_slide_1, "category", "123", true, 1));
         items.add(new HomeBannerItem("2", "", "", "", "Mua ngay", null, R.drawable.bg_slide_2, "product", "456", true, 2));
-        items.add(new HomeBannerItem("3", "", "", "", "Xem ưu đãi", null, R.drawable.bg_slide_3, "promotion", "789", true, 3));
-        items.add(new HomeBannerItem("4", "", "", "", "Gợi ý cho bạn", null, R.drawable.bg_slide_4, "recommendation", "012", true, 4));
-        items.add(new HomeBannerItem("5", "", "", "", "Nhận voucher", null, R.drawable.bg_slide_5, "voucher", "345", true, 5));
+        items.add(new HomeBannerItem("3", "", "", "", "Xem uu dai", null, R.drawable.bg_slide_3, "promotion", "789", true, 3));
+        items.add(new HomeBannerItem("4", "", "", "", "Goi y cho ban", null, R.drawable.bg_slide_4, "recommendation", "012", true, 4));
+        items.add(new HomeBannerItem("5", "", "", "", "Nhan voucher", null, R.drawable.bg_slide_5, "voucher", "345", true, 5));
 
         bannerAdapter.setItems(items);
 

@@ -49,8 +49,9 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
             OrderDto.OrderItemDto firstItem = order.getItems().get(0);
             holder.tvOrderFirstProductName.setText(firstItem.getProductName());
             Glide.with(holder.ivOrderFirstProduct.getContext())
-                    .load(firstItem.getImageUrl())
+                    .load(firstItem.getImageUrl() != null ? firstItem.getImageUrl() : "")
                     .placeholder(R.drawable.ic_product)
+                    .error(R.drawable.ic_product)
                     .into(holder.ivOrderFirstProduct);
 
             if (order.getItems().size() > 1) {

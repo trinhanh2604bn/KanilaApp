@@ -133,8 +133,12 @@ public class AuthRepository {
     private void handleAuthResponse(Response<ApiResponse<AuthResponse>> response, MutableLiveData<NetworkResult<AuthResponse>> result) {
         if (response.isSuccessful() && response.body() != null) {
             ApiResponse<AuthResponse> apiResponse = response.body();
-            if (apiResponse.isSuccess()) {
-                result.setValue(NetworkResult.success(apiResponse.getData()));
+            if (apiResponse.isSuccess() && apiResponse.getData() != null) {
+                AuthResponse data = apiResponse.getData();
+                if (data.getAccessToken() != null) {
+                    tokenManager.saveTokens(data.getAccessToken(), data.getRefreshToken());
+                }
+                result.setValue(NetworkResult.success(data));
             } else {
                 result.setValue(NetworkResult.error(apiResponse.getMessage()));
             }

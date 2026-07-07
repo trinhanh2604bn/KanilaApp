@@ -106,13 +106,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             tvQuantity.setText(String.valueOf(item.getQuantity()));
             
             Glide.with(ivProduct.getContext())
-                    .load(item.getImageUrlSnapshot())
+                    .load(item.getImageUrlSnapshot() != null ? item.getImageUrlSnapshot() : "")
                     .placeholder(R.drawable.ic_product)
                     .error(R.drawable.ic_product)
                     .into(ivProduct);
             
             // Note: Wishlist status might need separate API call or be part of item DTO if backend supports it
-            btnWishlist.setSelected(false); 
+            btnWishlist.setSelected(false);
             
             layoutFront.setTranslationX(0f);
             

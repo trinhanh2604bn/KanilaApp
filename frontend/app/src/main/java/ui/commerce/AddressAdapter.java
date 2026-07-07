@@ -35,7 +35,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_address_book, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_checkout_address, parent, false);
         return new ViewHolder(view);
     }
 
@@ -47,7 +47,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
         holder.tvDetail.setText(address.getAddressLine());
         
         // Handle selection indicator if needed
-        holder.layoutItem.setSelected(address.isDefault());
+        holder.layoutItem.setSelected(address.isDefaultShipping());
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onAddressClick(address, position);
@@ -55,10 +55,6 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
 
         holder.btnEdit.setOnClickListener(v -> {
             if (listener != null) listener.onEditClick(address);
-        });
-
-        holder.btnDelete.setOnClickListener(v -> {
-            if (listener != null) listener.onDeleteClick(address);
         });
     }
 
@@ -69,17 +65,16 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvPhone, tvDetail;
-        ImageView btnEdit, btnDelete;
+        ImageView btnEdit;
         View layoutItem;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            layoutItem = itemView.findViewById(R.id.layoutAddressItem);
-            tvName = itemView.findViewById(R.id.tvReceiverName);
-            tvPhone = itemView.findViewById(R.id.tvReceiverPhone);
-            tvDetail = itemView.findViewById(R.id.tvAddressFull);
-            btnEdit = itemView.findViewById(R.id.btnEdit);
-            btnDelete = itemView.findViewById(R.id.btnDelete);
+            layoutItem = itemView.findViewById(R.id.layoutAddressItemRoot);
+            tvName = itemView.findViewById(R.id.tvAddressName);
+            tvPhone = itemView.findViewById(R.id.tvAddressPhone);
+            tvDetail = itemView.findViewById(R.id.tvAddressDetail);
+            btnEdit = itemView.findViewById(R.id.btnAddressEdit);
         }
     }
 }

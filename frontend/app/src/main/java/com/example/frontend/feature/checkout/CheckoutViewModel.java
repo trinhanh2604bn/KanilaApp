@@ -18,6 +18,7 @@ public class CheckoutViewModel extends AndroidViewModel {
 
     private final CheckoutRepository checkoutRepository;
     private final MutableLiveData<NetworkResult<CheckoutSessionDto>> checkoutSession = new MutableLiveData<>();
+    private final MutableLiveData<com.example.frontend.data.model.address.AddressDto> selectedAddress = new MutableLiveData<>();
 
     public CheckoutViewModel(@NonNull Application application) {
         super(application);
@@ -26,6 +27,14 @@ public class CheckoutViewModel extends AndroidViewModel {
 
     public LiveData<NetworkResult<CheckoutSessionDto>> getCheckoutSession() {
         return checkoutSession;
+    }
+
+    public LiveData<com.example.frontend.data.model.address.AddressDto> getSelectedAddress() {
+        return selectedAddress;
+    }
+
+    public void setSelectedAddress(com.example.frontend.data.model.address.AddressDto address) {
+        selectedAddress.setValue(address);
     }
 
     public void prepareCheckout() {

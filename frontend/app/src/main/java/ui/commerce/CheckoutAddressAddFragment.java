@@ -13,8 +13,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.frontend.R;
+import com.example.frontend.data.model.address.AddressDto;
+import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.feature.checkout.CheckoutAddressViewModel;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -35,7 +39,9 @@ public class CheckoutAddressAddFragment extends Fragment {
 
     private String selectedProvince;
     private String selectedWard;
+    private String addressId;
     private Map<String, List<String>> provinceWardMap;
+    private CheckoutAddressViewModel viewModel;
 
     @Nullable
     @Override
@@ -47,11 +53,83 @@ public class CheckoutAddressAddFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        viewModel = new ViewModelProvider(requireActivity()).get(CheckoutAddressViewModel.class);
+        
+        if (getArguments() != null) {
+            addressId = getArguments().getString("address_id");
+        }
+
         initData();
         initViews(view);
         setupHeader(view);
         setupTexts(view);
         setupListeners(view);
+        observeViewModel();
+        
+        if (addressId != null) {
+            loadExistingAddress();
+        }
+    }
+
+    private void loadExistingAddress() {
+        // Find the address in the already loaded list from ViewModel
+        NetworkResult<List<AddressDto>> result = viewModel.getAddressResult().getValue();
+        if (result != null && result.data != null) {
+            for (AddressDto address : result.data) {
+                if (address.getId().equals(addressId)) {
+                    populateViews(address);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void populateViews(AddressDto address) {
+        if (edtFullName != null) edtFullName.setText(address.getRecipientName());
+        if (edtPhone != null) edtPhone.setText(address.getPhone());
+        if (edtDetail != null) edtDetail.setText(address.getAddressLine1());
+        
+        selectedProvince = address.getCity();
+        selectedWard = address.getWard();
+        
+        if (tvProvince != null) tvProvince.setText(selectedProvince);
+        if (tvWard != null) tvWard.setText(selectedWard);
+        
+        if (switchDefault != null) switchDefault.setChecked(address.isDefaultShipping());
+        
+        // Handle tags
+        if (chipGroupTag != null && address.getAddressType() != null) {
+            String type = address.getAddressType().toLowerCase();
+            if (type.contains("home")) {
+                chipGroupTag.check(R.id.chipAddressHome);
+            } else if (type.contains("office")) {
+                chipGroupTag.check(R.id.chipAddressOffice);
+            } else {
+                chipGroupTag.check(R.id.chipAddressOther);
+            }
+        }
+    }
+
+    private void observeViewModel() {
+        viewModel.getSaveResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case LOADING:
+                    btnSave.setEnabled(false);
+                    break;
+                case SUCCESS:
+                    Toast.makeText(getContext(), "Địa chỉ đã được lưu", Toast.LENGTH_SHORT).show();
+                    viewModel.loadCustomerAddresses(); // Refresh list
+                    if (getActivity() != null) {
+                        getActivity().getOnBackPressedDispatcher().onBackPressed();
+                    }
+                    break;
+                case ERROR:
+                    btnSave.setEnabled(true);
+                    showError(result.message);
+                    break;
+            }
+        });
     }
 
     private void initData() {
@@ -244,10 +322,29 @@ public class CheckoutAddressAddFragment extends Fragment {
     }
 
     private void saveAddress() {
-        // TODO: Implement save logic through repository
-        Toast.makeText(getContext(), "Địa chỉ đã được lưu", Toast.LENGTH_SHORT).show();
-        if (getActivity() != null) {
-            getActivity().getOnBackPressedDispatcher().onBackPressed();
+        Map<String, Object> data = new HashMap<>();
+        data.put("recipient_name", edtFullName.getText().toString().trim());
+        data.put("phone", edtPhone.getText().toString().trim());
+        data.put("city", selectedProvince);
+        data.put("ward", selectedWard);
+        data.put("address_line_1", edtDetail.getText().toString().trim());
+        data.put("is_default_shipping", switchDefault.isChecked());
+        
+        if (chipGroupTag != null) {
+            int checkedChipId = chipGroupTag.getCheckedChipId();
+            if (checkedChipId == R.id.chipAddressHome) {
+                data.put("address_type", "Home");
+            } else if (checkedChipId == R.id.chipAddressOffice) {
+                data.put("address_type", "Office");
+            } else if (checkedChipId == R.id.chipAddressOther) {
+                data.put("address_type", "Other");
+            }
+        }
+
+        if (addressId != null) {
+            viewModel.updateAddress(addressId, data);
+        } else {
+            viewModel.addAddress(data);
         }
     }
 }

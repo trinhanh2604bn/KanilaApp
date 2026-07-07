@@ -39,7 +39,7 @@ public class CheckoutFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(this).get(CheckoutViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(CheckoutViewModel.class);
         
         initViews(view);
         setupHeader(view);
@@ -75,6 +75,18 @@ public class CheckoutFragment extends Fragment {
         if (addressCard != null) {
             ((TextView) addressCard.findViewById(R.id.tvCheckoutOptionTitle)).setText("Địa chỉ nhận hàng");
             ((ImageView) addressCard.findViewById(R.id.ivCheckoutOptionIcon)).setImageResource(R.drawable.ic_location);
+
+            View btnEdit = addressCard.findViewById(R.id.tvCheckoutOptionEdit);
+            if (btnEdit != null) {
+                btnEdit.setOnClickListener(v -> {
+                    if (getActivity() != null) {
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.main, new CheckoutAddressFragment())
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                });
+            }
         }
 
         View shippingCard = view.findViewById(R.id.layoutCheckoutShipping);
@@ -130,6 +142,40 @@ public class CheckoutFragment extends Fragment {
                     break;
             }
         });
+
+        viewModel.getSelectedAddress().observe(getViewLifecycleOwner(), address -> {
+            if (address == null) return;
+            
+            CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ? 
+                viewModel.getCheckoutSession().getValue().data : null;
+            
+            if (session != null) {
+                CheckoutSessionDto.CheckoutAddressDto checkoutAddress = new CheckoutSessionDto.CheckoutAddressDto();
+                checkoutAddress.setFullName(address.getRecipientName());
+                checkoutAddress.setPhone(address.getPhone());
+                
+                // Format for secondary text
+                StringBuilder sb = new StringBuilder();
+                appendIfNotEmpty(sb, address.getAddressLine1());
+                appendIfNotEmpty(sb, address.getAddressLine2());
+                appendIfNotEmpty(sb, address.getWard());
+                appendIfNotEmpty(sb, address.getDistrict());
+                appendIfNotEmpty(sb, address.getCity());
+                checkoutAddress.setAddressLine(sb.toString());
+                
+                session.setShippingAddress(checkoutAddress);
+                setupAddress(checkoutAddress);
+            }
+        });
+    }
+
+    private void appendIfNotEmpty(StringBuilder sb, String text) {
+        if (text != null && !text.trim().isEmpty()) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(text);
+        }
     }
 
     private void bindCheckoutData(CheckoutSessionDto session) {
@@ -216,13 +262,6 @@ public class CheckoutFragment extends Fragment {
         tvPrimary.setText(address.getFullName() + " | " + address.getPhone());
         tvSecondary.setText(address.getAddressLine());
         if (tvValue != null) tvValue.setVisibility(View.GONE);
-        
-        View btnEdit = card.findViewById(R.id.tvCheckoutOptionEdit);
-        if (btnEdit != null) {
-            btnEdit.setOnClickListener(v -> {
-                // Navigate to address selector
-            });
-        }
     }
 
     private void setupShipping(String method, double amount) {
@@ -287,7 +326,11 @@ public class CheckoutFragment extends Fragment {
             tvPrice.setText(formatPrice(item.getPrice()));
             tvQuantity.setText("Số lượng: " + item.getQuantity());
 
-            Glide.with(this).load(item.getImageUrl()).placeholder(R.drawable.ic_product).into(ivProduct);
+            Glide.with(this)
+                    .load(item.getImageUrl() != null ? item.getImageUrl() : "")
+                    .placeholder(R.drawable.ic_product)
+                    .error(R.drawable.ic_product)
+                    .into(ivProduct);
             
             itemView.setOnClickListener(v -> {
                 if (getContext() == null) return;

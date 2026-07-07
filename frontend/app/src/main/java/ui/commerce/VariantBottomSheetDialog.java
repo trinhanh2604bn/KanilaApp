@@ -97,8 +97,9 @@ public class VariantBottomSheetDialog extends BottomSheetDialog {
         if (cartItem != null) {
             if (ivProduct != null) {
                 Glide.with(getContext())
-                        .load(cartItem.getImageUrlSnapshot())
+                        .load(cartItem.getImageUrlSnapshot() != null ? cartItem.getImageUrlSnapshot() : "")
                         .placeholder(R.drawable.ic_product)
+                        .error(R.drawable.ic_product)
                         .into(ivProduct);
             }
             if (tvBrand != null) tvBrand.setText(cartItem.getBrandNameSnapshot());

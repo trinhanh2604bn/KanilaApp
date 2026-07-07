@@ -11,12 +11,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.frontend.R;
 import com.example.frontend.databinding.FragmentLoginBinding;
-import com.google.android.material.tabs.TabLayout;
 
 public class LoginFragment extends Fragment {
     private FragmentLoginBinding binding;
     private AuthViewModel viewModel;
-    private String selectedChannel = "email";
 
     @Nullable
     @Override
@@ -30,88 +28,75 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
-        setupTabs();
         setupInputs();
         setupActions();
         observeViewModel();
     }
 
-    private void setupTabs() {
-        binding.tabLayoutAuth.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 0) {
-                    selectedChannel = "email";
-                    binding.inputEmail.setVisibility(View.VISIBLE);
-                    binding.inputPhone.setVisibility(View.GONE);
-                    binding.btnLogin.setText(R.string.auth_btn_send_otp_email);
-                } else {
-                    selectedChannel = "phone";
-                    binding.inputEmail.setVisibility(View.GONE);
-                    binding.inputPhone.setVisibility(View.VISIBLE);
-                    binding.btnLogin.setText(R.string.auth_btn_send_otp_phone);
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
-        });
-    }
-
     private void setupInputs() {
-        // Email Input
-        binding.inputEmail.setLabelText(getString(R.string.auth_email_label));
-        binding.inputEmail.getEditText().setHint(R.string.auth_email_hint);
-        binding.inputEmail.setLeadingIcon(R.drawable.ic_mail);
+        binding.inputIdentifier.setHintText(getString(R.string.auth_login_input_hint));
+        binding.inputIdentifier.setLeadingIcon(R.drawable.ic_mail);
 
-        // Phone Input
-        binding.inputPhone.setLabelText(getString(R.string.auth_phone_label));
-        binding.inputPhone.getEditText().setHint(R.string.auth_phone_hint);
-        binding.inputPhone.setLeadingIcon(R.drawable.ic_account); 
-        binding.inputPhone.getEditText().setInputType(android.text.InputType.TYPE_CLASS_PHONE);
+        binding.inputPassword.setHintText("••••••••");
+        binding.inputPassword.setLeadingIcon(R.drawable.ic_lock);
     }
 
     private void setupActions() {
-        binding.btnBack.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
-
-        binding.btnLogin.setOnClickListener(v -> {
-            String identifier;
-            if (selectedChannel.equals("email")) {
-                identifier = binding.inputEmail.getText().trim().toLowerCase();
-                if (identifier.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(identifier).matches()) {
-                    binding.inputEmail.setErrorState(getString(R.string.error_invalid_email));
-                    return;
-                }
-                binding.inputEmail.clearMessage();
-            } else {
-                String rawPhone = binding.inputPhone.getText().trim();
-                if (rawPhone.isEmpty() || rawPhone.length() < 9) {
-                    binding.inputPhone.setErrorState(getString(R.string.error_invalid_phone));
-                    return;
-                }
-                identifier = normalizePhone(rawPhone);
-                binding.inputPhone.clearMessage();
+        binding.btnMenu.setOnClickListener(v -> {
+            // Hamburger menu action or back action
+            if (getActivity() != null) {
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
             }
-
-            viewModel.login(selectedChannel, identifier);
         });
 
-        binding.tvGoToRegister.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
-                .replace(R.id.main, new RegisterFragment())
+        binding.btnLogin.setOnClickListener(v -> {
+            String rawIdentifier = binding.inputIdentifier.getText().trim();
+            String password = binding.inputPassword.getText().trim();
+
+            if (rawIdentifier.isEmpty()) {
+                binding.inputIdentifier.setErrorState(getString(R.string.error_required_field));
+                return;
+            }
+            binding.inputIdentifier.setDefaultState();
+
+            if (password.isEmpty()) {
+                binding.inputPassword.setErrorState(getString(R.string.error_required_field));
+                return;
+            }
+            binding.inputPassword.setDefaultState();
+
+            String channel = detectChannel(rawIdentifier);
+            String normalizedIdentifier = channel.equals("phone") ? normalizePhone(rawIdentifier) : rawIdentifier.toLowerCase();
+            
+            viewModel.login(channel, normalizedIdentifier, password);
+        });
+
+        binding.tvForgotPassword.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
+                .replace(R.id.main, new ForgotPasswordFragment())
                 .addToBackStack(null)
                 .commit());
 
-        // Need to add this to layout first, then binding will have it
-        // For now I'll just assume it's there or I'll add it to layout later
-        if (binding.tvForgotPassword != null) {
-            binding.tvForgotPassword.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new ForgotPasswordFragment())
+        binding.btnGoogle.setOnClickListener(v -> Toast.makeText(getContext(), "Tiếp tục với Google", Toast.LENGTH_SHORT).show());
+
+        binding.btnFacebook.setOnClickListener(v -> Toast.makeText(getContext(), "Tiếp tục với Facebook", Toast.LENGTH_SHORT).show());
+        
+        if (binding.tvGoToRegister != null) {
+            binding.tvGoToRegister.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, new RegisterFragment())
                     .addToBackStack(null)
                     .commit());
         }
+    }
+
+    private String detectChannel(String identifier) {
+        if (android.util.Patterns.EMAIL_ADDRESS.matcher(identifier).matches()) {
+            return "email";
+        }
+        // Basic phone detection: starts with 0 or + and has digits
+        if (identifier.matches("^[0-9+]{9,15}$") || (identifier.startsWith("0") && identifier.length() >= 9)) {
+            return "phone";
+        }
+        return "email"; // default to email for generic input
     }
 
     private String normalizePhone(String phone) {
@@ -139,13 +124,11 @@ public class LoginFragment extends Fragment {
                     binding.btnLogin.setEnabled(true);
                     if (result.data != null) {
                         if (result.data.isVerificationRequired()) {
-                            String email = binding.inputEmail.getText().trim().toLowerCase();
-                            String rawPhone = binding.inputPhone.getText().trim();
-                            String identifier = selectedChannel.equals("email") ? email : normalizePhone(rawPhone);
-                            
-                            navigateToOtp(identifier);
+                            String rawIdentifier = binding.inputIdentifier.getText().trim();
+                            String channel = detectChannel(rawIdentifier);
+                            String normalizedIdentifier = channel.equals("phone") ? normalizePhone(rawIdentifier) : rawIdentifier.toLowerCase();
+                            navigateToOtp(channel, normalizedIdentifier);
                         } else {
-                            // Direct success (e.g. if password was used or already authenticated)
                             Toast.makeText(getContext(), "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                             com.example.frontend.core.auth.AuthResultHandler.handleSuccess(requireActivity());
                         }
@@ -160,9 +143,9 @@ public class LoginFragment extends Fragment {
         });
     }
 
-    private void navigateToOtp(String identifier) {
+    private void navigateToOtp(String channel, String identifier) {
         OtpVerificationFragment fragment = OtpVerificationFragment.newInstance(
-                selectedChannel, identifier, "login"
+                channel, identifier, "login"
         );
         getParentFragmentManager().beginTransaction()
                 .replace(R.id.main, fragment)

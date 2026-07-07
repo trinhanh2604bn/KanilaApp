@@ -98,9 +98,12 @@ public class MainActivity extends AppCompatActivity {
         setupProductLists();
 
         observeViewModel();
-        viewModel.loadHomeData();
-
-        checkAuthStatus();
+        
+        // Delay home data loading slightly to ensure UI is ready and prevent ANR
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            viewModel.loadHomeData();
+            checkAuthStatus();
+        }, 500);
     }
 
     private void checkAuthStatus() {
@@ -495,7 +498,8 @@ public class MainActivity extends AppCompatActivity {
         int startPosition = (Integer.MAX_VALUE / 2) - ((Integer.MAX_VALUE / 2) % items.size());
         vpHomeBanner.setCurrentItem(startPosition, false);
 
-        setupAutoSlide(items.size());
+        // Delay auto-slide start to prevent blocking main thread during layout
+        vpHomeBanner.post(() -> setupAutoSlide(items.size()));
     }
 
     private void setupAutoSlide(int size) {

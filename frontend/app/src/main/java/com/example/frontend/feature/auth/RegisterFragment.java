@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.frontend.R;
 import com.example.frontend.databinding.FragmentRegisterBinding;
-import com.google.android.material.tabs.TabLayout;
 
 public class RegisterFragment extends Fragment {
     private FragmentRegisterBinding binding;
@@ -34,50 +33,56 @@ public class RegisterFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
-        setupTabs();
+        setupModeToggle();
         setupInputs();
         setupTerms();
         setupActions();
         observeViewModel();
+        
+        updateUiForMode();
     }
 
-    private void setupTabs() {
-        binding.tabLayoutAuth.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 0) {
-                    selectedChannel = "email";
-                } else {
-                    selectedChannel = "phone";
-                }
+    private void setupModeToggle() {
+        binding.tvRegisterModeToggle.setOnClickListener(v -> {
+            if (selectedChannel.equals("email")) {
+                selectedChannel = "phone";
+            } else {
+                selectedChannel = "email";
             }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
+            updateUiForMode();
         });
     }
 
+    private void updateUiForMode() {
+        if (selectedChannel.equals("email")) {
+            binding.inputAuth.setLabelText(getString(R.string.auth_email_label));
+            binding.inputAuth.getEditText().setHint(R.string.auth_email_hint);
+            binding.inputAuth.setLeadingIcon(R.drawable.ic_mail);
+            binding.inputAuth.getEditText().setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+            binding.tvRegisterModeToggle.setText(R.string.auth_tab_phone);
+        } else {
+            binding.inputAuth.setLabelText(getString(R.string.auth_phone_label));
+            binding.inputAuth.getEditText().setHint(R.string.auth_phone_hint);
+            binding.inputAuth.setLeadingIcon(R.drawable.ic_account);
+            binding.inputAuth.getEditText().setInputType(android.text.InputType.TYPE_CLASS_PHONE);
+            binding.tvRegisterModeToggle.setText(R.string.auth_tab_email);
+        }
+        binding.inputAuth.setTextValue("");
+        binding.inputAuth.clearMessage();
+    }
+
     private void setupInputs() {
-        // Full Name Input
-        binding.inputFullName.setLabelText(getString(R.string.auth_full_name_label));
-        binding.inputFullName.getEditText().setHint(R.string.auth_full_name_hint);
-        binding.inputFullName.setLeadingIcon(R.drawable.ic_account);
+        // Password Input
+        binding.inputPassword.setLabelText(getString(R.string.auth_password_label));
+        binding.inputPassword.getEditText().setHint("********");
+        binding.inputPassword.setLeadingIcon(R.drawable.ic_lock);
 
-        // Email Input
-        binding.inputEmail.setLabelText(getString(R.string.auth_email_label));
-        binding.inputEmail.getEditText().setHint(R.string.auth_email_hint);
-        binding.inputEmail.setLeadingIcon(R.drawable.ic_mail);
+        // Confirm Password Input
+        binding.inputConfirmPassword.setLabelText(getString(R.string.auth_confirm_password_label));
+        binding.inputConfirmPassword.getEditText().setHint("********");
+        binding.inputConfirmPassword.setLeadingIcon(R.drawable.ic_lock);
 
-        // Phone Input
-        binding.inputPhone.setLabelText(getString(R.string.auth_phone_label));
-        binding.inputPhone.getEditText().setHint(R.string.auth_phone_hint);
-        binding.inputPhone.setLeadingIcon(R.drawable.ic_account);
-        binding.inputPhone.getEditText().setInputType(android.text.InputType.TYPE_CLASS_PHONE);
-
-        binding.btnRegister.setText(R.string.auth_register_title);
+        binding.btnRegister.setText(R.string.auth_btn_register);
     }
 
     private void setupTerms() {
@@ -97,55 +102,61 @@ public class RegisterFragment extends Fragment {
         int endPrivacy = startPrivacy + privacy.length();
         spannable.setSpan(new ForegroundColorSpan(color), startPrivacy, endPrivacy, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         
-        binding.cbTerms.setText(spannable);
+        binding.tvTerms.setText(spannable);
     }
 
     private void setupActions() {
         binding.btnBack.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
 
         binding.btnRegister.setOnClickListener(v -> {
-            String fullName = binding.inputFullName.getText().trim();
-            if (fullName.isEmpty()) {
-                binding.inputFullName.setErrorState(getString(R.string.error_required_field));
+            String identifier = binding.inputAuth.getText().trim();
+            String password = binding.inputPassword.getText().trim();
+            String confirmPassword = binding.inputConfirmPassword.getText().trim();
+
+            if (identifier.isEmpty()) {
+                binding.inputAuth.setErrorState(getString(R.string.error_required_field));
                 return;
             }
-            binding.inputFullName.clearMessage();
-
-            String email = binding.inputEmail.getText().trim().toLowerCase();
-            String rawPhone = binding.inputPhone.getText().trim();
-            String phone = rawPhone.isEmpty() ? null : normalizePhone(rawPhone);
+            binding.inputAuth.clearMessage();
 
             if (selectedChannel.equals("email")) {
-                if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    binding.inputEmail.setErrorState(getString(R.string.error_invalid_email));
-                    return;
-                }
-                if (!rawPhone.isEmpty() && rawPhone.length() < 9) {
-                    binding.inputPhone.setErrorState(getString(R.string.error_invalid_phone));
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(identifier).matches()) {
+                    binding.inputAuth.setErrorState(getString(R.string.error_invalid_email));
                     return;
                 }
             } else {
-                if (rawPhone.isEmpty() || rawPhone.length() < 9) {
-                    binding.inputPhone.setErrorState(getString(R.string.error_invalid_phone));
-                    return;
-                }
-                if (!email.isEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    binding.inputEmail.setErrorState(getString(R.string.error_invalid_email));
+                if (identifier.length() < 9) {
+                    binding.inputAuth.setErrorState(getString(R.string.error_invalid_phone));
                     return;
                 }
             }
-            binding.inputEmail.clearMessage();
-            binding.inputPhone.clearMessage();
+
+            if (password.isEmpty()) {
+                binding.inputPassword.setErrorState(getString(R.string.error_required_field));
+                return;
+            }
+            if (password.length() < 6) {
+                binding.inputPassword.setErrorState(getString(R.string.error_password_short));
+                return;
+            }
+            binding.inputPassword.clearMessage();
+
+            if (!password.equals(confirmPassword)) {
+                binding.inputConfirmPassword.setErrorState(getString(R.string.error_password_mismatch));
+                return;
+            }
+            binding.inputConfirmPassword.clearMessage();
 
             if (!binding.cbTerms.isChecked()) {
                 Toast.makeText(getContext(), "Vui lòng đồng ý với điều khoản", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            viewModel.register(selectedChannel, fullName, email.isEmpty() ? null : email, phone, true, binding.cbMarketing.isChecked());
-        });
+            String email = selectedChannel.equals("email") ? identifier.toLowerCase() : null;
+            String phone = selectedChannel.equals("phone") ? normalizePhone(identifier) : null;
 
-        binding.tvGoToLogin.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
+            viewModel.register(selectedChannel, "User", email, phone, password, true, binding.cbMarketing.isChecked());
+        });
     }
 
     private String normalizePhone(String phone) {
@@ -172,10 +183,8 @@ public class RegisterFragment extends Fragment {
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnRegister.setEnabled(true);
                     if (result.data != null && result.data.isVerificationRequired()) {
-                        String email = binding.inputEmail.getText().trim().toLowerCase();
-                        String rawPhone = binding.inputPhone.getText().trim();
-                        String identifier = selectedChannel.equals("email") ? email : normalizePhone(rawPhone);
-                        
+                        String rawIdentifier = binding.inputAuth.getText().trim();
+                        String identifier = selectedChannel.equals("phone") ? normalizePhone(rawIdentifier) : rawIdentifier;
                         navigateToOtp(identifier);
                     }
                     break;

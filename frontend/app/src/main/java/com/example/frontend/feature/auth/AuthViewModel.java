@@ -32,6 +32,10 @@ public class AuthViewModel extends AndroidViewModel {
         return resetPasswordResult;
     }
 
+    public void login(String channel, String identifier, String password) {
+        repository.login(channel, identifier, password, authResult);
+    }
+
     public void login(String channel, String identifier) {
         repository.login(channel, identifier, authResult);
     }
@@ -40,8 +44,8 @@ public class AuthViewModel extends AndroidViewModel {
         repository.forgotPassword(channel, identifier, authResult);
     }
 
-    public void register(String channel, String fullName, String email, String phone, boolean terms, boolean marketing) {
-        repository.register(channel, fullName, email, phone, terms, marketing, authResult);
+    public void register(String channel, String fullName, String email, String phone, String password, boolean terms, boolean marketing) {
+        repository.register(channel, fullName, email, phone, password, terms, marketing, authResult);
     }
 
     public void verifyOtp(String type, String value, String otp, String purpose) {

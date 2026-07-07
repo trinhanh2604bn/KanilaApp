@@ -22,6 +22,7 @@ import com.example.frontend.data.model.wishlist.WishlistActionRequest;
 import com.example.frontend.data.model.wishlist.WishlistActionResponse;
 import com.example.frontend.data.model.wishlist.WishlistItemResponse;
 import com.example.frontend.data.model.common.PaginatedData;
+import com.example.frontend.data.model.product.ProductDetailResponse;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -54,6 +55,9 @@ public interface ApiService {
 
     @GET("api/products")
     Call<ApiResponse<List<Product>>> getProducts(@Query("q") String query, @Query("category") String categoryId, @Query("brand") String brandId);
+
+    @GET("api/mobile/products/{id}/detail")
+    Call<ApiResponse<ProductDetailResponse>> getProductDetail(@Path("id") String id);
 
     @GET("api/products/{id}")
     Call<ApiResponse<Product>> getProductById(@Path("id") String id);
@@ -108,6 +112,9 @@ public interface ApiService {
 
     @POST("api/checkout-sessions/me")
     Call<ApiResponse<CheckoutSessionDto>> createCheckoutSession(@Body Object request);
+
+    @POST("api/checkout-sessions/me/buy-now")
+    Call<ApiResponse<CheckoutSessionDto>> createBuyNowSession(@Body AddToCartRequest request);
 
     @POST("api/checkout-sessions/me/place-order")
     Call<ApiResponse<Object>> placeOrder(@Path("id") String sessionId, @Body Object request);

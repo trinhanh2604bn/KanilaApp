@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_bottom_sheet"
     android:orientation="vertical"
-    android:paddingTop="@dimen/spacing_m">
+    android:paddingTop="@dimen/spacing_s">
 
     <!-- Drag Handle -->
     <View
@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/spacing_l"
-        android:paddingVertical="@dimen/spacing_m">
+        android:paddingVertical="6dp">
 
         <TextView
             android:id="@+id/tvBottomSheetTitle"
@@ -29,7 +29,9 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:text="@string/variant_title"
-            android:textAppearance="@style/Text.Kanila.H3" />
+            android:fontFamily="@font/nunito_bold"
+            android:textColor="@color/accent_dark"
+            android:textSize="20sp" />
 
         <ImageButton
             android:id="@+id/btnVariantClose"
@@ -52,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="@dimen/spacing_l">
+            android:paddingBottom="6dp">
 
             <!-- Product Summary Area -->
             <LinearLayout
@@ -82,8 +84,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Kanila Beauty"
-                        android:textAppearance="@style/Text.Kanila.Micro"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="@color/accent_dark"
+                        android:fontFamily="@font/nunito_bold"
+                        android:textSize="12sp"
                         tools:text="Kanila Beauty" />
 
                     <TextView
@@ -109,7 +112,7 @@
                             android:layout_height="wrap_content"
                             android:text="189.000đ"
                             android:textAppearance="@style/Text.Kanila.H3"
-                            android:textColor="@color/burgundy" />
+                            android:textColor="@color/button" />
 
                         <FrameLayout
                             android:layout_width="wrap_content"
@@ -144,11 +147,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/spacing_m"
-                app:dividerColor="@color/border_divider" />
+
 
             <!-- Section: Màu son -->
             <TextView
@@ -156,13 +155,14 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="@dimen/spacing_l"
                 android:text="@string/variant_color_title"
-                android:textAppearance="@style/Text.Kanila.BodyMedium"
-                android:textColor="@color/text_main" />
+                android:fontFamily="@font/nunito_bold"
+                android:textSize="16sp"
+                android:textColor="@color/accent_dark" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_s"
+                android:layout_marginTop="6dp"
                 android:clipToPadding="false"
                 android:paddingHorizontal="@dimen/spacing_l"
                 android:scrollbars="none">
@@ -219,7 +219,7 @@
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/spacing_m"
+                android:layout_marginVertical="6dp"
                 app:dividerColor="@color/border_divider" />
 
             <!-- Section: Dung tích -->
@@ -228,13 +228,14 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="@dimen/spacing_l"
                 android:text="@string/variant_size_title"
-                android:textAppearance="@style/Text.Kanila.BodyMedium"
-                android:textColor="@color/text_main" />
+                android:fontFamily="@font/nunito_bold"
+                android:textSize="16sp"
+                android:textColor="@color/accent_dark" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_s"
+                android:layout_marginTop="6dp"
                 android:clipToPadding="false"
                 android:paddingHorizontal="@dimen/spacing_l"
                 android:scrollbars="none">
@@ -293,8 +294,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/variant_quantity_title"
-                    android:textAppearance="@style/Text.Kanila.BodyMedium"
-                    android:textColor="@color/text_main" />
+                    android:fontFamily="@font/nunito_bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/accent_dark" />
 
                 <!-- Reusing layoutQuantityControl style from item_cart -->
                 <LinearLayout
@@ -324,7 +326,7 @@
                         android:fontFamily="@font/nunito_bold"
                         android:gravity="center"
                         android:text="1"
-                        android:textColor="@color/text_main"
+                        android:textColor="@color/button"
                         android:textSize="14sp" />
 
                     <ImageButton
@@ -335,7 +337,7 @@
                         android:contentDescription="@string/content_desc_increase"
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_plus"
-                        app:tint="@color/pink_primary" />
+                        app:tint="@color/text_secondary" />
                 </LinearLayout>
             </LinearLayout>
 

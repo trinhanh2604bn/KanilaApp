@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_sub"
+    android:orientation="vertical">
+
+    <!-- Header -->
+    <include
+        android:id="@+id/layoutHeader"
+        layout="@layout/view_app_top_bar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Nhóm: Tài khoản của tôi -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="8dp"
+                android:text="Tài khoản của tôi"
+                android:textAppearance="@style/Text.Kanila.Caption"
+                android:textColor="@color/text_tertiary" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/background_main"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/menuSecurity"
+                    layout="@layout/view_settings_menu_item" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@color/border_divider" />
+
+                <include
+                    android:id="@+id/menuAddress"
+                    layout="@layout/view_settings_menu_item" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@color/border_divider" />
+
+                <include
+                    android:id="@+id/menuPayment"
+                    layout="@layout/view_settings_menu_item" />
+            </LinearLayout>
+
+            <!-- Nhóm: Cài đặt -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="8dp"
+                android:text="Cài đặt"
+                android:textAppearance="@style/Text.Kanila.Caption"
+                android:textColor="@color/text_tertiary" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/background_main"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/menuChat"
+                    layout="@layout/view_settings_menu_item" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@color/border_divider" />
+
+                <include
+                    android:id="@+id/menuNotification"
+                    layout="@layout/view_settings_menu_item" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@color/border_divider" />
+
+                <include
+                    android:id="@+id/menuLanguage"
+                    layout="@layout/view_settings_menu_item" />
+            </LinearLayout>
+
+            <!-- Nhóm: Hỗ trợ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="8dp"
+                android:text="Hỗ trợ"
+                android:textAppearance="@style/Text.Kanila.Caption"
+                android:textColor="@color/text_tertiary" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/background_main"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/menuHelpCenter"
+                    layout="@layout/view_settings_menu_item" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@color/border_divider" />
+
+                <include
+                    android:id="@+id/menuCommunityStandard"
+                    layout="@layout/view_settings_menu_item" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@color/border_divider" />
+
+                <include
+                    android:id="@+id/menuTerms"
+                    layout="@layout/view_settings_menu_item" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@color/border_divider" />
+
+                <include
+                    android:id="@+id/menuRate"
+                    layout="@layout/view_settings_menu_item" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@color/border_divider" />
+
+                <include
+                    android:id="@+id/menuAbout"
+                    layout="@layout/view_settings_menu_item" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@color/border_divider" />
+
+                <include
+                    android:id="@+id/menuRequestDelete"
+                    layout="@layout/view_settings_menu_item" />
+            </LinearLayout>
+
+            <!-- Logout Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogout"
+                style="@style/Widget.Kanila.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height"
+                android:layout_margin="16dp"
+                android:text="Đăng xuất"
+                android:textColor="@color/accent_dark"
+                app:strokeColor="@color/border_divider" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Nút đóng góc phải -->
+    <ImageView
+        android:id="@+id/btnDialogClose"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="end"
+        android:contentDescription="Đóng"
+        android:src="@drawable/ic_close"
+        app:tint="@color/text_tertiary" />
+
+    <!-- Icon tròn -->
+    <FrameLayout
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_icon_circle_pink">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:contentDescription="Đăng xuất"
+            android:src="@drawable/ic_logout"
+            app:tint="@color/button" />
+    </FrameLayout>
+
+    <!-- Tiêu đề -->
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="Đăng xuất?"
+        android:textAppearance="@style/Text.Kanila.H3"
+        android:textColor="@color/text_main" />
+
+    <!-- Mô tả -->
+    <TextView
+        android:id="@+id/tvDialogMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:lineSpacingExtra="2dp"
+        android:text="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này không?"
+        android:textAppearance="@style/Text.Kanila.Body"
+        android:textColor="@color/text_secondary" />
+
+    <!-- Action -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDialogCancel"
+            style="@style/Widget.Kanila.Button.Ghost"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:text="Hủy bỏ" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDialogConfirm"
+            style="@style/Widget.Kanila.Button.Primary"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:text="Đăng xuất" />
+    </LinearLayout>
+</LinearLayout>

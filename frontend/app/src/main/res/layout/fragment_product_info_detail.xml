@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main">
+
+    <include
+        android:id="@+id/layoutTopBar"
+        layout="@layout/view_app_top_bar"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutTopBar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="32dp">
+
+            <!-- Header Intro Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardInfoIntro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="@dimen/radius_l"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/secondary"
+                app:strokeWidth="1dp"
+                app:cardBackgroundColor="@color/background_sub">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <FrameLayout
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_circle_pink"
+                        android:backgroundTint="@color/white">
+
+                        <ImageView
+                            android:id="@+id/ivInfoIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_list"
+                            app:tint="@color/button" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvInfoSubtitle"
+                            style="@style/Text.Kanila.Caption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_secondary"
+                            tools:text="Xem nhanh các thành phần nổi bật trong công thức" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Main Content Container -->
+            <FrameLayout
+                android:id="@+id/layoutContentContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp">
+
+                <!-- Description Mode -->
+                <LinearLayout
+                    android:id="@+id/layoutDescriptionMode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="@dimen/radius_m"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/border_divider"
+                        app:strokeWidth="1dp">
+
+                        <TextView
+                            android:id="@+id/tvDescriptionContent"
+                            style="@style/Text.Kanila.Body"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:lineSpacingExtra="6dp"
+                            android:padding="20dp"
+                            tools:text="Nước tẩy trang L'Oreal Paris 3-in-1 Micellar Water là giải pháp làm sạch da hiệu quả..." />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- Ingredients Mode -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvIngredients"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:visibility="gone"
+                    tools:itemCount="10"
+                    tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    tools:listitem="@layout/item_interest_chip"
+                    tools:spanCount="2" />
+
+                <!-- Usage Mode -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvUsageSteps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    tools:listitem="@layout/item_usage_step" />
+
+                <!-- Empty State -->
+                <include
+                    android:id="@+id/layoutEmpty"
+                    layout="@layout/view_empty_state"
+                    android:visibility="gone" />
+
+                <!-- Loading State -->
+                <include
+                    android:id="@+id/layoutLoading"
+                    layout="@layout/view_loading_state"
+                    android:visibility="gone" />
+
+            </FrameLayout>
+
+            <!-- Bottom Note (Optional for Usage Mode) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardUsageNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:visibility="gone"
+                app:cardCornerRadius="@dimen/radius_m"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/secondary"
+                app:strokeWidth="1dp"
+                app:cardBackgroundColor="#FFF8F9"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_lightbulb"
+                        app:tint="@color/button" />
+
+                    <TextView
+                        android:id="@+id/tvUsageNote"
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Nên sử dụng theo routine phù hợp với làn da của bạn"
+                        android:textColor="@color/accent_dark" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

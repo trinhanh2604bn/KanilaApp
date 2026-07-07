@@ -27,11 +27,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/btnVariantClose"
             android:layout_centerVertical="true"
             android:text="@string/variant_title"
             android:fontFamily="@font/nunito_bold"
             android:textColor="@color/accent_dark"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:ellipsize="end"
+            android:maxLines="1" />
 
         <ImageButton
             android:id="@+id/btnVariantClose"
@@ -70,7 +73,7 @@
                     android:layout_height="100dp"
                     android:scaleType="centerCrop"
                     app:shapeAppearanceOverlay="@style/RoundedProductImage"
-                    tools:src="@drawable/cl_product" />
+                    tools:src="@drawable/ic_product" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -83,7 +86,6 @@
                         android:id="@+id/tvVariantBrand"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Kanila Beauty"
                         android:textColor="@color/accent_dark"
                         android:fontFamily="@font/nunito_bold"
                         android:textSize="12sp"
@@ -95,9 +97,9 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="2"
-                        android:text="Son Tint Lì Kanila Silky Matte"
                         android:textAppearance="@style/Text.Kanila.BodyMedium"
-                        android:textColor="@color/text_main" />
+                        android:textColor="@color/text_main"
+                        tools:text="Son Tint Lì Kanila Silky Matte" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -110,29 +112,21 @@
                             android:id="@+id/tvVariantCurrentPrice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="189.000đ"
                             android:textAppearance="@style/Text.Kanila.H3"
-                            android:textColor="@color/button" />
+                            android:textColor="@color/button"
+                            tools:text="189.000đ" />
 
-                        <FrameLayout
+                        <TextView
+                            android:id="@+id/tvVariantOriginalPrice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/spacing_s">
-                            <TextView
-                                android:id="@+id/tvVariantOriginalPrice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="250.000đ"
-                                android:textAppearance="@style/Text.Kanila.Caption"
-                                android:textColor="@color/text_tertiary"
-                                tools:ignore="SmallSp" />
-
-                            <View
-                                android:layout_width="55dp"
-                                android:layout_height="2dp"
-                                android:layout_gravity="center_vertical"
-                                android:background="@color/text_tertiary" />
-                        </FrameLayout>
+                            android:layout_marginStart="@dimen/spacing_s"
+                            android:includeFontPadding="false"
+                            android:textAppearance="@style/Text.Kanila.Caption"
+                            android:textColor="@color/text_tertiary"
+                            android:visibility="gone"
+                            tools:text="250.000đ"
+                            tools:visibility="visible" />
                     </LinearLayout>
 
                     <TextView
@@ -140,145 +134,69 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/spacing_xs"
-                        android:text="Còn 137 sản phẩm"
                         android:textAppearance="@style/Text.Kanila.Caption"
                         android:textColor="@color/text_secondary"
                         tools:text="Còn 137 sản phẩm" />
                 </LinearLayout>
             </LinearLayout>
 
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/border_divider" />
 
-
-            <!-- Section: Màu son -->
+            <!-- Section: Màu son / Options -->
             <TextView
+                android:id="@+id/tvColorOptionsTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="@dimen/spacing_l"
+                android:paddingTop="@dimen/spacing_m"
                 android:text="@string/variant_color_title"
                 android:fontFamily="@font/nunito_bold"
                 android:textSize="16sp"
-                android:textColor="@color/accent_dark" />
+                android:textColor="@color/accent_dark"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
-            <HorizontalScrollView
+            <LinearLayout
+                android:id="@+id/layoutColorOptions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_marginTop="6dp"
-                android:clipToPadding="false"
                 android:paddingHorizontal="@dimen/spacing_l"
-                android:scrollbars="none">
+                android:visibility="gone"
+                tools:visibility="visible" />
 
-                <LinearLayout
-                    android:id="@+id/layoutColorOptions"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <!-- Selected Color Example -->
-                    <FrameLayout
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:layout_marginEnd="@dimen/spacing_m">
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/bg_swatch_selected" />
-                        <View
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:layout_gravity="center"
-                            android:background="@drawable/bg_circle"
-                            android:backgroundTint="#C56A5A" />
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_tick"
-                            app:tint="@color/text_inverse" />
-                    </FrameLayout>
-
-                    <!-- Normal Color Example -->
-                    <View
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="@dimen/spacing_m"
-                        android:background="@drawable/bg_circle"
-                        android:backgroundTint="#B23A48" />
-
-                    <View
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="@dimen/spacing_m"
-                        android:background="@drawable/bg_circle"
-                        android:backgroundTint="#8B3A3A" />
-
-                </LinearLayout>
-            </HorizontalScrollView>
-
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="6dp"
-                app:dividerColor="@color/border_divider" />
-
-            <!-- Section: Dung tích -->
+            <!-- Section: Dung tích / Options -->
             <TextView
+                android:id="@+id/tvSizeOptionsTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="@dimen/spacing_l"
+                android:paddingTop="@dimen/spacing_m"
                 android:text="@string/variant_size_title"
                 android:fontFamily="@font/nunito_bold"
                 android:textSize="16sp"
-                android:textColor="@color/accent_dark" />
+                android:textColor="@color/accent_dark"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
-            <HorizontalScrollView
+            <LinearLayout
+                android:id="@+id/layoutSizeOptions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_marginTop="6dp"
-                android:clipToPadding="false"
                 android:paddingHorizontal="@dimen/spacing_l"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:id="@+id/layoutSizeOptions"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <!-- Selected Chip -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/chip_height"
-                        android:layout_marginEnd="@dimen/spacing_s"
-                        android:background="@drawable/bg_chip_selected"
-                        android:gravity="center"
-                        android:minWidth="80dp"
-                        android:paddingHorizontal="@dimen/spacing_l"
-                        android:text="3.5g"
-                        android:textAppearance="@style/Text.Kanila.Caption"
-                        android:textColor="@color/text_inverse" />
-
-                    <!-- Normal Chip -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/chip_height"
-                        android:layout_marginEnd="@dimen/spacing_s"
-                        android:background="@drawable/bg_chip_outline"
-                        android:gravity="center"
-                        android:minWidth="80dp"
-                        android:paddingHorizontal="@dimen/spacing_l"
-                        android:text="5g"
-                        android:textAppearance="@style/Text.Kanila.Caption"
-                        android:textColor="@color/text_main" />
-
-                </LinearLayout>
-            </HorizontalScrollView>
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/spacing_m"
+                android:layout_marginTop="@dimen/spacing_m"
                 app:dividerColor="@color/border_divider" />
 
             <!-- Quantity Section -->
@@ -287,7 +205,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="@dimen/spacing_l">
+                android:paddingHorizontal="@dimen/spacing_l"
+                android:paddingVertical="@dimen/spacing_m">
 
                 <TextView
                     android:layout_width="0dp"
@@ -298,21 +217,19 @@
                     android:textSize="16sp"
                     android:textColor="@color/accent_dark" />
 
-                <!-- Reusing layoutQuantityControl style from item_cart -->
                 <LinearLayout
                     android:id="@+id/layoutVariantQuantity"
                     android:layout_width="wrap_content"
-                    android:layout_height="28dp"
+                    android:layout_height="32dp"
                     android:background="@drawable/bg_quantity_control"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:paddingStart="@dimen/spacing_xs"
-                    android:paddingEnd="@dimen/spacing_xs">
+                    android:paddingHorizontal="@dimen/spacing_xs">
 
                     <ImageButton
                         android:id="@+id/btnVariantDecrease"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/content_desc_decrease"
                         android:scaleType="centerInside"
@@ -321,18 +238,19 @@
 
                     <TextView
                         android:id="@+id/tvVariantQuantity"
-                        android:layout_width="32dp"
+                        android:layout_width="40dp"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/nunito_bold"
                         android:gravity="center"
-                        android:text="1"
+                        android:text="@string/default_quantity"
                         android:textColor="@color/button"
-                        android:textSize="14sp" />
+                        android:textSize="16sp"
+                        tools:text="1" />
 
                     <ImageButton
                         android:id="@+id/btnVariantIncrease"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/content_desc_increase"
                         android:scaleType="centerInside"
@@ -357,7 +275,8 @@
             style="@style/Widget.Kanila.Button.Primary"
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_height"
-            android:text="@string/variant_apply" />
+            android:text="@string/variant_apply"
+            android:textAllCaps="false" />
     </LinearLayout>
 
 </LinearLayout>

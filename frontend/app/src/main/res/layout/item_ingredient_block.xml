@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/background_main"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/border_divider"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvIngredientName"
+            style="@style/Text.Kanila.H3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/accent_dark"
+            tools:text="Niacinamide" />
+
+        <TextView
+            android:id="@+id/tvIngredientBenefit"
+            style="@style/Text.Kanila.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            tools:text="Làm sáng da, mờ thâm và kiểm soát dầu thừa hiệu quả." />
+
+        <TextView
+            android:id="@+id/tvIngredientSuitability"
+            style="@style/Text.Kanila.Micro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_verified_pill"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:text="Phù hợp với da dầu"
+            android:textColor="@color/success" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

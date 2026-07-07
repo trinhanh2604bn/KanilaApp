@@ -126,4 +126,28 @@ public class CartRepository {
             }
         });
     }
+
+    public void addToCart(String productId, String variantId, int quantity, MutableLiveData<NetworkResult<CartDto>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.addToCart(new AddToCartRequest(productId, variantId, quantity)).enqueue(new Callback<ApiResponse<CartDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<CartDto>> call, Response<ApiResponse<CartDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<CartDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to add to cart"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<CartDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
 }

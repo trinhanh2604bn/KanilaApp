@@ -151,6 +151,13 @@
 
             <include layout="@layout/view_search_no_result" />
         </FrameLayout>
+
+        <include
+            android:id="@+id/layoutLoading"
+            layout="@layout/view_loading_state"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
     </FrameLayout>
 
     <!-- C. Fixed bottom area -->

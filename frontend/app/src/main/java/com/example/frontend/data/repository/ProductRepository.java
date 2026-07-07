@@ -10,6 +10,7 @@ import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.model.Product;
 import com.example.frontend.data.model.product.ProductVariantDto;
 import com.example.frontend.data.model.product.ProductMediaDto;
+import com.example.frontend.data.model.product.ProductDetailResponse;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -20,6 +21,34 @@ public class ProductRepository {
 
     public ProductRepository(Context context) {
         this.apiService = ApiClient.getClient(context).create(ApiService.class);
+    }
+
+    public LiveData<NetworkResult<ProductDetailResponse>> getProductDetail(String id) {
+        MutableLiveData<NetworkResult<ProductDetailResponse>> result = new MutableLiveData<>();
+        result.setValue(NetworkResult.loading());
+
+        apiService.getProductDetail(id).enqueue(new Callback<ApiResponse<ProductDetailResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<ProductDetailResponse>> call, Response<ApiResponse<ProductDetailResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<ProductDetailResponse> apiResponse = response.body();
+                    if (apiResponse.isSuccess() && apiResponse.getData() != null) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Product detail not found"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<ProductDetailResponse>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+
+        return result;
     }
 
     public LiveData<NetworkResult<List<Product>>> getProducts(String query, String categoryId, String brandId) {

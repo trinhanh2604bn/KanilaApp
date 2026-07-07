@@ -345,8 +345,15 @@
     <string name="auth_full_name_hint">Nhập họ và tên của bạn</string>
     <string name="auth_btn_send_otp_email">Gửi mã xác minh</string>
     <string name="auth_btn_send_otp_phone">Gửi mã OTP</string>
+    <string name="auth_forgot_password_hint">Email / Số điện thoại</string>
+    <string name="auth_forgot_password_info">Chúng tôi sẽ gửi mã xác minh để bảo vệ tài khoản của bạn</string>
+    <string name="auth_error_placeholder">Error message</string>
+    <string name="app_brand_name">Kanila</string>
     <string name="auth_btn_register_email">Tạo tài khoản bằng email</string>
     <string name="auth_btn_register_phone">Tạo tài khoản bằng số điện thoại</string>
+    <string name="auth_btn_register">Đăng ký</string>
+    <string name="auth_password_label">Mật khẩu</string>
+    <string name="auth_confirm_password_label">Xác nhận mật khẩu</string>
     <string name="auth_terms_prefix">Tôi đồng ý với </string>
     <string name="auth_terms_link">Điều khoản sử dụng</string>
     <string name="auth_privacy_link">Chính sách bảo mật</string>
@@ -357,7 +364,7 @@
     <string name="auth_otp_verify_title">Xác minh tài khoản</string>
     <string name="auth_otp_verify_email_subtitle">Nhập mã OTP gồm 6 số đã được gửi đến email %s.</string>
     <string name="auth_otp_verify_phone_subtitle">Nhập mã OTP gồm 6 số đã được gửi đến số điện thoại %s.</string>
-    <string name="auth_otp_resend_countdown">Gửi lại mã sau %02d:%02d</string>
+    <string name="auth_otp_resend_countdown">Gửi lại mã sau %1$02d:%2$02d</string>
     <string name="auth_otp_btn_resend">Gửi lại mã</string>
     <string name="auth_otp_btn_verify">Xác minh</string>
     <string name="auth_otp_change_email">Đổi email</string>
@@ -371,6 +378,7 @@
     <string name="auth_guest_btn_later">Để sau</string>
 
     <string name="auth_forgot_password">Quên mật khẩu?</string>
+    <string name="auth_forgot_password_header">Quên mật khẩu</string>
     <string name="auth_forgot_password_title">Quên mật khẩu?</string>
     <string name="auth_forgot_password_subtitle">Nhập email hoặc số điện thoại để nhận mã đặt lại mật khẩu.</string>
     <string name="auth_reset_password_title">Đặt lại mật khẩu</string>
@@ -452,4 +460,11 @@
     <string name="match_yes">Phù hợp với bạn</string>
     <string name="match_no">Có thể không phù hợp</string>
     <string name="action_find_similar">Tìm tương tự</string>
+    <string name="auth_login_input_hint">nhập email hoặc số điện thoại</string>
+    <string name="auth_remember_me">Ghi nhớ đăng nhập</string>
+    <string name="auth_continue_with">Hoặc tiếp tục với</string>
+    <string name="auth_google">Google</string>
+    <string name="auth_facebook">Facebook</string>
+    <string name="auth_no_account">Chưa có tài khoản? </string>
+    <string name="auth_create_account">Tạo tài khoản</string>
 </resources>

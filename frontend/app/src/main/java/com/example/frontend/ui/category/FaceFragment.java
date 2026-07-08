@@ -21,12 +21,18 @@ import com.example.frontend.feature.search.SearchActivity;
 import com.example.frontend.model.Product;
 import java.util.ArrayList;
 import java.util.List;
+import com.example.frontend.data.remote.TokenManager;
+import com.example.frontend.feature.wishlist.WishlistViewModel;
+import com.example.frontend.core.auth.AuthNavigationHelper;
+import com.example.frontend.core.auth.PendingAuthAction;
+import androidx.lifecycle.ViewModelProvider;
 import com.example.frontend.ui.common.BottomNavigationHelper;
 
 public class FaceFragment extends Fragment {
 
     private RecyclerView rvFaceProducts;
     private ProductAdapter adapter;
+    private WishlistViewModel wishlistViewModel;
     private List<Product> allFaceProducts = new ArrayList<>();
     private View containerSearchNoResult;
     private View loadingState;
@@ -54,6 +60,7 @@ public class FaceFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         productRepository = new ProductRepository(requireContext());
+        wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
 
         initViews(view);
         setupSearch(view);
@@ -173,6 +180,21 @@ public class FaceFragment extends Fragment {
 
     private void setupProductList() {
         adapter = new ProductAdapter();
+        adapter.setOnWishlistClickListener((product, position) -> {
+            if (TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                wishlistViewModel.toggleWishlist(product.getId(), product.isFavorite());
+                product.setFavorite(!product.isFavorite());
+                adapter.notifyItemChanged(position);
+                String msg = product.isFavorite() ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích";
+                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+            } else {
+                Bundle extras = new Bundle();
+                extras.putString("productId", product.getId());
+                extras.putBoolean("wasWishlisted", product.isFavorite());
+                PendingAuthAction action = new PendingAuthAction(PendingAuthAction.ActionType.ADD_TO_WISHLIST, "FaceFragment", R.id.main, extras);
+                AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
+            }
+        });
         adapter.setOnProductClickListener(product -> {
             if (getActivity() != null) {
                 getActivity().getSupportFragmentManager().beginTransaction()

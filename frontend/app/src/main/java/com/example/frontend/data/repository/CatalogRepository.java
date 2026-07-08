@@ -9,6 +9,7 @@ import com.example.frontend.data.remote.ApiService;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.model.Brand;
 import com.example.frontend.model.Category;
+import com.example.frontend.data.model.common.PaginatedData;
 import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;

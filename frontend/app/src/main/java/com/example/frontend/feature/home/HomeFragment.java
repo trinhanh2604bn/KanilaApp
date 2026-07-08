@@ -41,6 +41,10 @@ public class HomeFragment extends Fragment {
     private View viewHomeLoading;
     private View viewHomeError;
 
+    private View layoutRecommendedError;
+    private TextView tvRecommendedError;
+    private View btnRecommendedRetry;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -61,6 +65,14 @@ public class HomeFragment extends Fragment {
         layoutHomeStateContainer = view.findViewById(R.id.layoutHomeStateContainer);
         viewHomeLoading = view.findViewById(R.id.viewHomeLoading);
         viewHomeError = view.findViewById(R.id.viewHomeError);
+
+        layoutRecommendedError = view.findViewById(R.id.layoutRecommendedError);
+        tvRecommendedError = view.findViewById(R.id.tvRecommendedError);
+        btnRecommendedRetry = view.findViewById(R.id.btnRecommendedRetry);
+
+        if (btnRecommendedRetry != null) {
+            btnRecommendedRetry.setOnClickListener(v -> viewModel.loadHomeData());
+        }
 
         setupBannerSlider();
         setupHomeShortcuts();
@@ -111,9 +123,23 @@ public class HomeFragment extends Fragment {
                 showError(state.error);
             } else {
                 showContent();
-                if (state.recommendedProducts != null) {
-                    recommendedProductAdapter.setProducts(state.recommendedProducts);
+                
+                // Recommended Products Section
+                if (state.recommendedError != null) {
+                    if (rvRecommendedProducts != null) rvRecommendedProducts.setVisibility(View.GONE);
+                    if (layoutRecommendedError != null) {
+                        layoutRecommendedError.setVisibility(View.VISIBLE);
+                        if (tvRecommendedError != null) tvRecommendedError.setText(state.recommendedError);
+                    }
+                } else if (state.recommendedProducts != null) {
+                    if (layoutRecommendedError != null) layoutRecommendedError.setVisibility(View.GONE);
+                    if (rvRecommendedProducts != null) {
+                        rvRecommendedProducts.setVisibility(View.VISIBLE);
+                        recommendedProductAdapter.setProducts(state.recommendedProducts);
+                    }
                 }
+                
+                // All Products Section
                 if (state.allProducts != null) {
                     allProductAdapter.setProducts(state.allProducts);
                 }

@@ -24,10 +24,10 @@ public class AuthRepository {
         this.tokenManager = TokenManager.getInstance(context);
     }
 
-    public void login(String channel, String identifier, MutableLiveData<NetworkResult<AuthResponse>> result) {
+    public void login(String channel, String identifier, String password, MutableLiveData<NetworkResult<AuthResponse>> result) {
         result.setValue(NetworkResult.loading());
         String guestSessionId = tokenManager.getGuestSession();
-        apiService.login(new LoginRequest(channel, identifier, guestSessionId)).enqueue(new Callback<ApiResponse<AuthResponse>>() {
+        apiService.login(new LoginRequest(channel, identifier, password, guestSessionId)).enqueue(new Callback<ApiResponse<AuthResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<AuthResponse>> call, Response<ApiResponse<AuthResponse>> response) {
                 handleAuthResponse(response, result);
@@ -38,6 +38,10 @@ public class AuthRepository {
                 result.setValue(NetworkResult.error(t.getMessage()));
             }
         });
+    }
+
+    public void login(String channel, String identifier, MutableLiveData<NetworkResult<AuthResponse>> result) {
+        login(channel, identifier, null, result);
     }
 
     public void forgotPassword(String channel, String identifier, MutableLiveData<NetworkResult<AuthResponse>> result) {
@@ -56,11 +60,11 @@ public class AuthRepository {
         });
     }
 
-    public void register(String channel, String fullName, String email, String phone, 
+    public void register(String channel, String fullName, String email, String phone, String password,
                          boolean termsAccepted, boolean marketingOptIn, MutableLiveData<NetworkResult<AuthResponse>> result) {
         result.setValue(NetworkResult.loading());
         String guestSessionId = tokenManager.getGuestSession();
-        apiService.register(new RegisterRequest(channel, fullName, email, phone, termsAccepted, marketingOptIn, guestSessionId))
+        apiService.register(new RegisterRequest(channel, fullName, email, phone, termsAccepted, marketingOptIn, guestSessionId, password))
                 .enqueue(new Callback<ApiResponse<AuthResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<AuthResponse>> call, Response<ApiResponse<AuthResponse>> response) {
@@ -94,7 +98,7 @@ public class AuthRepository {
                         result.setValue(NetworkResult.error(apiResponse.getMessage()));
                     }
                 } else {
-                    result.setValue(NetworkResult.error("Verification failed"));
+                    result.setValue(NetworkResult.error(getErrorMessage(response)));
                 }
             }
 
@@ -119,7 +123,7 @@ public class AuthRepository {
                         result.setValue(NetworkResult.error(apiResponse.getMessage()));
                     }
                 } else {
-                    result.setValue(NetworkResult.error("Reset password failed"));
+                    result.setValue(NetworkResult.error(getErrorMessage(response)));
                 }
             }
 
@@ -134,12 +138,41 @@ public class AuthRepository {
         if (response.isSuccessful() && response.body() != null) {
             ApiResponse<AuthResponse> apiResponse = response.body();
             if (apiResponse.isSuccess()) {
-                result.setValue(NetworkResult.success(apiResponse.getData()));
+                AuthResponse data = apiResponse.getData();
+                if (data != null) {
+                    if (data.getAccessToken() != null) {
+                        tokenManager.saveTokens(data.getAccessToken(), data.getRefreshToken());
+                    }
+                    result.setValue(NetworkResult.success(data));
+                } else {
+                    result.setValue(NetworkResult.error("Dữ liệu không hợp lệ"));
+                }
             } else {
                 result.setValue(NetworkResult.error(apiResponse.getMessage()));
             }
         } else {
-            result.setValue(NetworkResult.error("Request failed"));
+            result.setValue(NetworkResult.error(getErrorMessage(response)));
         }
+    }
+
+    private String getErrorMessage(Response<?> response) {
+        String errorMsg = "Yêu cầu thất bại";
+        try {
+            if (response.errorBody() != null) {
+                String errorStr = response.errorBody().string();
+                com.google.gson.Gson gson = new com.google.gson.Gson();
+                ApiResponse<?> errorResponse = gson.fromJson(errorStr, ApiResponse.class);
+                if (errorResponse != null) {
+                    if (errorResponse.getMessage() != null) {
+                        return errorResponse.getMessage();
+                    } else if (errorResponse.getError() != null) {
+                        return errorResponse.getError();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Ignore parsing error
+        }
+        return errorMsg;
     }
 }

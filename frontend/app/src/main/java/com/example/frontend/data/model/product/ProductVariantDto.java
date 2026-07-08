@@ -9,16 +9,16 @@ public class ProductVariantDto {
     @SerializedName("sku")
     private String sku;
 
-    @SerializedName("variant_name")
+    @SerializedName("variantName")
     private String variantName;
 
     @SerializedName("price")
     private Double price;
 
-    @SerializedName("stock_quantity")
+    @SerializedName("stockQuantity")
     private int stockQuantity;
 
-    @SerializedName("image_url")
+    @SerializedName("imageUrl")
     private String imageUrl;
 
     public String getId() { return id; }

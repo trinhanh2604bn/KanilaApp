@@ -29,9 +29,6 @@ public class KanilaInputField extends LinearLayout {
     private EditText etInput;
     private ImageView ivTrailingIcon;
     private Button btnAction;
-    private LinearLayout containerMessage;
-    private ImageView ivMessageIcon;
-    private TextView tvMessage;
 
     private int mode = 0; // default text
     private PasswordToggleHelper passwordToggleHelper;
@@ -61,9 +58,6 @@ public class KanilaInputField extends LinearLayout {
         etInput = findViewById(R.id.etInput);
         ivTrailingIcon = findViewById(R.id.ivTrailingIcon);
         btnAction = findViewById(R.id.btnAction);
-        containerMessage = findViewById(R.id.containerMessage);
-        ivMessageIcon = findViewById(R.id.ivMessageIcon);
-        tvMessage = findViewById(R.id.tvMessage);
 
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.KanilaInputField);
@@ -84,17 +78,19 @@ public class KanilaInputField extends LinearLayout {
             setActionButtonText(actionText);
 
             boolean showActionButton = a.getBoolean(R.styleable.KanilaInputField_kanilaShowActionButton, mode == 4);
-            btnAction.setVisibility(showActionButton ? VISIBLE : GONE);
+            if (btnAction != null) btnAction.setVisibility(showActionButton ? VISIBLE : GONE);
 
             boolean showLeading = a.getBoolean(R.styleable.KanilaInputField_kanilaShowLeadingIcon, mode == 3);
-            ivLeadingIcon.setVisibility(showLeading ? VISIBLE : GONE);
+            if (ivLeadingIcon != null) ivLeadingIcon.setVisibility(showLeading ? VISIBLE : GONE);
             
             int leadingIconResId = a.getResourceId(R.styleable.KanilaInputField_kanilaLeadingIcon, 0);
             if (leadingIconResId != 0) {
-                ivLeadingIcon.setImageResource(leadingIconResId);
-                ivLeadingIcon.setVisibility(VISIBLE);
+                if (ivLeadingIcon != null) {
+                    ivLeadingIcon.setImageResource(leadingIconResId);
+                    ivLeadingIcon.setVisibility(VISIBLE);
+                }
             } else if (mode == 3) {
-                ivLeadingIcon.setImageResource(R.drawable.ic_search);
+                if (ivLeadingIcon != null) ivLeadingIcon.setImageResource(R.drawable.ic_search);
             }
 
             a.recycle();
@@ -107,10 +103,12 @@ public class KanilaInputField extends LinearLayout {
         switch (mode) {
             case 1: // password
                 etInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                ivTrailingIcon.setVisibility(VISIBLE);
-                ivTrailingIcon.setImageResource(R.drawable.ic_eye);
-                passwordToggleHelper = new PasswordToggleHelper();
-                ivTrailingIcon.setOnClickListener(v -> passwordToggleHelper.togglePasswordVisibility(etInput, ivTrailingIcon));
+                if (ivTrailingIcon != null) {
+                    ivTrailingIcon.setVisibility(VISIBLE);
+                    ivTrailingIcon.setImageResource(R.drawable.ic_eye);
+                    passwordToggleHelper = new PasswordToggleHelper();
+                    ivTrailingIcon.setOnClickListener(v -> passwordToggleHelper.togglePasswordVisibility(etInput, ivTrailingIcon));
+                }
                 break;
             case 2: // multiline
                 etInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
@@ -119,11 +117,13 @@ public class KanilaInputField extends LinearLayout {
                 break;
             case 3: // search
                 etInput.setInputType(InputType.TYPE_CLASS_TEXT);
-                ivLeadingIcon.setVisibility(VISIBLE);
-                ivLeadingIcon.setImageResource(R.drawable.ic_search);
+                if (ivLeadingIcon != null) {
+                    ivLeadingIcon.setVisibility(VISIBLE);
+                    ivLeadingIcon.setImageResource(R.drawable.ic_search);
+                }
                 break;
             case 4: // actionButton
-                btnAction.setVisibility(VISIBLE);
+                if (btnAction != null) btnAction.setVisibility(VISIBLE);
                 break;
             default:
                 etInput.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -143,8 +143,6 @@ public class KanilaInputField extends LinearLayout {
 
     public void setDefaultState() {
         containerInput.setBackgroundResource(R.drawable.bg_kanila_input_default);
-        ivMessageIcon.setVisibility(GONE);
-        containerMessage.setVisibility(tvMessage.getText().length() > 0 ? VISIBLE : GONE);
     }
 
     public void setFocusedState() {
@@ -153,26 +151,16 @@ public class KanilaInputField extends LinearLayout {
 
     public void setErrorState(String message) {
         containerInput.setBackgroundResource(R.drawable.bg_kanila_input_error);
-        tvMessage.setText(message);
-        tvMessage.setTextColor(ContextCompat.getColor(getContext(), R.color.error));
-        ivMessageIcon.setVisibility(VISIBLE);
-        ivMessageIcon.setImageResource(R.drawable.ic_error_outline);
-        containerMessage.setVisibility(VISIBLE);
     }
 
     public void setSuccessState(String message) {
         containerInput.setBackgroundResource(R.drawable.bg_kanila_input_success);
-        tvMessage.setText(message);
-        tvMessage.setTextColor(ContextCompat.getColor(getContext(), R.color.success));
-        ivMessageIcon.setVisibility(VISIBLE);
-        ivMessageIcon.setImageResource(R.drawable.ic_check_circle);
-        containerMessage.setVisibility(VISIBLE);
     }
 
     public void setDisabledState(boolean disabled) {
         setEnabled(!disabled);
         etInput.setEnabled(!disabled);
-        btnAction.setEnabled(!disabled);
+        if (btnAction != null) btnAction.setEnabled(!disabled);
         if (disabled) {
             containerInput.setBackgroundResource(R.drawable.bg_kanila_input_disabled);
         } else {
@@ -181,8 +169,7 @@ public class KanilaInputField extends LinearLayout {
     }
 
     public void clearMessage() {
-        tvMessage.setText("");
-        containerMessage.setVisibility(GONE);
+        setDefaultState();
     }
 
     public String getTextValue() {
@@ -198,28 +185,32 @@ public class KanilaInputField extends LinearLayout {
     }
 
     public void setLabelText(String label) {
-        if (label != null && !label.isEmpty()) {
-            tvLabel.setText(label);
-            tvLabel.setVisibility(VISIBLE);
-        } else {
-            tvLabel.setVisibility(GONE);
+        if (tvLabel != null) {
+            if (label != null && !label.isEmpty()) {
+                tvLabel.setText(label);
+                tvLabel.setVisibility(VISIBLE);
+            } else {
+                tvLabel.setVisibility(GONE);
+            }
         }
     }
 
     public void setActionButtonText(String text) {
-        btnAction.setText(text);
+        if (btnAction != null) btnAction.setText(text);
     }
 
     public void setOnActionClickListener(OnClickListener listener) {
-        btnAction.setOnClickListener(listener);
+        if (btnAction != null) btnAction.setOnClickListener(listener);
     }
 
     public void setLeadingIcon(int resId) {
-        if (resId != 0) {
-            ivLeadingIcon.setImageResource(resId);
-            ivLeadingIcon.setVisibility(VISIBLE);
-        } else {
-            ivLeadingIcon.setVisibility(GONE);
+        if (ivLeadingIcon != null) {
+            if (resId != 0) {
+                ivLeadingIcon.setImageResource(resId);
+                ivLeadingIcon.setVisibility(VISIBLE);
+            } else {
+                ivLeadingIcon.setVisibility(GONE);
+            }
         }
     }
 
@@ -228,12 +219,26 @@ public class KanilaInputField extends LinearLayout {
     }
 
     public void showMessage(String message) {
-        tvMessage.setText(message);
-        containerMessage.setVisibility(message != null && !message.isEmpty() ? VISIBLE : GONE);
+        // Method kept for compatibility, but no message view to show
     }
 
     public void hideMessage() {
-        containerMessage.setVisibility(GONE);
+        // Method kept for compatibility, but no message view to hide
+    }
+
+    public void setTrailingIcon(int resId) {
+        if (ivTrailingIcon != null) {
+            if (resId != 0) {
+                ivTrailingIcon.setImageResource(resId);
+                ivTrailingIcon.setVisibility(VISIBLE);
+            } else {
+                ivTrailingIcon.setVisibility(GONE);
+            }
+        }
+    }
+
+    public void setTrailingIconTint(int color) {
+        if (ivTrailingIcon != null) ivTrailingIcon.setColorFilter(color);
     }
 
     public String getText() {

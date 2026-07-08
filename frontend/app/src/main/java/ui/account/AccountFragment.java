@@ -123,16 +123,20 @@ public class AccountFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+
+        View menuSettings = view.findViewById(R.id.menuSettings);
+        if (menuSettings != null) {
+            menuSettings.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new AccountSettingsFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
     }
 
     private void setupBottomNavigation(View view) {
-        BottomNavigationHelper.setup(view, tabIndex -> {
-            if (tabIndex == BottomNavigationHelper.TAB_HOME) {
-                if (getActivity() != null) {
-                    getActivity().getOnBackPressedDispatcher().onBackPressed();
-                }
-            }
-        });
+        BottomNavigationHelper.setupStandardNavigation(this, view);
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_ACCOUNT);
     }
 

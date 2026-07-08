@@ -312,6 +312,5 @@
                 android:text="Tài khoản"
                 android:textColor="@color/text_main" />
         </LinearLayout>
-
     </LinearLayout>
 </LinearLayout>

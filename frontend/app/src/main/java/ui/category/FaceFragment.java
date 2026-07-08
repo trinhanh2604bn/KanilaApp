@@ -62,9 +62,7 @@ public class FaceFragment extends Fragment {
         setupActions(view);
         loadProductsFromRepository();
 
-        BottomNavigationHelper.setup(view, tabIndex -> {
-            // Handle bottom nav
-        });
+        BottomNavigationHelper.setupStandardNavigation(this, view);
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
     }
 

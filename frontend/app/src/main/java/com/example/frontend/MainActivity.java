@@ -17,10 +17,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,6 +48,7 @@ import ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
 import ui.commerce.CheckoutFragment;
 import ui.common.BottomNavigationHelper;
+import com.example.frontend.feature.community.reels.ReelsFeedFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,15 +59,20 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvRecommendedProducts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
+    private ImageView ivChatbot;
 
     private View layoutSearchExpandedBar;
     private EditText edtExpandedSearchQuery;
     private ImageButton btnExpandedSearchBack;
 
-    private View layoutKanilaReelsCard, layoutReelThumbOne, layoutReelThumbTwo;
-    private ImageView ivReelThumbOne, ivReelThumbTwo;
+    private View layoutKanilaReelsCard, layoutReelThumbOne, layoutReelThumbTwo ,layoutReelThumbThree;
+    private ImageView ivReelThumbOne, ivReelThumbTwo , ivReelThumbThree;
     private View layoutKanilaChallengeCard, btnJoinChallenge;
     private TextView tvChallengeProgress, tvChallengeParticipants, tvChallengeReward;
+
+
+    private android.widget.VideoView vvReelOne, vvReelTwo, vvReelThree;
+
 
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
@@ -96,10 +104,33 @@ public class MainActivity extends AppCompatActivity {
         setupBannerSlider();
         setupProductLists();
 
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main);
+                if (currentFragment instanceof ReelsFeedFragment) {
+                    // Navigate back to Home
+                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                    setEnabled(true);
+                }
+            }
+        });
+
         observeViewModel();
         viewModel.loadHomeData();
 
         checkAuthStatus();
+
+        // Delay home data loading slightly to ensure UI is ready and prevent ANR
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            viewModel.loadHomeData();
+            checkAuthStatus();
+        }, 500);
     }
 
     private void checkAuthStatus() {
@@ -107,22 +138,22 @@ public class MainActivity extends AppCompatActivity {
         if (tm.isLoggedIn()) {
             // Validate token by calling /me
             com.example.frontend.data.remote.ApiClient.getClient(this)
-                .create(com.example.frontend.data.remote.ApiService.class)
-                .getMe()
-                .enqueue(new retrofit2.Callback<com.example.frontend.data.remote.ApiResponse<Object>>() {
-                    @Override
-                    public void onResponse(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, retrofit2.Response<com.example.frontend.data.remote.ApiResponse<Object>> response) {
-                        if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
-                            tm.clearToken();
-                            Toast.makeText(MainActivity.this, "Phiên đăng nhập hết hạn", Toast.LENGTH_SHORT).show();
+                    .create(com.example.frontend.data.remote.ApiService.class)
+                    .getMe()
+                    .enqueue(new retrofit2.Callback<com.example.frontend.data.remote.ApiResponse<Object>>() {
+                        @Override
+                        public void onResponse(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, retrofit2.Response<com.example.frontend.data.remote.ApiResponse<Object>> response) {
+                            if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
+                                tm.clearToken();
+                                Toast.makeText(MainActivity.this, "Phien dang nhap het han", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, Throwable t) {
-                        // Network error, maybe don't clear token yet
-                    }
-                });
+                        @Override
+                        public void onFailure(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, Throwable t) {
+                            // Network error, maybe don't clear token yet
+                        }
+                    });
         }
     }
 
@@ -145,12 +176,18 @@ public class MainActivity extends AppCompatActivity {
         layoutHomeStateContainer = findViewById(R.id.layoutHomeStateContainer);
         viewHomeLoading = findViewById(R.id.viewHomeLoading);
         viewHomeError = findViewById(R.id.viewHomeError);
+        ivChatbot = findViewById(R.id.ivChatbot);
 
         layoutKanilaReelsCard = findViewById(R.id.layoutKanilaReelsCard);
         layoutReelThumbOne = findViewById(R.id.layoutReelThumbOne);
         layoutReelThumbTwo = findViewById(R.id.layoutReelThumbTwo);
+        layoutReelThumbThree = findViewById(R.id.layoutReelThumbThree);
         ivReelThumbOne = findViewById(R.id.ivReelThumbOne);
         ivReelThumbTwo = findViewById(R.id.ivReelThumbTwo);
+        ivReelThumbThree = findViewById(R.id.ivReelThumbThree);
+        vvReelOne = findViewById(R.id.vvReelOne);
+        vvReelTwo = findViewById(R.id.vvReelTwo);
+        vvReelThree = findViewById(R.id.vvReelThree);
         layoutKanilaChallengeCard = findViewById(R.id.layoutKanilaChallengeCard);
         btnJoinChallenge = findViewById(R.id.btnJoinChallenge);
         tvChallengeProgress = findViewById(R.id.tvChallengeProgress);
@@ -175,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
         btnCart.setOnClickListener(v -> navigateToCart());
 
         btnNotification.setOnClickListener(v -> {
+            // Mo NotificationCenterFragment
             // Mở NotificationCenterFragment
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main, new ui.notification.NotificationCenterFragment())
@@ -193,8 +231,42 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        if (ivChatbot != null) {
+            ivChatbot.setOnClickListener(v -> {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.support.ChatSupportFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+
         setupHomeShortcuts();
         setupSocialSection();
+        setupReelsVideos();
+    }
+
+    private void setupReelsVideos() {
+        vvReelOne.setVideoURI(Uri.parse(com.example.frontend.feature.community.reels.mock.MockReelsDataSource.VIDEO_URL_01));
+        vvReelTwo.setVideoURI(Uri.parse(com.example.frontend.feature.community.reels.mock.MockReelsDataSource.VIDEO_URL_02));
+        vvReelThree.setVideoURI(Uri.parse(com.example.frontend.feature.community.reels.mock.MockReelsDataSource.VIDEO_URL_03));
+
+        setupHomeVideo(vvReelOne, ivReelThumbOne);
+        setupHomeVideo(vvReelTwo, ivReelThumbTwo);
+        setupHomeVideo(vvReelThree, ivReelThumbThree);
+    }
+
+    private void setupHomeVideo(android.widget.VideoView videoView, ImageView thumbnail) {
+        videoView.setOnPreparedListener(mp -> {
+            mp.setVolume(0f, 0f);
+            mp.setLooping(true);
+            videoView.start();
+        });
+        videoView.setOnInfoListener((mp, what, extra) -> {
+            if (what == android.media.MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+                thumbnail.setVisibility(View.GONE);
+            }
+            return false;
+        });
     }
 
     private void setupBottomNavigation() {
@@ -209,6 +281,12 @@ public class MainActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.main, new ProductCategoryFragment())
                             .commit();
+                } else if (tabIndex == BottomNavigationHelper.TAB_REELS) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ReelsFeedFragment())
+                            .commit();
+                } else if (tabIndex == BottomNavigationHelper.TAB_COMMUNITY) {
+                    Toast.makeText(this, "Community coming soon!", Toast.LENGTH_SHORT).show();
                 } else if (tabIndex == BottomNavigationHelper.TAB_HOME) {
                     // Refresh current activity to show home content again
                     Intent intent = new Intent(this, MainActivity.class);
@@ -251,18 +329,20 @@ public class MainActivity extends AppCompatActivity {
                 extras.putBoolean("wasWishlisted", wasWishlisted);
 
                 com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
-                    com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
-                    "Home",
-                    0,
-                    extras
+                        com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
+                        "Home",
+                        0,
+                        extras
                 );
                 com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
             }
         });
 
-        rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        rvRecommendedProducts.setLayoutManager(new GridLayoutManager(this, 2));
         rvRecommendedProducts.setAdapter(recommendedProductAdapter);
+        rvRecommendedProducts.setNestedScrollingEnabled(false);
 
+        // All Products (Vertical Grid)
         // All Products (Vertical Grid)
 
         allProductAdapter = new HomeProductAdapter();
@@ -286,10 +366,10 @@ public class MainActivity extends AppCompatActivity {
                 extras.putBoolean("wasWishlisted", wasWishlisted);
 
                 com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
-                    com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
-                    "Home",
-                    0,
-                    extras
+                        com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
+                        "Home",
+                        0,
+                        extras
                 );
                 com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
             }
@@ -310,22 +390,64 @@ public class MainActivity extends AppCompatActivity {
                 showError(state.error);
             } else {
                 showContent();
+                List<com.example.frontend.model.Product> allProductsToUpdate = new java.util.ArrayList<>();
                 if (state.recommendedProducts != null) {
                     recommendedProductAdapter.setProducts(state.recommendedProducts);
+                    allProductsToUpdate.addAll(state.recommendedProducts);
                 }
                 if (state.allProducts != null) {
                     allProductAdapter.setProducts(state.allProducts);
+                    allProductsToUpdate.addAll(state.allProducts);
                 }
+
+                if (!allProductsToUpdate.isEmpty() && com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                    List<String> productIds = new java.util.ArrayList<>();
+                    for (com.example.frontend.model.Product p : allProductsToUpdate) {
+                        productIds.add(p.getId());
+                    }
+                    wishlistViewModel.loadWishlistStatus(productIds);
+                }
+            }
+        });
+
+        wishlistViewModel.getStatusResult().observe(this, result -> {
+            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && result.data != null) {
+                updateProductFavoriteStates(result.data);
+            }
+        });
+
+        wishlistViewModel.getToggleResult().observe(this, result -> {
+            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.ERROR) {
+                Toast.makeText(this, "Lỗi: " + result.message, Toast.LENGTH_SHORT).show();
+                // We might need to refresh status to rollback UI accurately
+                viewModel.loadHomeData();
             }
         });
     }
 
+    private void updateProductFavoriteStates(java.util.Map<String, Boolean> statusMap) {
+        if (recommendedProductAdapter.getProducts() != null) {
+            for (com.example.frontend.model.Product p : recommendedProductAdapter.getProducts()) {
+                Boolean isFav = statusMap.get(p.getId());
+                if (isFav != null) p.setFavorite(isFav);
+            }
+            recommendedProductAdapter.notifyDataSetChanged();
+        }
+        if (allProductAdapter.getProducts() != null) {
+            for (com.example.frontend.model.Product p : allProductAdapter.getProducts()) {
+                Boolean isFav = statusMap.get(p.getId());
+                if (isFav != null) p.setFavorite(isFav);
+            }
+            allProductAdapter.notifyDataSetChanged();
+        }
+    }
+
     private void showLoginPrompt() {
         com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
-            com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT,
-            "Home",
-            0,
-            null
+                com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT,
+                "Home",
+                0,
+                null
         );
         com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
     }
@@ -359,25 +481,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupSocialSection() {
-        String reelOneUrl = "https://youtube.com/shorts/JytbqPADyQc?si=cXt-VYSr5hhdpOQg";
-        String reelTwoUrl = "https://youtube.com/shorts/LwHA4UF3XQI?si=icecCgY-kTDcaYTz";
-
-        String thumbOneUrl = "https://img.youtube.com/vi/JytbqPADyQc/0.jpg";
-        String thumbTwoUrl = "https://img.youtube.com/vi/LwHA4UF3XQI/0.jpg";
-
-        Glide.with(this).load(thumbOneUrl).into(ivReelThumbOne);
-        Glide.with(this).load(thumbTwoUrl).into(ivReelThumbTwo);
-
-        layoutKanilaReelsCard.setOnClickListener(v -> Toast.makeText(this, "Kanila Reels", Toast.LENGTH_SHORT).show());
+        layoutKanilaReelsCard.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.community.reels.ReelsFeedFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
 
         layoutReelThumbOne.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reelOneUrl));
-            startActivity(intent);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.community.reels.ReelsFeedFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
 
         layoutReelThumbTwo.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reelTwoUrl));
-            startActivity(intent);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.community.reels.ReelsFeedFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        layoutReelThumbThree.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.community.reels.ReelsFeedFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
 
         layoutKanilaChallengeCard.setOnClickListener(v -> Toast.makeText(this, "Kanila Challenge", Toast.LENGTH_SHORT).show());
@@ -448,7 +577,8 @@ public class MainActivity extends AppCompatActivity {
         int startPosition = (Integer.MAX_VALUE / 2) - ((Integer.MAX_VALUE / 2) % items.size());
         vpHomeBanner.setCurrentItem(startPosition, false);
 
-        setupAutoSlide(items.size());
+        // Delay auto-slide start to prevent blocking main thread during layout
+        vpHomeBanner.post(() -> setupAutoSlide(items.size()));
     }
 
     private void setupAutoSlide(int size) {
@@ -519,6 +649,22 @@ public class MainActivity extends AppCompatActivity {
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.setDuration(duration);
         animator.start();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (vvReelOne != null) vvReelOne.start();
+        if (vvReelTwo != null) vvReelTwo.start();
+        if (vvReelThree != null) vvReelThree.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (vvReelOne != null) vvReelOne.pause();
+        if (vvReelTwo != null) vvReelTwo.pause();
+        if (vvReelThree != null) vvReelThree.pause();
     }
 
     @Override

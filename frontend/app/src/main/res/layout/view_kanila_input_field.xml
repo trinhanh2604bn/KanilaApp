@@ -80,32 +80,5 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/containerMessage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_xs"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        tools:visibility="visible">
-
-        <ImageView
-            android:id="@+id/ivMessageIcon"
-            android:layout_width="@dimen/icon_size_small"
-            android:layout_height="@dimen/icon_size_small"
-            android:layout_marginEnd="@dimen/spacing_xs"
-            android:contentDescription="@null"
-            tools:src="@drawable/ic_error_outline" />
-
-        <TextView
-            android:id="@+id/tvMessage"
-            style="@style/Micro"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/error"
-            tools:text="Error message" />
-
-    </LinearLayout>
-
+    <!-- Removed containerMessage as per request -->
 </merge>

@@ -8,7 +8,7 @@ public class Product {
     private String id;
     
     @SerializedName("productName")
-    private String productName;
+    private String name;
     
     @SerializedName("productCode")
     private String productCode;
@@ -17,16 +17,16 @@ public class Product {
     private String slug;
     
     @SerializedName("brandId")
-    private Brand brand;
+    private Object brandId;
     
     @SerializedName("brandName")
     private String brandName;
     
     @SerializedName("categoryId")
-    private Category category;
+    private Object categoryId;
     
     @SerializedName("price")
-    private double price;
+    private double priceValue;
     
     @SerializedName("compareAtPrice")
     private Double compareAtPrice;
@@ -47,13 +47,19 @@ public class Product {
     private int bought;
     
     @SerializedName("averageRating")
-    private double averageRating;
+    private double averageRatingValue;
     
     @SerializedName("isActive")
     private boolean isActive;
     
     @SerializedName("productStatus")
     private String productStatus;
+
+    @SerializedName("ingredientText")
+    private String ingredientText;
+
+    @SerializedName("usageInstruction")
+    private String usageInstruction;
     
     @SerializedName("skin_types_supported")
     private List<String> skinTypesSupported;
@@ -62,7 +68,7 @@ public class Product {
     private List<String> concernsTargeted;
     
     @SerializedName("is_best_seller")
-    private boolean isBestSeller;
+    private boolean bestSeller;
     
     @SerializedName("sales_count")
     private int salesCount;
@@ -86,13 +92,19 @@ public class Product {
     private List<Shade> shades;
 
     public static class Shade {
-        @SerializedName("shadeName")
+        @SerializedName(value = "name", alternate = {"shadeName", "shade_name"})
         private String shadeName;
+
         @SerializedName("hex")
         private String hex;
 
-        public String getShadeName() { return shadeName; }
-        public String getHex() { return hex; }
+        public String getShadeName() {
+            return shadeName != null ? shadeName : "";
+        }
+
+        public String getHex() {
+            return hex;
+        }
     }
 
     public Product() {}
@@ -100,42 +112,46 @@ public class Product {
     public Product(String id, String brandName, String productName, String price, String averageRating, String reviewCount, int imageResource, String badgeText, String subcategory) {
         this.id = id;
         this.brandName = brandName;
-        this.productName = productName;
+        this.name = productName;
         try {
-            this.price = Double.parseDouble(price);
+            this.priceValue = Double.parseDouble(price);
         } catch (Exception e) {
-            this.price = 0;
+            this.priceValue = 0;
         }
         try {
-            this.averageRating = Double.parseDouble(averageRating);
+            this.averageRatingValue = Double.parseDouble(averageRating);
         } catch (Exception e) {
-            this.averageRating = 0;
+            this.averageRatingValue = 0;
         }
         this.reviewCount = reviewCount;
         this.imageResource = imageResource;
         this.badgeText = badgeText;
         this.subcategory = subcategory;
         if ("Best Seller".equalsIgnoreCase(badgeText)) {
-            this.isBestSeller = true;
+            this.bestSeller = true;
         }
     }
 
     public String getId() { return id; }
     
-    public String getName() { return productName != null ? productName : ""; }
+    public String getName() { return name != null ? name : ""; }
     
     public String getBrand() { 
         if (brandName != null && !brandName.isEmpty()) return brandName;
-        if (brand != null && brand.getBrandName() != null) return brand.getBrandName();
+        if (brandId instanceof com.google.gson.internal.LinkedTreeMap) {
+            Object nameObj = ((com.google.gson.internal.LinkedTreeMap<?, ?>) brandId).get("brandName");
+            if (nameObj != null) return nameObj.toString();
+        }
+        if (brandId != null) return brandId.toString();
         return "";
     }
     
     public String getPrice() { 
-        if (price == 0) return "Liên hệ";
-        return String.format(java.util.Locale.US, "%,.0fđ", price).replace(",", ".");
+        if (priceValue == 0) return "Liên hệ";
+        return String.format(java.util.Locale.US, "%,.0fđ", priceValue).replace(",", ".");
     }
     
-    public String getRating() { return String.valueOf(averageRating); }
+    public String getRating() { return String.valueOf(averageRatingValue); }
     
     public String getReviewCount() { 
         if (reviewCount != null) return reviewCount;
@@ -150,24 +166,36 @@ public class Product {
 
     public String getSubcategory() { return subcategory != null ? subcategory : ""; }
 
+    public String getShortDescription() { return shortDescription; }
+
+    public String getLongDescription() { return longDescription; }
+
+    public int getBought() { return bought; }
+
+    public int getStock() { return stock; }
+
+    public Double getCompareAtPrice() { return compareAtPrice; }
+
     public boolean hasAr() { return hasAr; }
 
     public void setHasAr(boolean hasAr) { this.hasAr = hasAr; }
     
     public String getBadgeText() { 
         if (badgeText != null && !badgeText.isEmpty()) return badgeText;
-        if (isBestSeller) return "Best Seller";
+        if (bestSeller) return "Best Seller";
         return "";
     }
 
-    public Brand getBrandObject() { return brand; }
-    public Category getCategoryObject() { return category; }
+    public Object getBrandId() { return brandId; }
+    public Object getCategoryId() { return categoryId; }
     public String getSlug() { return slug; }
-    public double getPriceValue() { return price; }
-    public double getAverageRatingValue() { return averageRating; }
-    public boolean isBestSeller() { return isBestSeller; }
+    public double getPriceValue() { return priceValue; }
+    public double getAverageRatingValue() { return averageRatingValue; }
+    public boolean isBestSeller() { return bestSeller; }
     public boolean isFavorite() { return isFavorite; }
     public void setFavorite(boolean favorite) { isFavorite = favorite; }
     public List<String> getSkinTypesSupported() { return skinTypesSupported; }
     public List<Shade> getShades() { return shades; }
+    public String getIngredientText() { return ingredientText; }
+    public String getUsageInstruction() { return usageInstruction; }
 }

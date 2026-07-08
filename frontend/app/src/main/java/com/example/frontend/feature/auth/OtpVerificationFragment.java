@@ -182,7 +182,7 @@ public class OtpVerificationFragment extends Fragment {
                 case SUCCESS:
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnVerify.setEnabled(true);
-                    
+
                     if (purpose.equals("reset_password")) {
                         if (result.data != null && result.data.getResetToken() != null) {
                             ResetPasswordFragment fragment = ResetPasswordFragment.newInstance(result.data.getResetToken());

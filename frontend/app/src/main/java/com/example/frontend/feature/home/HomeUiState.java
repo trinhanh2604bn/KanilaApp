@@ -6,6 +6,8 @@ import java.util.List;
 public class HomeUiState {
     public boolean loading = false;
     public String error = null;
+    public String recommendedError = null;
+    public String allProductsError = null;
     public List<Product> recommendedProducts = null;
     public List<Product> allProducts = null;
     /**

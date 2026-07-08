@@ -10,13 +10,8 @@
 const { GoogleGenAI } = require("@google/genai");
 const { KANILA_SYSTEM_PROMPT } = require("./chatbot.prompt");
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TEMP DEV ONLY - remove before commit/deploy
-const TEMP_DEV_GEMINI_API_KEY = "PASTE_YOUR_GEMINI_KEY_HERE"; // TEMP DEV ONLY - remove before commit/deploy
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Resolve API key: prefer environment variable, fallback to dev key
-const geminiApiKey = process.env.GEMINI_API_KEY || TEMP_DEV_GEMINI_API_KEY;
+// Resolve API key: prefer environment variable
+const geminiApiKey = process.env.GEMINI_API_KEY;
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
@@ -29,12 +24,9 @@ const GEMINI_TIMEOUT_MS = 10000;
  */
 let _genAI = null;
 function getGenAI() {
-  if (
-    !geminiApiKey ||
-    geminiApiKey === "PASTE_YOUR_GEMINI_KEY_HERE"
-  ) {
+  if (!geminiApiKey) {
     const err = new Error(
-      "Gemini API key is missing or not configured. Set GEMINI_API_KEY in .env or add a temporary dev key in gemini.provider.js."
+      "Gemini API key is missing or not configured. Set GEMINI_API_KEY in .env."
     );
     err.code = "CHATBOT_CONFIG_ERROR";
     throw err;

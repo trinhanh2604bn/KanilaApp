@@ -15,25 +15,36 @@ public class ChatMessageUiModel {
     private final String replyType;
     private final boolean customerContextUsed;
     private final ChatPreferenceQuestionUiModel preferenceQuestion;
+    private final ChatCartSummaryUiModel cartSummary;
+    private final ChatCartActionUiModel cartAction;
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp) {
-        this(id, content, isUser, timestamp, false, new ArrayList<>(), null, null, null, false, null);
+        this(id, content, isUser, timestamp, false, new ArrayList<>(), null, null, null, false, null, null, null);
     }
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping) {
-        this(id, content, isUser, timestamp, isTyping, new ArrayList<>(), null, null, null, false, null);
+        this(id, content, isUser, timestamp, isTyping, new ArrayList<>(), null, null, null, false, null, null, null);
     }
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping, 
                              List<ChatProductUiModel> products, ChatOrderUiModel order, 
                              ChatTicketUiModel ticket, String replyType) {
-        this(id, content, isUser, timestamp, isTyping, products, order, ticket, replyType, false, null);
+        this(id, content, isUser, timestamp, isTyping, products, order, ticket, replyType, false, null, null, null);
     }
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping, 
                              List<ChatProductUiModel> products, ChatOrderUiModel order, 
                              ChatTicketUiModel ticket, String replyType, boolean customerContextUsed,
                              ChatPreferenceQuestionUiModel preferenceQuestion) {
+        this(id, content, isUser, timestamp, isTyping, products, order, ticket, replyType, customerContextUsed, preferenceQuestion, null, null);
+    }
+
+    public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping, 
+                             List<ChatProductUiModel> products, ChatOrderUiModel order, 
+                             ChatTicketUiModel ticket, String replyType, boolean customerContextUsed,
+                             ChatPreferenceQuestionUiModel preferenceQuestion,
+                             ChatCartSummaryUiModel cartSummary,
+                             ChatCartActionUiModel cartAction) {
         this.id = id;
         this.content = content;
         this.isUser = isUser;
@@ -45,6 +56,8 @@ public class ChatMessageUiModel {
         this.replyType = replyType;
         this.customerContextUsed = customerContextUsed;
         this.preferenceQuestion = preferenceQuestion;
+        this.cartSummary = cartSummary;
+        this.cartAction = cartAction;
     }
 
     public String getId() {
@@ -89,6 +102,14 @@ public class ChatMessageUiModel {
 
     public ChatPreferenceQuestionUiModel getPreferenceQuestion() {
         return preferenceQuestion;
+    }
+
+    public ChatCartSummaryUiModel getCartSummary() {
+        return cartSummary;
+    }
+
+    public ChatCartActionUiModel getCartAction() {
+        return cartAction;
     }
 
     public static ChatMessageUiModel createTypingIndicator() {

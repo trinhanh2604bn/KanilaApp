@@ -9,10 +9,15 @@
  * Phase 4A: personalized product recommendation using customer profile
  *           progressive profile questioning
  *           preference saving from conversation
+ * Phase 5A: AI Cart Assistant
+ *           cart_recommendation — build product combos
+ *           add_to_cart         — add combo to real cart
+ *           cart_summary        — read current cart
  *
  * Response always includes:
  *   session_id, reply_type, bot_message, products[], order|null, ticket|null,
- *   quick_replies[], handoff_required, customer_context_used
+ *   quick_replies[], handoff_required, customer_context_used,
+ *   cart_summary|null, cart_action|null, upsell_products[]
  */
 
 const crypto = require("crypto");
@@ -27,6 +32,11 @@ const {
   generateMissingInfoQuestion,
   generateOrderExplanation,
   generateTicketConfirmation,
+  generateCartExplanation,
+  generateCartActionConfirmation,
+  generateCartSummaryReply,
+  generateBeautyConsultationReply,
+  generateComboExplanation,
 } = require("./gemini.provider");
 const { findRecommendedProducts } = require("./chatbotProduct.tool");
 const { findOrderForUser } = require("./chatbotOrder.tool");
@@ -35,6 +45,14 @@ const { getCustomerContext } = require("./chatbotCustomerContext.service");
 const { updateCustomerPreference } = require("./chatbotPreference.service");
 const { rankProducts } = require("./chatbotRecommendation.scorer");
 const { parseProductConstraints } = require("./chatbotProductQuery.parser");
+const { generateCartRecommendation, addProductsToCart, calculateCartSummary } = require("./chatbotCart.tool");
+const { findComplementaryProducts } = require("./chatbotUpsell.tool");
+const { parseCartIntent } = require("./chatbotCart.parser");
+// Phase 5 shopping assistant
+const {
+  getRecommendationContext,
+  buildComboRecommendation,
+} = require("./chatbotRecommendation.service");
 
 const MAX_HISTORY_MESSAGES = 10;
 
@@ -75,11 +93,65 @@ const ORDER_NOT_FOUND_QUICK_REPLIES = ["Nhập mã đơn hàng khác", "Gặp nh
 const SUPPORT_LOGIN_QUICK_REPLIES = ["Đăng nhập tài khoản", "Gặp nhân viên hỗ trợ", "Quay lại"];
 const SUPPORT_CREATED_QUICK_REPLIES = ["Kiểm tra đơn hàng", "Tư vấn sản phẩm", "Quay lại trang chủ"];
 
+// Phase 5A cart quick replies
+const CART_RECOMMEND_QUICK_REPLIES = ["Thêm combo này vào giỏ", "Thêm sản phẩm bổ sung", "Xem giỏ hàng của mình", "Tư vấn sản phẩm khác"];
+const CART_LOGIN_REQUIRED_QUICK_REPLIES = ["Đăng nhập tài khoản", "Xem combo không đăng nhập", "Tư vấn sản phẩm"];
+const CART_ADDED_QUICK_REPLIES = ["Xem giỏ hàng của mình", "Thanh toán ngay", "Tiếp tục mua sắm", "Tư vấn thêm sản phẩm"];
+const CART_SUMMARY_QUICK_REPLIES = ["Thanh toán ngay", "Xóa sản phẩm khỏi giỏ", "Tiếp tục mua sắm", "Tư vấn thêm sản phẩm"];
+const CART_EMPTY_QUICK_REPLIES = ["Tạo combo skincare", "Tư vấn sản phẩm", "Xem ưu đãi hôm nay"];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Intent detection
 // ─────────────────────────────────────────────────────────────────────────────
 
 const INTENT_RULES = [
+  // Phase 5A: cart intents must appear BEFORE product_recommendation to avoid overlap
+  {
+    intent: "cart_summary",
+    keywords: [
+      "giỏ hàng của mình", "xem giỏ hàng", "giỏ hàng có gì",
+      "tổng tiền giỏ", "giỏ hiện tại", "trong giỏ", "xem giỏ",
+      "kiểm tra giỏ", "bao nhiêu trong giỏ", "cart của mình",
+    ],
+  },
+  {
+    intent: "add_to_cart",
+    keywords: [
+      "thêm vào giỏ", "cho vào giỏ", "thêm combo", "mua combo",
+      "thêm bộ này", "add to cart", "mua giúp mình", "thêm hết vào giỏ",
+      "mua ngay", "thêm cái này", "cho thêm vào", "đặt hàng ngay",
+      "cho mình mua",
+    ],
+  },
+  {
+    intent: "cart_recommendation",
+    keywords: [
+      "bộ skincare", "combo skincare", "bộ chăm sóc da", "tạo combo",
+      "gợi ý bộ sản phẩm", "routine đầy đủ", "cần bộ sản phẩm",
+      "mua bộ", "set sản phẩm", "bộ dưỡng da", "combo cho mình",
+      "bộ làm đẹp", "bộ dưỡng", "gợi ý bộ",
+    ],
+  },
+  // Phase 5: beauty_consultation — general advisory (checked before product_recommendation)
+  {
+    intent: "beauty_consultation",
+    keywords: [
+      "nên dùng gì", "dùng loại nào", "có nên dùng", "nên chọn",
+      "phù hợp cho da", "tìm hiểu về da", "chăm sóc da như thế nào",
+      "hỏi về da", "da mình nên", "tư vấn da", "càng dùng càng",
+      "làm đẹp tự nhiên", "làm sáng da", "làn da khỏe",
+    ],
+  },
+  // Phase 5: combo_recommendation — advisory combo without cart action
+  {
+    intent: "combo_recommendation",
+    keywords: [
+      "bộ này giá bao nhiêu", "combo dưới", "bộ sản phẩm dưới",
+      "routine cơ bản", "gợi ý routine", "chu trình dưỡng da",
+      "routine cho da", "bộ đầy đủ", "lập bộ sản phẩm",
+      "nếu mua cả bộ", "cần mấy sản phẩm",
+    ],
+  },
   {
     intent: "order_tracking",
     keywords: [
@@ -377,10 +449,457 @@ async function handleSupportTicket(message, user, sessionId, history) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Phase 5: Shopping Assistant handlers
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Phase 5: General beauty consultation handler.
+ *
+ * Uses the full recommendation engine (recommendForProfile with ProductBeautyProfile
+ * scoring) instead of keyword-only search. Intended for advisory questions like
+ * "Da dầu mụn nên dùng gì?" where the user wants product guidance without a
+ * specific cart action.
+ *
+ * Flow:
+ *   1. Parse constraints (skin type, concern, budget, category) from message.
+ *   2. Load customer context if authenticated.
+ *   3. Fetch profile-scored products via getRecommendationContext().
+ *   4. Gemini writes the explanation — Gemini does NOT select products.
+ *
+ * @returns {{ botText, products, quickReplies, replyType, customerContextUsed }}
+ */
+async function handleBeautyConsultation(message, user, history) {
+  const constraints = parseProductConstraints(message);
+
+  // Resolve customerId from JWT (security: never from client body)
+  let customerId = null;
+  if (user && user.account_id) {
+    try {
+      const customer = await Customer.findOne({ account_id: user.account_id }).select("_id").lean();
+      if (customer) customerId = customer._id;
+    } catch (_) {}
+  }
+
+  // Fetch profile-scored products
+  const { products, customer_context_used } = await getRecommendationContext(
+    customerId,
+    constraints,
+    6
+  ).catch((err) => {
+    console.error("[Chatbot] BeautyConsultation product error:", err.message);
+    return { products: [], customer_context_used: false };
+  });
+
+  // Load customer profile for Gemini context (non-fatal)
+  let customerProfile = null;
+  if (customerId && customer_context_used) {
+    try {
+      const ctx = await getCustomerContext(customerId);
+      customerProfile = ctx?.customer_profile || null;
+    } catch (_) {}
+  }
+
+  if (products.length === 0) {
+    let botText;
+    try {
+      botText = await generateChatReply(message, history);
+    } catch (_) {
+      botText = "Mình chưa tìm được sản phẩm phù hợp. Bạn có thể cho mình biết loại da, vấn đề da đang gặp và ngân sách không?";
+    }
+    return {
+      botText,
+      products: [],
+      quickReplies: NO_PRODUCT_QUICK_REPLIES,
+      replyType: "text",
+      customerContextUsed: false,
+    };
+  }
+
+  // Gemini explains WHY these products suit the user — does NOT select them
+  let botText;
+  try {
+    botText = await generateBeautyConsultationReply(products, customerProfile, message, history);
+  } catch (_) {
+    botText = `Mình tìm được ${products.length} sản phẩm phù hợp cho nhu cầu của bạn. Bạn có thể xem các gợi ý bên dưới nhé!`;
+  }
+
+  return {
+    botText,
+    products,
+    quickReplies: PRODUCT_QUICK_REPLIES,
+    replyType: "product_recommendation",
+    customerContextUsed: customer_context_used,
+  };
+}
+
+/**
+ * Phase 5: Combo recommendation handler (advisory, no cart action).
+ *
+ * Builds a slot-based skincare combo (cleanser → serum → moisturizer…) using
+ * the full recommendation engine. Price calculated by backend — Gemini only
+ * explains the combo.
+ *
+ * Use case: "Tạo routine dưỡng da cơ bản dưới 500k"
+ *
+ * @returns {{ botText, products, quickReplies, replyType, customerContextUsed }}
+ */
+async function handleComboRecommendation(message, user, history) {
+  const constraints = parseProductConstraints(message);
+  // Also parse combo type from cart intent parser (it knows "skincare_basic" vs "skincare_full")
+  const { comboType, budgetMax: parsedBudget } = parseCartIntent(message);
+  if (parsedBudget && !constraints.budgetMax) constraints.budgetMax = parsedBudget;
+
+  // Resolve customerId
+  let customerId = null;
+  if (user && user.account_id) {
+    try {
+      const customer = await Customer.findOne({ account_id: user.account_id }).select("_id").lean();
+      if (customer) customerId = customer._id;
+    } catch (_) {}
+  }
+
+  // Build slot-based combo (backend calculates price)
+  let comboResult;
+  try {
+    comboResult = await buildComboRecommendation(customerId, {
+      ...constraints,
+      comboType: comboType && comboType !== "unknown" ? comboType : "skincare_basic",
+    });
+  } catch (err) {
+    console.error("[Chatbot] ComboRecommendation error:", err.message);
+    return {
+      botText: "Mình chưa thể tạo combo phù hợp lúc này. Bạn có thể cho mình biết thêm ngân sách và loại da để mình tư vấn chính xác hơn không?",
+      products: [],
+      quickReplies: NO_PRODUCT_QUICK_REPLIES,
+      replyType: "text",
+      customerContextUsed: false,
+    };
+  }
+
+  const { combo = [], total = 0, customer_context_used = false } = comboResult;
+
+  if (combo.length === 0) {
+    let botText;
+    try {
+      botText = await generateChatReply(message, history);
+    } catch (_) {
+      botText = "Mình chưa tìm được bộ sản phẩm phù hợp. Bạn hãy cho mình biết ngân sách và loại da để mình tư vấn chính xác hơn nhé!";
+    }
+    return {
+      botText,
+      products: [],
+      quickReplies: NO_PRODUCT_QUICK_REPLIES,
+      replyType: "text",
+      customerContextUsed: false,
+    };
+  }
+
+  // Load customer profile for Gemini context (non-fatal)
+  let customerProfile = null;
+  if (customerId && customer_context_used) {
+    try {
+      const ctx = await getCustomerContext(customerId);
+      customerProfile = ctx?.customer_profile || null;
+    } catch (_) {}
+  }
+
+  // Gemini explains combo rationale — does NOT select or price products
+  let botText;
+  try {
+    botText = await generateComboExplanation(combo, total, customerProfile, message, history);
+  } catch (_) {
+    const totalStr = total.toLocaleString("vi-VN");
+    botText = `Mình gợi ý combo ${combo.length} sản phẩm tổng cộng ${totalStr}đ, phù hợp với nhu cầu của bạn. Bạn xem thử nhé!`;
+  }
+
+  return {
+    botText,
+    products: combo, // same field for backward compat
+    quickReplies: CART_RECOMMEND_QUICK_REPLIES, // suggest adding to cart as next step
+    replyType: "combo_recommendation",
+    customerContextUsed: customer_context_used,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 5A: Cart handlers
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Resolve a verified customerId for cart operations.
+ * SECURITY: Must come from JWT-verified user, never from client body.
+ */
+async function resolveCustomerIdFromUser(user) {
+  if (!user || !user.account_id) return null;
+  try {
+    const customer = await Customer.findOne({ account_id: user.account_id }).select("_id").lean();
+    return customer ? customer._id : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+/**
+ * Phase 5A: Read and summarize the customer's current active cart.
+ */
+async function handleCartSummary(message, user, history) {
+  const customerId = await resolveCustomerIdFromUser(user);
+
+  if (!customerId) {
+    const botText = "Để xem giỏ hàng, bạn cần đăng nhập tài khoản Kanila nhé. Sau khi đăng nhập, mình có thể hiển thị toàn bộ giỏ hàng và tổng tiền cho bạn!";
+    return { botText, cartSummary: null, quickReplies: CART_LOGIN_REQUIRED_QUICK_REPLIES, replyType: "text" };
+  }
+
+  let summary;
+  try {
+    summary = await calculateCartSummary(customerId);
+  } catch (err) {
+    console.error("[Chatbot] CartSummary error:", err.message);
+    return {
+      botText: "Mình chưa thể lấy thông tin giỏ hàng lúc này. Bạn vui lòng thử lại sau nhé.",
+      cartSummary: null,
+      quickReplies: DEFAULT_QUICK_REPLIES,
+      replyType: "text",
+    };
+  }
+
+  if (!summary.found || summary.items_count === 0) {
+    let botText;
+    try {
+      botText = await generateCartSummaryReply(summary, message, history);
+    } catch (_) {
+      botText = "Giỏ hàng của bạn hiện đang trống. Bạn có muốn mình gợi ý một bộ skincare phù hợp không?";
+    }
+    return { botText, cartSummary: summary, quickReplies: CART_EMPTY_QUICK_REPLIES, replyType: "cart_summary" };
+  }
+
+  let botText;
+  try {
+    botText = await generateCartSummaryReply(summary, message, history);
+  } catch (_) {
+    botText = `Giỏ hàng của bạn có ${summary.items_count} sản phẩm, tổng cộng ${summary.total.toLocaleString("vi-VN")}đ. Bạn có muốn thanh toán ngay không?`;
+  }
+
+  return {
+    botText,
+    cartSummary: {
+      items_count: summary.items_count,
+      subtotal:    summary.subtotal,
+      discount:    summary.discount,
+      total:       summary.total,
+    },
+    quickReplies: CART_SUMMARY_QUICK_REPLIES,
+    replyType: "cart_summary",
+  };
+}
+
+/**
+ * Phase 5A: Build a product combo recommendation and find upsell products.
+ */
+async function handleCartRecommendation(message, user, history) {
+  // Parse combo type and budget from message
+  const { comboType, budgetMax: messageBudget } = parseCartIntent(message);
+
+  // Load customer profile for personalization
+  let customerProfile = null;
+  if (user && user.account_id) {
+    try {
+      const customerId = await resolveCustomerIdFromUser(user);
+      if (customerId) {
+        const ctx = await getCustomerContext(customerId);
+        customerProfile = ctx?.customer_profile || null;
+      }
+    } catch (_) { /* non-fatal */ }
+  }
+
+  // Use message budget or profile budget
+  const budgetMax = messageBudget || customerProfile?.budget_max || null;
+
+  // Build combo from real MongoDB products
+  let comboResult;
+  try {
+    comboResult = await generateCartRecommendation({
+      comboType: comboType === "unknown" ? "skincare_basic" : comboType,
+      customerProfile,
+      budgetMax,
+    });
+  } catch (err) {
+    console.error("[Chatbot] CartRecommendation error:", err.message);
+    return {
+      botText: "Mình chưa tìm được bộ sản phẩm phù hợp lúc này. Bạn có thể cho mình biết ngân sách và loại da của bạn để mình tư vấn chính xác hơn không?",
+      products: [],
+      upsellProducts: [],
+      cartSummary: {
+        items_count: comboResult?.products?.length || 0,
+        subtotal:    comboResult?.totalPrice || 0,
+        discount:    0,
+        total:       comboResult?.totalPrice || 0,
+      },
+      quickReplies: NO_PRODUCT_QUICK_REPLIES,
+      replyType: "text",
+    };
+  }
+
+  const products = comboResult.products || [];
+
+  if (products.length === 0) {
+    let botText;
+    try {
+      botText = await generateChatReply(message, history);
+    } catch (_) {
+      botText = "Mình chưa tìm được bộ sản phẩm phù hợp. Bạn hãy cho mình biết ngân sách và loại da để mình tư vấn chính xác hơn nhé!";
+    }
+    return {
+      botText,
+      products: [],
+      upsellProducts: [],
+      cartSummary: null,
+      quickReplies: NO_PRODUCT_QUICK_REPLIES,
+      replyType: "text",
+    };
+  }
+
+  // Find complementary upsell products
+  let upsellProducts = [];
+  try {
+    const existingIds = products.map((p) => p.product_id);
+    const existingCats = products.map((p) => p.category_name).filter(Boolean);
+    const upsellResult = await findComplementaryProducts({
+      existingProductIds: existingIds,
+      existingCategories: existingCats,
+      customerProfile,
+      limit: 2,
+    });
+    upsellProducts = upsellResult.upsell_products || [];
+  } catch (_) { /* non-fatal */ }
+
+  // Gemini explanation
+  let botText;
+  try {
+    botText = await generateCartExplanation(products, upsellProducts, customerProfile, message, history);
+  } catch (_) {
+    botText = `Mình gợi ý bộ ${comboResult.comboType.replace(/_/g, " ")} gồm ${products.length} sản phẩm, tổng ${comboResult.totalPrice.toLocaleString("vi-VN")}đ. Bạn có muốn thêm vào giỏ không?`;
+  }
+
+  return {
+    botText,
+    products,
+    upsellProducts,
+    cartSummary: {
+      items_count: products.length,
+      subtotal:    comboResult.totalPrice,
+      discount:    0,
+      total:       comboResult.totalPrice,
+    },
+    quickReplies: CART_RECOMMEND_QUICK_REPLIES,
+    replyType: "cart_recommendation",
+  };
+}
+
+/**
+ * Phase 5A/5B: Add recommended products to the authenticated customer's cart.
+ *
+ * SECURITY:
+ *  - Requires authentication (customerId from JWT).
+ *  - product_ids re-validated from DB by addProductsToCart() — never trusted from client.
+ *  - Never modifies another customer's cart.
+ *
+ * @param {string}   message
+ * @param {object}   user
+ * @param {string[]} productIds  — legacy: plain product_id array
+ * @param {Array}    history
+ * @param {Array}    [cartItems] — Phase 5B: [{product_id, variant_id?, quantity?}]
+ */
+async function handleAddToCart(message, user, productIds, history, cartItems = null) {
+  const customerId = await resolveCustomerIdFromUser(user);
+
+  if (!customerId) {
+    return {
+      botText: "Để thêm sản phẩm vào giỏ, bạn cần đăng nhập tài khoản Kanila trước nhé!",
+      cartAction: { success: false, reason: "login_required" },
+      quickReplies: CART_LOGIN_REQUIRED_QUICK_REPLIES,
+      replyType: "text",
+    };
+  }
+
+  const hasCartItems  = Array.isArray(cartItems) && cartItems.length > 0;
+  const hasProductIds = Array.isArray(productIds) && productIds.length > 0;
+
+  if (!hasCartItems && !hasProductIds) {
+    return {
+      botText: "Mình chưa có sản phẩm nào để thêm vào giỏ. Bạn có muốn mình tạo combo sản phẩm phù hợp không?",
+      cartAction: { success: false, reason: "no_products" },
+      quickReplies: CART_RECOMMEND_QUICK_REPLIES,
+      replyType: "text",
+    };
+  }
+
+  let addResult;
+  try {
+    addResult = await addProductsToCart({
+      customerId,
+      productIds: hasCartItems ? undefined : productIds,
+      cartItems:  hasCartItems ? cartItems : undefined,
+    });
+  } catch (err) {
+    console.error("[Chatbot] AddToCart error:", err.message);
+    return {
+      botText: "Xin lỗi, mình không thể thêm sản phẩm vào giỏ lúc này. Bạn vui lòng thử lại sau nhé.",
+      cartAction: { success: false, reason: "internal_error" },
+      quickReplies: DEFAULT_QUICK_REPLIES,
+      replyType: "text",
+    };
+  }
+
+  // ── Variant selection required ────────────────────────────────────────────────────
+  if (addResult.reason === "variant_selection_required") {
+    const firstProduct = addResult.needs_variant_selection[0];
+    const variantList  = (firstProduct?.variants || [])
+      .map((v) => v.volume_ml ? `${v.name} (${v.volume_ml}ml)` : v.name)
+      .join(" / ");
+    const botText = `Sản phẩm "${firstProduct?.product_name || "này"}" có nhiều phiên bản. Bạn muốn chọn loại nào?${
+      variantList ? ` (${variantList})` : ""
+    }`;
+    return {
+      botText,
+      cartAction: addResult,
+      quickReplies: (firstProduct?.variants || []).map((v) => v.name).slice(0, 5),
+      replyType: "cart_action",
+    };
+  }
+
+  // ── No products / all unavailable ─────────────────────────────────────────────────
+  if (addResult.reason === "all_products_unavailable" || addResult.reason === "no_products") {
+    return {
+      botText: "Một số sản phẩm trong combo hiện không còn phù hợp hoặc đã hết hàng. Bạn có muốn mình tìm sản phẩm thay thế không?",
+      cartAction: addResult,
+      quickReplies: NO_PRODUCT_QUICK_REPLIES,
+      replyType: "cart_action",
+    };
+  }
+
+  let botText;
+  try {
+    botText = await generateCartActionConfirmation(addResult, message, history);
+  } catch (_) {
+    botText = addResult.success
+      ? `Mình đã thêm ${addResult.items_added} sản phẩm vào giỏ hàng thành công! Giỏ hàng hiện có ${addResult.cart_count} sản phẩm, tổng ${(addResult.cart_total || 0).toLocaleString("vi-VN")}đ.`
+      : "Mình không thể thêm tất cả sản phẩm vào giỏ. Một số sản phẩm có thể đã hết hàng.";
+  }
+
+  return {
+    botText,
+    cartAction: addResult,
+    quickReplies: addResult.success ? CART_ADDED_QUICK_REPLIES : NO_PRODUCT_QUICK_REPLIES,
+    replyType: "cart_action",
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Main service function
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function handleUserMessage({ sessionId, message, sourceScreen, user }) {
+async function handleUserMessage({ sessionId, message, sourceScreen, user, productIds, cartItems }) {
   // 1. Resolve or create session
   const session = await resolveOrCreateSession(sessionId, user, sourceScreen);
 
@@ -400,15 +919,14 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user }) {
   });
 
   // 5. Phase 4A: save preferences from user message (authenticated only, non-blocking)
-  if (user && user.account_id && intent === "product_recommendation") {
-    // Resolve customerId lazily — non-fatal
+  if (user && user.account_id &&
+    (intent === "product_recommendation" || intent === "beauty_consultation" || intent === "combo_recommendation")
+  ) {
     Customer.findOne({ account_id: user.account_id })
       .select("_id")
       .lean()
       .then((customer) => {
-        if (customer) {
-          return updateCustomerPreference({ customerId: customer._id, message: message.trim() });
-        }
+        if (customer) return updateCustomerPreference({ customerId: customer._id, message: message.trim() });
       })
       .catch((err) => console.error("[ChatbotPreference] Non-fatal:", err.message));
   }
@@ -422,11 +940,71 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user }) {
   let replyType = "text";
   let handoffRequired = false;
   let customerContextUsed = false;
+  // Phase 5A additions
+  let cartSummary = null;
+  let cartAction = null;
+  let upsellProducts = [];
+  let needsVariantSelection = false;
+
+  // Phase 5B: resolve product_ids / cart_items for add_to_cart
+  // Android passes product_ids (simple) or cart_items (with variant+qty) when user confirms
+  const pendingCartItems  = Array.isArray(cartItems) && cartItems.length > 0 ? cartItems : null;
+  const pendingProductIds = pendingCartItems ? null : (Array.isArray(productIds) && productIds.length > 0 ? productIds : []);
 
   try {
-    if (intent === "product_recommendation") {
+    if (intent === "cart_summary") {
+      // Phase 5A
+      const r = await handleCartSummary(message.trim(), user, history);
+      botText = r.botText;
+      cartSummary = r.cartSummary || null;
+      quickReplies = r.quickReplies;
+      replyType = r.replyType;
+
+    } else if (intent === "cart_recommendation") {
+      // Phase 5A
+      const r = await handleCartRecommendation(message.trim(), user, history);
+      botText = r.botText;
+      products = r.products || [];
+      upsellProducts = r.upsellProducts || [];
+      cartSummary = r.cartSummary || null;
+      quickReplies = r.quickReplies;
+      replyType = r.replyType;
+
+    } else if (intent === "add_to_cart") {
+      // Phase 5B — Android sends product_ids[] or cart_items[] when user confirms
+      const r = await handleAddToCart(
+        message.trim(),
+        user,
+        pendingProductIds,
+        history,
+        pendingCartItems
+      );
+      botText = r.botText;
+      cartAction = r.cartAction || null;
+      quickReplies = r.quickReplies;
+      replyType = r.replyType;
+
+    } else if (intent === "product_recommendation") {
       // Phase 4A: personalized recommendation
       const r = await handlePersonalizedProductRecommendation(message.trim(), user, history);
+      botText = r.botText;
+      products = r.products;
+      quickReplies = r.quickReplies;
+      replyType = r.replyType;
+      customerContextUsed = r.customerContextUsed;
+
+    } else if (intent === "beauty_consultation") {
+      // Phase 5: general beauty advisory using full recommendation engine
+      const r = await handleBeautyConsultation(message.trim(), user, history);
+      botText = r.botText;
+      products = r.products;
+      quickReplies = r.quickReplies;
+      replyType = r.replyType;
+      customerContextUsed = r.customerContextUsed;
+
+    } else if (intent === "combo_recommendation") {
+      // Phase 5: advisory combo without cart action
+      const r = await handleComboRecommendation(message.trim(), user, history);
       botText = r.botText;
       products = r.products;
       quickReplies = r.quickReplies;
@@ -481,13 +1059,18 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user }) {
       ticket: ticket ? { ticket_id: ticket.ticket_id, ticket_code: ticket.ticket_code, status: ticket.status, category: ticket.category } : null,
       handoff_required: handoffRequired,
       customer_context_used: customerContextUsed,
+      // Phase 5A
+      cart_summary: cartSummary,
+      cart_action: cartAction ? { success: cartAction.success, items_added: cartAction.items_added, cart_count: cartAction.cart_count, reason: cartAction.reason } : null,
+      // Phase 5B
+      needs_variant_selection: cartAction?.needs_variant_selection || null,
     },
   });
 
   // 8. Update session last intent
   await ChatbotSession.findByIdAndUpdate(session._id, { last_intent: intent });
 
-  // 9. Return full structured result (backward compatible + Phase 4A additions)
+  // 9. Return full structured result (backward compatible + Phase 5A additions)
   return {
     session_id: session._id.toString(),
     reply_type: replyType,
@@ -498,6 +1081,12 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user }) {
     quick_replies: quickReplies,
     handoff_required: handoffRequired,
     customer_context_used: customerContextUsed,
+    // Phase 5A
+    cart_summary: cartSummary,
+    cart_action: cartAction,
+    upsell_products: upsellProducts,
+    // Phase 5B: variant selection prompt
+    needs_variant_selection: cartAction?.needs_variant_selection || null,
   };
 }
 

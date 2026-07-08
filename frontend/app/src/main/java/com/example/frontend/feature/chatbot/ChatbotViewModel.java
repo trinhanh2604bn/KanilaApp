@@ -11,6 +11,8 @@ import com.example.frontend.data.remote.TokenManager;
 import com.example.frontend.feature.chatbot.data.ChatbotRepository;
 import com.example.frontend.feature.chatbot.data.request.ChatbotContextRequest;
 import com.example.frontend.feature.chatbot.data.request.ChatbotMessageRequest;
+import com.example.frontend.feature.chatbot.data.response.ChatCartActionResponse;
+import com.example.frontend.feature.chatbot.data.response.ChatCartSummaryResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatOrderResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatOrderTimelineResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatProductResponse;
@@ -19,6 +21,8 @@ import com.example.frontend.feature.chatbot.data.response.ChatTicketResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatbotDataResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatbotMessageResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatbotSessionHistoryResponse;
+import com.example.frontend.feature.chatbot.model.ChatCartActionUiModel;
+import com.example.frontend.feature.chatbot.model.ChatCartSummaryUiModel;
 import com.example.frontend.feature.chatbot.model.ChatMessageUiModel;
 import com.example.frontend.feature.chatbot.model.ChatOrderTimelineUiModel;
 import com.example.frontend.feature.chatbot.model.ChatOrderUiModel;
@@ -184,6 +188,16 @@ public class ChatbotViewModel extends AndroidViewModel {
                     preferenceQuestionUiModel = mapToUiModel(data.getPreferenceQuestion());
                 }
 
+                ChatCartSummaryUiModel cartSummaryUiModel = null;
+                if (data.getCartSummary() != null) {
+                    cartSummaryUiModel = mapToUiModel(data.getCartSummary());
+                }
+
+                ChatCartActionUiModel cartActionUiModel = null;
+                if (data.getCartAction() != null) {
+                    cartActionUiModel = mapToUiModel(data.getCartAction());
+                }
+
                 ChatMessageUiModel botMsg = new ChatMessageUiModel(
                         UUID.randomUUID().toString(),
                         data.getBotMessage(),
@@ -195,7 +209,9 @@ public class ChatbotViewModel extends AndroidViewModel {
                         ticketUiModel,
                         data.getReplyType(),
                         data.getCustomerContextUsed() != null && data.getCustomerContextUsed(),
-                        preferenceQuestionUiModel
+                        preferenceQuestionUiModel,
+                        cartSummaryUiModel,
+                        cartActionUiModel
                 );
                 messageList.add(botMsg);
                 updateState(false, null);
@@ -210,6 +226,30 @@ public class ChatbotViewModel extends AndroidViewModel {
 
         // Reset lastResponse to null so it doesn't trigger again on configuration change
         lastResponse.setValue(null);
+    }
+
+    public void confirmAddCombo(String action) {
+        // Show typing indicator
+        messageList.add(ChatMessageUiModel.createTypingIndicator());
+        updateState(true, null);
+
+        // Call repository with the action as message or a specific trigger
+        ChatbotMessageRequest request = new ChatbotMessageRequest(
+                sessionId,
+                action, // Use the action from the response as the message trigger
+                "chatbot",
+                new ChatbotContextRequest(null, null)
+        );
+
+        repository.sendMessage(request, lastResponse);
+    }
+
+    public void startNewChat() {
+        messageList.clear();
+        currentQuickReplies.clear();
+        sessionId = null;
+        tokenManager.saveChatbotSession(null);
+        updateState(false, null);
     }
 
     private void addErrorBubble(String message) {
@@ -286,6 +326,26 @@ public class ChatbotViewModel extends AndroidViewModel {
                 q.getQuestionType(),
                 q.getQuestion(),
                 q.getOptions()
+        );
+    }
+
+    private ChatCartSummaryUiModel mapToUiModel(ChatCartSummaryResponse s) {
+        return new ChatCartSummaryUiModel(
+                s.getItemsCount() != null ? s.getItemsCount() : 0,
+                s.getSubtotal() != null ? formatPrice(s.getSubtotal()) : "0đ",
+                s.getDiscount() != null ? formatPrice(s.getDiscount()) : "0đ",
+                s.getTotal() != null ? formatPrice(s.getTotal()) : "0đ",
+                s.getDiscount() != null && s.getDiscount() > 0
+        );
+    }
+
+    private ChatCartActionUiModel mapToUiModel(ChatCartActionResponse a) {
+        return new ChatCartActionUiModel(
+                a.getAction(),
+                a.getSuccess() != null && a.getSuccess(),
+                a.getRequiresConfirmation() != null && a.getRequiresConfirmation(),
+                a.getReason(),
+                a.getCartCount()
         );
     }
 

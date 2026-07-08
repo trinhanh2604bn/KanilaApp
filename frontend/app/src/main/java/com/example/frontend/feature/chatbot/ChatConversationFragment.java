@@ -18,8 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
 import com.example.frontend.feature.chatbot.adapter.ChatMessageAdapter;
-import com.example.frontend.feature.chatbot.adapter.ChatProductAdapter;
 import com.example.frontend.feature.chatbot.adapter.QuickReplyAdapter;
+import com.example.frontend.feature.chatbot.model.ChatMessageUiModel;
 import com.example.frontend.feature.chatbot.model.ChatOrderUiModel;
 import com.example.frontend.feature.chatbot.model.ChatProductUiModel;
 import com.example.frontend.feature.chatbot.model.ChatTicketUiModel;
@@ -37,6 +37,7 @@ public class ChatConversationFragment extends Fragment {
     private QuickReplyAdapter quickReplyAdapter;
     private EditText edtMessage;
     private View btnSend;
+    private View btnNewChat;
     private View layoutWelcome;
     private RecyclerView rvChat;
 
@@ -77,8 +78,8 @@ public class ChatConversationFragment extends Fragment {
         layoutWelcome = view.findViewById(R.id.layoutWelcome);
         edtMessage = view.findViewById(R.id.edtMessage);
         btnSend = view.findViewById(R.id.btnSend);
+        btnNewChat = view.findViewById(R.id.btnNewChat);
         ImageButton btnBack = view.findViewById(R.id.btnBack);
-        ImageButton btnMenu = view.findViewById(R.id.btnMenu);
 
         btnBack.setOnClickListener(v -> {
             if (getActivity() != null) {
@@ -86,9 +87,20 @@ public class ChatConversationFragment extends Fragment {
             }
         });
 
-        btnMenu.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Menu", Toast.LENGTH_SHORT).show();
-        });
+        btnNewChat.setOnClickListener(v -> showNewChatConfirmation());
+    }
+
+    private void showNewChatConfirmation() {
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle(R.string.chat_new_chat_confirm_title)
+                .setMessage(R.string.chat_new_chat_confirm_message)
+                .setNegativeButton(R.string.chat_new_chat_confirm_btn_cancel, null)
+                .setPositiveButton(R.string.chat_new_chat_confirm_btn_confirm, (dialog, which) -> {
+                    viewModel.startNewChat();
+                    edtMessage.setText("");
+                    Toast.makeText(getContext(), "Đã bắt đầu cuộc trò chuyện mới", Toast.LENGTH_SHORT).show();
+                })
+                .show();
     }
 
     private void setupRecyclerViews(View view) {
@@ -96,9 +108,31 @@ public class ChatConversationFragment extends Fragment {
                 this::onProductClick,
                 this::onOrderClick,
                 this::onTicketClick,
-                this::onPreferenceClick
+                this::onPreferenceClick,
+                new ChatMessageAdapter.OnAddComboClickListener() {
+                    @Override
+                    public void onAddComboClick(ChatMessageUiModel message) {
+                        ChatConversationFragment.this.onAddComboClick(message);
+                    }
+
+                    @Override
+                    public void onViewCartClick() {
+                        ChatConversationFragment.this.onViewCartClick();
+                    }
+                }
         );
         rvChat.setAdapter(chatAdapter);
+
+        // Scroll to bottom when keyboard appears
+        rvChat.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (bottom < oldBottom) {
+                rvChat.postDelayed(() -> {
+                    if (chatAdapter.getItemCount() > 0) {
+                        rvChat.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
+                    }
+                }, 100);
+            }
+        });
 
         RecyclerView rvQuickReplies = view.findViewById(R.id.rvQuickReplies);
         quickReplyAdapter = new QuickReplyAdapter();
@@ -187,6 +221,55 @@ public class ChatConversationFragment extends Fragment {
         if (option != null && !option.isEmpty()) {
             viewModel.sendMessage(option);
         }
+    }
+
+    private void onAddComboClick(ChatMessageUiModel message) {
+        if (message.getCartAction() != null && "require_login".equals(message.getCartAction().getReason())) {
+            showLoginPrompt();
+            return;
+        }
+
+        if (message.getCartSummary() != null) {
+            showAddComboConfirmation(message);
+        }
+    }
+
+    private void onViewCartClick() {
+        if (getActivity() instanceof com.example.frontend.MainActivity) {
+            ((com.example.frontend.MainActivity) getActivity()).navigateToCart();
+        }
+    }
+
+    private void showLoginPrompt() {
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle(R.string.chat_cart_require_login)
+                .setNegativeButton(R.string.chat_new_chat_confirm_btn_cancel, null)
+                .setPositiveButton(R.string.chat_cart_login_now, (dialog, which) -> {
+                    if (getActivity() != null) {
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.main, new com.example.frontend.feature.auth.LoginFragment())
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                })
+                .show();
+    }
+
+    private void showAddComboConfirmation(ChatMessageUiModel message) {
+        String info = getString(R.string.chat_cart_confirm_info, 
+                message.getCartSummary().getItemsCount(), 
+                message.getCartSummary().getTotal());
+
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle(R.string.chat_cart_confirm_title)
+                .setMessage(getString(R.string.chat_cart_confirm_msg) + "\n\n" + info)
+                .setNegativeButton(R.string.chat_new_chat_confirm_btn_cancel, null)
+                .setPositiveButton(R.string.chat_cart_confirm_btn_add, (dialog, which) -> {
+                    if (message.getCartAction() != null) {
+                        viewModel.confirmAddCombo(message.getCartAction().getAction());
+                    }
+                })
+                .show();
     }
 
     private void observeViewModel() {

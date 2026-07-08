@@ -31,6 +31,12 @@ public class ChatbotDataResponse {
     @SerializedName("preference_question")
     private ChatPreferenceQuestionResponse preferenceQuestion;
 
+    @SerializedName("cart_summary")
+    private ChatCartSummaryResponse cartSummary;
+
+    @SerializedName("cart_action")
+    private ChatCartActionResponse cartAction;
+
     @SerializedName("handoff_required")
     private boolean handoffRequired;
 
@@ -68,6 +74,14 @@ public class ChatbotDataResponse {
 
     public ChatPreferenceQuestionResponse getPreferenceQuestion() {
         return preferenceQuestion;
+    }
+
+    public ChatCartSummaryResponse getCartSummary() {
+        return cartSummary;
+    }
+
+    public ChatCartActionResponse getCartAction() {
+        return cartAction;
     }
 
     public boolean isHandoffRequired() {

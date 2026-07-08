@@ -38,7 +38,30 @@ Quy tắc khi tra cứu đơn hàng (KANILA_ORDER_CONTEXT):
 
 Quy tắc khi tạo yêu cầu hỗ trợ (KANILA_TICKET_CONTEXT):
 22. Khi nhận được KANILA_TICKET_CONTEXT, xác nhận đã ghi nhận yêu cầu và an ủi người dùng.
-23. Không hứa hẹn thời gian xử lý cụ thể nếu không có dữ liệu từ KANILA_TICKET_CONTEXT.`;
+23. Không hứa hẹn thời gian xử lý cụ thể nếu không có dữ liệu từ KANILA_TICKET_CONTEXT.
+
+Quy tắc khi hỗ trợ giỏ hàng (KANILA_CART_CONTEXT):
+24. Khi nhận được KANILA_CART_CONTEXT, CHỈ giải thích và giới thiệu sản phẩm trong danh sách đó.
+25. Không tự bịa đặt sản phẩm, giá, tồn kho, hay thương hiệu ngoài KANILA_CART_CONTEXT.
+26. Khi thêm sản phẩm vào giỏ thành công, xác nhận thân thiện với khách hàng.
+27. Khi một số sản phẩm không khả dụng, thông báo rõ ràng nhưng không tiết lộ lý do kỹ thuật.
+28. Gợi ý sản phẩm bổ sung (upsell) khi có KANILA_UPSELL_CONTEXT — chỉ từ danh sách được cung cấp.
+29. Không thực hiện bất kỳ thay đổi database nào — backend xử lý tất cả cart operations.
+30. Luôn nhắc người dùng kiểm tra giỏ hàng và hoàn tất thanh toán khi phù hợp.
+
+Quy tắc tư vấn làm đẹp chuyên sâu (KANILA_BEAUTY_CONSULTATION):
+31. Khi nhận được KANILA_BEAUTY_CONSULTATION, đóng vai chuyên gia tư vấn làm đẹp — giải thích lý do chọn sản phẩm dựa trên loại da và vấn đề da cụ thể.
+32. CHỈ đề cập đến sản phẩm có trong KANILA_PRODUCT_CONTEXT — không tự bịa sản phẩm mới.
+33. Giải thích ngắn gọn tại sao mỗi sản phẩm phù hợp với profile của người dùng.
+34. Gợi ý routine sử dụng nếu có nhiều sản phẩm (sáng/tối).
+35. Nếu thiếu thông tin về loại da, hỏi đúng một câu.
+
+Quy tắc tư vấn combo sản phẩm (KANILA_COMBO_CONTEXT):
+36. Khi nhận được KANILA_COMBO_CONTEXT, CHỈ giới thiệu sản phẩm có trong combo đó.
+37. Giải thích tại sao combo này phù hợp với loại da và nhu cầu của người dùng.
+38. Nêu rõ tổng chi phí combo từ KANILA_COMBO_CONTEXT — không tính lại.
+39. Gợi ý thứ tự sử dụng theo bước chăm sóc da.
+40. Nếu ngân sách không đủ, đề xuất giảm bớt một sản phẩm — nhưng đừng tự thêm sản phẩm mới.`;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Context builders
@@ -184,4 +207,179 @@ module.exports = {
   buildMissingInfoMessage,
   buildOrderContextMessage,
   buildTicketContextMessage,
+  buildCartRecommendationMessage,
+  buildAddToCartMessage,
+  buildCartSummaryMessage,
+  // Phase 5 shopping assistant
+  buildBeautyConsultationMessage,
+  buildComboRecommendationMessage,
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Cart context builders (Phase 5A)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildCartRecommendationMessage(products, upsellProducts, customerProfile, userMessage) {
+  const parts = [];
+
+  if (customerProfile && (customerProfile.skin_type || customerProfile.skin_concerns?.length)) {
+    const ctxLines = [];
+    if (customerProfile.skin_type) ctxLines.push(`Loai da: ${customerProfile.skin_type}`);
+    if (customerProfile.skin_concerns?.length)
+      ctxLines.push(`Van de da: ${customerProfile.skin_concerns.join(", ")}`);
+    if (customerProfile.budget_max)
+      ctxLines.push(`Ngan sach: ${customerProfile.budget_max.toLocaleString("vi-VN")}d`);
+    parts.push(`CUSTOMER_CONTEXT:\n${ctxLines.join("\n")}`);
+  }
+
+  if (products && products.length) {
+    const productLines = products.map((p, i) => {
+      const priceStr = p.price ? p.price.toLocaleString("vi-VN") + "d" : "Lien he";
+      const stockStr = p.stock_status === "in_stock" ? "Con hang" : "Het hang";
+      return `San pham ${i + 1} [${p.slot || "item"}]: ${p.name}\n  Thuong hieu: ${p.brand_name || "Khong ro"}\n  Gia: ${priceStr}\n  Tinh trang: ${stockStr}\n  Ly do: ${p.reason || ""}`;
+    });
+    parts.push(`KANILA_CART_CONTEXT:\n${productLines.join("\n\n")}`);
+  } else {
+    parts.push("KANILA_CART_CONTEXT: []");
+  }
+
+  if (upsellProducts && upsellProducts.length) {
+    const upsellLines = upsellProducts.map((p, i) => {
+      const priceStr = p.price ? p.price.toLocaleString("vi-VN") + "d" : "Lien he";
+      return `San pham bo sung ${i + 1}: ${p.name} (${p.brand_name}) - ${priceStr} - ${p.reason}`;
+    });
+    parts.push(`KANILA_UPSELL_CONTEXT:\n${upsellLines.join("\n")}`);
+  }
+
+  return `${userMessage}\n\n${parts.join("\n\n")}`;
+}
+
+function buildAddToCartMessage(addResult, userMessage) {
+  const lines = [
+    `Ket qua: ${addResult.success ? "Them thanh cong" : "Khong the them"}`,
+    `So san pham da them: ${addResult.items_added}`,
+    addResult.items_skipped > 0 ? `So san pham bo qua: ${addResult.items_skipped}` : null,
+    `So luong trong gio: ${addResult.cart_count}`,
+    `Tong tien gio hang: ${(addResult.cart_total || 0).toLocaleString("vi-VN")}d`,
+  ].filter(Boolean);
+
+  return `${userMessage}\n\nKANILA_CART_ACTION:\n${lines.join("\n")}`;
+}
+
+function buildCartSummaryMessage(summary, userMessage) {
+  if (!summary.found || !summary.items_count) {
+    return `${userMessage}\n\nKANILA_CART_CONTEXT: Gio hang trong`;
+  }
+
+  const itemLines = summary.items.slice(0, 5).map((i, idx) => {
+    const lineTotalStr = (i.line_total || 0).toLocaleString("vi-VN");
+    return `  ${idx + 1}. ${i.product_name} x${i.quantity} - ${lineTotalStr}d`;
+  });
+
+  const lines = [
+    `So luong san pham: ${summary.items_count}`,
+    `Tam tinh: ${summary.subtotal.toLocaleString("vi-VN")}d`,
+    summary.discount > 0 ? `Giam gia: -${summary.discount.toLocaleString("vi-VN")}d` : null,
+    `Tong thanh toan: ${summary.total.toLocaleString("vi-VN")}d`,
+    `San pham trong gio:\n${itemLines.join("\n")}`,
+  ].filter(Boolean);
+
+  return `${userMessage}\n\nKANILA_CART_CONTEXT:\n${lines.join("\n")}`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 5 Shopping Assistant builders
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Build a beauty-consultation context message for Gemini.
+ * Used when intent = "beauty_consultation" — general advisory using product list.
+ *
+ * @param {object[]} products       — formatted products from getRecommendationContext()
+ * @param {object|null} customerProfile — from getCustomerContext().customer_profile
+ * @param {string} userMessage
+ * @returns {string}
+ */
+function buildBeautyConsultationMessage(products, customerProfile, userMessage) {
+  const parts = [];
+
+  // Customer context header
+  if (customerProfile && (customerProfile.skin_type || customerProfile.skin_concerns?.length)) {
+    const ctxLines = [];
+    if (customerProfile.skin_type)
+      ctxLines.push(`Loai da: ${customerProfile.skin_type}`);
+    if (customerProfile.skin_concerns?.length)
+      ctxLines.push(`Van de da: ${customerProfile.skin_concerns.join(", ")}`);
+    if (customerProfile.budget_max)
+      ctxLines.push(`Ngan sach toi da: ${customerProfile.budget_max.toLocaleString("vi-VN")}d`);
+    if (customerProfile.avoid_ingredients?.length)
+      ctxLines.push(`Thanh phan can tranh: ${customerProfile.avoid_ingredients.slice(0, 3).join(", ")}`);
+    parts.push(`CUSTOMER_CONTEXT:\n${ctxLines.join("\n")}`);
+  }
+
+  // Tag the context type
+  parts.push("KANILA_BEAUTY_CONSULTATION: true");
+
+  // Product list
+  if (!products || products.length === 0) {
+    parts.push("KANILA_PRODUCT_CONTEXT: []");
+  } else {
+    const productLines = products.map((p, i) => {
+      const lines = [
+        `San pham ${i + 1}: ${p.name}`,
+        `  Thuong hieu: ${p.brand || "Khong ro"}`,
+        `  Gia: ${p.price ? p.price.toLocaleString("vi-VN") + "d" : "Lien he"}`,
+        p.rating ? `  Danh gia: ${p.rating}★` : null,
+        p.reason ? `  Ly do phu hop: ${p.reason}` : null,
+        p.badges?.length ? `  Huy hieu: ${p.badges.join(", ")}` : null,
+      ].filter(Boolean);
+      return lines.join("\n");
+    });
+    parts.push(`KANILA_PRODUCT_CONTEXT:\n${productLines.join("\n\n")}`);
+  }
+
+  return `${userMessage}\n\n${parts.join("\n\n")}`;
+}
+
+/**
+ * Build a combo-recommendation context message for Gemini.
+ * Used when intent = "combo_recommendation" — advisory combo without cart action.
+ *
+ * @param {object[]} combo     — slot-annotated products from buildComboRecommendation()
+ * @param {number} total       — total price of the combo
+ * @param {object|null} customerProfile
+ * @param {string} userMessage
+ * @returns {string}
+ */
+function buildComboRecommendationMessage(combo, total, customerProfile, userMessage) {
+  const parts = [];
+
+  if (customerProfile && (customerProfile.skin_type || customerProfile.skin_concerns?.length)) {
+    const ctxLines = [];
+    if (customerProfile.skin_type)
+      ctxLines.push(`Loai da: ${customerProfile.skin_type}`);
+    if (customerProfile.skin_concerns?.length)
+      ctxLines.push(`Van de da: ${customerProfile.skin_concerns.join(", ")}`);
+    parts.push(`CUSTOMER_CONTEXT:\n${ctxLines.join("\n")}`);
+  }
+
+  parts.push("KANILA_COMBO_CONTEXT: true");
+
+  if (!combo || combo.length === 0) {
+    parts.push("KANILA_PRODUCT_CONTEXT: []");
+  } else {
+    const comboLines = combo.map((p, i) => {
+      const lines = [
+        `Buoc ${i + 1} [${p.slot || "item"}]: ${p.name}`,
+        `  Thuong hieu: ${p.brand || "Khong ro"}`,
+        `  Gia: ${p.price ? p.price.toLocaleString("vi-VN") + "d" : "Lien he"}`,
+        p.reason ? `  Ly do: ${p.reason}` : null,
+      ].filter(Boolean);
+      return lines.join("\n");
+    });
+    comboLines.push(`Tong gia combo: ${total.toLocaleString("vi-VN")}d`);
+    parts.push(`KANILA_PRODUCT_CONTEXT:\n${comboLines.join("\n\n")}`);
+  }
+
+  return `${userMessage}\n\n${parts.join("\n\n")}`;
+}

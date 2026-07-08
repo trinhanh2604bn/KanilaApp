@@ -13,6 +13,11 @@ const {
   buildMissingInfoMessage,
   buildOrderContextMessage,
   buildTicketContextMessage,
+  buildCartRecommendationMessage,
+  buildAddToCartMessage,
+  buildCartSummaryMessage,
+  buildBeautyConsultationMessage,
+  buildComboRecommendationMessage,
 } = require("./chatbot.prompt");
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -134,4 +139,75 @@ module.exports = {
   generateMissingInfoQuestion,            // Phase 4A
   generateOrderExplanation,              // Phase 3A
   generateTicketConfirmation,            // Phase 3A
+  generateCartExplanation,               // Phase 5A
+  generateCartActionConfirmation,        // Phase 5A
+  generateCartSummaryReply,              // Phase 5A
+  generateBeautyConsultationReply,       // Phase 5 shopping assistant
+  generateComboExplanation,              // Phase 5 shopping assistant
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 5A cart functions
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Phase 5A: Explain a cart combo recommendation to the user.
+ * Gemini only writes the explanation — products and prices come from backend.
+ */
+async function generateCartExplanation(products, upsellProducts, customerProfile, userMessage, history = []) {
+  const messageWithContext = buildCartRecommendationMessage(products, upsellProducts, customerProfile, userMessage);
+  return _geminiChatWithTimeout(messageWithContext, history);
+}
+
+/**
+ * Phase 5A: Confirm that products were added to cart.
+ */
+async function generateCartActionConfirmation(addResult, userMessage, history = []) {
+  const messageWithContext = buildAddToCartMessage(addResult, userMessage);
+  return _geminiChatWithTimeout(messageWithContext, history);
+}
+
+/**
+ * Phase 5A: Reply about current cart contents.
+ */
+async function generateCartSummaryReply(summary, userMessage, history = []) {
+  const messageWithContext = buildCartSummaryMessage(summary, userMessage);
+  return _geminiChatWithTimeout(messageWithContext, history);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 5 Shopping Assistant functions
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Phase 5: General beauty advisory reply.
+ * Gemini explains why the backend-selected products suit the user's skin profile.
+ * Gemini does NOT select products — backend already did via getRecommendationContext().
+ *
+ * @param {object[]} products       — formatted products
+ * @param {object|null} customerProfile
+ * @param {string} userMessage
+ * @param {Array} history
+ * @returns {Promise<string>}
+ */
+async function generateBeautyConsultationReply(products, customerProfile, userMessage, history = []) {
+  const messageWithContext = buildBeautyConsultationMessage(products, customerProfile, userMessage);
+  return _geminiChatWithTimeout(messageWithContext, history);
+}
+
+/**
+ * Phase 5: Explain a slot-based combo recommendation.
+ * Gemini explains the combo rationale; backend already selected and priced the combo.
+ *
+ * @param {object[]} combo       — slot-annotated products
+ * @param {number} total         — backend-calculated total
+ * @param {object|null} customerProfile
+ * @param {string} userMessage
+ * @param {Array} history
+ * @returns {Promise<string>}
+ */
+async function generateComboExplanation(combo, total, customerProfile, userMessage, history = []) {
+  const messageWithContext = buildComboRecommendationMessage(combo, total, customerProfile, userMessage);
+  return _geminiChatWithTimeout(messageWithContext, history);
+}
+

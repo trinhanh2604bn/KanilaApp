@@ -10,10 +10,11 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
+import com.example.frontend.feature.chatbot.model.ChatCartActionUiModel;
+import com.example.frontend.feature.chatbot.model.ChatCartSummaryUiModel;
 import com.example.frontend.feature.chatbot.model.ChatMessageUiModel;
 import com.example.frontend.feature.chatbot.model.ChatOrderTimelineUiModel;
 import com.example.frontend.feature.chatbot.model.ChatOrderUiModel;
-import com.example.frontend.feature.chatbot.model.ChatProductUiModel;
 import com.example.frontend.feature.chatbot.model.ChatTicketUiModel;
 
 import java.text.SimpleDateFormat;
@@ -40,21 +41,29 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void onPreferenceClick(String option);
     }
 
+    public interface OnAddComboClickListener {
+        void onAddComboClick(ChatMessageUiModel message);
+        void onViewCartClick();
+    }
+
     private final List<ChatMessageUiModel> messages = new ArrayList<>();
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private final ChatProductAdapter.OnProductClickListener productClickListener;
     private final OnOrderClickListener orderClickListener;
     private final OnTicketClickListener ticketClickListener;
     private final OnPreferenceClickListener preferenceClickListener;
+    private final OnAddComboClickListener addComboClickListener;
 
     public ChatMessageAdapter(ChatProductAdapter.OnProductClickListener productClickListener,
                              OnOrderClickListener orderClickListener,
                              OnTicketClickListener ticketClickListener,
-                             OnPreferenceClickListener preferenceClickListener) {
+                             OnPreferenceClickListener preferenceClickListener,
+                             OnAddComboClickListener addComboClickListener) {
         this.productClickListener = productClickListener;
         this.orderClickListener = orderClickListener;
         this.ticketClickListener = ticketClickListener;
         this.preferenceClickListener = preferenceClickListener;
+        this.addComboClickListener = addComboClickListener;
     }
 
     public void setMessages(List<ChatMessageUiModel> newMessages) {
@@ -131,6 +140,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView tvTicketCode, tvTicketStatus, tvTicketCategory, tvTicketCreatedAt, tvTicketMessage;
         View btnViewTicketDetail;
 
+        // Cart summary views
+        View layoutCartSummary;
+        TextView tvCartItemsCount, tvCartSubtotal, tvCartDiscount, tvCartTotal;
+        View layoutCartDiscountRow;
+        View btnAddCombo, btnViewCart;
+
         BotMessageViewHolder(@NonNull View itemView) {
             super(itemView);
             tvMessage = itemView.findViewById(R.id.tvMessage);
@@ -174,6 +189,18 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 tvTicketCreatedAt = layoutTicketCard.findViewById(R.id.tvTicketCreatedAt);
                 tvTicketMessage = layoutTicketCard.findViewById(R.id.tvTicketMessage);
                 btnViewTicketDetail = layoutTicketCard.findViewById(R.id.btnViewTicketDetail);
+            }
+
+            // Init Cart summary views
+            layoutCartSummary = itemView.findViewById(R.id.layoutCartSummaryContainer);
+            if (layoutCartSummary != null) {
+                tvCartItemsCount = layoutCartSummary.findViewById(R.id.tvItemsCount);
+                tvCartSubtotal = layoutCartSummary.findViewById(R.id.tvSubtotal);
+                tvCartDiscount = layoutCartSummary.findViewById(R.id.tvDiscount);
+                tvCartTotal = layoutCartSummary.findViewById(R.id.tvTotal);
+                layoutCartDiscountRow = layoutCartSummary.findViewById(R.id.layoutDiscount);
+                btnAddCombo = layoutCartSummary.findViewById(R.id.btnAddCombo);
+                btnViewCart = layoutCartSummary.findViewById(R.id.btnViewCart);
             }
         }
 
@@ -220,6 +247,53 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 layoutTicketCard.setVisibility(View.VISIBLE);
             } else if (layoutTicketCard != null) {
                 layoutTicketCard.setVisibility(View.GONE);
+            }
+
+            // Cart Summary
+            if (message.getCartSummary() != null && layoutCartSummary != null) {
+                bindCartSummary(message);
+                layoutCartSummary.setVisibility(View.VISIBLE);
+            } else if (layoutCartSummary != null) {
+                layoutCartSummary.setVisibility(View.GONE);
+            }
+        }
+
+        private void bindCartSummary(ChatMessageUiModel message) {
+            ChatCartSummaryUiModel summary = message.getCartSummary();
+            ChatCartActionUiModel action = message.getCartAction();
+
+            if (action != null && action.isSuccess() && action.getCartCount() != null) {
+                tvCartItemsCount.setText(itemView.getContext().getString(R.string.chat_cart_count_format, action.getCartCount()));
+            } else {
+                tvCartItemsCount.setText(itemView.getContext().getString(R.string.chat_cart_items_count, summary.getItemsCount()));
+            }
+
+            tvCartSubtotal.setText(summary.getSubtotal());
+            tvCartTotal.setText(summary.getTotal());
+
+            if (summary.isHasDiscount()) {
+                tvCartDiscount.setText(summary.getDiscount());
+                layoutCartDiscountRow.setVisibility(View.VISIBLE);
+            } else {
+                layoutCartDiscountRow.setVisibility(View.GONE);
+            }
+
+            if (action != null && action.isRequiresConfirmation()) {
+                btnAddCombo.setVisibility(View.VISIBLE);
+                btnAddCombo.setOnClickListener(v -> {
+                    if (addComboClickListener != null) addComboClickListener.onAddComboClick(message);
+                });
+            } else {
+                btnAddCombo.setVisibility(View.GONE);
+            }
+
+            if (action != null && action.isSuccess() && "added".equals(action.getAction())) {
+                btnViewCart.setVisibility(View.VISIBLE);
+                btnViewCart.setOnClickListener(v -> {
+                    if (addComboClickListener != null) addComboClickListener.onViewCartClick();
+                });
+            } else {
+                btnViewCart.setVisibility(View.GONE);
             }
         }
 

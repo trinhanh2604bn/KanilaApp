@@ -514,4 +514,24 @@
     <string name="chat_product_detail_next_phase">Tính năng xem chi tiết sản phẩm sẽ được kết nối ở bước tiếp theo.</string>
     <string name="chat_personalized_badge">✨ Đề xuất dành riêng cho bạn</string>
     <string name="chat_personalized_reason">Phù hợp với hồ sơ của bạn</string>
+    <string name="chat_new_chat">Chat mới</string>
+    <string name="chat_new_chat_confirm_title">Bắt đầu chat mới</string>
+    <string name="chat_new_chat_confirm_message">Bạn muốn bắt đầu cuộc trò chuyện mới?</string>
+    <string name="chat_new_chat_confirm_btn_cancel">Hủy</string>
+    <string name="chat_new_chat_confirm_btn_confirm">Tạo chat mới</string>
+
+    <string name="chat_cart_items_count">%d sản phẩm</string>
+    <string name="chat_cart_subtotal">Tạm tính</string>
+    <string name="chat_cart_discount">Giảm giá</string>
+    <string name="chat_cart_total">Tổng tiền</string>
+    <string name="chat_cart_add_combo">Thêm combo vào giỏ</string>
+    <string name="chat_cart_add_success">Đã thêm combo vào giỏ hàng thành công</string>
+    <string name="chat_cart_count_format">Giỏ hàng hiện có %d sản phẩm</string>
+    <string name="chat_cart_view">Xem giỏ hàng</string>
+    <string name="chat_cart_confirm_title">Xác nhận thêm combo</string>
+    <string name="chat_cart_confirm_msg">Bạn muốn thêm combo này vào giỏ hàng?</string>
+    <string name="chat_cart_confirm_info">%1$d sản phẩm • %2$s</string>
+    <string name="chat_cart_confirm_btn_add">Thêm vào giỏ</string>
+    <string name="chat_cart_require_login">Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.</string>
+    <string name="chat_cart_login_now">Đăng nhập ngay</string>
 </resources>

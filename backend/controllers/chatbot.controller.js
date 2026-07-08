@@ -74,15 +74,27 @@ const sendMessage = async (req, res) => {
     });
   }
 
-  const { session_id, message, source_screen } = req.body;
+  const { session_id, message, source_screen, product_ids, cart_items } = req.body;
 
   try {
     // 2. Delegate to service — passes req.user (may be undefined for guests)
+    // Phase 5B: also forward product_ids (legacy) / cart_items (variant-explicit) for add_to_cart
+    // Security: only pass safe fields from cart_items, never price/discount etc.
+    const sanitizedCartItems = Array.isArray(cart_items)
+      ? cart_items.map((ci) => ({
+          product_id: String(ci.product_id || ""),
+          variant_id: ci.variant_id ? String(ci.variant_id) : null,
+          quantity:   Math.max(1, parseInt(ci.quantity, 10) || 1),
+        }))
+      : null;
+
     const result = await chatbotService.handleUserMessage({
-      sessionId: session_id || null,
+      sessionId:    session_id || null,
       message,
       sourceScreen: source_screen,
-      user: req.user, // populated by optionalAuth if token was provided
+      user:         req.user, // populated by optionalAuth if token was provided
+      productIds:   Array.isArray(product_ids) ? product_ids.map(String) : undefined,
+      cartItems:    sanitizedCartItems || undefined,
     });
 
     return res.status(200).json({

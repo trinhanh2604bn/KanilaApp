@@ -20,7 +20,9 @@ import com.example.frontend.R;
 import com.example.frontend.feature.chatbot.adapter.ChatMessageAdapter;
 import com.example.frontend.feature.chatbot.adapter.ChatProductAdapter;
 import com.example.frontend.feature.chatbot.adapter.QuickReplyAdapter;
+import com.example.frontend.feature.chatbot.model.ChatOrderUiModel;
 import com.example.frontend.feature.chatbot.model.ChatProductUiModel;
+import com.example.frontend.feature.chatbot.model.ChatTicketUiModel;
 import com.example.frontend.feature.product.ProductDetailFragment;
 
 import java.util.Arrays;
@@ -90,7 +92,11 @@ public class ChatConversationFragment extends Fragment {
     }
 
     private void setupRecyclerViews(View view) {
-        chatAdapter = new ChatMessageAdapter(this::onProductClick);
+        chatAdapter = new ChatMessageAdapter(
+                this::onProductClick,
+                this::onOrderClick,
+                this::onTicketClick
+        );
         rvChat.setAdapter(chatAdapter);
 
         RecyclerView rvQuickReplies = view.findViewById(R.id.rvQuickReplies);
@@ -164,6 +170,16 @@ public class ChatConversationFragment extends Fragment {
         } catch (Exception e) {
             Toast.makeText(getContext(), R.string.chat_product_detail_next_phase, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void onOrderClick(ChatOrderUiModel order) {
+        // Feature connects in next phase as OrderDetailFragment is not found
+        Toast.makeText(getContext(), "Tính năng xem chi tiết đơn hàng sẽ được kết nối ở bước tiếp theo.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void onTicketClick(ChatTicketUiModel ticket) {
+        // Feature connects in next phase as SupportTicketDetailFragment is not found
+        Toast.makeText(getContext(), "Tính năng theo dõi yêu cầu hỗ trợ sẽ được kết nối ở bước tiếp theo.", Toast.LENGTH_SHORT).show();
     }
 
     private void observeViewModel() {

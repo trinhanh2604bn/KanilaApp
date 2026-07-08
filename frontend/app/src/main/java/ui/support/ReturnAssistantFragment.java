@@ -87,17 +87,21 @@ public class ReturnAssistantFragment extends Fragment {
     }
 
     private void navigateToCreateTicket() {
+        if (getActivity() == null) return;
+        int containerId = R.id.main_fragment_container;
         // Thực hiện transaction chuyển Fragment
         getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.container7, new CreateTicketFragment())
+                .replace(containerId, new CreateTicketFragment())
                 .addToBackStack(null)
                 .commit();
     }
 
     private void replaceFragment(Fragment fragment) {
+        if (getActivity() == null) return;
+        int containerId = R.id.main_fragment_container;
         getParentFragmentManager().beginTransaction()
-                .replace(R.id.container7, fragment)
+                .replace(containerId, fragment)
                 .addToBackStack(null)
                 .commit();
     }

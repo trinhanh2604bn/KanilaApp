@@ -114,6 +114,11 @@ public class SkinAnalysisFragment extends Fragment {
             btnBack.setOnClickListener(v -> handleBackNavigation());
         }
 
+        // Setup Ingredients
+        setupIngredientCard(view, R.id.cardIngredient1, "Ceramide", R.drawable.ic_shield_star);
+        setupIngredientCard(view, R.id.cardIngredient2, "BHA", R.drawable.ic_beaker);
+        setupIngredientCard(view, R.id.cardIngredient3, "Vitamin C", R.drawable.ic_goal_sparkle);
+
         MaterialButton btnViewFullRoutine = view.findViewById(R.id.btnViewFullRoutine);
         if (btnViewFullRoutine != null) {
             ViewUtils.applyClickAnimation(btnViewFullRoutine);
@@ -121,11 +126,32 @@ public class SkinAnalysisFragment extends Fragment {
                 // Chuyển sang màn hình Look & Quy trình đã được thiết kế Editorial
                 getParentFragmentManager().beginTransaction()
                         .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(R.id.main, new RecommendationLookFragment())
+                        .replace(R.id.main_fragment_container, new RecommendationLookFragment())
                         .addToBackStack(null)
                         .commit();
             });
         }
+    }
+
+    private void setupIngredientCard(View root, int id, String name, int iconRes) {
+        View card = root.findViewById(id);
+        if (card == null) return;
+        
+        TextView label = card.findViewById(R.id.tvLabel);
+        ImageView icon = card.findViewById(R.id.ivIcon);
+        
+        if (label != null) label.setText(name);
+        if (icon != null) {
+            icon.setImageResource(iconRes);
+            icon.setImageTintList(android.content.res.ColorStateList.valueOf(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.button)));
+        }
+        
+        ViewUtils.applyClickAnimation(card);
+        card.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.main_fragment_container, StepProductSuggestionsFragment.newInstance("Sản phẩm chứa " + name))
+                .addToBackStack(null)
+                .commit());
     }
 
     private void handleBackNavigation() {

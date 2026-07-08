@@ -64,14 +64,14 @@ public class AccountFragment extends Fragment {
     private void setupGuestState() {
         layoutGuestState.findViewById(R.id.btnLoginNow).setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.auth.LoginFragment())
+                    .replace(R.id.main_fragment_container, new com.example.frontend.feature.auth.LoginFragment())
                     .addToBackStack(null)
                     .commit();
         });
         
         layoutGuestState.findViewById(R.id.tvCreateAccount).setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.auth.RegisterFragment())
+                    .replace(R.id.main_fragment_container, new com.example.frontend.feature.auth.RegisterFragment())
                     .addToBackStack(null)
                     .commit();
         });
@@ -98,28 +98,28 @@ public class AccountFragment extends Fragment {
         View menuBeautyProfile = view.findViewById(R.id.ivMenu1).getParent() instanceof View ? (View) view.findViewById(R.id.ivMenu1).getParent() : view.findViewById(R.id.ivMenu1);
         menuBeautyProfile.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new BeautyProfileOverviewFragment())
+                    .replace(R.id.main_fragment_container, new BeautyProfileOverviewFragment())
                     .addToBackStack(null)
                     .commit();
         });
 
         view.findViewById(R.id.btnAccountOrders).setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.order.OrderListFragment())
+                    .replace(R.id.main_fragment_container, new com.example.frontend.feature.order.OrderListFragment())
                     .addToBackStack(null)
                     .commit();
         });
 
         view.findViewById(R.id.btnAccountVouchers).setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.voucher.VoucherListFragment())
+                    .replace(R.id.main_fragment_container, new com.example.frontend.feature.voucher.VoucherListFragment())
                     .addToBackStack(null)
                     .commit();
         });
 
         view.findViewById(R.id.btnAccountSaved).setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
+                    .replace(R.id.main_fragment_container, new com.example.frontend.feature.wishlist.WishlistFragment())
                     .addToBackStack(null)
                     .commit();
         });
@@ -128,12 +128,23 @@ public class AccountFragment extends Fragment {
         if (menuSettings != null) {
             menuSettings.setOnClickListener(v -> {
                 getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main, new AccountSettingsFragment())
+                        .replace(R.id.main_fragment_container, new AccountSettingsFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+
+        View menuSupportCenter = view.findViewById(R.id.menuSupportCenter);
+        if (menuSupportCenter != null) {
+            menuSupportCenter.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_fragment_container, new ui.support.HelpCenterFragment())
                         .addToBackStack(null)
                         .commit();
             });
         }
     }
+
 
     private void setupBottomNavigation(View view) {
         BottomNavigationHelper.setupStandardNavigation(this, view);

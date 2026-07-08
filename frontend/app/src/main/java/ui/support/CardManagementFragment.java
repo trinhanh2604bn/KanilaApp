@@ -30,8 +30,10 @@ public class CardManagementFragment extends Fragment {
         });
 
         view.findViewById(R.id.btnAddCard).setOnClickListener(v -> {
+            if (getActivity() == null) return;
+            int containerId = R.id.main_fragment_container;
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.container7, new AddCardFragment())
+                    .replace(containerId, new AddCardFragment())
                     .addToBackStack(null)
                     .commit();
         });

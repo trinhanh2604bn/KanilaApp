@@ -409,7 +409,7 @@ public class CartFragment extends Fragment {
                     checkoutFragment.setArguments(args);
 
                     getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, checkoutFragment)
+                            .replace(R.id.main_fragment_container, checkoutFragment)
                             .addToBackStack(null)
                             .commit();
                 }

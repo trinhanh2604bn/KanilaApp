@@ -264,22 +264,26 @@ public class EditSkinProfileFragment extends Fragment {
         btnSaveBottom = view.findViewById(R.id.btnSaveProfile);
         btnSaveBottom.setOnClickListener(v -> { if (isDirty) saveProfile(); });
         
-        setupSeeMore(view, R.id.tvSeeMoreCondition, R.id.layoutMoreCondition, R.id.scrollCondition);
-        setupSeeMore(view, R.id.tvSeeMoreLipstick, R.id.layoutMoreLipstick, R.id.scrollLipstick);
-        setupSeeMore(view, R.id.tvSeeMoreAvoid, R.id.layoutMoreAvoid, R.id.scrollAvoid);
+        setupSeeMore(view, R.id.tvSeeMoreSkinType, R.id.layoutMoreSkinType);
+        setupSeeMore(view, R.id.tvSeeMoreCondition, R.id.layoutMoreCondition);
+        setupSeeMore(view, R.id.tvSeeMoreSensitivity, R.id.layoutMoreSensitivity);
+        setupSeeMore(view, R.id.tvSeeMoreColor, R.id.layoutMoreColor);
+        setupSeeMore(view, R.id.tvSeeMoreUndertone, R.id.layoutMoreUndertone);
+        setupSeeMore(view, R.id.tvSeeMoreFinish, R.id.layoutMoreFinish);
+        setupSeeMore(view, R.id.tvSeeMoreLipstick, R.id.layoutMoreLipstick);
+        setupSeeMore(view, R.id.tvSeeMoreMakeup, R.id.layoutMoreMakeup);
+        setupSeeMore(view, R.id.tvSeeMoreAvoid, R.id.layoutMoreAvoid);
 
         updateSaveButtonsState(false);
     }
 
-    private void setupSeeMore(View root, int btnId, int layoutId, int scrollId) {
+    private void setupSeeMore(View root, int btnId, int layoutId) {
         TextView btn = root.findViewById(btnId);
         View layout = root.findViewById(layoutId);
-        View scroll = root.findViewById(scrollId);
-        if (btn != null && layout != null && scroll != null) {
+        if (btn != null && layout != null) {
             btn.setOnClickListener(v -> {
                 if (layout.getVisibility() == View.GONE) {
                     layout.setVisibility(View.VISIBLE);
-                    // Keep scroll visible, just show the next row below
                     btn.setText(R.string.action_collapse);
                 } else {
                     layout.setVisibility(View.GONE);

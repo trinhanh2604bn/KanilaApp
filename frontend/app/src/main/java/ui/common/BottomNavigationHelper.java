@@ -69,23 +69,25 @@ public class BottomNavigationHelper {
             } else if (tabIndex == TAB_CATEGORY) {
                 if (!(fragment instanceof ProductCategoryFragment)) {
                     fragment.getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main, new ProductCategoryFragment())
+                            .replace(R.id.main_fragment_container, new ProductCategoryFragment())
                             .commit();
                 }
             } else if (tabIndex == TAB_ACCOUNT) {
                 if (!(fragment instanceof AccountFragment)) {
                     fragment.getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main, new AccountFragment())
+                            .replace(R.id.main_fragment_container, new AccountFragment())
                             .commit();
                 }
             } else if (tabIndex == TAB_REELS) {
                 if (!(fragment instanceof ReelsFeedFragment)) {
                     fragment.getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main, new ReelsFeedFragment())
+                            .replace(R.id.main_fragment_container, new ReelsFeedFragment())
                             .commit();
                 }
             } else if (tabIndex == TAB_COMMUNITY) {
-                Toast.makeText(fragment.getContext(), "Community coming soon!", Toast.LENGTH_SHORT).show();
+                fragment.getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_fragment_container, new ui.support.HelpCenterFragment())
+                        .commit();
             }
         });
     }
@@ -100,18 +102,20 @@ public class BottomNavigationHelper {
                 }
             } else if (tabIndex == TAB_CATEGORY) {
                 activity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ProductCategoryFragment())
+                        .replace(R.id.main_fragment_container, new ProductCategoryFragment())
                         .commit();
             } else if (tabIndex == TAB_ACCOUNT) {
                 activity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new AccountFragment())
+                        .replace(R.id.main_fragment_container, new AccountFragment())
                         .commit();
             } else if (tabIndex == TAB_REELS) {
                 activity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ReelsFeedFragment())
+                        .replace(R.id.main_fragment_container, new ReelsFeedFragment())
                         .commit();
             } else if (tabIndex == TAB_COMMUNITY) {
-                Toast.makeText(activity, "Community coming soon!", Toast.LENGTH_SHORT).show();
+                activity.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_fragment_container, new ui.support.HelpCenterFragment())
+                        .commit();
             }
         });
     }

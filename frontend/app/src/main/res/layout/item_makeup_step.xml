@@ -41,15 +41,16 @@
 
             <TextView
                 android:id="@+id/tvStepNumber"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_margin="8dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_margin="6dp"
                 android:background="@drawable/bg_circle"
-                android:backgroundTint="@color/accent_dark"
+                android:backgroundTint="@color/button"
                 android:gravity="center"
                 android:text="1"
                 android:textColor="@color/white"
-                android:textSize="10sp"
+                android:textSize="12sp"
+                android:elevation="4dp"
                 android:textStyle="bold" />
         </FrameLayout>
 

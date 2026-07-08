@@ -2,16 +2,22 @@ package ui.account;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,6 +51,8 @@ public class BeautyProfileOverviewFragment extends Fragment {
     private CustomerBeautyProfileDto currentProfile;
     private BeautyProfileViewModel viewModel;
     private final Map<String, Boolean> expandedSections = new HashMap<>();
+    private final Handler ctaHandler = new Handler(Looper.getMainLooper());
+    private boolean isCtaShown = false;
 
     private int brandPink, darkText, grayBorder;
     private final List<SectionData> sections = new ArrayList<>();
@@ -64,9 +72,25 @@ public class BeautyProfileOverviewFragment extends Fragment {
         setupEvents(view);
         observeViewModel();
 
-        if (viewModel.getProfileResult().getValue() == null) {
+        NetworkResult<CustomerBeautyProfileDto> currentResult = viewModel.getProfileResult().getValue();
+        if (currentResult == null) {
             viewModel.loadProfile("me");
+            // If data is not available immediately, schedule CTA popup to show after a short delay
+            // This ensures the user isn't stuck waiting for a failing network call (like in your logs)
+            startCtaTimer();
+        } else if (currentResult.status == NetworkResult.Status.SUCCESS) {
+            bindProfileData(currentResult.data);
+        } else {
+            showCtaPopup();
         }
+    }
+
+    private void startCtaTimer() {
+        ctaHandler.postDelayed(() -> {
+            if (isAdded() && !isCtaShown && (currentProfile == null || currentProfile.getSkinType() == null)) {
+                showCtaPopup();
+            }
+        }, 600); // Reduced delay to 0.6 seconds for faster interaction
     }
 
     private void initColors() {
@@ -121,7 +145,11 @@ public class BeautyProfileOverviewFragment extends Fragment {
                 if (result.status == NetworkResult.Status.SUCCESS) {
                     bindProfileData(result.data);
                 } else if (result.status == NetworkResult.Status.ERROR) {
-                    if (layoutEmptyState != null) layoutEmptyState.setVisibility(View.VISIBLE);
+                    if (layoutEmptyState != null) {
+                        layoutEmptyState.setVisibility(View.VISIBLE);
+                        // Even on error (like ConnectException), show the popup to let user edit manually
+                        showCtaPopup();
+                    }
                 }
             }
         });
@@ -156,6 +184,10 @@ public class BeautyProfileOverviewFragment extends Fragment {
                 boolean isEmpty = layoutSectionsList.getChildCount() == 0;
                 layoutEmptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
                 
+                if (isEmpty) {
+                    showCtaPopup();
+                }
+
                 // Hide recommendations if no profile data yet
                 if (layoutRecommendations != null) {
                     layoutRecommendations.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
@@ -305,15 +337,23 @@ public class BeautyProfileOverviewFragment extends Fragment {
         View btnEdit = view.findViewById(R.id.btnEdit);
         if (btnEdit != null) btnEdit.setOnClickListener(v -> navigateToEditProfile());
         
-        View btnEditProfile = view.findViewById(R.id.btnEditProfile);
-        if (btnEditProfile != null) btnEditProfile.setOnClickListener(v -> navigateToEditProfile());
+        View btnSavedRoutines = view.findViewById(R.id.btnSavedRoutines);
+        if (btnSavedRoutines != null) {
+            btnSavedRoutines.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(R.id.main_fragment_container, new SavedBeautyRoutinesFragment())
+                        .addToBackStack("beauty_profile_to_saved")
+                        .commit();
+            });
+        }
 
         View btnAnalyzeSkin = view.findViewById(R.id.btnAnalyzeSkin);
         if (btnAnalyzeSkin != null) {
             btnAnalyzeSkin.setOnClickListener(v -> {
                 getParentFragmentManager().beginTransaction()
                         .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(R.id.main, new SkinAnalysisFragment())
+                        .replace(R.id.main_fragment_container, new SkinAnalysisFragment())
                         .addToBackStack("beauty_profile_to_analysis")
                         .commit();
             });
@@ -328,7 +368,7 @@ public class BeautyProfileOverviewFragment extends Fragment {
     private void navigateToEditProfile() {
         getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main, new EditSkinProfileFragment())
+                .replace(R.id.main_fragment_container, new EditSkinProfileFragment())
                 .addToBackStack("beauty_profile_to_edit")
                 .commit();
     }
@@ -368,6 +408,49 @@ public class BeautyProfileOverviewFragment extends Fragment {
         } else {
             requireActivity().getOnBackPressedDispatcher().onBackPressed();
         }
+    }
+
+    private void showCtaPopup() {
+        if (!isAdded() || getContext() == null || isCtaShown) return;
+        isCtaShown = true;
+        ctaHandler.removeCallbacksAndMessages(null);
+        
+        android.app.Dialog dialog = new android.app.Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_beauty_profile_cta);
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(true);
+
+        View btnEdit = dialog.findViewById(R.id.btnGoToEdit);
+        if (btnEdit != null) {
+            btnEdit.setOnClickListener(v -> {
+                dialog.dismiss();
+                navigateToEditProfile();
+            });
+        }
+
+        View btnLater = dialog.findViewById(R.id.btnMaybeLater);
+        if (btnLater != null) {
+            btnLater.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.dimAmount = 0.6f;
+            window.setAttributes(params);
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        ctaHandler.removeCallbacksAndMessages(null);
+        super.onDestroyView();
     }
 
     private int dpToPx(int dp) {

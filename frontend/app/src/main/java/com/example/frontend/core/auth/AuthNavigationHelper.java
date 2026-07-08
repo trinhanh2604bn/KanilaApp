@@ -18,14 +18,14 @@ public class AuthNavigationHelper {
 
     public static void navigateToLogin(FragmentActivity activity) {
         activity.getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main, new LoginFragment())
+                .replace(R.id.main_fragment_container, new LoginFragment())
                 .addToBackStack(null)
                 .commit();
     }
 
     public static void navigateToRegister(FragmentActivity activity) {
         activity.getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main, new RegisterFragment())
+                .replace(R.id.main_fragment_container, new RegisterFragment())
                 .addToBackStack(null)
                 .commit();
     }

@@ -114,7 +114,7 @@ public class ForgotPasswordFragment extends Fragment {
                 channel, identifier, "reset_password"
         );
         getParentFragmentManager().beginTransaction()
-                .replace(R.id.main, fragment)
+                .replace(R.id.main_fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
     }

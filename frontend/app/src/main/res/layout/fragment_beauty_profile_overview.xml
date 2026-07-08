@@ -128,13 +128,13 @@
                             app:rippleColor="@color/secondary" />
 
                         <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnEditProfile"
+                            android:id="@+id/btnSavedRoutines"
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:layout_weight="1"
-                            android:text="Chỉnh sửa"
+                            android:text="Đã lưu"
                             android:textColor="@color/button"
                             android:textSize="12sp"
                             app:strokeColor="@color/button"
@@ -152,7 +152,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
 
-            <!-- Empty State -->
+            <!-- Empty State Container (Now managed by logic) -->
             <LinearLayout
                 android:id="@+id/layoutEmptyState"
                 android:layout_width="match_parent"
@@ -161,21 +161,8 @@
                 android:gravity="center"
                 android:padding="32dp"
                 android:layout_marginTop="40dp"
-                android:visibility="visible">
-                <ImageView
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:src="@drawable/community_feed"
-                    android:alpha="0.8" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Hãy thiết lập làn da của bạn"
-                    android:gravity="center"
-                    android:textColor="@color/accent_dark"
-                    android:alpha="0.5"
-                    style="@style/Text.Kanila.H3" />
+                android:visibility="gone">
+                <!-- Managed via Popup CTA -->
             </LinearLayout>
 
             <!-- Recommended Products Section -->

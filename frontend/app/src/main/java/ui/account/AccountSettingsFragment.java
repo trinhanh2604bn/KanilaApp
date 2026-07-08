@@ -61,14 +61,14 @@ public class AccountSettingsFragment extends Fragment {
 
         setupMenuItem(view.findViewById(R.id.menuAddress), "Địa chỉ", v -> {
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new CheckoutAddressFragment())
+                    .replace(R.id.main_fragment_container, new CheckoutAddressFragment())
                     .addToBackStack(null)
                     .commit();
         });
 
         setupMenuItem(view.findViewById(R.id.menuPayment), "Tài khoản / Thẻ ngân hàng", v -> {
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new PaymentMethodFragment())
+                    .replace(R.id.main_fragment_container, new PaymentMethodFragment())
                     .addToBackStack(null)
                     .commit();
         });
@@ -172,7 +172,7 @@ public class AccountSettingsFragment extends Fragment {
 
         // 4. Navigate back to AccountFragment which will now show Guest State
         getParentFragmentManager().beginTransaction()
-                .replace(R.id.main, new AccountFragment())
+                .replace(R.id.main_fragment_container, new AccountFragment())
                 .commit();
 
         Toast.makeText(getContext(), "Đã đăng xuất thành công", Toast.LENGTH_SHORT).show();

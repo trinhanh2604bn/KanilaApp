@@ -60,15 +60,16 @@ public class HelpCenterFragment extends Fragment {
             replaceFragment(new ChatConversationFragment());
         });
 
-        // FAQ 1
+        // "Tôi cần hỗ trợ về đơn hàng" - Example FAQ
         view.findViewById(R.id.faq1).setOnClickListener(v -> {
-            // Navigate to FAQ detail if available
+            replaceFragment(new OrderTrackingResultFragment());
         });
     }
 
     private void replaceFragment(Fragment fragment) {
+        if (getActivity() == null) return;
         getParentFragmentManager().beginTransaction()
-                .replace(R.id.container7, fragment)
+                .replace(R.id.main_fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
     }

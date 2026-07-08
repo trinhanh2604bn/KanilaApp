@@ -202,7 +202,7 @@ public class RegisterFragment extends Fragment {
                 selectedChannel, identifier, "register"
         );
         getParentFragmentManager().beginTransaction()
-                .replace(R.id.main, fragment)
+                .replace(R.id.main_fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
     }

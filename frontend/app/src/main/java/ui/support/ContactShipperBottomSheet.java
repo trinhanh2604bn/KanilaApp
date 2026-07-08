@@ -41,8 +41,10 @@ public class ContactShipperBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void replaceFragment(Fragment fragment) {
+        if (getActivity() == null) return;
+        int containerId = R.id.main_fragment_container;
         getParentFragmentManager().beginTransaction()
-                .replace(R.id.container7, fragment)
+                .replace(containerId, fragment)
                 .addToBackStack(null)
                 .commit();
     }

@@ -72,7 +72,7 @@ public class LoginFragment extends Fragment {
         });
 
         binding.tvForgotPassword.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
-                .replace(R.id.main, new ForgotPasswordFragment())
+                .replace(R.id.main_fragment_container, new ForgotPasswordFragment())
                 .addToBackStack(null)
                 .commit());
 
@@ -82,7 +82,7 @@ public class LoginFragment extends Fragment {
         
         if (binding.tvGoToRegister != null) {
             binding.tvGoToRegister.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new RegisterFragment())
+                    .replace(R.id.main_fragment_container, new RegisterFragment())
                     .addToBackStack(null)
                     .commit());
         }
@@ -148,7 +148,7 @@ public class LoginFragment extends Fragment {
                 channel, identifier, "login"
         );
         getParentFragmentManager().beginTransaction()
-                .replace(R.id.main, fragment)
+                .replace(R.id.main_fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
     }

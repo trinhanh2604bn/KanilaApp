@@ -51,9 +51,10 @@ public class ChatbotQuickMenuBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void replaceFragment(androidx.fragment.app.Fragment fragment) {
-        // R.id.container7 is from MainActivity7
+        if (getActivity() == null) return;
+        int containerId = R.id.main_fragment_container;
         getParentFragmentManager().beginTransaction()
-                .replace(R.id.container7, fragment)
+                .replace(containerId, fragment)
                 .addToBackStack(null)
                 .commit();
     }

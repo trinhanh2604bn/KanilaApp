@@ -137,7 +137,7 @@ public class NotificationCenterFragment extends Fragment {
         if (btnCart != null) {
             btnCart.setOnClickListener(v -> {
                 if (getActivity() instanceof MainActivity) {
-                    ((MainActivity) getActivity()).navigateToCart();
+                    ((MainActivity) getActivity()).loadFragment(new ui.commerce.CartFragment());
                 }
             });
         }

@@ -207,11 +207,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center_horizontal">
 
-                <include layout="@layout/item_grid_selection" />
-                <include layout="@layout/item_grid_selection" />
-                <include layout="@layout/item_grid_selection" />
+                <include android:id="@+id/cardIngredient1" layout="@layout/item_grid_selection" />
+                <include android:id="@+id/cardIngredient2" layout="@layout/item_grid_selection" />
+                <include android:id="@+id/cardIngredient3" layout="@layout/item_grid_selection" />
 
             </LinearLayout>
 

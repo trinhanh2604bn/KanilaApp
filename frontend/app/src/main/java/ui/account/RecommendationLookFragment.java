@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.frontend.R;
+import com.example.frontend.data.model.beauty.SavedRoutineDto;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -22,9 +24,27 @@ import ui.common.ViewUtils;
 
 public class RecommendationLookFragment extends Fragment {
 
+    private SavedRoutineDto routineData;
+
+    public static RecommendationLookFragment newInstance(SavedRoutineDto routine) {
+        RecommendationLookFragment fragment = new RecommendationLookFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("routine_data", routine);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     public RecommendationLookFragment() {
         // Kết nối Fragment với fragment_recommendation_look.xml
         super(R.layout.fragment_recommendation_look);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            routineData = (SavedRoutineDto) getArguments().getSerializable("routine_data");
+        }
     }
 
     @Override
@@ -34,7 +54,60 @@ public class RecommendationLookFragment extends Fragment {
     ) {
         super.onViewCreated(view, savedInstanceState);
 
+        if (routineData != null) {
+            TextView tvTitle = view.findViewById(R.id.tvTitle);
+            TextView tvHeroName = view.findViewById(R.id.tvRoutineHeroName);
+            ImageView ivHero = view.findViewById(R.id.ivHeroImage);
+            
+            if (tvTitle != null) tvTitle.setText(routineData.getName());
+            if (tvHeroName != null) tvHeroName.setText(routineData.getName());
+            if (ivHero != null && routineData.getImageRes() != 0) {
+                ivHero.setImageResource(routineData.getImageRes());
+            }
+        }
+
+        setupSteps(view);
         setupEvents(view);
+    }
+
+    private void setupSteps(View view) {
+        // Makeup steps (Now renamed to "Các quy trình gợi ý")
+        setupMakeupStepClick(view, R.id.stepMakeup1, "1", "Kem lót", "Làm mờ lỗ chân lông", R.drawable.img_foudation);
+        setupMakeupStepClick(view, R.id.stepMakeup2, "2", "Kem nền", "Che phủ tự nhiên", R.drawable.cl_product);
+        setupMakeupStepClick(view, R.id.stepMakeup3, "3", "Phấn phủ", "Kiềm dầu bền màu", R.drawable.img_eyeshadow);
+        setupMakeupStepClick(view, R.id.stepMakeup4, "4", "Son môi", "Màu sắc rạng rỡ", R.drawable.img_lipstick);
+    }
+
+    private void setupStepClick(View root, int id, String num, String name, String time) {
+        // Not used currently after skincare section removal, but keeping for reference
+    }
+
+    private void setupMakeupStepClick(View root, int id, String num, String title, String effect, int imageRes) {
+        View step = root.findViewById(id);
+        if (step == null) return;
+
+        TextView tvNum = step.findViewById(R.id.tvStepNumber);
+        TextView tvTitle = step.findViewById(R.id.tvStepTitle);
+        TextView tvEffect = step.findViewById(R.id.tvStepEffect);
+        ImageView ivProduct = step.findViewById(R.id.ivStepProduct);
+
+        if (tvNum != null) tvNum.setText(num);
+        if (tvTitle != null) tvTitle.setText(title);
+        if (tvEffect != null) tvEffect.setText(effect);
+        if (ivProduct != null && imageRes != 0) {
+            ivProduct.setImageResource(imageRes);
+        }
+
+        ViewUtils.applyClickAnimation(step);
+        step.setOnClickListener(v -> navigateToStepProducts(title));
+    }
+
+    private void navigateToStepProducts(String stepName) {
+        getParentFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.main_fragment_container, StepProductSuggestionsFragment.newInstance(stepName))
+                .addToBackStack(null)
+                .commit();
     }
 
     private void setupEvents(@NonNull View view) {

@@ -204,7 +204,7 @@ public class SkinConcernsGoalsFragment extends Fragment {
     private void openAnalysis() {
         getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main, new SkinAnalysisFragment())
+                .replace(R.id.main_fragment_container, new SkinAnalysisFragment())
                 .addToBackStack(null)
                 .commit();
     }

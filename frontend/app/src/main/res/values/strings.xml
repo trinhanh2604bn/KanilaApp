@@ -109,9 +109,19 @@
     <string name="discovery_new_arrivals_desc">Cập nhật sản phẩm mới mỗi tuần</string>
 
     <string name="home_social_reels_title">Kanila Reels</string>
+    <string name="reels_title">Reels</string>
+    <string name="reels_products_title">Sản phẩm trong video</string>
+    <string name="reels_add_to_cart">Thêm</string>
+    <string name="reels_buy_now">Mua</string>
+    <string name="reels_view_detail">Chi tiết</string>
+    <string name="reels_comment_demo">Bình luận sẽ được làm ở phase sau</string>
+    <string name="reels_share_demo">Chia sẻ demo</string>
+    <string name="reels_added_to_cart">Đã thêm vào giỏ hàng demo</string>
+    <string name="reels_mvp_payment_demo">MVP demo - chưa kết nối thanh toán</string>
     <string name="home_social_challenge_title">Kanila Challenge</string>
     <string name="home_social_reel_1_title">Routine da dầu</string>
     <string name="home_social_reel_2_title">Makeup nhẹ nhàng</string>
+    <string name="home_social_reel_3_title">Mẹo đánh son lì</string>
     <string name="home_social_challenge_hot">HOT</string>
     <string name="home_social_challenge_name">14 ngày da sáng khỏe</string>
     <string name="home_social_challenge_subtitle">Cùng Kanila</string>
@@ -345,8 +355,15 @@
     <string name="auth_full_name_hint">Nhập họ và tên của bạn</string>
     <string name="auth_btn_send_otp_email">Gửi mã xác minh</string>
     <string name="auth_btn_send_otp_phone">Gửi mã OTP</string>
+    <string name="auth_forgot_password_hint">Email / Số điện thoại</string>
+    <string name="auth_forgot_password_info">Chúng tôi sẽ gửi mã xác minh để bảo vệ tài khoản của bạn</string>
+    <string name="auth_error_placeholder">Error message</string>
+    <string name="app_brand_name">Kanila</string>
     <string name="auth_btn_register_email">Tạo tài khoản bằng email</string>
     <string name="auth_btn_register_phone">Tạo tài khoản bằng số điện thoại</string>
+    <string name="auth_btn_register">Đăng ký</string>
+    <string name="auth_password_label">Mật khẩu</string>
+    <string name="auth_confirm_password_label">Xác nhận mật khẩu</string>
     <string name="auth_terms_prefix">Tôi đồng ý với </string>
     <string name="auth_terms_link">Điều khoản sử dụng</string>
     <string name="auth_privacy_link">Chính sách bảo mật</string>
@@ -371,6 +388,7 @@
     <string name="auth_guest_btn_later">Để sau</string>
 
     <string name="auth_forgot_password">Quên mật khẩu?</string>
+    <string name="auth_forgot_password_header">Quên mật khẩu</string>
     <string name="auth_forgot_password_title">Quên mật khẩu?</string>
     <string name="auth_forgot_password_subtitle">Nhập email hoặc số điện thoại để nhận mã đặt lại mật khẩu.</string>
     <string name="auth_reset_password_title">Đặt lại mật khẩu</string>
@@ -427,6 +445,37 @@
     <string name="create_support_subtitle">Gửi yêu cầu và theo dõi tiến độ</string>
     <string name="menu_talk_human">Liên hệ nhân viên</string>
     <string name="menu_talk_human_subtitle">Kết nối với đội ngũ Kanila</string>
+
+    <string name="chatbot_quick_menu_title">Kanila AI Assistant</string>
+    <string name="chatbot_quick_menu_subtitle">Bạn muốn mình hỗ trợ gì hôm nay?</string>
+
+    <string name="menu_product_consult">Tư vấn sản phẩm</string>
+    <string name="menu_product_consult_subtitle">Gợi ý mỹ phẩm phù hợp với nhu cầu của bạn</string>
+
+    <string name="menu_create_routine">Tạo routine skincare</string>
+    <string name="menu_create_routine_subtitle">Xây dựng chu trình chăm sóc da cơ bản</string>
+
+    <string name="menu_ingredients_check">Kiểm tra thành phần</string>
+    <string name="menu_ingredients_check_subtitle">Hỏi nhanh về cách phối hợp thành phần</string>
+
+    <string name="menu_track_order">Tra cứu đơn hàng</string>
+    <string name="menu_track_order_subtitle">Kiểm tra tình trạng đơn hàng của bạn</string>
+
+    <string name="menu_get_support">Gặp nhân viên hỗ trợ</string>
+    <string name="menu_get_support_subtitle">Tạo yêu cầu hỗ trợ khi cần tư vấn thêm</string>
+
+    <string name="chat_assistant_subtitle">Tư vấn mỹ phẩm &amp; hỗ trợ đơn hàng</string>
+    <string name="chat_welcome_full">Xin chào, mình là Kanila AI. Mình có thể tư vấn sản phẩm, tạo routine, kiểm tra thành phần và hỗ trợ đơn hàng.</string>
+    <string name="chat_typing_indicator">Kanila AI đang trả lời...</string>
+    <string name="content_desc_send">Gửi</string>
+    <string name="chatbot_next_phase_msg">Màn hình chat sẽ được triển khai ở bước tiếp theo.</string>
+
+    <!-- Chatbot Starter Messages -->
+    <string name="starter_product_consult">Tư vấn giúp mình sản phẩm phù hợp</string>
+    <string name="starter_create_routine">Tạo routine skincare cho mình</string>
+    <string name="starter_ingredients_check">Kiểm tra thành phần mỹ phẩm giúp mình</string>
+    <string name="starter_track_order">Tra cứu đơn hàng của mình</string>
+    <string name="starter_get_support">Mình muốn gặp nhân viên hỗ trợ</string>
     <string name="support_banner_title">Hỗ trợ luôn sẵn sàng</string>
     <string name="support_banner_subtitle">Phản hồi trung bình: <![CDATA[<font color="#E83E72"><b>5 phút</b></font>]]></string>
     <string name="choose_contact_channel">Chọn kênh liên hệ</string>
@@ -452,6 +501,17 @@
     <string name="match_yes">Phù hợp với bạn</string>
     <string name="match_no">Có thể không phù hợp</string>
     <string name="action_find_similar">Tìm tương tự</string>
+    <string name="auth_login_input_hint">nhập email hoặc số điện thoại</string>
+    <string name="auth_remember_me">Ghi nhớ đăng nhập</string>
+    <string name="auth_continue_with">Hoặc tiếp tục với</string>
+    <string name="auth_google">Google</string>
+    <string name="auth_facebook">Facebook</string>
+    <string name="auth_no_account">Chưa có tài khoản? </string>
+    <string name="auth_create_account">Tạo tài khoản</string>
+    <string name="content_desc_chatbot">Mở trợ lý Kanila AI</string>
+    <string name="chat_product_review_count">(%s)</string>
+    <string name="chat_view_product_detail">Xem chi tiết</string>
+    <string name="chat_product_detail_next_phase">Tính năng xem chi tiết sản phẩm sẽ được kết nối ở bước tiếp theo.</string>
     <string name="search_hint_community">Tìm kiếm trong Community...</string>
     <string name="tab_feed">Feed</string>
     <string name="tab_challenge">Challenge</string>
@@ -494,7 +554,6 @@
     <string name="content_desc_save">Lưu</string>
     <string name="content_desc_remove_media">Xóa phương tiện</string>
     <string name="content_desc_camera">Mở máy ảnh</string>
-    <string name="username_format">&#64;%s</string>
     <string name="comment_count_format">Bình luận (%d)</string>
     <string name="comment_hint">Thêm bình luận...</string>
 
@@ -612,6 +671,7 @@
     <string name="report_note_hint">Mô tả thêm nếu cần...</string>
     <string name="report_submit">Gửi báo cáo</string>
     <string name="report_cancel">Hủy</string>
+    <string name="username_format">&#64;%s</string>
     <string name="report_success">Cảm ơn bạn, báo cáo đã được ghi nhận.</string>
     <string name="report_hide_checkbox">Ẩn bài viết này khỏi Feed của tôi</string>
     <string name="replying_to_format">Đang trả lời %s</string>

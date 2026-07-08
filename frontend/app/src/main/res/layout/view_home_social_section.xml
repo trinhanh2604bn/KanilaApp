@@ -14,10 +14,10 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/layoutKanilaReelsCard"
         android:layout_width="0dp"
-        android:layout_height="210dp"
+        android:layout_height="154dp"
         android:layout_marginEnd="@dimen/spacing_s"
         android:layout_weight="1"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="@color/bg_section"
         app:cardCornerRadius="@dimen/radius_m"
         app:cardElevation="0dp"
         app:strokeColor="@color/border_soft"
@@ -25,7 +25,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="139dp"
             android:orientation="vertical"
             android:padding="@dimen/spacing_s">
 
@@ -67,6 +67,18 @@
                     android:layout_marginEnd="4dp"
                     android:layout_weight="1">
 
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:cardCornerRadius="4dp"
+                        app:cardElevation="0dp">
+
+                        <VideoView
+                            android:id="@+id/vvReelOne"
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp" />
+                    </com.google.android.material.card.MaterialCardView>
+
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/ivReelThumbOne"
                         android:layout_width="match_parent"
@@ -81,22 +93,10 @@
                         android:layout_height="16dp"
                         android:layout_gravity="top|start"
                         android:layout_margin="4dp"
-                        android:src="@drawable/ic_reels"
                         android:contentDescription="@string/content_desc_reels_icon"
+                        android:src="@drawable/ic_reels"
                         app:tint="@color/white" />
 
-                    <TextView
-                        android:id="@+id/tvReelTitleOne"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
-                        android:layout_margin="4dp"
-                        android:ellipsize="end"
-                        android:fontFamily="@font/nunito_semibold"
-                        android:maxLines="2"
-                        android:text="@string/home_social_reel_1_title"
-                        android:textColor="@color/white"
-                        android:textSize="10sp" />
                 </FrameLayout>
 
                 <!-- Reel 2 -->
@@ -104,7 +104,20 @@
                     android:id="@+id/layoutReelThumbTwo"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_marginEnd="4dp"
                     android:layout_weight="1">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:cardCornerRadius="4dp"
+                        app:cardElevation="0dp">
+
+                        <VideoView
+                            android:id="@+id/vvReelTwo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/ivReelThumbTwo"
@@ -120,22 +133,49 @@
                         android:layout_height="16dp"
                         android:layout_gravity="top|start"
                         android:layout_margin="4dp"
-                        android:src="@drawable/ic_reels"
                         android:contentDescription="@string/content_desc_reels_icon"
+                        android:src="@drawable/ic_reels"
                         app:tint="@color/white" />
 
-                    <TextView
-                        android:id="@+id/tvReelTitleTwo"
+                </FrameLayout>
+
+                <!-- Reel 3 -->
+                <FrameLayout
+                    android:id="@+id/layoutReelThumbThree"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
+                        android:layout_height="match_parent"
+                        app:cardCornerRadius="4dp"
+                        app:cardElevation="0dp">
+
+                        <VideoView
+                            android:id="@+id/vvReelThree"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivReelThumbThree"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/img_lipstick"
+                        app:shapeAppearanceOverlay="@style/RoundedFour" />
+
+                    <ImageView
+                        android:id="@+id/badgeReelThree"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="top|start"
                         android:layout_margin="4dp"
-                        android:ellipsize="end"
-                        android:fontFamily="@font/nunito_semibold"
-                        android:maxLines="2"
-                        android:text="@string/home_social_reel_2_title"
-                        android:textColor="@color/white"
-                        android:textSize="10sp" />
+                        android:contentDescription="@string/content_desc_reels_icon"
+                        android:src="@drawable/ic_reels"
+                        app:tint="@color/white" />
+
                 </FrameLayout>
             </LinearLayout>
         </LinearLayout>
@@ -145,7 +185,7 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/layoutKanilaChallengeCard"
         android:layout_width="0dp"
-        android:layout_height="210dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         app:cardBackgroundColor="@color/background_sub"
         app:cardCornerRadius="@dimen/radius_m"
@@ -155,7 +195,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="151dp"
             android:orientation="vertical"
             android:padding="@dimen/spacing_s">
 
@@ -186,13 +226,13 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="38dp"
                 android:layout_marginBottom="6dp">
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/ivChallengeBanner"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="38dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/bg_reward"
                     app:shapeAppearanceOverlay="@style/RoundedEight" />
@@ -222,16 +262,20 @@
                 android:textColor="@color/text_main"
                 android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/tvChallengeSubtitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:fontFamily="@font/nunito_regular"
-                android:maxLines="1"
-                android:text="@string/home_social_challenge_subtitle"
-                android:textColor="@color/text_secondary"
-                android:textSize="10sp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnJoinChallenge"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:backgroundTint="@color/button"
+                android:fontFamily="@font/nunito_bold"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="8dp"
+                android:text="@string/home_social_challenge_cta"
+                android:textAllCaps="false"
+                android:textSize="10sp"
+                app:cornerRadius="12dp" />
 
             <ProgressBar
                 android:id="@+id/progressChallenge"
@@ -254,9 +298,9 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:fontFamily="@font/nunito_semibold"
-                    tools:text="8/14 ngày"
                     android:textColor="@color/button"
-                    android:textSize="9sp" />
+                    android:textSize="9sp"
+                    tools:text="8/14 ngày" />
 
                 <TextView
                     android:id="@+id/tvChallengeParticipants"
@@ -264,9 +308,9 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:fontFamily="@font/nunito_regular"
-                    tools:text="12.6K tham gia"
                     android:textColor="@color/text_tertiary"
-                    android:textSize="9sp" />
+                    android:textSize="9sp"
+                    tools:text="12.6K tham gia" />
             </RelativeLayout>
 
             <LinearLayout
@@ -277,13 +321,6 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:src="@drawable/ic_star"
-                    android:contentDescription="@string/content_desc_reward_icon"
-                    app:tint="@color/button" />
-
                 <TextView
                     android:id="@+id/tvChallengeReward"
                     android:layout_width="0dp"
@@ -291,24 +328,10 @@
                     android:layout_marginStart="2dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/nunito_bold"
-                    tools:text="200 điểm"
                     android:textColor="@color/button"
-                    android:textSize="10sp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnJoinChallenge"
-                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:backgroundTint="@color/button"
-                    android:fontFamily="@font/nunito_bold"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:paddingHorizontal="8dp"
-                    android:text="@string/home_social_challenge_cta"
-                    android:textAllCaps="false"
                     android:textSize="10sp"
-                    app:cornerRadius="12dp" />
+                    tools:text="200 điểm" />
+
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

@@ -81,6 +81,9 @@ const guestSessionRoutes = require("./guestSession.route");
 const recommendationRoutes = require("./recommendation.route");
 const mobileProductRoutes = require("./mobileProduct.routes");
 
+// Chatbot routes (Phase 1 MVP — Kanila AI Assistant)
+const chatbotRoutes = require("./chatbot.routes");
+
 router.use("/brands", brandRoutes);
 router.use("/categories", categoryRoutes);
 router.use("/products", productRoutes);
@@ -157,6 +160,7 @@ router.use("/admin", adminRoutes);
 router.use("/setup", setupRoutes);
 router.use("/guest-sessions", guestSessionRoutes);
 router.use("/recommendations", recommendationRoutes);
+router.use("/chatbot", chatbotRoutes);
 
 // One-time migration route (remove after running)
 const migrateRoute = require("./migrate.route");

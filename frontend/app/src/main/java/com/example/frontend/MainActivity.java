@@ -17,10 +17,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,6 +32,7 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
+import com.example.frontend.feature.chatbot.ChatbotQuickMenuBottomSheet;
 import com.example.frontend.feature.home.HomeBannerAdapter;
 import com.example.frontend.feature.home.HomeProductAdapter;
 import com.example.frontend.feature.home.HomeShortcutAdapter;
@@ -46,6 +49,7 @@ import ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
 import ui.commerce.CheckoutFragment;
 import ui.common.BottomNavigationHelper;
+import com.example.frontend.feature.community.reels.ReelsFeedFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,14 +60,15 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvRecommendedProducts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
-    private ImageView ivChatbot;
+    private View ivChatbot;
 
     private View layoutSearchExpandedBar;
     private EditText edtExpandedSearchQuery;
     private ImageButton btnExpandedSearchBack;
 
-    private View layoutKanilaReelsCard, layoutReelThumbOne, layoutReelThumbTwo;
-    private ImageView ivReelThumbOne, ivReelThumbTwo;
+    private View layoutKanilaReelsCard, layoutReelThumbOne, layoutReelThumbTwo, layoutReelThumbThree;
+    private ImageView ivReelThumbOne, ivReelThumbTwo, ivReelThumbThree;
+    private android.widget.VideoView vvReelOne, vvReelTwo, vvReelThree;
     private View layoutKanilaChallengeCard, btnJoinChallenge;
     private TextView tvChallengeProgress, tvChallengeParticipants, tvChallengeReward;
 
@@ -97,10 +102,30 @@ public class MainActivity extends AppCompatActivity {
         setupBannerSlider();
         setupProductLists();
 
-        observeViewModel();
-        viewModel.loadHomeData();
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main);
+                if (currentFragment instanceof ReelsFeedFragment) {
+                    // Navigate back to Home
+                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                    setEnabled(true);
+                }
+            }
+        });
 
-        checkAuthStatus();
+        observeViewModel();
+        
+        // Delay home data loading slightly to ensure UI is ready and prevent ANR
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            viewModel.loadHomeData();
+            checkAuthStatus();
+        }, 500);
     }
 
     private void checkAuthStatus() {
@@ -151,8 +176,13 @@ public class MainActivity extends AppCompatActivity {
         layoutKanilaReelsCard = findViewById(R.id.layoutKanilaReelsCard);
         layoutReelThumbOne = findViewById(R.id.layoutReelThumbOne);
         layoutReelThumbTwo = findViewById(R.id.layoutReelThumbTwo);
+        layoutReelThumbThree = findViewById(R.id.layoutReelThumbThree);
         ivReelThumbOne = findViewById(R.id.ivReelThumbOne);
         ivReelThumbTwo = findViewById(R.id.ivReelThumbTwo);
+        ivReelThumbThree = findViewById(R.id.ivReelThumbThree);
+        vvReelOne = findViewById(R.id.vvReelOne);
+        vvReelTwo = findViewById(R.id.vvReelTwo);
+        vvReelThree = findViewById(R.id.vvReelThree);
         layoutKanilaChallengeCard = findViewById(R.id.layoutKanilaChallengeCard);
         btnJoinChallenge = findViewById(R.id.btnJoinChallenge);
         tvChallengeProgress = findViewById(R.id.tvChallengeProgress);
@@ -197,15 +227,38 @@ public class MainActivity extends AppCompatActivity {
 
         if (ivChatbot != null) {
             ivChatbot.setOnClickListener(v -> {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ui.support.ChatSupportFragment())
-                        .addToBackStack(null)
-                        .commit();
+                ChatbotQuickMenuBottomSheet.newInstance()
+                        .show(getSupportFragmentManager(), "ChatbotQuickMenu");
             });
         }
 
         setupHomeShortcuts();
         setupSocialSection();
+        setupReelsVideos();
+    }
+
+    private void setupReelsVideos() {
+        vvReelOne.setVideoURI(Uri.parse(com.example.frontend.feature.community.reels.mock.MockReelsDataSource.VIDEO_URL_01));
+        vvReelTwo.setVideoURI(Uri.parse(com.example.frontend.feature.community.reels.mock.MockReelsDataSource.VIDEO_URL_02));
+        vvReelThree.setVideoURI(Uri.parse(com.example.frontend.feature.community.reels.mock.MockReelsDataSource.VIDEO_URL_03));
+
+        setupHomeVideo(vvReelOne, ivReelThumbOne);
+        setupHomeVideo(vvReelTwo, ivReelThumbTwo);
+        setupHomeVideo(vvReelThree, ivReelThumbThree);
+    }
+
+    private void setupHomeVideo(android.widget.VideoView videoView, ImageView thumbnail) {
+        videoView.setOnPreparedListener(mp -> {
+            mp.setVolume(0f, 0f);
+            mp.setLooping(true);
+            videoView.start();
+        });
+        videoView.setOnInfoListener((mp, what, extra) -> {
+            if (what == android.media.MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+                thumbnail.setVisibility(View.GONE);
+            }
+            return false;
+        });
     }
 
     private void setupBottomNavigation() {
@@ -221,7 +274,9 @@ public class MainActivity extends AppCompatActivity {
                             .replace(R.id.main, new ProductCategoryFragment())
                             .commit();
                 } else if (tabIndex == BottomNavigationHelper.TAB_REELS) {
-                    Toast.makeText(this, "Reels coming soon!", Toast.LENGTH_SHORT).show();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ReelsFeedFragment())
+                            .commit();
                 } else if (tabIndex == BottomNavigationHelper.TAB_COMMUNITY) {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.main, new ui.community.CommunityHomeFragment())
@@ -408,25 +463,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupSocialSection() {
-        String reelOneUrl = "https://youtube.com/shorts/JytbqPADyQc?si=cXt-VYSr5hhdpOQg";
-        String reelTwoUrl = "https://youtube.com/shorts/LwHA4UF3XQI?si=icecCgY-kTDcaYTz";
-
-        String thumbOneUrl = "https://img.youtube.com/vi/JytbqPADyQc/0.jpg";
-        String thumbTwoUrl = "https://img.youtube.com/vi/LwHA4UF3XQI/0.jpg";
-
-        Glide.with(this).load(thumbOneUrl).into(ivReelThumbOne);
-        Glide.with(this).load(thumbTwoUrl).into(ivReelThumbTwo);
-
-        layoutKanilaReelsCard.setOnClickListener(v -> Toast.makeText(this, "Kanila Reels", Toast.LENGTH_SHORT).show());
+        layoutKanilaReelsCard.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.community.reels.ReelsFeedFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
 
         layoutReelThumbOne.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reelOneUrl));
-            startActivity(intent);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.community.reels.ReelsFeedFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
 
         layoutReelThumbTwo.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reelTwoUrl));
-            startActivity(intent);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.community.reels.ReelsFeedFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        layoutReelThumbThree.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, new com.example.frontend.feature.community.reels.ReelsFeedFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
 
         layoutKanilaChallengeCard.setOnClickListener(v -> Toast.makeText(this, "Kanila Challenge", Toast.LENGTH_SHORT).show());
@@ -497,7 +559,8 @@ public class MainActivity extends AppCompatActivity {
         int startPosition = (Integer.MAX_VALUE / 2) - ((Integer.MAX_VALUE / 2) % items.size());
         vpHomeBanner.setCurrentItem(startPosition, false);
 
-        setupAutoSlide(items.size());
+        // Delay auto-slide start to prevent blocking main thread during layout
+        vpHomeBanner.post(() -> setupAutoSlide(items.size()));
     }
 
     private void setupAutoSlide(int size) {
@@ -568,6 +631,22 @@ public class MainActivity extends AppCompatActivity {
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.setDuration(duration);
         animator.start();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (vvReelOne != null) vvReelOne.start();
+        if (vvReelTwo != null) vvReelTwo.start();
+        if (vvReelThree != null) vvReelThree.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (vvReelOne != null) vvReelOne.pause();
+        if (vvReelTwo != null) vvReelTwo.pause();
+        if (vvReelThree != null) vvReelThree.pause();
     }
 
     @Override

@@ -1,28 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="56dp"
-    android:layout_height="56dp">
-
-    <View
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:background="@drawable/bg_fab_circle"
-        android:elevation="6dp" />
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.FrameLayout">
 
     <ImageView
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:elevation="6dp"
-        android:src="@drawable/ic_chat_placeholder"
-        app:tint="@color/background_main"
-        android:contentDescription="Mở chatbot" />
+        android:src="@drawable/chatbotai"
+        android:scaleType="centerInside"
+        android:contentDescription="@string/content_desc_chatbot" />
 
-    <View
-        android:layout_width="14dp"
-        android:layout_height="14dp"
-        android:layout_gravity="top|end"
-        android:elevation="7dp"
-        android:background="@drawable/bg_badge_dot" />
-</FrameLayout>
+</merge>

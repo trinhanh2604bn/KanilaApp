@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
+import com.example.frontend.feature.community.reels.ReelsFeedFragment;
 import ui.account.AccountFragment;
 import ui.category.ProductCategoryFragment;
 
@@ -78,7 +79,11 @@ public class BottomNavigationHelper {
                             .commit();
                 }
             } else if (tabIndex == TAB_REELS) {
-                Toast.makeText(fragment.getContext(), "Reels coming soon!", Toast.LENGTH_SHORT).show();
+                if (!(fragment instanceof ReelsFeedFragment)) {
+                    fragment.getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ReelsFeedFragment())
+                            .commit();
+                }
             } else if (tabIndex == TAB_COMMUNITY) {
                 if (!(fragment instanceof ui.community.CommunityHomeFragment)) {
                     fragment.getParentFragmentManager().beginTransaction()
@@ -106,7 +111,9 @@ public class BottomNavigationHelper {
                         .replace(R.id.main, new AccountFragment())
                         .commit();
             } else if (tabIndex == TAB_REELS) {
-                Toast.makeText(activity, "Reels coming soon!", Toast.LENGTH_SHORT).show();
+                activity.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ReelsFeedFragment())
+                        .commit();
             } else if (tabIndex == TAB_COMMUNITY) {
                 activity.getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main, new ui.community.CommunityHomeFragment())

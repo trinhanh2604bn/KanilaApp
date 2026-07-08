@@ -251,17 +251,13 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <ImageView
+    <!-- Floating Chatbot Button -->
+    <com.example.frontend.feature.chatbot.FloatingChatbotView
         android:id="@+id/ivChatbot"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:src="@drawable/chatbotai"
-        android:elevation="8dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:contentDescription="@string/support_center_title"
         app:layout_constraintBottom_toTopOf="@id/layoutBottomNavigation"
         app:layout_constraintEnd_toEndOf="parent" />
 

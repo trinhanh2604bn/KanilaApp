@@ -10,8 +10,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
     // Emulator: http://10.0.2.2:5000/
-    // Physical Device: http://10.160.98.213:5000/ (e.g., http://192.168.1.5:5000/ ) chú phó http://10.160.98.189:5000/ )
-    private static final String BASE_URL = "http://10.160.98.189:5000/"; // Important: must end with / for Retrofit
+    // Physical Device: http://10.160.98.213:5000/ (e.g., http://192.168.1.5:5000/)
+    private static final String BASE_URL = "http://10.160.98.213:5000/"; // Important: must end with / for Retrofit
 
     private static Retrofit retrofit;
 

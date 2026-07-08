@@ -8,7 +8,12 @@
  */
 
 const { GoogleGenAI } = require("@google/genai");
-const { KANILA_SYSTEM_PROMPT } = require("./chatbot.prompt");
+const {
+  KANILA_SYSTEM_PROMPT,
+  buildProductContextMessage,
+  buildOrderContextMessage,
+  buildTicketContextMessage,
+} = require("./chatbot.prompt");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TEMP DEV ONLY - remove before commit/deploy
@@ -46,27 +51,21 @@ function getGenAI() {
 }
 
 /**
- * Call Gemini with conversation history and the user's latest message.
- *
- * @param {string} userMessage — The latest user message text.
- * @param {Array<{role: string, parts: Array<{text: string}>}>} history
- *   — The last N messages formatted as Gemini Content objects (role: "user"|"model").
- * @returns {Promise<string>} — The assistant's text reply.
+ * Internal: run a Gemini chat call with timeout protection.
+ * @param {string} message — user message text (may include injected context)
+ * @param {Array} history — prior conversation turns in Gemini format
+ * @returns {Promise<string>}
  */
-async function generateChatReply(userMessage, history = []) {
-  const genAI = getGenAI(); // throws CHATBOT_CONFIG_ERROR if key missing
+async function _geminiChatWithTimeout(message, history = []) {
+  const genAI = getGenAI();
 
-  // Wrap the Gemini call with a timeout race
   const geminiPromise = (async () => {
     const chat = genAI.chats.create({
       model: GEMINI_MODEL,
-      config: {
-        systemInstruction: KANILA_SYSTEM_PROMPT,
-      },
+      config: { systemInstruction: KANILA_SYSTEM_PROMPT },
       history,
     });
-
-    const result = await chat.sendMessage({ message: userMessage });
+    const result = await chat.sendMessage({ message });
     return result.text;
   })();
 
@@ -79,14 +78,11 @@ async function generateChatReply(userMessage, history = []) {
   });
 
   try {
-    const replyText = await Promise.race([geminiPromise, timeoutPromise]);
-    return replyText;
+    return await Promise.race([geminiPromise, timeoutPromise]);
   } catch (err) {
-    // Re-throw structured errors (CONFIG or TIMEOUT) as-is
     if (err.code === "CHATBOT_CONFIG_ERROR" || err.code === "CHATBOT_TIMEOUT") {
       throw err;
     }
-    // Wrap unexpected Gemini SDK errors without leaking internals
     console.error("[Gemini] Provider error:", err.message);
     const wrapped = new Error("Gemini provider encountered an error.");
     wrapped.code = "CHATBOT_ERROR";
@@ -94,4 +90,62 @@ async function generateChatReply(userMessage, history = []) {
   }
 }
 
-module.exports = { generateChatReply };
+// ─────────────────────────────────────────────────────────────────────────────
+// Public functions
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * General chat — used for non-product, non-order intents.
+ * @param {string} userMessage
+ * @param {Array} history
+ * @returns {Promise<string>}
+ */
+async function generateChatReply(userMessage, history = []) {
+  return _geminiChatWithTimeout(userMessage, history);
+}
+
+/**
+ * Product recommendation explanation.
+ * Products are injected as KANILA_PRODUCT_CONTEXT — Gemini must NOT invent data.
+ * @param {object[]} products
+ * @param {string} userMessage
+ * @param {Array} history
+ * @returns {Promise<string>}
+ */
+async function generateProductExplanation(products, userMessage, history = []) {
+  const messageWithContext = buildProductContextMessage(products, userMessage);
+  return _geminiChatWithTimeout(messageWithContext, history);
+}
+
+/**
+ * Order tracking explanation.
+ * Order data is injected as KANILA_ORDER_CONTEXT — Gemini must NOT invent delivery/refund data.
+ * @param {object} order — normalized order object
+ * @param {string} userMessage
+ * @param {Array} history
+ * @returns {Promise<string>}
+ */
+async function generateOrderExplanation(order, userMessage, history = []) {
+  const messageWithContext = buildOrderContextMessage(order, userMessage);
+  return _geminiChatWithTimeout(messageWithContext, history);
+}
+
+/**
+ * Support ticket confirmation.
+ * Ticket data is injected as KANILA_TICKET_CONTEXT.
+ * @param {object} ticket — normalized ticket object
+ * @param {string} userMessage
+ * @param {Array} history
+ * @returns {Promise<string>}
+ */
+async function generateTicketConfirmation(ticket, userMessage, history = []) {
+  const messageWithContext = buildTicketContextMessage(ticket, userMessage);
+  return _geminiChatWithTimeout(messageWithContext, history);
+}
+
+module.exports = {
+  generateChatReply,
+  generateProductExplanation,
+  generateOrderExplanation,
+  generateTicketConfirmation,
+};

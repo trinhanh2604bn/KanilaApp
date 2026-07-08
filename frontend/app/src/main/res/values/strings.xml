@@ -435,6 +435,37 @@
     <string name="create_support_subtitle">Gửi yêu cầu và theo dõi tiến độ</string>
     <string name="menu_talk_human">Liên hệ nhân viên</string>
     <string name="menu_talk_human_subtitle">Kết nối với đội ngũ Kanila</string>
+
+    <string name="chatbot_quick_menu_title">Kanila AI Assistant</string>
+    <string name="chatbot_quick_menu_subtitle">Bạn muốn mình hỗ trợ gì hôm nay?</string>
+
+    <string name="menu_product_consult">Tư vấn sản phẩm</string>
+    <string name="menu_product_consult_subtitle">Gợi ý mỹ phẩm phù hợp với nhu cầu của bạn</string>
+
+    <string name="menu_create_routine">Tạo routine skincare</string>
+    <string name="menu_create_routine_subtitle">Xây dựng chu trình chăm sóc da cơ bản</string>
+
+    <string name="menu_ingredients_check">Kiểm tra thành phần</string>
+    <string name="menu_ingredients_check_subtitle">Hỏi nhanh về cách phối hợp thành phần</string>
+
+    <string name="menu_track_order">Tra cứu đơn hàng</string>
+    <string name="menu_track_order_subtitle">Kiểm tra tình trạng đơn hàng của bạn</string>
+
+    <string name="menu_get_support">Gặp nhân viên hỗ trợ</string>
+    <string name="menu_get_support_subtitle">Tạo yêu cầu hỗ trợ khi cần tư vấn thêm</string>
+
+    <string name="chat_assistant_subtitle">Tư vấn mỹ phẩm &amp; hỗ trợ đơn hàng</string>
+    <string name="chat_welcome_full">Xin chào, mình là Kanila AI. Mình có thể tư vấn sản phẩm, tạo routine, kiểm tra thành phần và hỗ trợ đơn hàng.</string>
+    <string name="chat_typing_indicator">Kanila AI đang trả lời...</string>
+    <string name="content_desc_send">Gửi</string>
+    <string name="chatbot_next_phase_msg">Màn hình chat sẽ được triển khai ở bước tiếp theo.</string>
+
+    <!-- Chatbot Starter Messages -->
+    <string name="starter_product_consult">Tư vấn giúp mình sản phẩm phù hợp</string>
+    <string name="starter_create_routine">Tạo routine skincare cho mình</string>
+    <string name="starter_ingredients_check">Kiểm tra thành phần mỹ phẩm giúp mình</string>
+    <string name="starter_track_order">Tra cứu đơn hàng của mình</string>
+    <string name="starter_get_support">Mình muốn gặp nhân viên hỗ trợ</string>
     <string name="support_banner_title">Hỗ trợ luôn sẵn sàng</string>
     <string name="support_banner_subtitle">Phản hồi trung bình: <![CDATA[<font color="#E83E72"><b>5 phút</b></font>]]></string>
     <string name="choose_contact_channel">Chọn kênh liên hệ</string>
@@ -631,4 +662,8 @@
     <string name="auth_facebook">Facebook</string>
     <string name="auth_no_account">Chưa có tài khoản? </string>
     <string name="auth_create_account">Tạo tài khoản</string>
+    <string name="content_desc_chatbot">Mở trợ lý Kanila AI</string>
+    <string name="chat_product_review_count">(%s)</string>
+    <string name="chat_view_product_detail">Xem chi tiết</string>
+    <string name="chat_product_detail_next_phase">Tính năng xem chi tiết sản phẩm sẽ được kết nối ở bước tiếp theo.</string>
 </resources>

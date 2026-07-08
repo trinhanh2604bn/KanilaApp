@@ -5,11 +5,16 @@
     android:id="@+id/layoutPostItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
-    android:layout_marginVertical="8dp"
+    android:layout_marginStart="@dimen/spacing_l"
+    android:layout_marginEnd="@dimen/spacing_l"
+    android:layout_marginTop="@dimen/spacing_s"
+    android:layout_marginBottom="@dimen/spacing_s"
     android:background="@drawable/bg_community_card"
     android:orientation="vertical"
-    android:padding="16dp">
+    app:cardElevation="4dp"
+    app:cardMaxElevation="4dp"
+    app:cardUseCompatPadding="false"
+    android:padding="@dimen/spacing_l">
 
     <!-- Header Row -->
     <LinearLayout
@@ -20,10 +25,10 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivPostAvatar"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:scaleType="centerCrop"
-            app:shapeAppearanceOverlay="@style/RoundedProductImage"
+            app:shapeAppearanceOverlay="@style/CircleImage"
             tools:src="@android:drawable/ic_menu_report_image" />
 
         <LinearLayout
@@ -44,10 +49,10 @@
                     android:id="@+id/tvPostUserName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_semibold"
+                    android:fontFamily="@font/nunito_bold"
                     android:text="Kim Trần"
                     android:textColor="@color/text_main"
-                    android:textSize="18sp"
+                    android:textSize="14sp"
                     tools:text="Kim Trần" />
 
                 <ImageView
@@ -67,14 +72,14 @@
                 android:fontFamily="@font/nunito_regular"
                 android:text="2 giờ trước"
                 android:textColor="@color/border_divider"
-                android:textSize="13sp"
+                android:textSize="10sp"
                 tools:text="2 giờ trước" />
         </LinearLayout>
 
         <ImageButton
             android:id="@+id/btnPostMore"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="More options"
             android:src="@drawable/ic_more_horiz"
@@ -86,8 +91,8 @@
     <LinearLayout
         android:id="@+id/layoutVerifiedPurchase"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="4dp"
         android:background="@drawable/bg_verified_pill"
         android:gravity="center"
         android:paddingHorizontal="10dp"
@@ -109,7 +114,7 @@
             android:fontFamily="@font/nunito_semibold"
             android:text="Đã mua hàng"
             android:textColor="@color/button"
-            android:textSize="13sp" />
+            android:textSize="10sp" />
     </LinearLayout>
 
     <!-- Content Section -->
@@ -117,31 +122,31 @@
         android:id="@+id/tvPostTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:fontFamily="@font/nunito_bold"
         android:text="Serum Niacinamide 10% – sáng da, mờ thâm thấy rõ!"
         android:textColor="@color/text_main"
-        android:textSize="20sp"
+        android:textSize="16sp"
         tools:text="Serum Niacinamide 10% – sáng da, mờ thâm thấy rõ!" />
 
     <TextView
         android:id="@+id/tvPostContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="4dp"
         android:fontFamily="@font/nunito_regular"
         android:lineSpacingExtra="2dp"
         android:text="Sau 3 tuần sử dụng The Ordinary Niacinamide 10% + Zinc 1% da mình sáng và cũng không nhờn rít."
         android:textColor="@color/text_main"
-        android:textSize="15sp"
+        android:textSize="12sp"
         tools:text="Sau 3 tuần sử dụng The Ordinary Niacinamide 10% + Zinc 1% da mình sáng và cũng không nhờn rít." />
 
     <!-- Gallery Section -->
     <HorizontalScrollView
         android:id="@+id/hsvPostImages"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="4dp"
         android:contentDescription="@string/post_gallery"
         android:scrollbars="none">
 
@@ -154,17 +159,17 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/ivPostImage1"
-                android:layout_width="160dp"
+                android:layout_width="120dp"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="12dp"
-                android:scaleType="centerCrop"
                 android:contentDescription="@string/post_image_1"
+                android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/RoundedProductImage"
                 tools:src="@android:drawable/ic_menu_report_image" />
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/ivPostImage2"
-                android:layout_width="160dp"
+                android:layout_width="120dp"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="12dp"
                 android:scaleType="centerCrop"
@@ -174,7 +179,7 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/ivPostImage3"
-                android:layout_width="160dp"
+                android:layout_width="120dp"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="12dp"
                 android:scaleType="centerCrop"
@@ -188,7 +193,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="6dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -206,7 +211,7 @@
             <ImageView
                 android:id="@+id/ivPostLikeIcon"
                 android:layout_width="wrap_content"
-                android:layout_height="24dp"
+                android:layout_height="20dp"
                 android:duplicateParentState="true"
                 android:src="@drawable/ic_heart_outline"
                 app:tint="@color/selector_post_action_tint" />
@@ -220,14 +225,14 @@
                 android:fontFamily="@font/nunito_regular"
                 android:text="1.2K"
                 android:textColor="@color/selector_post_action_tint"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutPostComment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="10dp"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical"
@@ -237,8 +242,8 @@
 
             <ImageView
                 android:id="@+id/ivPostCommentIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:duplicateParentState="true"
                 android:src="@drawable/ic_comment"
                 app:tint="@color/selector_post_action_tint" />
@@ -252,14 +257,14 @@
                 android:fontFamily="@font/nunito_regular"
                 android:text="137"
                 android:textColor="@color/selector_post_action_tint"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutPostShare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="10dp"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical"
@@ -269,8 +274,8 @@
 
             <ImageView
                 android:id="@+id/ivPostShareIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:duplicateParentState="true"
                 android:src="@drawable/ic_share"
                 app:tint="@color/selector_post_action_tint" />
@@ -284,7 +289,7 @@
                 android:fontFamily="@font/nunito_regular"
                 android:text="36"
                 android:textColor="@color/selector_post_action_tint"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <View
@@ -294,11 +299,11 @@
 
         <ImageButton
             android:id="@+id/btnPostSave"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:background="@android:color/transparent"
             android:contentDescription="Save post"
-            android:padding="8dp"
+            app:tint="@color/selector_post_action_tint"
             android:scaleType="centerInside"
             android:src="@drawable/ic_bookmark_outline"
             tools:ignore="TouchTargetSizeCheck"

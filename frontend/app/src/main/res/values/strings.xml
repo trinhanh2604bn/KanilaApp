@@ -512,4 +512,168 @@
     <string name="chat_product_review_count">(%s)</string>
     <string name="chat_view_product_detail">Xem chi tiết</string>
     <string name="chat_product_detail_next_phase">Tính năng xem chi tiết sản phẩm sẽ được kết nối ở bước tiếp theo.</string>
+    <string name="search_hint_community">Tìm kiếm trong Community...</string>
+    <string name="tab_feed">Feed</string>
+    <string name="tab_challenge">Challenge</string>
+    <string name="tab_blog">Blog</string>
+    <string name="tab_profile">Profile</string>
+    <string name="feature_coming_soon">Tính năng sẽ được bổ sung ở phase sau.</string>
+    <string name="community_title">Community</string>
+
+    <!-- Create Post Strings -->
+    <string name="create_post_title">Tạo bài viết</string>
+    <string name="create_post_draft">Nháp</string>
+    <string name="create_post_purchased_badge">Đã mua hàng</string>
+    <string name="create_post_select_type">Chọn loại bài viết</string>
+    <string name="create_post_media_title">Ảnh / Video đính kèm (tối đa 10)</string>
+    <string name="create_post_products_used">Sản phẩm đã dùng (tối đa 3)</string>
+    <string name="create_post_add_product">Thêm sản phẩm</string>
+    <string name="create_post_skin_type_title">Loại da của bạn</string>
+    <string name="create_post_reward_note_1">Bài viết có ảnh/video sẽ nhận thêm 20 điểm ✨</string>
+    <string name="create_post_reward_note_2">Chia sẻ nhiều hơn – Nhận thưởng nhiều hơn!</string>
+    <string name="create_post_action">Đăng bài</string>
+    <string name="create_post_hint">Chia sẻ trải nghiệm của bạn...</string>
+    <string name="new_post_title">Bài viết mới</string>
+    <string name="post_action">Đăng bài</string>
+    <string name="char_counter_format">%1$d/1500</string>
+
+    <!-- General Actions -->
+    <string name="content_desc_remove_item">Gỡ bỏ</string>
+    <string name="action_add_media">Thêm</string>
+    <string name="max_media_reached">Bạn chỉ có thể chọn tối đa 10 ảnh/video.</string>
+
+    <!-- Post Detail & Comments -->
+    <string name="post_detail_title">Chi tiết bài viết</string>
+    <string name="author_label">Tác giả</string>
+    <string name="reply_label">Trả lời</string>
+    <string name="content_desc_post_avatar">Ảnh đại diện người đăng</string>
+    <string name="content_desc_more_options">Thêm tùy chọn</string>
+    <string name="content_desc_like">Thích</string>
+    <string name="content_desc_comment">Bình luận</string>
+    <string name="content_desc_share">Chia sẻ</string>
+    <string name="content_desc_save">Lưu</string>
+    <string name="content_desc_remove_media">Xóa phương tiện</string>
+    <string name="content_desc_camera">Mở máy ảnh</string>
+    <string name="comment_count_format">Bình luận (%d)</string>
+    <string name="comment_hint">Thêm bình luận...</string>
+
+    <!-- Media Picker -->
+    <string name="media_picker_title">Ảnh/ Video đính kèm</string>
+    <string name="action_next">TIẾP</string>
+    <string name="action_add">Thêm</string>
+    <string name="attached_media_title">Ảnh / Video đính kèm</string>
+
+    <!-- Challenge Strings -->
+    <string name="challenge_tab_ongoing">Đang diễn ra</string>
+    <string name="challenge_tab_joined">Đã tham gia</string>
+    <string name="challenge_tab_leaderboard">Bảng xếp hạng</string>
+    <string name="challenge_participants">%s tham gia</string>
+    <string name="challenge_reward_points">%s điểm</string>
+    <string name="challenge_action_join">Tham gia</string>
+    <string name="challenge_action_continue">Tiếp tục</string>
+    <string name="challenge_action_post_progress">Đăng tiến trình</string>
+    <string name="challenge_detail_title">Chi tiết thử thách</string>
+    <string name="challenge_rules">Thể lệ</string>
+    <string name="challenge_progress_title">Tiến trình của tôi</string>
+    <string name="challenge_tasks_today">Nhiệm vụ hôm nay</string>
+    <string name="challenge_products_in_challenge">Sản phẩm trong thử thách</string>
+    <string name="challenge_rewards">Phần thưởng</string>
+    <string name="challenge_action_join_challenge">Tham gia thử thách</string>
+    <string name="challenge_action_view_reward">Xem phần thưởng</string>
+    <string name="challenge_ended">Thử thách đã kết thúc</string>
+    <string name="challenge_remaining_time">Còn lại: %s</string>
+    <string name="challenge_day_format">Ngày %1$d/%2$d</string>
+
+    <string name="leaderboard_weekly">Tuần này</string>
+
+    <string name="leaderboard_monthly">Tháng này</string>
+    <string name="leaderboard_rank_suffix">Hạng %d</string>
+    <string name="leaderboard_points_suffix">%d điểm</string>
+    <string name="leaderboard_my_rank">Hạng của tôi</string>
+    <string name="leaderboard_next_rank">Còn %d điểm để lên hạng tiếp theo</string>
+
+    <string name="reward_center_title">Trung tâm đổi thưởng</string>
+    <string name="reward_total_points">Tổng điểm tích lũy</string>
+    <string name="reward_equivalent_value">Tương đương %sđ</string>
+    <string name="reward_voucher_count">%d Voucher</string>
+    <string name="reward_streak_title">Chuỗi hoạt động</string>
+    <string name="reward_daily_tasks">Nhiệm vụ hàng ngày</string>
+    <string name="reward_redeem_gift">Đổi quà tặng</string>
+    <string name="reward_history">Lịch sử nhận thưởng</string>
+
+    <string name="progress_post_title">Đăng tiến trình</string>
+    <string name="progress_feeling_label">Hôm nay bạn cảm thấy thế nào?</string>
+    <string name="progress_visibility_public">Công khai</string>
+    <string name="progress_visibility_private">Chỉ mình tôi</string>
+
+    <!-- Blog Strings -->
+    <string name="blog_tab_title">Blog</string>
+    <string name="blog_featured_title">Bài viết nổi bật</string>
+    <string name="blog_detail_title">Chi tiết bài viết</string>
+    <string name="blog_official_author">Kanila Official</string>
+    <string name="blog_team_author">Kanila Beauty Team</string>
+    <string name="blog_suggested_products">Sản phẩm gợi ý</string>
+    <string name="blog_category_makeup">Makeup Tips</string>
+    <string name="blog_category_product">Product Update</string>
+    <string name="blog_category_beginner">Beginner Guide</string>
+    <string name="blog_category_skincare">Skincare Routine</string>
+
+    <!-- Profile Strings -->
+    <string name="profile_tab_title">Hồ sơ cá nhân</string>
+    <string name="profile_edit_avatar">Đổi ảnh đại diện</string>
+    <string name="profile_take_photo">Chụp ảnh mới</string>
+    <string name="profile_record_video">Quay video mới</string>
+    <string name="profile_choose_gallery">Chọn từ thư viện</string>
+    <string name="profile_remove_avatar">Gỡ ảnh hiện tại</string>
+    <string name="profile_my_rewards">Điểm thưởng của tôi</string>
+    <string name="profile_followers">Người theo dõi</string>
+    <string name="profile_following">Đang theo dõi</string>
+    <string name="profile_likes">Lượt thích</string>
+    <string name="profile_subtab_posts">Bài viết</string>
+    <string name="profile_subtab_challenges">Challenge</string>
+    <string name="profile_subtab_saved">Lưu</string>
+    <string name="profile_saved_empty">Bạn chưa lưu nội dung nào.</string>
+    <string name="profile_explore_community">Khám phá Community</string>
+    <string name="profile_filter_all">Tất cả</string>
+    <string name="profile_filter_feed">Feed</string>
+    <string name="profile_filter_blog">Blog</string>
+    <string name="profile_filter_challenge">Challenge</string>
+
+    <!-- Community Share -->
+    <string name="share_post_title">Chia sẻ bài viết</string>
+    <string name="share_zalo">Zalo</string>
+    <string name="share_messenger">Messenger</string>
+    <string name="share_instagram">Instagram</string>
+    <string name="share_other">Thêm</string>
+    <string name="share_copy_link">Sao chép đường dẫn</string>
+    <string name="share_link_copied">Đã sao chép đường dẫn bài viết</string>
+    <string name="share_app_not_installed">Ứng dụng chưa được cài đặt, đang mở chia sẻ hệ thống...</string>
+    <string name="share_chooser_title">Chia sẻ bài viết qua</string>
+    <string name="share_preview_link_text">Xem bài viết này trên Kanila: %1$s</string>
+
+    <!-- Community Feed Actions -->
+    <string name="action_hide_post">Ẩn bài viết</string>
+    <string name="action_report_post">Báo cáo</string>
+    <string name="msg_post_hidden">Đã ẩn bài viết này khỏi Feed của bạn.</string>
+
+    <!-- Report Post Bottom Sheet -->
+    <string name="report_post_title">Báo cáo bài viết</string>
+    <string name="report_post_subtitle">Hãy cho Kanila biết lý do bạn muốn báo cáo nội dung này.</string>
+    <string name="report_reason_irrelevant">Nội dung không liên quan đến makeup/làm đẹp</string>
+    <string name="report_reason_misleading">Thông tin sai lệch về sản phẩm hoặc thành phần</string>
+    <string name="report_reason_offensive">Hình ảnh phản cảm hoặc không phù hợp</string>
+    <string name="report_reason_spam">Spam, quảng cáo hoặc bán hàng không phù hợp</string>
+    <string name="report_reason_harassment">Ngôn từ công kích, quấy rối hoặc xúc phạm</string>
+    <string name="report_reason_fake">Nghi ngờ hàng giả / lừa đảo</string>
+    <string name="report_reason_misleading_after">Before/After gây hiểu nhầm hoặc chỉnh sửa quá mức</string>
+    <string name="report_reason_privacy">Tiết lộ thông tin cá nhân / vi phạm quyền riêng tư</string>
+    <string name="report_reason_other">Khác</string>
+    <string name="report_note_hint">Mô tả thêm nếu cần...</string>
+    <string name="report_submit">Gửi báo cáo</string>
+    <string name="report_cancel">Hủy</string>
+    <string name="username_format">&#64;%s</string>
+    <string name="report_success">Cảm ơn bạn, báo cáo đã được ghi nhận.</string>
+    <string name="report_hide_checkbox">Ẩn bài viết này khỏi Feed của tôi</string>
+    <string name="replying_to_format">Đang trả lời %s</string>
+    <string name="reply_hint_format">Trả lời %s…</string>
 </resources>

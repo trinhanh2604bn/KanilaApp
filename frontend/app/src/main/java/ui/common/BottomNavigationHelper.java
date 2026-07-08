@@ -85,7 +85,11 @@ public class BottomNavigationHelper {
                             .commit();
                 }
             } else if (tabIndex == TAB_COMMUNITY) {
-                Toast.makeText(fragment.getContext(), "Community coming soon!", Toast.LENGTH_SHORT).show();
+                if (!(fragment instanceof ui.community.CommunityHomeFragment)) {
+                    fragment.getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ui.community.CommunityHomeFragment())
+                            .commit();
+                }
             }
         });
     }
@@ -111,7 +115,9 @@ public class BottomNavigationHelper {
                         .replace(R.id.main, new ReelsFeedFragment())
                         .commit();
             } else if (tabIndex == TAB_COMMUNITY) {
-                Toast.makeText(activity, "Community coming soon!", Toast.LENGTH_SHORT).show();
+                activity.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.community.CommunityHomeFragment())
+                        .commit();
             }
         });
     }

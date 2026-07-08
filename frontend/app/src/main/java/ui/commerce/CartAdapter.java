@@ -23,6 +23,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
     private List<CartItemDto> items = new ArrayList<>();
     private OnCartItemChangeListener listener;
+    private int swipedPosition = -1;
 
     public interface OnCartItemChangeListener {
         void onItemSelectedChanged(CartItemDto item, boolean isSelected);
@@ -45,6 +46,24 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         return items;
     }
 
+    public void setSwipedPosition(int position) {
+        if (swipedPosition == position) return;
+
+        int oldPosition = swipedPosition;
+        swipedPosition = position;
+
+        if (oldPosition != -1 && oldPosition < items.size()) {
+            notifyItemChanged(oldPosition);
+        }
+        if (swipedPosition != -1 && swipedPosition < items.size()) {
+            notifyItemChanged(swipedPosition);
+        }
+    }
+
+    public int getSwipedPosition() {
+        return swipedPosition;
+    }
+
     @NonNull
     @Override
     public CartViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -55,7 +74,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     @Override
     public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
         CartItemDto item = items.get(position);
-        holder.bind(item);
+        boolean isSwiped = (position == swipedPosition);
+        holder.bind(item, isSwiped);
     }
 
     @Override
@@ -75,7 +95,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             super(itemView);
             layoutFront = itemView.findViewById(R.id.layoutCartFront);
             layoutAction = itemView.findViewById(R.id.layoutCartAction);
-            
+
             cbSelected = layoutFront.findViewById(R.id.cbCartSelected);
             ivProduct = layoutFront.findViewById(R.id.ivCartProductImage);
             tvName = layoutFront.findViewById(R.id.tvCartProductName);
@@ -93,9 +113,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             tvActionDelete = layoutAction.findViewById(R.id.tvActionDelete);
         }
 
-        public void bind(CartItemDto item) {
+        public void bind(CartItemDto item, boolean isSwiped) {
             tvName.setText(item.getProductNameSnapshot());
-            
+
             if (layoutVariant != null) {
                 TextView tvVariantName = layoutVariant.findViewById(R.id.tvVariantName);
                 if (tvVariantName != null) {
@@ -106,14 +126,14 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             }
 
             tvPrice.setText(formatPrice(item.getFinalUnitPriceAmount()));
-            
+
             if (tvOldPrice != null) {
                 double oldPrice = item.getCompareAtPriceAmount();
                 if (oldPrice > item.getFinalUnitPriceAmount()) {
                     tvOldPrice.setVisibility(View.VISIBLE);
                     tvOldPrice.setText(formatPrice(oldPrice));
                     tvOldPrice.setPaintFlags(tvOldPrice.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
-                    
+
                     if (tvDiscount != null) {
                         tvDiscount.setVisibility(View.VISIBLE);
                         int percent = (int) Math.round((oldPrice - item.getFinalUnitPriceAmount()) / oldPrice * 100);
@@ -126,15 +146,15 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             }
 
             tvQuantity.setText(String.valueOf(item.getQuantity()));
-            
+
             Glide.with(ivProduct.getContext())
                     .load(item.getImageUrlSnapshot() != null ? item.getImageUrlSnapshot() : "")
                     .placeholder(R.drawable.ic_product)
                     .error(R.drawable.ic_product)
                     .into(ivProduct);
-            
+
             btnWishlist.setSelected(item.isFavorite());
-            
+
             btnWishlist.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && listener != null) {
@@ -144,9 +164,25 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                     listener.onWishlistClick(item, pos);
                 }
             });
-            
-            layoutFront.setTranslationX(0f);
-            
+
+            if (isSwiped) {
+                float actionWidth = 160 * layoutFront.getContext().getResources().getDisplayMetrics().density;
+                layoutFront.setTranslationX(-actionWidth);
+            } else {
+                layoutFront.setTranslationX(0f);
+            }
+
+            layoutFront.setOnTouchListener((v, event) -> {
+                if (isSwiped) {
+                    if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+                        v.performClick();
+                        setSwipedPosition(-1);
+                    }
+                    return true;
+                }
+                return false;
+            });
+
             cbSelected.setOnCheckedChangeListener(null);
             cbSelected.setChecked(item.isSelected());
             cbSelected.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -189,12 +225,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         private String getDisplayVariantName(CartItemDto item) {
             String variantName = item.getVariantNameSnapshot();
             String productName = item.getProductNameSnapshot();
-            
+
             if (variantName == null || variantName.isEmpty()) return "";
             if (productName == null || productName.isEmpty()) return variantName;
-            
+
             String display = variantName;
-            
+
             // Standard case: "Product Name - Variant Detail"
             if (display.contains(productName + " - ")) {
                 display = display.replace(productName + " - ", "");
@@ -209,13 +245,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                     }
                 }
             }
-            
+
             // Append SKU if available and not already in variant name
             String sku = item.getSkuSnapshot();
             if (sku != null && !sku.isEmpty() && !display.contains(sku)) {
                 display += " (SKU: " + sku + ")";
             }
-            
+
             return display;
         }
 

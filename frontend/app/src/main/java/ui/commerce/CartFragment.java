@@ -118,7 +118,7 @@ public class CartFragment extends Fragment {
         if (btnWishlist instanceof ImageView) {
             ((ImageView) btnWishlist).setImageResource(R.drawable.ic_heart_outline);
             btnWishlist.setVisibility(View.VISIBLE);
-            
+
             btnWishlist.setOnClickListener(v -> {
                 if (com.example.frontend.data.remote.TokenManager.getInstance(getContext()).isLoggedIn()) {
                     getParentFragmentManager().beginTransaction()
@@ -153,6 +153,17 @@ public class CartFragment extends Fragment {
         rvCartItems.setLayoutManager(new LinearLayoutManager(getContext()));
         rvCartItems.setAdapter(adapter);
 
+        rvCartItems.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    if (adapter != null && adapter.getSwipedPosition() != -1) {
+                        adapter.setSwipedPosition(-1);
+                    }
+                }
+            }
+        });
+
         adapter.setOnCartItemChangeListener(new CartAdapter.OnCartItemChangeListener() {
             @Override
             public void onItemSelectedChanged(CartItemDto item, boolean isSelected) {
@@ -168,12 +179,12 @@ public class CartFragment extends Fragment {
             @Override
             public void onQuantityChanged(CartItemDto item, int newQuantity) {
                 if (item == null || item.getId() == null) return;
-                
+
                 String token = com.example.frontend.data.remote.TokenManager.getInstance(getContext()).getAccessToken();
-                Log.d("CartFragment", "Quantity update: ID=" + item.getId() + 
-                        ", Product=" + item.getProductNameSnapshot() + 
-                        ", OldQty=" + item.getQuantity() + 
-                        ", NewQty=" + newQuantity + 
+                Log.d("CartFragment", "Quantity update: ID=" + item.getId() +
+                        ", Product=" + item.getProductNameSnapshot() +
+                        ", OldQty=" + item.getQuantity() +
+                        ", NewQty=" + newQuantity +
                         ", TokenExists=" + (token != null && !token.isEmpty()));
 
                 item.setQuantity(newQuantity);
@@ -185,7 +196,7 @@ public class CartFragment extends Fragment {
             @Override
             public void onVariantClick(CartItemDto item, int position) {
                 if (item == null || getContext() == null) return;
-                
+
                 // Show loading or just start fetching
                 ApiService apiService = ApiClient.getClient(getContext()).create(ApiService.class);
                 apiService.getProductDetail(item.getProductId()).enqueue(new Callback<ApiResponse<ProductDetailResponse>>() {
@@ -210,12 +221,12 @@ public class CartFragment extends Fragment {
                                         if (variant.getPrice() != null) {
                                             item.setFinalUnitPriceAmount(variant.getPrice());
                                         }
-                                        
+
                                         // Update UI immediately
                                         item.setQuantity(quantity);
                                         adapter.notifyItemChanged(position);
                                         updateSummaryLocal();
-                                        
+
                                         viewModel.updateItemVariant(item.getId(), variant.getId(), quantity);
                                     }
                                 });
@@ -242,19 +253,19 @@ public class CartFragment extends Fragment {
             @Override
             public void onWishlistClick(CartItemDto item, int position) {
                 if (item == null || item.getProductId() == null) return;
-                
+
                 boolean wasWishlisted = !item.isFavorite(); // Since it was toggled in adapter
-                
+
                 if (com.example.frontend.data.remote.TokenManager.getInstance(getContext()).isLoggedIn()) {
                     wishlistViewModel.toggleWishlist(item.getProductId(), wasWishlisted);
-                    
+
                     String message = !wasWishlisted ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích";
                     Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                 } else {
                     // Rollback UI state in adapter
                     item.setFavorite(wasWishlisted);
                     adapter.notifyItemChanged(position);
-                    
+
                     Bundle extras = new Bundle();
                     extras.putString("productId", item.getProductId());
                     extras.putBoolean("wasWishlisted", wasWishlisted);
@@ -427,7 +438,19 @@ public class CartFragment extends Fragment {
     }
 
     private void setupSwipeToReveal() {
-        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                int position = viewHolder.getAdapterPosition();
+                int swipeFlags;
+                if (adapter != null && position == adapter.getSwipedPosition()) {
+                    swipeFlags = ItemTouchHelper.RIGHT;
+                } else {
+                    swipeFlags = ItemTouchHelper.LEFT;
+                }
+                return makeMovementFlags(0, swipeFlags);
+            }
+
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView,
                                   @NonNull RecyclerView.ViewHolder viewHolder,
@@ -437,7 +460,30 @@ public class CartFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                adapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                int position = viewHolder.getAdapterPosition();
+                boolean isOpened = (direction == ItemTouchHelper.LEFT);
+                Log.d("CartSwipe", "Swipe Event - Position: " + position +
+                        ", Direction: " + (isOpened ? "LEFT (Open)" : "RIGHT (Close)") +
+                        ", State: " + (isOpened ? "Opened" : "Closed"));
+
+                if (isOpened) {
+                    adapter.setSwipedPosition(position);
+                } else {
+                    adapter.setSwipedPosition(-1);
+                }
+            }
+
+            @Override
+            public float getSwipeThreshold(@NonNull RecyclerView.ViewHolder viewHolder) {
+                // Return a threshold based on action width
+                float actionWidth = 160 * viewHolder.itemView.getContext().getResources().getDisplayMetrics().density;
+                float threshold = (actionWidth / viewHolder.itemView.getWidth()) * 0.5f;
+                return Math.max(0.1f, Math.min(threshold, 0.5f));
+            }
+
+            @Override
+            public float getSwipeEscapeVelocity(float defaultValue) {
+                return defaultValue * 10;
             }
 
             @Override
@@ -451,7 +497,23 @@ public class CartFragment extends Fragment {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     CartAdapter.CartViewHolder holder = (CartAdapter.CartViewHolder) viewHolder;
                     float actionWidth = 160 * recyclerView.getContext().getResources().getDisplayMetrics().density;
-                    float translationX = Math.max(-actionWidth, dX);
+                    int currentPos = viewHolder.getAdapterPosition();
+
+                    if (isCurrentlyActive && adapter.getSwipedPosition() != -1 && adapter.getSwipedPosition() != currentPos) {
+                        adapter.setSwipedPosition(-1);
+                    }
+
+                    float translationX;
+                    if (currentPos == adapter.getSwipedPosition()) {
+                        translationX = Math.min(0, -actionWidth + dX);
+                    } else {
+                        translationX = Math.max(-actionWidth, dX);
+                    }
+
+                    Log.v("CartSwipe", "Swipe Drawing - Position: " + currentPos +
+                            ", dX: " + dX + ", translationX: " + translationX +
+                            ", isCurrentlyActive: " + isCurrentlyActive);
+
                     holder.layoutFront.setTranslationX(translationX);
                 } else {
                     super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
@@ -461,9 +523,16 @@ public class CartFragment extends Fragment {
             @Override
             public void clearView(@NonNull RecyclerView recyclerView,
                                   @NonNull RecyclerView.ViewHolder viewHolder) {
-                super.clearView(recyclerView, viewHolder);
+                int position = viewHolder.getAdapterPosition();
                 CartAdapter.CartViewHolder holder = (CartAdapter.CartViewHolder) viewHolder;
-                holder.layoutFront.setTranslationX(0);
+
+                if (position != -1 && position == adapter.getSwipedPosition()) {
+                    float actionWidth = 160 * recyclerView.getContext().getResources().getDisplayMetrics().density;
+                    holder.layoutFront.setTranslationX(-actionWidth);
+                } else {
+                    holder.layoutFront.setTranslationX(0);
+                }
+                super.clearView(recyclerView, viewHolder);
             }
         };
 

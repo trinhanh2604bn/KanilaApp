@@ -57,7 +57,7 @@ public class VariantBottomSheetDialog extends BottomSheetDialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.bottom_sheet_variant);
+        setContentView(R.layout.bottom_sheet_variant_selector);
 
         setOnShowListener(dialog -> setupHeight());
         setupViews();

@@ -382,6 +382,27 @@
     <string name="error_password_weak">Mật khẩu phải có ít nhất 8 ký tự.</string>
 
     <string name="auth_otp_channel_label">Nhận mã xác minh qua:</string>
+    <string name="order_detail_title">Thông tin đơn hàng</string>
+    <string name="order_detail_banner_seller_preparing">Người bán đang chuẩn bị hàng</string>
+    <string name="order_detail_banner_time_guarantee">Thời gian đảm bảo nhận hàng: Dự kiến sau 2-3 ngày</string>
+    <string name="order_detail_shipping_info">Thông tin vận chuyển</string>
+    <string name="order_detail_tracking_number">Mã vận đơn: %s</string>
+    <string name="order_detail_recipient_title">Địa chỉ nhận hàng</string>
+    <string name="order_detail_total_label">Thành tiền: </string>
+    <string name="order_detail_support_title">Bạn cần hỗ trợ?</string>
+    <string name="order_detail_contact_shop">Liên hệ Shop</string>
+    <string name="order_detail_help_center">Trung tâm Hỗ trợ</string>
+    <string name="order_detail_number_label">Mã đơn hàng</string>
+    <string name="order_detail_placed_time">Thời gian đặt hàng</string>
+    <string name="order_detail_copy">SAO CHÉP</string>
+    <string name="order_detail_copy_success">Đã sao chép mã đơn hàng</string>
+    <string name="order_detail_cancel_order">Hủy đơn hàng</string>
+    <string name="order_detail_cancel_reason_title">Lý Do Hủy</string>
+    <string name="order_detail_cancel_note">Bạn có biết? Bạn có thể cập nhật thông tin nhận hàng cho đơn hàng (1 lần duy nhất). Nếu bạn xác nhận hủy, toàn bộ đơn hàng sẽ được hủy.</string>
+    <string name="order_detail_you_may_like">—— Có thể bạn cũng thích ——</string>
+    <string name="order_detail_cancel_success">Hủy đơn hàng thành công</string>
+    <string name="order_detail_return_refund">Trả hàng/Hoàn tiền</string>
+
     <string name="error_no_internet">Không có kết nối Internet</string>
     <string name="empty_state_title">Chưa có dữ liệu</string>
     <string name="empty_state_description">Hiện tại chưa có thông tin để hiển thị.</string>

@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardOrder"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/spacing_m"
@@ -20,6 +21,7 @@
 
         <!-- Card Header: Store/Brand & Status -->
         <LinearLayout
+            android:id="@+id/layoutOrderHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -54,6 +56,7 @@
         </LinearLayout>
 
         <View
+            android:id="@+id/dividerOrder"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/spacing_s"
@@ -94,6 +97,7 @@
 
         <!-- Action Area -->
         <LinearLayout
+            android:id="@+id/layoutOrderActionArea"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_m"
@@ -112,15 +116,34 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnOrderAction"
-                style="@style/Widget.Kanila.Button.Secondary"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:minWidth="100dp"
-                android:paddingHorizontal="16dp"
-                android:text="Đánh giá"
-                android:textSize="12sp" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnOrderReturn"
+                    style="@style/Widget.Kanila.Button.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="8dp"
+                    android:minWidth="100dp"
+                    android:paddingHorizontal="16dp"
+                    android:text="Trả hàng/Hoàn tiền"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnOrderAction"
+                    style="@style/Widget.Kanila.Button.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:minWidth="100dp"
+                    android:paddingHorizontal="16dp"
+                    android:text="Đánh giá"
+                    android:textSize="12sp" />
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>

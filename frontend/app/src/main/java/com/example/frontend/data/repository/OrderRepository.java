@@ -7,9 +7,12 @@ import com.example.frontend.data.remote.ApiResponse;
 import com.example.frontend.data.remote.ApiService;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.data.model.order.OrderDto;
+import com.example.frontend.data.model.order.OrderDetailDto;
 import com.example.frontend.data.model.order.OrderSummaryDto;
 import com.example.frontend.data.model.common.PaginatedData;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -19,6 +22,56 @@ public class OrderRepository {
 
     public OrderRepository(Context context) {
         this.apiService = ApiClient.getClient(context).create(ApiService.class);
+    }
+
+    public void getOrderDetail(String orderId, MutableLiveData<NetworkResult<OrderDetailDto>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.getMyOrderDetail(orderId).enqueue(new Callback<ApiResponse<OrderDetailDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<OrderDetailDto>> call, Response<ApiResponse<OrderDetailDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<OrderDetailDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to load order details"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<OrderDetailDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void cancelOrder(String orderId, String reason, MutableLiveData<NetworkResult<OrderSummaryDto>> result) {
+        result.setValue(NetworkResult.loading());
+        Map<String, String> body = new HashMap<>();
+        body.put("reason", reason);
+        apiService.cancelMyOrder(orderId, body).enqueue(new Callback<ApiResponse<OrderSummaryDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<OrderSummaryDto>> call, Response<ApiResponse<OrderSummaryDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<OrderSummaryDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to cancel order"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<OrderSummaryDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
     }
 
     public void getMyOrders(String status, Integer page, MutableLiveData<NetworkResult<List<OrderSummaryDto>>> result) {

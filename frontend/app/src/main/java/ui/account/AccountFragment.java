@@ -143,6 +143,16 @@ public class AccountFragment extends Fragment {
                         .commit();
             });
         }
+
+        View menuHelpCenter = view.findViewById(R.id.menuHelpCenter);
+        if (menuHelpCenter != null) {
+            menuHelpCenter.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.support.HelpCenterFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
     }
 
     private void setupBottomNavigation(View view) {

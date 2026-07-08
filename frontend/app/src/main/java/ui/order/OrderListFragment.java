@@ -47,6 +47,13 @@ public class OrderListFragment extends Fragment {
         setupRecyclerView();
         observeViewModel();
         
+        getParentFragmentManager().setFragmentResultListener("order_detail_result", getViewLifecycleOwner(), (requestKey, result) -> {
+            boolean cancelled = result.getBoolean("cancelled", false);
+            if (cancelled) {
+                viewModel.loadOrders(currentStatus);
+            }
+        });
+
         viewModel.loadOrders(null);
     }
 
@@ -114,6 +121,13 @@ public class OrderListFragment extends Fragment {
 
     private void setupRecyclerView() {
         adapter = new OrderAdapter();
+        adapter.setOnOrderClickListener(order -> {
+            OrderDetailFragment fragment = OrderDetailFragment.newInstance(order.getId());
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
         rvOrders.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvOrders.setAdapter(adapter);
     }

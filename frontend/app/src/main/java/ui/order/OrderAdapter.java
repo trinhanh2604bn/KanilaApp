@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,9 +19,18 @@ import java.util.Locale;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
 
+    public interface OnOrderClickListener {
+        void onOrderClick(OrderSummaryDto order);
+    }
+
     private final List<OrderSummaryDto> orders = new ArrayList<>();
+    private OnOrderClickListener listener;
 
     public OrderAdapter() {
+    }
+
+    public void setOnOrderClickListener(OnOrderClickListener listener) {
+        this.listener = listener;
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -36,7 +46,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     @Override
     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_order_card, parent, false);
-        return new OrderViewHolder(view);
+        return new OrderViewHolder(view, listener);
     }
 
     @Override
@@ -53,10 +63,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     static class OrderViewHolder extends RecyclerView.ViewHolder {
         TextView tvBrandName, tvStatus, tvProductName, tvVariant, tvQuantity, tvPrice, tvTotalSummary, tvGrandTotal, tvDisclaimer;
         ImageView ivProduct;
-        MaterialButton btnAction;
+        MaterialButton btnAction, btnReturn;
+        LinearLayout layoutActionArea;
+        private final OnOrderClickListener listener;
 
-        public OrderViewHolder(@NonNull View itemView) {
+        public OrderViewHolder(@NonNull View itemView, OnOrderClickListener listener) {
             super(itemView);
+            this.listener = listener;
             tvBrandName = itemView.findViewById(R.id.tvOrderBrandName);
             tvStatus = itemView.findViewById(R.id.tvOrderHeaderStatus);
             
@@ -71,6 +84,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             tvGrandTotal = itemView.findViewById(R.id.tvOrderGrandTotal);
             tvDisclaimer = itemView.findViewById(R.id.tvOrderProcessingDisclaimer);
             btnAction = itemView.findViewById(R.id.btnOrderAction);
+            btnReturn = itemView.findViewById(R.id.btnOrderReturn);
+            layoutActionArea = itemView.findViewById(R.id.layoutOrderActionArea);
         }
 
         public void bind(OrderSummaryDto order) {
@@ -101,7 +116,9 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             setupActionArea(status);
 
             itemView.setOnClickListener(v -> {
-                // TODO: Navigate to Order Detail
+                if (listener != null) {
+                    listener.onOrderClick(order);
+                }
             });
         }
 
@@ -110,6 +127,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             btnAction.setEnabled(true);
             btnAction.setAlpha(1.0f);
             btnAction.setVisibility(View.VISIBLE);
+            btnReturn.setVisibility(View.GONE);
 
             if (status == null) {
                 btnAction.setVisibility(View.GONE);
@@ -126,9 +144,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
                     btnAction.setEnabled(false);
                     btnAction.setAlpha(0.5f);
                     tvDisclaimer.setVisibility(View.VISIBLE);
+                    btnReturn.setVisibility(View.VISIBLE);
+                    btnReturn.setText("Trả hàng/Hoàn tiền");
                     break;
                 case "completed":
                     btnAction.setText("Đánh giá");
+                    btnReturn.setVisibility(View.VISIBLE);
+                    btnReturn.setText("Trả hàng/Hoàn tiền");
                     break;
                 case "cancelled":
                 case "returned":
@@ -141,6 +163,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             
             btnAction.setOnClickListener(v -> {
                 // TODO: Handle action based on button text
+            });
+
+            btnReturn.setOnClickListener(v -> {
+                // TODO: Handle return/refund
             });
         }
 

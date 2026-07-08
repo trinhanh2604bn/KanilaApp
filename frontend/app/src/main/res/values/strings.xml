@@ -68,6 +68,8 @@
     <string name="category_section_brand">Thương hiệu nổi bật</string>
     <string name="action_see_all">Xem tất cả ></string>
     <string name="action_view_all">Xem tất cả</string>
+    <string name="action_see_more">Xem thêm</string>
+    <string name="action_collapse">Thu gọn</string>
     <string name="category_lips">Lips</string>
     <string name="category_eyes">Eyes</string>
     <string name="category_cheeks">Cheeks</string>
@@ -293,29 +295,24 @@
     <string name="popular_ingredients">Thành phần phổ biến</string>
     <string name="recent_searches">Tìm kiếm gần đây</string>
     <string name="add_custom_ingredient">Thêm thành phần khác</string>
-    <!-- Skin indicators -->
     <string name="skin_type_oily">Da dầu</string>
     <string name="skin_type_dry">Da khô</string>
     <string name="skin_type_combination">Da hỗn hợp</string>
     <string name="skin_type_normal">Da thường</string>
     <string name="skin_type_sensitive">Da nhạy cảm</string>
     <string name="skin_type_unknown">Chưa chắc chắn</string>
-
     <string name="skin_score_oily">72/100</string>
     <string name="skin_score_dry">38/100</string>
     <string name="skin_score_combination">64/100</string>
     <string name="skin_score_normal">82/100</string>
     <string name="skin_score_sensitive">56/100</string>
     <string name="skin_score_unknown">--/100</string>
-
     <string name="skin_status_high">Khá cao</string>
     <string name="skin_status_low">Thấp</string>
     <string name="skin_status_medium">Trung bình</string>
     <string name="skin_status_balanced">Cân bằng</string>
     <string name="skin_status_sensitive">Dễ kích ứng</string>
     <string name="skin_status_unknown">Chưa xác định</string>
-
-    <!-- Beauty goals -->
     <string name="goal_hydrating">Cấp ẩm</string>
     <string name="goal_brightening">Làm sáng da</string>
     <string name="goal_acne">Hỗ trợ giảm mụn</string>
@@ -326,9 +323,6 @@
     <string name="goal_soothing">Làm dịu da</string>
     <string name="goal_sun">Chống nắng</string>
     <string name="goal_even_tone">Làm đều màu da</string>
-    <string name="log_today_progress" />
-
-    <!-- Auth -->
     <string name="auth_login_title">Đăng nhập</string>
     <string name="auth_login_subtitle">Chào mừng bạn quay lại! Đăng nhập để tiếp tục mua sắm và theo dõi đơn hàng.</string>
     <string name="auth_register_title">Tạo tài khoản</string>
@@ -367,7 +361,6 @@
     <string name="auth_guest_btn_login">Đăng nhập</string>
     <string name="auth_guest_btn_register">Tạo tài khoản</string>
     <string name="auth_guest_btn_later">Để sau</string>
-
     <string name="auth_forgot_password">Quên mật khẩu?</string>
     <string name="auth_forgot_password_title">Quên mật khẩu?</string>
     <string name="auth_forgot_password_subtitle">Nhập email hoặc số điện thoại để nhận mã đặt lại mật khẩu.</string>
@@ -378,12 +371,9 @@
     <string name="auth_reset_success">Đặt lại mật khẩu thành công</string>
     <string name="error_password_mismatch">Mật khẩu xác nhận không khớp.</string>
     <string name="error_password_weak">Mật khẩu phải có ít nhất 8 ký tự.</string>
-
     <string name="error_no_internet">Không có kết nối Internet</string>
     <string name="empty_state_title">Chưa có dữ liệu</string>
     <string name="empty_state_description">Hiện tại chưa có thông tin để hiển thị.</string>
-
-    <!-- Support Center -->
     <string name="support_center_title">Trung tâm hỗ trợ</string>
     <string name="support_search_hint">Tìm câu trả lời, đơn hàng, chính sách...</string>
     <string name="popular_topics">Chủ đề phổ biến</string>
@@ -399,8 +389,6 @@
     <string name="see_all_requests">Xem tất cả yêu cầu</string>
     <string name="status_processing">Đang xử lý</string>
     <string name="last_updated_format">Cập nhật lần cuối: %s</string>
-
-    <!-- Chat Conversation -->
     <string name="chat_assistant_title">Kanila AI Assistant</string>
     <string name="chat_welcome_title">Xin chào bạn! 👋</string>
     <string name="chat_welcome_desc">Mình là Kanila AI Assistant. Mình có thể giúp bạn tư vấn sản phẩm, thành phần, đơn hàng và chính sách của Kanila Beauty.</string>
@@ -412,8 +400,6 @@
     <string name="chat_ai_status">AI hoạt động\n24/7</string>
     <string name="chat_input_hint">Nhập câu hỏi của bạn...</string>
     <string name="chat_disclaimer">AI có thể mắc lỗi. Vui lòng kiểm tra lại thông tin quan trọng.</string>
-
-    <!-- Chatbot Quick Menu -->
     <string name="quick_menu_title">Tác vụ nhanh</string>
     <string name="track_order_subtitle">Xem tình trạng đơn hàng của bạn</string>
     <string name="ingredients_check">Kiểm tra thành phần</string>
@@ -434,8 +420,6 @@
     <string name="channel_email">Email</string>
     <string name="channel_zalo">Zalo</string>
     <string name="menu_clear_chat">Xóa lịch sử trò chuyện</string>
-
-    <!-- Ingredient Analysis -->
     <string name="ingredient_check_title">Kiểm tra thành phần</string>
     <string name="advisor_name">Kanila Beauty Advisor</string>
     <string name="online_status">Đang online</string>
@@ -448,4 +432,170 @@
     <string name="status_consider">Cần cân nhắc</string>
     <string name="match_yes">Phù hợp với bạn</string>
     <string name="match_no">Có thể không phù hợp</string>
+    <string name="order_tracking_title">Tra cứu đơn hàng</string>
+    <string name="order_detail_title">Chi tiết đơn hàng</string>
+    <string name="shipping_address_title">Địa chỉ nhận hàng</string>
+    <string name="order_summary_title">Thông tin đơn hàng</string>
+    <string name="order_status_shipping">Đang giao</string>
+    <string name="order_date_format">Ngày đặt: %s</string>
+    <string name="order_total_format">Tổng: %s</string>
+    <string name="shipping_unit">Đơn vị vận chuyển</string>
+    <string name="expected_delivery">Dự kiến giao</string>
+    <string name="order_step_confirmed">Đã xác nhận</string>
+    <string name="order_step_preparing">Đang chuẩn bị</string>
+    <string name="order_step_shipping">Đang giao</string>
+    <string name="order_step_success">Giao thành công</string>
+    <string name="action_view_order_detail">Xem chi tiết đơn hàng</string>
+    <string name="action_contact_shipper">Liên hệ shipper</string>
+    <string name="action_create_support">Tạo yêu cầu hỗ trợ</string>
+    <string name="create_ticket_title">Gửi yêu cầu hỗ trợ</string>
+    <string name="label_subject">Chủ đề</string>
+    <string name="hint_subject">Chọn chủ đề</string>
+    <string name="label_order_id">Mã đơn hàng</string>
+    <string name="hint_order_id">Nhập mã đơn hàng</string>
+    <string name="label_description">Mô tả vấn đề</string>
+    <string name="hint_description">Vui lòng mô tả chi tiết vấn đề bạn gặp phải...</string>
+    <string name="label_attachment">Đính kèm hình ảnh / video</string>
+    <string name="upload_placeholder">Tải ảnh hoặc video</string>
+    <string name="upload_limit">Tối đa 5 file, mỗi file ≤ 20MB</string>
+    <string name="label_issue_type">Loại vấn đề</string>
+    <string name="issue_return">Đổi trả</string>
+    <string name="issue_missing">Thiếu hàng</string>
+    <string name="issue_payment">Thanh toán</string>
+    <string name="issue_consult">Tư vấn sản phẩm</string>
+    <string name="issue_other">Khác</string>
+    <string name="label_contact_method">Phương thức liên hệ mong muốn</string>
+    <string name="contact_call">Gọi điện thoại</string>
+    <string name="contact_call_sub">Nhân viên sẽ gọi bạn</string>
+    <string name="contact_email">Email</string>
+    <string name="contact_email_sub">Gửi phản hồi qua email</string>
+    <string name="contact_chat">Tin nhắn</string>
+    <string name="contact_chat_sub">Phản hồi qua ứng dụng</string>
+    <string name="ticket_banner_title">Phản hồi trong vòng 24h</string>
+    <string name="ticket_banner_desc">Kanila Beauty cam kết phản hồi yêu cầu của bạn trong vòng 24 giờ làm việc.</string>
+    <string name="btn_submit_ticket">Gửi yêu cầu</string>
+    <string name="chat_input_hint_short">Nhập tin nhắn...</string>
+    <string name="handoff_title">Nhân viên hỗ trợ</string>
+    <string name="advisor_linh">Linh – CSKH Kanila</string>
+    <string name="msg_user_1">Mình muốn đổi trả sản phẩm vì bị lỗi khi nhận hàng.</string>
+    <string name="msg_advisor_1">Dạ Kanila rất tiếc vì trải nghiệm chưa như mong muốn của bạn ạ. Mình vui lòng cung cấp giúp Linh mã đơn hàng để mình kiểm tra nhanh nhé.</string>
+    <string name="msg_order_card">Đơn hàng #KB2505123456</string>
+    <string name="prod_peptide">Serum Kanila Peptide Glow</string>
+    <string name="prod_peptide_desc">30ml</string>
+    <string name="prod_peptide_price">650.000đ</string>
+    <string name="msg_advisor_2">Cảm ơn bạn. Đơn hàng của bạn đủ điều kiện đổi trả do lỗi sản phẩm. Bạn vui lòng gửi hình ảnh sản phẩm lỗi giúp Linh nhé.</string>
+    <string name="msg_upload_card">Tải ảnh sản phẩm lỗi</string>
+    <string name="filename_sample">IMG_20250512_1015.jpg (1.2MB)</string>
+    <string name="msg_advisor_3">Mình đã nhận được hình ảnh ạ. Kanila sẽ tiến hành xử lý đổi trả cho bạn ngay ạ. Dự kiến bạn sẽ nhận được hàng mới trong 2-3 ngày làm việc. Cảm ơn bạn đã tin tưởng Kanila! 💗</string>
+    <string name="action_call_now">Gọi ngay</string>
+    <string name="action_view_policy">Xem chính sách</string>
+    <string name="action_create_return">Tạo đổi trả</string>
+    <string name="ticket_detail_title">Chi tiết yêu cầu</string>
+    <string name="label_ticket_id">Mã yêu cầu</string>
+    <string name="ticket_id_sample">#TK250512-00123</string>
+    <string name="status_processing_text">Đang xử lý</string>
+    <string name="label_process_title">Tiến trình xử lý</string>
+    <string name="step_received">Đã tiếp nhận</string>
+    <string name="step_verifying">Đang xác minh</string>
+    <string name="step_replied">Đã phản hồi</string>
+    <string name="step_completed">Hoàn tất</string>
+    <string name="label_latest_content">Nội dung xử lý (mới nhất)</string>
+    <string name="content_sample">Chúng tôi đã xác minh thông tin và xác nhận sản phẩm bị lỗi do nhà sản xuất. Kanila sẽ tiến hành đổi sản phẩm mới cho bạn.</string>
+    <string name="content_update_info">Cập nhật bởi Linh – CSKH Kanila – 12/05/2025 11:02</string>
+    <string name="label_sla">SLA cam kết</string>
+    <string name="sla_value">Phản hồi trong 24h</string>
+    <string name="label_last_update">Cập nhật gần nhất</string>
+    <string name="last_update_sample">12/05/2025 11:02</string>
+    <string name="btn_add_info">Bổ sung thông tin</string>
+    <string name="btn_close_ticket">Đóng yêu cầu</string>
+    <string name="btn_rate_support">Đánh giá hỗ trợ</string>
+    <string name="help_center_title">Trung tâm trợ giúp</string>
+    <string name="help_search_hint">Bạn cần hỗ trợ vấn đề gì?</string>
+    <string name="category_orders">Đơn hàng</string>
+    <string name="category_returns">Đổi trả</string>
+    <string name="category_payment">Thanh toán</string>
+    <string name="category_account">Tài khoản</string>
+    <string name="category_product">Sản phẩm</string>
+    <string name="category_promotion">Khuyến mãi</string>
+    <string name="faq_section_title">Câu hỏi thường gặp</string>
+    <string name="faq_1">Làm thế nào để theo dõi đơn hàng?</string>
+    <string name="faq_2">Bao lâu thì tôi nhận được hàng?</string>
+    <string name="faq_3">Chính sách đổi trả của Kanila Beauty</string>
+    <string name="faq_4">Sản phẩm bị hư hỏng khi nhận hàng thì sao?</string>
+    <string name="faq_5">Phương thức thanh toán nào được chấp nhận?</string>
+    <string name="view_all">Xem tất cả</string>
+    <string name="featured_articles">Bài viết nổi bật</string>
+    <string name="article_title">Hướng dẫn đổi trả mỹ phẩm</string>
+    <string name="article_desc">Quy trình đổi trả dễ dàng chỉ với 4 bước đơn giản.</string>
+    <string name="view_detail">Xem chi tiết</string>
+    <string name="no_answer_found">Không tìm thấy câu trả lời?</string>
+    <string name="chat_now">Chat ngay</string>
+    <string name="return_assistant_title">Hỗ trợ đổi trả</string>
+    <string name="selected_order_title">Đơn hàng đã chọn</string>
+    <string name="view_detail_action">Xem chi tiết</string>
+    <string name="order_id_sample">#KB24052568</string>
+    <string name="order_date_sample">25/05/2024 - 2 sản phẩm</string>
+    <string name="step_select_product">Chọn sản phẩm</string>
+    <string name="step_select_product_desc">1 sản phẩm được chọn</string>
+    <string name="step_return_reason">Lý do đổi trả</string>
+    <string name="step_return_reason_desc">Sản phẩm bị lỗi</string>
+    <string name="step_upload_media">Tải ảnh/video</string>
+    <string name="step_upload_media_desc">2 ảnh đã tải lên</string>
+    <string name="step_confirm">Xác nhận</string>
+    <string name="step_confirm_desc">Kiểm tra thông tin và phương thức hoàn tiền</string>
+    <string name="refund_method_title">Phương thức hoàn tiền</string>
+    <string name="refund_method_wallet">Hoàn tiền về ví Kanila</string>
+    <string name="refund_method_desc">Nhanh chóng, tiện lợi</string>
+    <string name="change_action">Thay đổi</string>
+    <string name="summary_title">Tóm tắt yêu cầu</string>
+    <string name="label_product">Sản phẩm</string>
+    <string name="product_name_sample">Serum cấp ẩm Kanila 30ml</string>
+    <string name="label_reason">Lý do đổi trả</string>
+    <string name="label_refund_method">Phương thức hoàn tiền</string>
+    <string name="label_total_refund">Tổng tiền hoàn</string>
+    <string name="total_refund_sample">650.000đ</string>
+    <string name="step_num_1">1</string>
+    <string name="step_num_2">2</string>
+    <string name="step_num_3">3</string>
+    <string name="step_num_4">4</string>
+    <string name="btn_create_return_request">Tạo yêu cầu đổi trả</string>
+    <string name="support_history_title">Lịch sử hỗ trợ</string>
+    <string name="tab_open_format">Đang mở (%d)</string>
+    <string name="tab_completed_format">Đã hoàn tất (%d)</string>
+    <string name="ticket_sample_title_1">Đổi trả sản phẩm bị lỗi</string>
+    <string name="ticket_sample_id_1">#SR24060031</string>
+    <string name="ticket_sample_order_1">Đơn #KB24052568</string>
+    <string name="ticket_sample_time_1">1 giờ trước</string>
+    <string name="ticket_sample_title_2">Hỏi về đơn hàng</string>
+    <string name="ticket_sample_id_2">#SR24060012</string>
+    <string name="ticket_sample_order_2">Đơn #KB24052611</string>
+    <string name="ticket_sample_time_2">5 giờ trước</string>
+    <string name="ticket_sample_title_3">Tư vấn sản phẩm</string>
+    <string name="ticket_sample_id_3">#SR24059980</string>
+    <string name="ticket_sample_time_3">1 ngày trước</string>
+    <string name="ticket_sample_title_4">Vấn đề thanh toán</string>
+    <string name="ticket_sample_id_4">#SR24059876</string>
+    <string name="ticket_sample_time_4">2 ngày trước</string>
+    <string name="status_waiting_reply">Chờ phản hồi</string>
+    <string name="rate_support_title">Đánh giá hỗ trợ</string>
+    <string name="rate_support_subtitle">Chúng tôi luôn muốn phục vụ bạn tốt hơn!</string>
+    <string name="rate_excellent">Tuyệt vời!</string>
+    <string name="chip_fast_response">Phản hồi nhanh</string>
+    <string name="chip_friendly">Thân thiện</string>
+    <string name="chip_good_resolution">Giải quyết tốt</string>
+    <string name="share_more_label">Chia sẻ thêm của bạn (không bắt buộc)</string>
+    <string name="sample_rating_comment">Nhân viên hỗ trợ rất nhiệt tình và giải quyết vấn đề nhanh chóng. Mình rất hài lòng!</string>
+    <string name="status_finished">Đã hoàn tất</string>
+    <string name="beauty_profile_description">Hiểu làn da của bạn để gợi ý sản phẩm phù hợp hơn</string>
+    <string name="beauty_profile_card_title">Hồ sơ làn da của bạn</string>
+    <string name="label_skin_type">Loại da:</string>
+    <string name="label_skin_tone">Tone da:</string>
+    <string name="sample_skin_tone_light">Sáng</string>
+    <string name="profile_completion_format">Hồ sơ của bạn hoàn thành %d%%</string>
+    <string name="remaining_steps_format">Chỉ còn %d bước để hoàn thành hồ sơ</string>
+    <string name="section_skin_type">1. Loại da</string>
+    <string name="section_skin_tone">2. Tone da</string>
+    <string name="section_budget">3. Ngân sách ưu tiên</string>
+    <string name="section_avoid_ingredients">4. Thành phần cần tránh</string>
+    <string name="btn_submit_rating">Gửi đánh giá</string>
 </resources>

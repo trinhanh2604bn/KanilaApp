@@ -16,7 +16,6 @@ public class BottomNavigationHelper {
     public static final int TAB_REELS = 2;
     public static final int TAB_COMMUNITY = 3;
     public static final int TAB_ACCOUNT = 4;
-    public static final int TAB_SUPPORT = 5;
 
     public interface OnTabSelectedListener {
         void onTabSelected(int tabIndex);
@@ -28,7 +27,6 @@ public class BottomNavigationHelper {
         View navReels = root.findViewById(R.id.navReels);
         View navCommunity = root.findViewById(R.id.navCommunity);
         View navAccount = root.findViewById(R.id.navAccount);
-        View navSupport = root.findViewById(R.id.navSupport);
 
         if (navHome != null) navHome.setOnClickListener(v -> {
             setSelectedTab(root, TAB_HOME);
@@ -50,17 +48,13 @@ public class BottomNavigationHelper {
             setSelectedTab(root, TAB_ACCOUNT);
             if (listener != null) listener.onTabSelected(TAB_ACCOUNT);
         });
-        if (navSupport != null) navSupport.setOnClickListener(v -> {
-            setSelectedTab(root, TAB_SUPPORT);
-            if (listener != null) listener.onTabSelected(TAB_SUPPORT);
-        });
     }
 
     public static void setSelectedTab(View root, int tabIndex) {
-        int[] itemIds = {R.id.navHome, R.id.navCategory, R.id.navReels, R.id.navCommunity, R.id.navAccount, R.id.navSupport};
-        int[] iconIds = {R.id.ivHome, R.id.ivCategory, R.id.ivReels, R.id.ivCommunity, R.id.ivAccount, R.id.ivSupport};
-        int[] textIds = {R.id.tvHome, R.id.tvCategory, R.id.tvReels, R.id.tvCommunity, R.id.tvAccount, R.id.tvSupport};
-        int[] bgIds = {R.id.bgHome, R.id.bgCategory, R.id.bgReels, R.id.bgCommunity, R.id.bgAccount, R.id.bgSupport};
+        int[] itemIds = {R.id.navHome, R.id.navCategory, R.id.navReels, R.id.navCommunity, R.id.navAccount};
+        int[] iconIds = {R.id.ivHome, R.id.ivCategory, R.id.ivReels, R.id.ivCommunity, R.id.ivAccount};
+        int[] textIds = {R.id.tvHome, R.id.tvCategory, R.id.tvReels, R.id.tvCommunity, R.id.tvAccount};
+        int[] bgIds = {R.id.bgHome, R.id.bgCategory, R.id.bgReels, R.id.bgCommunity, R.id.bgAccount};
 
         Context context = root.getContext();
         int activeColor = ContextCompat.getColor(context, R.color.button);

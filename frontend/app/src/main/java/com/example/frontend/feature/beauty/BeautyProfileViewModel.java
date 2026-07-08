@@ -33,6 +33,10 @@ public class BeautyProfileViewModel extends AndroidViewModel {
         repository.getBeautyProfile(customerId, profileResult);
     }
 
+    public void updateProfileLocally(CustomerBeautyProfileDto profile) {
+        profileResult.setValue(NetworkResult.success(profile));
+    }
+
     public void loadReferences() {
         repository.getBeautyReferences(referencesResult);
     }

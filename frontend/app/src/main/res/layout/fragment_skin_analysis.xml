@@ -97,6 +97,7 @@
                         android:layout_marginTop="16dp">
 
                         <ProgressBar
+                            android:id="@+id/progressScore"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:indeterminate="false"
@@ -113,6 +114,7 @@
                             android:gravity="center"
                             android:orientation="vertical">
                             <TextView
+                                android:id="@+id/tvScore"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="82"
@@ -120,6 +122,7 @@
                                 android:textColor="@color/accent_dark"
                                 android:fontFamily="@font/nunito_bold"/>
                             <TextView
+                                android:id="@+id/tvScoreStatus"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Tốt"
@@ -130,6 +133,7 @@
                     </FrameLayout>
 
                     <TextView
+                        android:id="@+id/tvAiStats"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
@@ -178,6 +182,7 @@
                     </LinearLayout>
 
                     <TextView
+                        android:id="@+id/tvAiVerdict"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"

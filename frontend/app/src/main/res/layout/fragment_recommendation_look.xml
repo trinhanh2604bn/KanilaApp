@@ -232,7 +232,7 @@
                 android:id="@+id/btnBuyAllRec"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:layout_weight="1.5"
+                android:layout_weight="1"
                 android:backgroundTint="@color/button"
                 android:fontFamily="@font/nunito_bold"
                 android:text="Mua trọn bộ"

@@ -150,6 +150,7 @@
 
                 <!-- Oily Skin -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/suggestOilySkin"
                     style="@style/Widget.MaterialComponents.CardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -192,6 +193,7 @@
 
                 <!-- Order Status -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/suggestOrderStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/spacing_s"
@@ -233,6 +235,7 @@
 
                 <!-- Sensitive Skin -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/suggestSensitiveSkin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/spacing_s"
@@ -274,6 +277,7 @@
 
                 <!-- Return Policy -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/suggestReturnPolicy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/spacing_xl"

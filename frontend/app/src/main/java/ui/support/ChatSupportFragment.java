@@ -4,18 +4,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.example.frontend.R;
-import ui.common.ViewUtils;
-import ui.common.helper.ChatbotLoadingAnimator;
 
 public class ChatSupportFragment extends Fragment {
 
-    private ChatbotLoadingAnimator chatbotLoadingAnimator;
+    public static ChatSupportFragment newInstance() {
+        return new ChatSupportFragment();
+    }
 
     @Nullable
     @Override
@@ -26,34 +24,10 @@ public class ChatSupportFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        chatbotLoadingAnimator = new ChatbotLoadingAnimator(view);
-        chatbotLoadingAnimator.start();
-
-        setupEvents(view);
-    }
-
-    private void setupEvents(View view) {
+        
         View btnBack = view.findViewById(R.id.btnBack);
         if (btnBack != null) {
-            ViewUtils.applyClickAnimation(btnBack);
-            btnBack.setOnClickListener(v -> {
-                if (getParentFragmentManager().getBackStackEntryCount() > 0) {
-                    getParentFragmentManager().popBackStack();
-                } else {
-                    requireActivity().getOnBackPressedDispatcher().onBackPressed();
-                }
-            });
+            btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        if (chatbotLoadingAnimator != null) {
-            chatbotLoadingAnimator.stop();
-            chatbotLoadingAnimator = null;
-        }
-
-        super.onDestroyView();
     }
 }

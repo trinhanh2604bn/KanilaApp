@@ -2,9 +2,11 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="160dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
+    android:layout_marginHorizontal="6dp"
+    android:layout_marginVertical="10dp"
+    app:cardUseCompatPadding="true"
     app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="24dp"
     app:cardElevation="2dp"
@@ -14,18 +16,20 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp">
+        android:padding="12dp"
+        android:minHeight="280dp">
 
         <!-- Status Badge -->
         <LinearLayout
             android:id="@+id/layoutProductStatusBadge"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="24dp"
             android:background="@drawable/bg_product_badge"
             android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
+            android:gravity="center"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:elevation="1dp">
 
             <TextView
                 android:id="@+id/tvProductBadge"
@@ -63,25 +67,28 @@
         <!-- Product Image -->
         <ImageView
             android:id="@+id/ivProductImage"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="32dp"
             android:scaleType="centerInside"
             android:contentDescription="@string/product_image_desc"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layoutProductStatusBadge"
-            tools:src="@drawable/ic_product" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/cl_product" />
 
         <!-- Brand Name -->
         <TextView
             android:id="@+id/tvProductBrand"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/nunito_bold"
             android:textColor="@color/text_main"
             android:textSize="14sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivProductImage"
@@ -91,7 +98,7 @@
         <TextView
             android:id="@+id/tvProductName"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:fontFamily="@font/nunito_regular"
@@ -107,7 +114,7 @@
         <LinearLayout
             android:id="@+id/layoutRating"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             app:layout_constraintStart_toStartOf="parent"
@@ -137,11 +144,12 @@
         <TextView
             android:id="@+id/tvProductPrice"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="24dp"
             android:layout_marginTop="12dp"
             android:fontFamily="@font/nunito_bold"
             android:textColor="@color/button"
             android:textSize="14sp"
+            android:gravity="center_vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/layoutRating"
             tools:text="450.000đ" />

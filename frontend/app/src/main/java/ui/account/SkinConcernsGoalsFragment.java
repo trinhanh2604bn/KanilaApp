@@ -155,15 +155,16 @@ public class SkinConcernsGoalsFragment extends Fragment {
     }
 
     private void saveProfile() {
-        new MaterialAlertDialogBuilder(requireContext())
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Lưu hồ sơ làm đẹp")
                 .setMessage("Bạn có muốn lưu các thay đổi này vào hồ sơ của mình không?")
-                .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
-                .setPositiveButton("Lưu", (dialog, which) -> {
-                    dialog.dismiss();
+                .setNegativeButton("Hủy", (d, which) -> d.dismiss())
+                .setPositiveButton("Lưu", (d, which) -> {
+                    d.dismiss();
                     showSaveSuccessPopup();
                 })
                 .show();
+        ViewUtils.customizeDialogButtons(dialog);
     }
 
     private void showSaveSuccessPopup() {

@@ -73,15 +73,16 @@ public class RecommendationLookFragment extends Fragment {
      * Hiển thị hộp thoại xác nhận lưu look.
      */
     private void showSaveConfirmDialog() {
-        new MaterialAlertDialogBuilder(requireContext())
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Lưu look trang điểm")
                 .setMessage("Bạn có muốn lưu look này vào danh sách yêu thích của mình không?")
-                .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
-                .setPositiveButton("Lưu", (dialog, which) -> {
-                    dialog.dismiss();
+                .setNegativeButton("Hủy", (d, which) -> d.dismiss())
+                .setPositiveButton("Lưu", (d, which) -> {
+                    d.dismiss();
                     showSaveSuccessPopup();
                 })
                 .show();
+        ViewUtils.customizeDialogButtons(dialog);
     }
 
     /**

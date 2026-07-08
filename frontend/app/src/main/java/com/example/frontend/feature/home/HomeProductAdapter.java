@@ -62,6 +62,16 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Product product = products.get(position);
+        
+        // Đảm bảo kích thước view luôn chuẩn xác khi reuse
+        ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
+        if (itemWidth > 0) {
+            layoutParams.width = itemWidth;
+        } else {
+            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        }
+        holder.itemView.setLayoutParams(layoutParams);
+
         holder.tvName.setText(product.getName());
         holder.tvBrand.setText(product.getBrand());
         holder.tvPrice.setText(product.getPrice());

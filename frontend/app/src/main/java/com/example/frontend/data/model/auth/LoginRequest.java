@@ -9,6 +9,9 @@ public class LoginRequest {
     @SerializedName("identifier")
     private String identifier;
 
+    @SerializedName("password")
+    private String password;
+
     @SerializedName("guest_session_id")
     private String guestSessionId;
 
@@ -18,7 +21,15 @@ public class LoginRequest {
         this.guestSessionId = guestSessionId;
     }
 
+    public LoginRequest(String loginChannel, String identifier, String password, String guestSessionId) {
+        this.loginChannel = loginChannel;
+        this.identifier = identifier;
+        this.password = password;
+        this.guestSessionId = guestSessionId;
+    }
+
     public String getLoginChannel() { return loginChannel; }
     public String getIdentifier() { return identifier; }
+    public String getPassword() { return password; }
     public String getGuestSessionId() { return guestSessionId; }
 }

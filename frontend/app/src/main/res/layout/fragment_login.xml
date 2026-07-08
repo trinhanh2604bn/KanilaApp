@@ -5,122 +5,211 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/background_main">
+    android:background="@color/white">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/spacing_xl">
+        android:padding="@dimen/spacing_l">
 
         <ImageButton
-            android:id="@+id/btnBack"
+            android:id="@+id/btnMenu"
             style="@style/Widget.Kanila.Button.Icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_back"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_list"
+            android:background="@drawable/bg_circle"
+            android:elevation="2dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/text_main" />
+
+        <TextView
+            android:id="@+id/tvBrandName"
+            style="@style/Text.Kanila.H1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_brand_name"
+            android:textColor="@color/text_main"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/ivIllustration"
+            android:layout_width="240dp"
+            android:layout_height="180dp"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/login_8"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvBrandName" />
 
         <TextView
             android:id="@+id/tvTitle"
             style="@style/Text.Kanila.H1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_xl"
+            android:layout_marginTop="24dp"
             android:text="@string/auth_login_title"
+            android:textColor="@color/text_main"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnBack" />
+            app:layout_constraintTop_toBottomOf="@id/ivIllustration" />
 
         <TextView
             android:id="@+id/tvSubtitle"
             style="@style/Text.Kanila.Body"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_s"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
             android:text="@string/auth_login_subtitle"
             android:textColor="@color/text_secondary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayoutAuth"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="32dp"
-            android:background="@drawable/bg_chip_default"
-            app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
-            app:tabIndicatorHeight="0dp"
-            app:tabRippleColor="@null"
-            app:tabSelectedTextColor="@color/white"
-            app:tabTextColor="@color/text_secondary"
-            app:tabMode="fixed">
-            <com.google.android.material.tabs.TabItem android:text="@string/auth_tab_email" />
-            <com.google.android.material.tabs.TabItem android:text="@string/auth_tab_phone" />
-        </com.google.android.material.tabs.TabLayout>
-
-        <FrameLayout
-            android:id="@+id/login_input_container"
+        <ui.common.KanilaInputField
+            android:id="@+id/inputIdentifier"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            app:layout_constraintTop_toBottomOf="@id/tabLayoutAuth">
+            app:kanilaHint="@string/auth_login_input_hint"
+            app:kanilaLeadingIcon="@drawable/ic_mail"
+            app:kanilaShowLeadingIcon="true"
+            app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
 
-            <ui.common.KanilaInputField
-                android:id="@+id/inputEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:kanilaLabel="@string/auth_email_label"
-                app:kanilaHint="@string/auth_email_hint"
-                app:kanilaShowLeadingIcon="true" />
+        <ui.common.KanilaInputField
+            android:id="@+id/inputPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:kanilaHint="••••••••"
+            app:kanilaLeadingIcon="@drawable/ic_lock"
+            app:kanilaMode="1"
+            app:kanilaShowLeadingIcon="true"
+            app:layout_constraintTop_toBottomOf="@id/inputIdentifier" />
 
-            <ui.common.KanilaInputField
-                android:id="@+id/inputPhone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:kanilaLabel="@string/auth_phone_label"
-                app:kanilaHint="@string/auth_phone_hint"
-                app:kanilaShowLeadingIcon="true" />
-
-        </FrameLayout>
+        <CheckBox
+            android:id="@+id/cbRememberMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/auth_remember_me"
+            style="@style/Text.Kanila.Caption"
+            android:buttonTint="@color/button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/inputPassword" />
 
         <TextView
             android:id="@+id/tvForgotPassword"
             style="@style/Text.Kanila.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_m"
             android:text="@string/auth_forgot_password"
-            android:textColor="@color/text_tertiary"
+            android:textColor="@color/button"
+            app:layout_constraintBottom_toBottomOf="@id/cbRememberMe"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/login_input_container" />
+            app:layout_constraintTop_toTopOf="@id/cbRememberMe" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogin"
             style="@style/Widget.Kanila.Button.Primary"
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_height"
-            android:layout_marginTop="40dp"
-            android:text="@string/auth_btn_send_otp_email"
-            app:layout_constraintTop_toBottomOf="@id/tvForgotPassword" />
+            android:layout_marginTop="32dp"
+            android:text="@string/auth_login_title"
+            app:layout_constraintTop_toBottomOf="@id/cbRememberMe" />
 
         <LinearLayout
-            android:id="@+id/layoutRegisterRow"
-            android:layout_width="wrap_content"
+            android:id="@+id/layoutOr"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:gravity="center"
             android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btnLogin">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="@color/border_divider" />
 
             <TextView
                 style="@style/Text.Kanila.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chưa có tài khoản? "
+                android:layout_marginHorizontal="16dp"
+                android:text="@string/auth_continue_with"
+                android:textColor="@color/text_tertiary" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="@color/border_divider" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutSocialLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/layoutOr">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGoogle"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:text="@string/auth_google"
+                android:textAllCaps="false"
+                android:textColor="@color/text_main"
+                app:icon="@drawable/ic_search"
+                app:iconGravity="textStart"
+                app:iconTint="@null"
+                app:strokeColor="@color/border_divider" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFacebook"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="@string/auth_facebook"
+                android:textAllCaps="false"
+                android:textColor="@color/text_main"
+                app:icon="@drawable/ic_face"
+                app:iconGravity="textStart"
+                app:iconTint="#1877F2"
+                app:strokeColor="@color/border_divider" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutRegisterRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutSocialLogin"
+            app:layout_constraintVertical_bias="1.0">
+
+            <TextView
+                style="@style/Text.Kanila.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/auth_no_account"
                 android:textColor="@color/text_secondary" />
 
             <TextView
@@ -128,7 +217,7 @@
                 style="@style/Text.Kanila.BodyMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tạo tài khoản"
+                android:text="@string/auth_create_account"
                 android:textColor="@color/button" />
         </LinearLayout>
 

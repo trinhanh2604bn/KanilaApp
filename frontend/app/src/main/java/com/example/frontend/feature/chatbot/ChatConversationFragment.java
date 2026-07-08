@@ -18,7 +18,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
 import com.example.frontend.feature.chatbot.adapter.ChatMessageAdapter;
+import com.example.frontend.feature.chatbot.adapter.ChatProductAdapter;
 import com.example.frontend.feature.chatbot.adapter.QuickReplyAdapter;
+import com.example.frontend.feature.chatbot.model.ChatProductUiModel;
+import com.example.frontend.feature.product.ProductDetailFragment;
 
 import java.util.Arrays;
 import java.util.List;
@@ -87,7 +90,7 @@ public class ChatConversationFragment extends Fragment {
     }
 
     private void setupRecyclerViews(View view) {
-        chatAdapter = new ChatMessageAdapter();
+        chatAdapter = new ChatMessageAdapter(this::onProductClick);
         rvChat.setAdapter(chatAdapter);
 
         RecyclerView rvQuickReplies = view.findViewById(R.id.rvQuickReplies);
@@ -142,6 +145,24 @@ public class ChatConversationFragment extends Fragment {
         if (!content.isEmpty()) {
             viewModel.sendMessage(content);
             edtMessage.setText("");
+        }
+    }
+
+    private void onProductClick(ChatProductUiModel product) {
+        if (product == null || product.getProductId() == null) {
+            Toast.makeText(getContext(), R.string.chat_product_detail_next_phase, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, ProductDetailFragment.newInstance(product.getProductId()))
+                        .addToBackStack(null)
+                        .commit();
+            }
+        } catch (Exception e) {
+            Toast.makeText(getContext(), R.string.chat_product_detail_next_phase, Toast.LENGTH_SHORT).show();
         }
     }
 

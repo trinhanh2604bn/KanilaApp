@@ -509,4 +509,7 @@
     <string name="auth_no_account">Chưa có tài khoản? </string>
     <string name="auth_create_account">Tạo tài khoản</string>
     <string name="content_desc_chatbot">Mở trợ lý Kanila AI</string>
+    <string name="chat_product_review_count">(%s)</string>
+    <string name="chat_view_product_detail">Xem chi tiết</string>
+    <string name="chat_product_detail_next_phase">Tính năng xem chi tiết sản phẩm sẽ được kết nối ở bước tiếp theo.</string>
 </resources>

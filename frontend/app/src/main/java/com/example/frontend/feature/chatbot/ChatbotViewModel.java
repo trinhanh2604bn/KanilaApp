@@ -11,13 +11,16 @@ import com.example.frontend.data.remote.TokenManager;
 import com.example.frontend.feature.chatbot.data.ChatbotRepository;
 import com.example.frontend.feature.chatbot.data.request.ChatbotContextRequest;
 import com.example.frontend.feature.chatbot.data.request.ChatbotMessageRequest;
+import com.example.frontend.feature.chatbot.data.response.ChatProductResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatbotDataResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatbotMessageResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatbotSessionHistoryResponse;
 import com.example.frontend.feature.chatbot.model.ChatMessageUiModel;
+import com.example.frontend.feature.chatbot.model.ChatProductUiModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 public class ChatbotViewModel extends AndroidViewModel {
@@ -129,11 +132,21 @@ public class ChatbotViewModel extends AndroidViewModel {
                 }
 
                 // Add bot message
+                List<ChatProductUiModel> productUiModels = new ArrayList<>();
+                if (data.getProducts() != null) {
+                    for (ChatProductResponse p : data.getProducts()) {
+                        productUiModels.add(mapToUiModel(p));
+                    }
+                }
+
                 ChatMessageUiModel botMsg = new ChatMessageUiModel(
                         UUID.randomUUID().toString(),
                         data.getBotMessage(),
                         false,
-                        System.currentTimeMillis()
+                        System.currentTimeMillis(),
+                        false,
+                        productUiModels,
+                        data.getReplyType()
                 );
                 messageList.add(botMsg);
                 updateState(false, null);
@@ -159,6 +172,27 @@ public class ChatbotViewModel extends AndroidViewModel {
         );
         messageList.add(errorMsg);
         updateState(false, message);
+    }
+
+    private ChatProductUiModel mapToUiModel(ChatProductResponse p) {
+        return new ChatProductUiModel(
+                p.getProductId(),
+                p.getVariantId(),
+                p.getSlug(),
+                p.getName(),
+                p.getBrandName(),
+                p.getPrice() != null ? formatPrice(p.getPrice()) : "Liên hệ",
+                p.getCompareAtPrice() != null ? formatPrice(p.getCompareAtPrice()) : null,
+                p.getImageUrl(),
+                p.getRating() != null ? String.valueOf(p.getRating()) : null,
+                p.getReviewCount() != null ? String.valueOf(p.getReviewCount()) : "0",
+                p.getStockStatus(),
+                p.getReason()
+        );
+    }
+
+    private String formatPrice(long price) {
+        return String.format(Locale.US, "%,dđ", price).replace(",", ".");
     }
 
     private void updateState(boolean isLoading, String error) {

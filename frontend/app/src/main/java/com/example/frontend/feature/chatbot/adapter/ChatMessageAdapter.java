@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
 import com.example.frontend.feature.chatbot.model.ChatMessageUiModel;
+import com.example.frontend.feature.chatbot.model.ChatProductUiModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +26,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private final List<ChatMessageUiModel> messages = new ArrayList<>();
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    private final ChatProductAdapter.OnProductClickListener productClickListener;
+
+    public ChatMessageAdapter(ChatProductAdapter.OnProductClickListener productClickListener) {
+        this.productClickListener = productClickListener;
+    }
 
     public void setMessages(List<ChatMessageUiModel> newMessages) {
         messages.clear();
@@ -84,16 +90,29 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     class BotMessageViewHolder extends RecyclerView.ViewHolder {
         TextView tvMessage, tvTime;
+        RecyclerView rvProducts;
+        ChatProductAdapter productAdapter;
 
         BotMessageViewHolder(@NonNull View itemView) {
             super(itemView);
             tvMessage = itemView.findViewById(R.id.tvMessage);
             tvTime = itemView.findViewById(R.id.tvTime);
+            rvProducts = itemView.findViewById(R.id.rvProducts);
+            
+            productAdapter = new ChatProductAdapter(productClickListener);
+            rvProducts.setAdapter(productAdapter);
         }
 
         void bind(ChatMessageUiModel message) {
             tvMessage.setText(message.getContent());
             tvTime.setText(timeFormat.format(new Date(message.getTimestamp())));
+
+            if (message.getProducts() != null && !message.getProducts().isEmpty()) {
+                productAdapter.setProducts(message.getProducts());
+                rvProducts.setVisibility(View.VISIBLE);
+            } else {
+                rvProducts.setVisibility(View.GONE);
+            }
         }
     }
 

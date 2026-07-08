@@ -36,18 +36,25 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void onTicketClick(ChatTicketUiModel ticket);
     }
 
+    public interface OnPreferenceClickListener {
+        void onPreferenceClick(String option);
+    }
+
     private final List<ChatMessageUiModel> messages = new ArrayList<>();
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private final ChatProductAdapter.OnProductClickListener productClickListener;
     private final OnOrderClickListener orderClickListener;
     private final OnTicketClickListener ticketClickListener;
+    private final OnPreferenceClickListener preferenceClickListener;
 
     public ChatMessageAdapter(ChatProductAdapter.OnProductClickListener productClickListener,
                              OnOrderClickListener orderClickListener,
-                             OnTicketClickListener ticketClickListener) {
+                             OnTicketClickListener ticketClickListener,
+                             OnPreferenceClickListener preferenceClickListener) {
         this.productClickListener = productClickListener;
         this.orderClickListener = orderClickListener;
         this.ticketClickListener = ticketClickListener;
+        this.preferenceClickListener = preferenceClickListener;
     }
 
     public void setMessages(List<ChatMessageUiModel> newMessages) {
@@ -107,9 +114,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     class BotMessageViewHolder extends RecyclerView.ViewHolder {
-        TextView tvMessage, tvTime;
-        RecyclerView rvProducts;
+        TextView tvMessage, tvTime, tvPersonalizedBadge;
+        RecyclerView rvProducts, rvPreferenceOptions;
         ChatProductAdapter productAdapter;
+        QuickReplyAdapter preferenceAdapter;
         
         // Order card views
         View layoutOrderCard;
@@ -127,10 +135,20 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             super(itemView);
             tvMessage = itemView.findViewById(R.id.tvMessage);
             tvTime = itemView.findViewById(R.id.tvTime);
+            tvPersonalizedBadge = itemView.findViewById(R.id.tvPersonalizedBadge);
             rvProducts = itemView.findViewById(R.id.rvProducts);
+            rvPreferenceOptions = itemView.findViewById(R.id.rvPreferenceOptions);
             
             productAdapter = new ChatProductAdapter(productClickListener);
             rvProducts.setAdapter(productAdapter);
+
+            preferenceAdapter = new QuickReplyAdapter();
+            preferenceAdapter.setOnItemClickListener(option -> {
+                if (preferenceClickListener != null) {
+                    preferenceClickListener.onPreferenceClick(option);
+                }
+            });
+            rvPreferenceOptions.setAdapter(preferenceAdapter);
 
             // Init Order views
             layoutOrderCard = itemView.findViewById(R.id.layoutOrderCardContainer);
@@ -163,12 +181,29 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             tvMessage.setText(message.getContent());
             tvTime.setText(timeFormat.format(new Date(message.getTimestamp())));
 
+            // Personalized badge
+            if (message.isCustomerContextUsed() && tvPersonalizedBadge != null) {
+                tvPersonalizedBadge.setVisibility(View.VISIBLE);
+            } else if (tvPersonalizedBadge != null) {
+                tvPersonalizedBadge.setVisibility(View.GONE);
+            }
+
             // Products
             if (message.getProducts() != null && !message.getProducts().isEmpty()) {
-                productAdapter.setProducts(message.getProducts());
+                productAdapter.setProducts(message.getProducts(), message.isCustomerContextUsed());
                 rvProducts.setVisibility(View.VISIBLE);
             } else {
                 rvProducts.setVisibility(View.GONE);
+            }
+
+            // Preference question
+            if (message.getPreferenceQuestion() != null && rvPreferenceOptions != null 
+                    && message.getPreferenceQuestion().getOptions() != null 
+                    && !message.getPreferenceQuestion().getOptions().isEmpty()) {
+                preferenceAdapter.setItems(message.getPreferenceQuestion().getOptions());
+                rvPreferenceOptions.setVisibility(View.VISIBLE);
+            } else if (rvPreferenceOptions != null) {
+                rvPreferenceOptions.setVisibility(View.GONE);
             }
 
             // Order

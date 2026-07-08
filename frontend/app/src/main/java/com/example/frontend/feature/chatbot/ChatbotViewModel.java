@@ -14,6 +14,7 @@ import com.example.frontend.feature.chatbot.data.request.ChatbotMessageRequest;
 import com.example.frontend.feature.chatbot.data.response.ChatOrderResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatOrderTimelineResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatProductResponse;
+import com.example.frontend.feature.chatbot.data.response.ChatPreferenceQuestionResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatTicketResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatbotDataResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatbotMessageResponse;
@@ -21,6 +22,7 @@ import com.example.frontend.feature.chatbot.data.response.ChatbotSessionHistoryR
 import com.example.frontend.feature.chatbot.model.ChatMessageUiModel;
 import com.example.frontend.feature.chatbot.model.ChatOrderTimelineUiModel;
 import com.example.frontend.feature.chatbot.model.ChatOrderUiModel;
+import com.example.frontend.feature.chatbot.model.ChatPreferenceQuestionUiModel;
 import com.example.frontend.feature.chatbot.model.ChatProductUiModel;
 import com.example.frontend.feature.chatbot.model.ChatTicketUiModel;
 
@@ -66,13 +68,35 @@ public class ChatbotViewModel extends AndroidViewModel {
         if (history != null) {
             messageList.clear();
             for (ChatbotSessionHistoryResponse.ChatbotMessageDto msg : history) {
-                // Parse date if needed, or just use current time for simplicity in Phase 1
-                // Assuming created_at is an ISO string or similar.
+                long timestamp = System.currentTimeMillis();
+                if (msg.getCreatedAt() != null) {
+                    try {
+                        // Assuming ISO 8601 format: "yyyy-MM-dd'T'HH:mm:ss.SSSX" or similar
+                        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US);
+                        sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+                        java.util.Date date = sdf.parse(msg.getCreatedAt());
+                        if (date != null) {
+                            timestamp = date.getTime();
+                        }
+                    } catch (Exception e) {
+                        // Fallback to second attempt for simpler format
+                        try {
+                            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US);
+                            java.util.Date date = sdf.parse(msg.getCreatedAt());
+                            if (date != null) {
+                                timestamp = date.getTime();
+                            }
+                        } catch (Exception e2) {
+                            // Keep current timestamp
+                        }
+                    }
+                }
+
                 messageList.add(new ChatMessageUiModel(
                         UUID.randomUUID().toString(),
                         msg.getMessageText(),
                         "user".equals(msg.getSenderType()),
-                        System.currentTimeMillis() // Simple fallback
+                        timestamp
                 ));
             }
             updateState(false, null);
@@ -131,9 +155,9 @@ public class ChatbotViewModel extends AndroidViewModel {
                 this.sessionId = data.getSessionId();
                 tokenManager.saveChatbotSession(this.sessionId);
 
-                // Update quick replies if available
+                // Update quick replies
+                currentQuickReplies.clear();
                 if (data.getQuickReplies() != null && !data.getQuickReplies().isEmpty()) {
-                    currentQuickReplies.clear();
                     currentQuickReplies.addAll(data.getQuickReplies());
                 }
 
@@ -155,6 +179,11 @@ public class ChatbotViewModel extends AndroidViewModel {
                     ticketUiModel = mapToUiModel(data.getTicket());
                 }
 
+                ChatPreferenceQuestionUiModel preferenceQuestionUiModel = null;
+                if (data.getPreferenceQuestion() != null) {
+                    preferenceQuestionUiModel = mapToUiModel(data.getPreferenceQuestion());
+                }
+
                 ChatMessageUiModel botMsg = new ChatMessageUiModel(
                         UUID.randomUUID().toString(),
                         data.getBotMessage(),
@@ -164,7 +193,9 @@ public class ChatbotViewModel extends AndroidViewModel {
                         productUiModels,
                         orderUiModel,
                         ticketUiModel,
-                        data.getReplyType()
+                        data.getReplyType(),
+                        data.getCustomerContextUsed() != null && data.getCustomerContextUsed(),
+                        preferenceQuestionUiModel
                 );
                 messageList.add(botMsg);
                 updateState(false, null);
@@ -247,6 +278,14 @@ public class ChatbotViewModel extends AndroidViewModel {
                 t.getCategoryLabel(),
                 t.getCreatedAt(),
                 t.getMessage()
+        );
+    }
+
+    private ChatPreferenceQuestionUiModel mapToUiModel(ChatPreferenceQuestionResponse q) {
+        return new ChatPreferenceQuestionUiModel(
+                q.getQuestionType(),
+                q.getQuestion(),
+                q.getOptions()
         );
     }
 

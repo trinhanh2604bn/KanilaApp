@@ -13,18 +13,27 @@ public class ChatMessageUiModel {
     private final ChatOrderUiModel order;
     private final ChatTicketUiModel ticket;
     private final String replyType;
+    private final boolean customerContextUsed;
+    private final ChatPreferenceQuestionUiModel preferenceQuestion;
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp) {
-        this(id, content, isUser, timestamp, false, new ArrayList<>(), null, null, null);
+        this(id, content, isUser, timestamp, false, new ArrayList<>(), null, null, null, false, null);
     }
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping) {
-        this(id, content, isUser, timestamp, isTyping, new ArrayList<>(), null, null, null);
+        this(id, content, isUser, timestamp, isTyping, new ArrayList<>(), null, null, null, false, null);
     }
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping, 
                              List<ChatProductUiModel> products, ChatOrderUiModel order, 
                              ChatTicketUiModel ticket, String replyType) {
+        this(id, content, isUser, timestamp, isTyping, products, order, ticket, replyType, false, null);
+    }
+
+    public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping, 
+                             List<ChatProductUiModel> products, ChatOrderUiModel order, 
+                             ChatTicketUiModel ticket, String replyType, boolean customerContextUsed,
+                             ChatPreferenceQuestionUiModel preferenceQuestion) {
         this.id = id;
         this.content = content;
         this.isUser = isUser;
@@ -34,6 +43,8 @@ public class ChatMessageUiModel {
         this.order = order;
         this.ticket = ticket;
         this.replyType = replyType;
+        this.customerContextUsed = customerContextUsed;
+        this.preferenceQuestion = preferenceQuestion;
     }
 
     public String getId() {
@@ -70,6 +81,14 @@ public class ChatMessageUiModel {
 
     public String getReplyType() {
         return replyType;
+    }
+
+    public boolean isCustomerContextUsed() {
+        return customerContextUsed;
+    }
+
+    public ChatPreferenceQuestionUiModel getPreferenceQuestion() {
+        return preferenceQuestion;
     }
 
     public static ChatMessageUiModel createTypingIndicator() {

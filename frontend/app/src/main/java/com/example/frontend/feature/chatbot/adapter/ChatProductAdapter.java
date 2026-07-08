@@ -22,6 +22,7 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
 
     private final List<ChatProductUiModel> products = new ArrayList<>();
     private final OnProductClickListener listener;
+    private boolean customerContextUsed = false;
 
     public interface OnProductClickListener {
         void onProductClick(ChatProductUiModel product);
@@ -32,6 +33,11 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
     }
 
     public void setProducts(List<ChatProductUiModel> newProducts) {
+        setProducts(newProducts, false);
+    }
+
+    public void setProducts(List<ChatProductUiModel> newProducts, boolean customerContextUsed) {
+        this.customerContextUsed = customerContextUsed;
         products.clear();
         if (newProducts != null) {
             products.addAll(newProducts);
@@ -48,7 +54,7 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
-        holder.bind(products.get(position));
+        holder.bind(products.get(position), customerContextUsed);
     }
 
     @Override
@@ -58,7 +64,7 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
 
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProductImage;
-        TextView tvBrandName, tvProductName, tvPrice, tvCompareAtPrice, tvReason, tvReviewCount, btnViewDetail;
+        TextView tvBrandName, tvProductName, tvPrice, tvCompareAtPrice, tvReason, tvReviewCount, btnViewDetail, tvPersonalizedLabel;
         RatingBar rbRating;
         View layoutRating;
         private final OnProductClickListener listener;
@@ -76,13 +82,16 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
             btnViewDetail = itemView.findViewById(R.id.btnViewDetail);
             rbRating = itemView.findViewById(R.id.rbRating);
             layoutRating = itemView.findViewById(R.id.layoutRating);
+            tvPersonalizedLabel = itemView.findViewById(R.id.tvPersonalizedLabel);
         }
 
-        void bind(ChatProductUiModel product) {
+        void bind(ChatProductUiModel product, boolean customerContextUsed) {
             tvBrandName.setText(product.getBrandName());
             tvProductName.setText(product.getName());
             tvPrice.setText(product.getPriceText());
             
+            tvPersonalizedLabel.setVisibility(customerContextUsed ? View.VISIBLE : View.GONE);
+
             if (product.getCompareAtPriceText() != null && !product.getCompareAtPriceText().isEmpty()) {
                 tvCompareAtPrice.setText(product.getCompareAtPriceText());
                 tvCompareAtPrice.setPaintFlags(tvCompareAtPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);

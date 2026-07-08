@@ -47,6 +47,33 @@
             android:textAppearance="@style/Body"
             android:textColor="@color/text_main" />
 
+        <TextView
+            android:id="@+id/tvPersonalizedBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_chip_pink"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="@string/chat_personalized_badge"
+            android:textAppearance="@style/Caption"
+            android:textColor="@color/accent_dark"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPreferenceOptions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:clipToPadding="false"
+            android:paddingHorizontal="0dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_chat_quick_reply"
+            tools:visibility="visible" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvProducts"
             android:layout_width="match_parent"

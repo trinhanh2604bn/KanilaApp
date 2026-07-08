@@ -25,6 +25,12 @@ public class ChatbotDataResponse {
     @SerializedName("quick_replies")
     private List<String> quickReplies;
 
+    @SerializedName("customer_context_used")
+    private Boolean customerContextUsed;
+
+    @SerializedName("preference_question")
+    private ChatPreferenceQuestionResponse preferenceQuestion;
+
     @SerializedName("handoff_required")
     private boolean handoffRequired;
 
@@ -54,6 +60,14 @@ public class ChatbotDataResponse {
 
     public List<String> getQuickReplies() {
         return quickReplies;
+    }
+
+    public Boolean getCustomerContextUsed() {
+        return customerContextUsed;
+    }
+
+    public ChatPreferenceQuestionResponse getPreferenceQuestion() {
+        return preferenceQuestion;
     }
 
     public boolean isHandoffRequired() {

@@ -95,7 +95,8 @@ public class ChatConversationFragment extends Fragment {
         chatAdapter = new ChatMessageAdapter(
                 this::onProductClick,
                 this::onOrderClick,
-                this::onTicketClick
+                this::onTicketClick,
+                this::onPreferenceClick
         );
         rvChat.setAdapter(chatAdapter);
 
@@ -182,6 +183,12 @@ public class ChatConversationFragment extends Fragment {
         Toast.makeText(getContext(), "Tính năng theo dõi yêu cầu hỗ trợ sẽ được kết nối ở bước tiếp theo.", Toast.LENGTH_SHORT).show();
     }
 
+    private void onPreferenceClick(String option) {
+        if (option != null && !option.isEmpty()) {
+            viewModel.sendMessage(option);
+        }
+    }
+
     private void observeViewModel() {
         viewModel.getUiState().observe(getViewLifecycleOwner(), state -> {
             chatAdapter.setMessages(state.getMessages());
@@ -193,7 +200,7 @@ public class ChatConversationFragment extends Fragment {
             rvChat.setVisibility(state.isWelcomeVisible() ? View.GONE : View.VISIBLE);
 
             // Update quick replies from state
-            if (state.getQuickReplies() != null && !state.getQuickReplies().isEmpty()) {
+            if (state.getQuickReplies() != null) {
                 quickReplyAdapter.setItems(state.getQuickReplies());
             }
 

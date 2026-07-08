@@ -16,43 +16,36 @@
         android:padding="7dp"
         android:src="@drawable/ic_chat_placeholder"
         app:tint="@color/accent_dark"
-        android:contentDescription="Kanila AI" />
+        android:contentDescription="@string/chat_assistant_title" />
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tvBotName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
-            android:text="AI Assistant"
+            android:text="Kanila AI"
             android:textAppearance="@style/Caption"
             android:textColor="@color/text_tertiary" />
 
-        <TextView
-            android:id="@+id/tvMessage"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="280dp"
             android:background="@drawable/bg_bubble_bot"
             android:paddingHorizontal="14dp"
-            android:paddingVertical="10dp"
-            android:lineSpacingExtra="2dp"
-            android:text="Chào bạn! Mình là Kanila AI Assistant. Mình có thể giúp gì cho bạn hôm nay?"
-            android:textAppearance="@style/Body"
-            android:textColor="@color/text_main" />
+            android:paddingVertical="12dp">
 
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="09:41"
-            android:textAppearance="@style/Micro"
-            android:textColor="@color/text_tertiary" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/chat_typing_indicator"
+                android:textAppearance="@style/Body"
+                android:textColor="@color/text_tertiary"
+                android:textStyle="italic" />
+
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

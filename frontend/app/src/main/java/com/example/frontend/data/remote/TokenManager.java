@@ -8,6 +8,7 @@ public class TokenManager {
     private static final String KEY_ACCESS_TOKEN = "access_token";
     private static final String KEY_REFRESH_TOKEN = "refresh_token";
     private static final String KEY_GUEST_SESSION_ID = "guest_session_id";
+    private static final String KEY_CHATBOT_SESSION_ID = "chatbot_session_id";
 
     private static TokenManager instance;
     private final SharedPreferences prefs;
@@ -82,6 +83,19 @@ public class TokenManager {
                 .remove(KEY_ACCESS_TOKEN)
                 .remove(KEY_REFRESH_TOKEN)
                 .remove(KEY_GUEST_SESSION_ID)
+                .remove(KEY_CHATBOT_SESSION_ID)
                 .apply();
+    }
+
+    public void saveChatbotSession(String sessionId) {
+        prefs.edit().putString(KEY_CHATBOT_SESSION_ID, sessionId).apply();
+    }
+
+    public String getChatbotSession() {
+        return prefs.getString(KEY_CHATBOT_SESSION_ID, null);
+    }
+
+    public void clearChatbotSession() {
+        prefs.edit().remove(KEY_CHATBOT_SESSION_ID).apply();
     }
 }

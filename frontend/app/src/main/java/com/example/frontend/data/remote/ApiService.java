@@ -23,6 +23,8 @@ import com.example.frontend.data.model.wishlist.WishlistActionResponse;
 import com.example.frontend.data.model.wishlist.WishlistItemResponse;
 import com.example.frontend.data.model.common.PaginatedData;
 import com.example.frontend.data.model.product.ProductDetailResponse;
+import com.example.frontend.feature.chatbot.data.request.ChatbotMessageRequest;
+import com.example.frontend.feature.chatbot.data.response.ChatbotMessageResponse;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -35,6 +37,12 @@ import retrofit2.http.PUT;
 import retrofit2.http.DELETE;
 
 public interface ApiService {
+    @POST("api/chatbot/message")
+    Call<ChatbotMessageResponse> sendChatbotMessage(@Body ChatbotMessageRequest request);
+
+    @GET("api/chatbot/sessions/{sessionId}/messages")
+    Call<com.example.frontend.feature.chatbot.data.response.ChatbotSessionHistoryResponse> getChatbotHistory(@Path("sessionId") String sessionId);
+
     @POST("api/auth/login")
     Call<ApiResponse<AuthResponse>> login(@Body LoginRequest credentials);
 

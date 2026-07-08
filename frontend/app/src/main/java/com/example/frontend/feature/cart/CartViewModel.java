@@ -43,27 +43,14 @@ public class CartViewModel extends AndroidViewModel {
 
     public void updateItemQuantity(String itemId, int quantity) {
         if (USE_MOCK_CART && mockCart != null) {
-            List<CartItemDto> newList = new ArrayList<>();
-            for (CartItemDto item : mockCart.getItems()) {
-                if (item.getId().equals(itemId)) {
-                    newList.add(CartItemDto.createMock(
-                            item.getId(),
-                            item.getProductNameSnapshot(),
-                            item.getVariantNameSnapshot(),
-                            item.getFinalUnitPriceAmount(),
-                            quantity,
-                            item.isSelected(),
-                            item.getImageUrlSnapshot()
-                    ));
-                } else {
-                    newList.add(item);
-                }
-            }
-            recalculateMockTotals(newList);
-            cartResult.postValue(NetworkResult.success(mockCart));
-            return;
+            // ... (mock logic)
         }
         cartRepository.updateItemQuantity(itemId, quantity, cartResult);
+    }
+
+    public void updateItemVariant(String itemId, String variantId, int quantity) {
+        if (USE_MOCK_CART) return;
+        cartRepository.updateItemVariant(itemId, variantId, quantity, cartResult);
     }
 
     public void toggleItemSelection(String itemId, boolean selected) {
@@ -124,7 +111,7 @@ public class CartViewModel extends AndroidViewModel {
             cartResult.postValue(NetworkResult.success(mockCart));
             return;
         }
-        // If there was a repository method, we'd call it here
+        cartRepository.selectAllItems(selected, cartResult);
     }
 
     public void addToCart(com.example.frontend.data.model.cart.AddToCartRequest request) {

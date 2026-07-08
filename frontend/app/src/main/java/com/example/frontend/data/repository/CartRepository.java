@@ -43,6 +43,8 @@ public class CartRepository {
         call.enqueue(new Callback<ApiResponse<CartDto>>() {
             @Override
             public void onResponse(Call<ApiResponse<CartDto>> call, Response<ApiResponse<CartDto>> response) {
+                android.util.Log.d("CartRepository", "updateItemQuantity Response: " + response.code() + 
+                        " " + response.message());
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<CartDto> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
@@ -74,6 +76,8 @@ public class CartRepository {
         apiService.mergeGuestCart().enqueue(new Callback<ApiResponse<CartDto>>() {
             @Override
             public void onResponse(Call<ApiResponse<CartDto>> call, Response<ApiResponse<CartDto>> response) {
+                android.util.Log.d("CartRepository", "updateItemQuantity Response: " + response.code() + 
+                        " " + response.message());
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<CartDto> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
@@ -95,9 +99,28 @@ public class CartRepository {
 
     public void updateItemQuantity(String itemId, int quantity, MutableLiveData<NetworkResult<CartDto>> result) {
         result.setValue(NetworkResult.loading());
-        apiService.updateCartItemQuantity(itemId, new UpdateCartItemRequest(quantity, null)).enqueue(new Callback<ApiResponse<CartDto>>() {
+        
+        Call<ApiResponse<CartDto>> call;
+        UpdateCartItemRequest request = new UpdateCartItemRequest(quantity, (Boolean) null);
+        
+        boolean loggedIn = tokenManager.isLoggedIn();
+        String token = tokenManager.getAccessToken();
+        
+        android.util.Log.d("CartRepository", "updateItemQuantity: itemId=" + itemId + 
+                ", quantity=" + quantity + ", isLoggedIn=" + loggedIn + 
+                ", hasToken=" + (token != null && !token.isEmpty()));
+        
+        if (loggedIn) {
+            call = apiService.updateCartItemQuantity(itemId, request);
+        } else {
+            call = apiService.updateGuestCartItemQuantity(itemId, request);
+        }
+        
+        call.enqueue(new Callback<ApiResponse<CartDto>>() {
             @Override
             public void onResponse(Call<ApiResponse<CartDto>> call, Response<ApiResponse<CartDto>> response) {
+                android.util.Log.d("CartRepository", "updateItemQuantity Response: " + response.code() + 
+                        " " + response.message());
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<CartDto> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
@@ -123,11 +146,59 @@ public class CartRepository {
         });
     }
 
-    public void toggleItemSelection(String itemId, boolean selected, MutableLiveData<NetworkResult<CartDto>> result) {
+    public void updateItemVariant(String itemId, String variantId, int quantity, MutableLiveData<NetworkResult<CartDto>> result) {
         result.setValue(NetworkResult.loading());
-        apiService.toggleCartItemSelection(itemId, new UpdateCartItemRequest(null, selected)).enqueue(new Callback<ApiResponse<CartDto>>() {
+        
+        Call<ApiResponse<CartDto>> call;
+        UpdateCartItemRequest request = new UpdateCartItemRequest(quantity, variantId);
+        
+        if (tokenManager.isLoggedIn()) {
+            call = apiService.updateCartItemQuantity(itemId, request);
+        } else {
+            call = apiService.updateGuestCartItemQuantity(itemId, request);
+        }
+        
+        call.enqueue(new Callback<ApiResponse<CartDto>>() {
             @Override
             public void onResponse(Call<ApiResponse<CartDto>> call, Response<ApiResponse<CartDto>> response) {
+                android.util.Log.d("CartRepository", "updateItemQuantity Response: " + response.code() + 
+                        " " + response.message());
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<CartDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to update variant"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<CartDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void toggleItemSelection(String itemId, boolean selected, MutableLiveData<NetworkResult<CartDto>> result) {
+        result.setValue(NetworkResult.loading());
+        
+        Call<ApiResponse<CartDto>> call;
+        UpdateCartItemRequest request = new UpdateCartItemRequest(null, selected);
+        
+        if (tokenManager.isLoggedIn()) {
+            call = apiService.toggleCartItemSelection(itemId, request);
+        } else {
+            call = apiService.toggleGuestCartItemSelection(itemId, request);
+        }
+        
+        call.enqueue(new Callback<ApiResponse<CartDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<CartDto>> call, Response<ApiResponse<CartDto>> response) {
+                android.util.Log.d("CartRepository", "updateItemQuantity Response: " + response.code() + 
+                        " " + response.message());
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<CartDto> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
@@ -147,11 +218,57 @@ public class CartRepository {
         });
     }
 
-    public void removeItem(String itemId, MutableLiveData<NetworkResult<CartDto>> result) {
+    public void selectAllItems(boolean selected, MutableLiveData<NetworkResult<CartDto>> result) {
         result.setValue(NetworkResult.loading());
-        apiService.removeFromCart(itemId).enqueue(new Callback<ApiResponse<CartDto>>() {
+        
+        Call<ApiResponse<CartDto>> call;
+        UpdateCartItemRequest request = new UpdateCartItemRequest(null, selected);
+        
+        if (tokenManager.isLoggedIn()) {
+            call = apiService.toggleAllSelection(request);
+        } else {
+            call = apiService.toggleGuestAllSelection(request);
+        }
+        
+        call.enqueue(new Callback<ApiResponse<CartDto>>() {
             @Override
             public void onResponse(Call<ApiResponse<CartDto>> call, Response<ApiResponse<CartDto>> response) {
+                android.util.Log.d("CartRepository", "updateItemQuantity Response: " + response.code() + 
+                        " " + response.message());
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<CartDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to select all items"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<CartDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void removeItem(String itemId, MutableLiveData<NetworkResult<CartDto>> result) {
+        result.setValue(NetworkResult.loading());
+        
+        Call<ApiResponse<CartDto>> call;
+        if (tokenManager.isLoggedIn()) {
+            call = apiService.removeFromCart(itemId);
+        } else {
+            call = apiService.removeGuestFromCart(itemId);
+        }
+        
+        call.enqueue(new Callback<ApiResponse<CartDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<CartDto>> call, Response<ApiResponse<CartDto>> response) {
+                android.util.Log.d("CartRepository", "updateItemQuantity Response: " + response.code() + 
+                        " " + response.message());
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<CartDto> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
@@ -184,6 +301,8 @@ public class CartRepository {
         call.enqueue(new Callback<ApiResponse<CartDto>>() {
             @Override
             public void onResponse(Call<ApiResponse<CartDto>> call, Response<ApiResponse<CartDto>> response) {
+                android.util.Log.d("CartRepository", "updateItemQuantity Response: " + response.code() + 
+                        " " + response.message());
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<CartDto> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {

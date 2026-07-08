@@ -104,11 +104,26 @@ public interface ApiService {
     @PATCH("api/carts/me/items/{itemId}/quantity")
     Call<ApiResponse<CartDto>> updateCartItemQuantity(@Path("itemId") String itemId, @Body UpdateCartItemRequest updateRequest);
 
+    @PATCH("api/carts/guest/items/{itemId}/quantity")
+    Call<ApiResponse<CartDto>> updateGuestCartItemQuantity(@Path("itemId") String itemId, @Body UpdateCartItemRequest updateRequest);
+
     @PATCH("api/carts/me/items/{itemId}/selection")
     Call<ApiResponse<CartDto>> toggleCartItemSelection(@Path("itemId") String itemId, @Body UpdateCartItemRequest updateRequest);
 
+    @PATCH("api/carts/guest/items/{itemId}/selection")
+    Call<ApiResponse<CartDto>> toggleGuestCartItemSelection(@Path("itemId") String itemId, @Body UpdateCartItemRequest updateRequest);
+
+    @PATCH("api/carts/me/selection")
+    Call<ApiResponse<CartDto>> toggleAllSelection(@Body UpdateCartItemRequest updateRequest);
+
+    @PATCH("api/carts/guest/selection")
+    Call<ApiResponse<CartDto>> toggleGuestAllSelection(@Body UpdateCartItemRequest updateRequest);
+
     @DELETE("api/carts/me/items/{itemId}")
     Call<ApiResponse<CartDto>> removeFromCart(@Path("itemId") String itemId);
+
+    @DELETE("api/carts/guest/items/{itemId}")
+    Call<ApiResponse<CartDto>> removeGuestFromCart(@Path("itemId") String itemId);
 
     @GET("api/carts/me/checkout-prepare")
     Call<ApiResponse<CheckoutSessionDto>> prepareCheckout();

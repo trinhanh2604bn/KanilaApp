@@ -2,6 +2,7 @@ package ui.commerce;
 
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +22,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
 import com.example.frontend.data.model.cart.CartDto;
 import com.example.frontend.data.model.cart.CartItemDto;
+import com.example.frontend.data.model.product.ProductDetailResponse;
+import com.example.frontend.data.remote.ApiClient;
+import com.example.frontend.data.remote.ApiResponse;
+import com.example.frontend.data.remote.ApiService;
+import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.feature.product.VariantSelectorBottomSheet;
+import com.example.frontend.feature.wishlist.WishlistViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ui.common.ViewUtils;
 
 public class CartFragment extends Fragment {
@@ -39,6 +52,7 @@ public class CartFragment extends Fragment {
     private View layoutCartLoading, layoutCartEmpty, layoutCartContent, layoutCartCheckoutSummary;
 
     private CartViewModel viewModel;
+    private WishlistViewModel wishlistViewModel;
     private boolean useCoins = false;
     private boolean isUpdatingSelectAll = false;
 
@@ -54,6 +68,7 @@ public class CartFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
 
         initViews(view);
         setupHeader(view);
@@ -99,9 +114,27 @@ public class CartFragment extends Fragment {
             tvTitle.setText(R.string.cart);
         }
 
-        View btnSearch = header.findViewById(R.id.btnTopBarSearch);
-        if (btnSearch instanceof ImageView) {
-            ((ImageView) btnSearch).setImageResource(R.drawable.ic_heart_outline);
+        View btnWishlist = header.findViewById(R.id.btnTopBarSearch);
+        if (btnWishlist instanceof ImageView) {
+            ((ImageView) btnWishlist).setImageResource(R.drawable.ic_heart_outline);
+            btnWishlist.setVisibility(View.VISIBLE);
+            
+            btnWishlist.setOnClickListener(v -> {
+                if (com.example.frontend.data.remote.TokenManager.getInstance(getContext()).isLoggedIn()) {
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
+                            .addToBackStack(null)
+                            .commit();
+                } else {
+                    com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_WISHLIST,
+                            "Cart",
+                            0,
+                            null
+                    );
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
+                }
+            });
         }
 
         View btnBack = header.findViewById(R.id.btnTopBarBack);
@@ -135,6 +168,13 @@ public class CartFragment extends Fragment {
             @Override
             public void onQuantityChanged(CartItemDto item, int newQuantity) {
                 if (item == null || item.getId() == null) return;
+                
+                String token = com.example.frontend.data.remote.TokenManager.getInstance(getContext()).getAccessToken();
+                Log.d("CartFragment", "Quantity update: ID=" + item.getId() + 
+                        ", Product=" + item.getProductNameSnapshot() + 
+                        ", OldQty=" + item.getQuantity() + 
+                        ", NewQty=" + newQuantity + 
+                        ", TokenExists=" + (token != null && !token.isEmpty()));
 
                 item.setQuantity(newQuantity);
                 updateSummaryLocal();
@@ -146,35 +186,87 @@ public class CartFragment extends Fragment {
             public void onVariantClick(CartItemDto item, int position) {
                 if (item == null || getContext() == null) return;
                 
-                VariantBottomSheetDialog dialog = new VariantBottomSheetDialog(getContext(), item);
-                dialog.setOnVariantAppliedListener((variant, quantity) -> {
-                    if (variant != null) {
-                        item.setVariantId(variant.getId());
-                        item.setVariantNameSnapshot(variant.getVariantName());
-                        if (variant.getPrice() != null) {
-                            item.setFinalUnitPriceAmount(variant.getPrice());
+                // Show loading or just start fetching
+                ApiService apiService = ApiClient.getClient(getContext()).create(ApiService.class);
+                apiService.getProductDetail(item.getProductId()).enqueue(new Callback<ApiResponse<ProductDetailResponse>>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse<ProductDetailResponse>> call, Response<ApiResponse<ProductDetailResponse>> response) {
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                            ProductDetailResponse detail = response.body().getData();
+                            if (detail != null && detail.getProduct() != null) {
+                                VariantSelectorBottomSheet dialog = VariantSelectorBottomSheet.newInstance(
+                                        detail.getProduct(),
+                                        detail.getVariants(),
+                                        VariantSelectorBottomSheet.ActionMode.ADD_TO_CART
+                                );
+                                dialog.setListener((variant, mode, quantity) -> {
+                                    if (variant != null) {
+                                        item.setVariantId(variant.getId());
+                                        item.setVariantNameSnapshot(variant.getVariantName());
+                                        item.setSkuSnapshot(variant.getSku());
+                                        if (variant.getImageUrl() != null && !variant.getImageUrl().isEmpty()) {
+                                            item.setImageUrlSnapshot(variant.getImageUrl());
+                                        }
+                                        if (variant.getPrice() != null) {
+                                            item.setFinalUnitPriceAmount(variant.getPrice());
+                                        }
+                                        
+                                        // Update UI immediately
+                                        item.setQuantity(quantity);
+                                        adapter.notifyItemChanged(position);
+                                        updateSummaryLocal();
+                                        
+                                        viewModel.updateItemVariant(item.getId(), variant.getId(), quantity);
+                                    }
+                                });
+                                dialog.show(getChildFragmentManager(), "VariantSelector");
+                            }
+                        } else {
+                            Toast.makeText(getContext(), "Không thể tải thông tin sản phẩm", Toast.LENGTH_SHORT).show();
                         }
                     }
-                    
-                    item.setQuantity(quantity);
-                    adapter.notifyItemChanged(position);
-                    updateSummaryLocal();
-                    
-                    // TODO: Call API to update item variant and quantity
-                    if (variant != null) {
-                        viewModel.updateItemQuantity(item.getId(), quantity);
-                        // viewModel.updateItemVariant(item.getId(), variant.getId());
-                    } else {
-                        viewModel.updateItemQuantity(item.getId(), quantity);
+
+                    @Override
+                    public void onFailure(Call<ApiResponse<ProductDetailResponse>> call, Throwable t) {
+                        Toast.makeText(getContext(), "Lỗi kết nối", Toast.LENGTH_SHORT).show();
                     }
                 });
-                dialog.show();
             }
 
             @Override
             public void onDeleteClick(CartItemDto item, int position) {
                 if (item == null || item.getId() == null) return;
                 viewModel.removeItem(item.getId());
+            }
+
+            @Override
+            public void onWishlistClick(CartItemDto item, int position) {
+                if (item == null || item.getProductId() == null) return;
+                
+                boolean wasWishlisted = !item.isFavorite(); // Since it was toggled in adapter
+                
+                if (com.example.frontend.data.remote.TokenManager.getInstance(getContext()).isLoggedIn()) {
+                    wishlistViewModel.toggleWishlist(item.getProductId(), wasWishlisted);
+                    
+                    String message = !wasWishlisted ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích";
+                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                } else {
+                    // Rollback UI state in adapter
+                    item.setFavorite(wasWishlisted);
+                    adapter.notifyItemChanged(position);
+                    
+                    Bundle extras = new Bundle();
+                    extras.putString("productId", item.getProductId());
+                    extras.putBoolean("wasWishlisted", wasWishlisted);
+
+                    com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
+                            "Cart",
+                            0,
+                            extras
+                    );
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
+                }
             }
         });
 
@@ -187,10 +279,12 @@ public class CartFragment extends Fragment {
 
             switch (result.status) {
                 case LOADING:
+                    Log.d("CartFragment", "Cart loading...");
                     showLoading();
                     break;
 
                 case SUCCESS:
+                    Log.d("CartFragment", "Cart API response received: " + (result.data != null ? result.data.getItems().size() : 0) + " items");
                     showContent(result.data);
                     break;
 
@@ -201,6 +295,21 @@ public class CartFragment extends Fragment {
                 case ERROR:
                     showError(result.message);
                     break;
+            }
+        });
+
+        wishlistViewModel.getStatusResult().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+                Map<String, Boolean> statusMap = result.data;
+                if (adapter != null && adapter.getItems() != null) {
+                    for (CartItemDto item : adapter.getItems()) {
+                        Boolean isFavorite = statusMap.get(item.getProductId());
+                        if (isFavorite != null) {
+                            item.setFavorite(isFavorite);
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                }
             }
         });
     }
@@ -214,11 +323,12 @@ public class CartFragment extends Fragment {
             layoutCartEmpty.setVisibility(View.GONE);
         }
 
-        if (rvCartItems != null) {
+        // Only hide list if it's currently empty to avoid flickering on item updates
+        if (rvCartItems != null && (adapter == null || adapter.getItemCount() == 0)) {
             rvCartItems.setVisibility(View.GONE);
         }
 
-        if (layoutCartCheckoutSummary != null) {
+        if (layoutCartCheckoutSummary != null && (adapter == null || adapter.getItemCount() == 0)) {
             layoutCartCheckoutSummary.setVisibility(View.GONE);
         }
     }
@@ -250,6 +360,18 @@ public class CartFragment extends Fragment {
         }
 
         adapter.setItems(cart.getItems());
+
+        // Load wishlist status for all items in cart
+        if (cart.getItems() != null && !cart.getItems().isEmpty()) {
+            List<String> productIds = new ArrayList<>();
+            for (CartItemDto item : cart.getItems()) {
+                if (item.getProductId() != null) {
+                    productIds.add(item.getProductId());
+                }
+            }
+            wishlistViewModel.loadWishlistStatus(productIds);
+        }
+
         updateSummary(cart);
         updateSelectAllState();
     }

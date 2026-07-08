@@ -38,6 +38,9 @@ public class CartItemDto implements Serializable {
     @SerializedName("final_unit_price_amount")
     private double finalUnitPriceAmount;
 
+    @SerializedName("compare_at_price_amount")
+    private double compareAtPriceAmount;
+
     @SerializedName("line_total_amount")
     private double lineTotalAmount;
 
@@ -46,6 +49,8 @@ public class CartItemDto implements Serializable {
 
     @SerializedName("stock_status")
     private String stockStatus;
+
+    private boolean favorite;
 
     public String getId() {
         return id;
@@ -91,6 +96,10 @@ public class CartItemDto implements Serializable {
         return finalUnitPriceAmount;
     }
 
+    public double getCompareAtPriceAmount() {
+        return compareAtPriceAmount;
+    }
+
     public double getLineTotalAmount() {
         return lineTotalAmount;
     }
@@ -101,6 +110,14 @@ public class CartItemDto implements Serializable {
 
     public String getStockStatus() {
         return stockStatus;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 
     public void setSelected(boolean selected) {
@@ -125,6 +142,14 @@ public class CartItemDto implements Serializable {
 
     public void setVariantNameSnapshot(String variantNameSnapshot) {
         this.variantNameSnapshot = variantNameSnapshot;
+    }
+
+    public void setSkuSnapshot(String skuSnapshot) {
+        this.skuSnapshot = skuSnapshot;
+    }
+
+    public void setImageUrlSnapshot(String imageUrlSnapshot) {
+        this.imageUrlSnapshot = imageUrlSnapshot;
     }
 
     public void setFinalUnitPriceAmount(double finalUnitPriceAmount) {

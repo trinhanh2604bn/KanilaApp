@@ -29,6 +29,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         void onQuantityChanged(CartItemDto item, int newQuantity);
         void onVariantClick(CartItemDto item, int position);
         void onDeleteClick(CartItemDto item, int position);
+        void onWishlistClick(CartItemDto item, int position);
     }
 
     public void setOnCartItemChangeListener(OnCartItemChangeListener listener) {
@@ -65,7 +66,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     class CartViewHolder extends RecyclerView.ViewHolder {
         CheckBox cbSelected;
         ImageView ivProduct;
-        TextView tvName, tvVariant, tvPrice, tvQuantity;
+        TextView tvName, tvVariant, tvPrice, tvOldPrice, tvDiscount, tvQuantity;
         ImageButton btnDecrease, btnIncrease, btnWishlist;
         View layoutFront, layoutAction, layoutVariant;
         View tvActionSimilar, tvActionDelete;
@@ -80,6 +81,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             tvName = layoutFront.findViewById(R.id.tvCartProductName);
             // tvVariant = layoutFront.findViewById(R.id.tvCartProductVariant); // Removed as we use included layout
             tvPrice = layoutFront.findViewById(R.id.tvCartPrice);
+            tvOldPrice = layoutFront.findViewById(R.id.tvCartOldPrice);
+            tvDiscount = layoutFront.findViewById(R.id.tvCartDiscount);
             tvQuantity = layoutFront.findViewById(R.id.tvCartQuantity);
             btnDecrease = layoutFront.findViewById(R.id.btnDecreaseQuantity);
             btnIncrease = layoutFront.findViewById(R.id.btnIncreaseQuantity);
@@ -96,13 +99,32 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             if (layoutVariant != null) {
                 TextView tvVariantName = layoutVariant.findViewById(R.id.tvVariantName);
                 if (tvVariantName != null) {
-                    tvVariantName.setText(item.getVariantNameSnapshot());
+                    tvVariantName.setText(getDisplayVariantName(item));
                 }
             } else if (tvVariant != null) {
-                tvVariant.setText(item.getVariantNameSnapshot());
+                tvVariant.setText(getDisplayVariantName(item));
             }
 
             tvPrice.setText(formatPrice(item.getFinalUnitPriceAmount()));
+            
+            if (tvOldPrice != null) {
+                double oldPrice = item.getCompareAtPriceAmount();
+                if (oldPrice > item.getFinalUnitPriceAmount()) {
+                    tvOldPrice.setVisibility(View.VISIBLE);
+                    tvOldPrice.setText(formatPrice(oldPrice));
+                    tvOldPrice.setPaintFlags(tvOldPrice.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+                    
+                    if (tvDiscount != null) {
+                        tvDiscount.setVisibility(View.VISIBLE);
+                        int percent = (int) Math.round((oldPrice - item.getFinalUnitPriceAmount()) / oldPrice * 100);
+                        tvDiscount.setText("-" + percent + "%");
+                    }
+                } else {
+                    tvOldPrice.setVisibility(View.GONE);
+                    if (tvDiscount != null) tvDiscount.setVisibility(View.GONE);
+                }
+            }
+
             tvQuantity.setText(String.valueOf(item.getQuantity()));
             
             Glide.with(ivProduct.getContext())
@@ -111,8 +133,17 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                     .error(R.drawable.ic_product)
                     .into(ivProduct);
             
-            // Note: Wishlist status might need separate API call or be part of item DTO if backend supports it
-            btnWishlist.setSelected(false);
+            btnWishlist.setSelected(item.isFavorite());
+            
+            btnWishlist.setOnClickListener(v -> {
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION && listener != null) {
+                    boolean newState = !item.isFavorite();
+                    item.setFavorite(newState);
+                    v.setSelected(newState);
+                    listener.onWishlistClick(item, pos);
+                }
+            });
             
             layoutFront.setTranslationX(0f);
             
@@ -153,6 +184,39 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             tvActionSimilar.setOnClickListener(v -> {
                 // Feature logic for similar products
             });
+        }
+
+        private String getDisplayVariantName(CartItemDto item) {
+            String variantName = item.getVariantNameSnapshot();
+            String productName = item.getProductNameSnapshot();
+            
+            if (variantName == null || variantName.isEmpty()) return "";
+            if (productName == null || productName.isEmpty()) return variantName;
+            
+            String display = variantName;
+            
+            // Standard case: "Product Name - Variant Detail"
+            if (display.contains(productName + " - ")) {
+                display = display.replace(productName + " - ", "");
+            } else if (display.startsWith(productName)) {
+                // Handle case where it starts with product name but maybe different separator
+                String potential = display.substring(productName.length()).trim();
+                if (!potential.isEmpty()) {
+                    if (potential.startsWith("-") || potential.startsWith(":") || potential.startsWith("•")) {
+                        display = potential.substring(1).trim();
+                    } else {
+                        display = potential;
+                    }
+                }
+            }
+            
+            // Append SKU if available and not already in variant name
+            String sku = item.getSkuSnapshot();
+            if (sku != null && !sku.isEmpty() && !display.contains(sku)) {
+                display += " (SKU: " + sku + ")";
+            }
+            
+            return display;
         }
 
         private String formatPrice(double price) {

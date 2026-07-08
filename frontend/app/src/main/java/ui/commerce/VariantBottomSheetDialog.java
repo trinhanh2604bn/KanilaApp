@@ -3,9 +3,12 @@ package ui.commerce;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -125,6 +128,19 @@ public class VariantBottomSheetDialog extends BottomSheetDialog {
             public void onResponse(Call<ApiResponse<List<ProductVariantDto>>> call, Response<ApiResponse<List<ProductVariantDto>>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     variants = response.body().getData();
+                    
+                    if (variants != null && cartItem != null) {
+                        for (ProductVariantDto v : variants) {
+                            if (v.getId() != null && v.getId().equals(cartItem.getVariantId())) {
+                                selectedVariant = v;
+                                break;
+                            }
+                        }
+                        if (selectedVariant == null && !variants.isEmpty()) {
+                            selectedVariant = variants.get(0);
+                        }
+                    }
+
                     bindVariantsUI();
                 }
             }
@@ -137,10 +153,105 @@ public class VariantBottomSheetDialog extends BottomSheetDialog {
     }
 
     private void bindVariantsUI() {
-        // Here we would dynamically populate layoutColorOptions or layoutSizeOptions
-        // For simplicity and since the requirement didn't specify complex dynamic UI building, 
-        // we'll just handle the selection if the user clicks one.
-        // In a real app, we'd use a RecyclerView or dynamically add views.
+        if (variants == null || variants.isEmpty()) return;
+
+        Log.d("VariantBottomSheet", "Rendering variants for product: " + cartItem.getProductNameSnapshot());
+
+        LinearLayout layoutColorOptions = findViewById(R.id.layoutColorOptions);
+        LinearLayout layoutSizeOptions = findViewById(R.id.layoutSizeOptions);
+
+        if (layoutColorOptions != null) layoutColorOptions.removeAllViews();
+        if (layoutSizeOptions != null) layoutSizeOptions.removeAllViews();
+
+        for (ProductVariantDto variant : variants) {
+            // Check if it's a color variant by name or some logic
+            if (isColorVariant(variant)) {
+                addColorOption(variant, layoutColorOptions);
+            } else {
+                addSizeOption(variant, layoutSizeOptions);
+            }
+        }
+        
+        updateSelectedVariantUI();
+    }
+
+    private boolean isColorVariant(ProductVariantDto variant) {
+        String name = variant.getVariantName().toLowerCase();
+        return name.contains("#") || name.contains("red") || name.contains("pink") || name.contains("rose");
+    }
+
+    private void addColorOption(ProductVariantDto variant, LinearLayout container) {
+        if (container == null) return;
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.item_variant_color, container, false);
+        View selectionBg = view.findViewById(R.id.viewSelectionBg);
+        View colorCircle = view.findViewById(R.id.viewColorCircle);
+        ImageView ivTick = view.findViewById(R.id.ivTick);
+        TextView tvName = view.findViewById(R.id.tvVariantName);
+        
+        tvName.setText(variant.getVariantName());
+        
+        boolean isSelected = selectedVariant != null && selectedVariant.getId().equals(variant.getId());
+        
+        // Mock color or try to parse from name
+        if (colorCircle != null && colorCircle.getBackground() != null) {
+            int color = android.graphics.Color.LTGRAY;
+            String name = variant.getVariantName().toLowerCase();
+            if (name.contains("red")) color = android.graphics.Color.RED;
+            else if (name.contains("pink")) color = android.graphics.Color.parseColor("#FFC0CB");
+            else if (name.contains("black")) color = android.graphics.Color.BLACK;
+            
+            colorCircle.getBackground().setTint(color);
+        }
+
+        if (selectionBg != null) selectionBg.setVisibility(isSelected ? View.VISIBLE : View.GONE);
+        if (ivTick != null) ivTick.setVisibility(isSelected ? View.VISIBLE : View.GONE);
+        
+        view.setOnClickListener(v -> {
+            Log.d("VariantBottomSheet", "Variant selected: " + variant.getVariantName());
+            selectedVariant = variant;
+            bindVariantsUI();
+        });
+
+        container.addView(view);
+    }
+
+    private void addSizeOption(ProductVariantDto variant, LinearLayout container) {
+        if (container == null) return;
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.item_variant_size, container, false);
+        TextView tvSize = view instanceof TextView ? (TextView) view : view.findViewById(R.id.tvVariantSize);
+        
+        if (tvSize != null) {
+            tvSize.setText(variant.getVariantName());
+            boolean isSelected = selectedVariant != null && selectedVariant.getId().equals(variant.getId());
+            tvSize.setBackgroundResource(isSelected ? R.drawable.bg_chip_selected : R.drawable.bg_chip_outline);
+            tvSize.setTextColor(isSelected ? android.graphics.Color.WHITE : android.graphics.Color.BLACK);
+        }
+
+        view.setOnClickListener(v -> {
+            Log.d("VariantBottomSheet", "Variant selected: " + variant.getVariantName());
+            selectedVariant = variant;
+            bindVariantsUI();
+        });
+
+        container.addView(view);
+    }
+
+    private void updateSelectedVariantUI() {
+        TextView tvPrice = findViewById(R.id.tvVariantCurrentPrice);
+        TextView tvStock = findViewById(R.id.tvVariantStock);
+        ImageView ivProduct = findViewById(R.id.ivVariantProductImage);
+
+        if (selectedVariant != null) {
+            if (tvPrice != null && selectedVariant.getPrice() != null) {
+                tvPrice.setText(formatPrice(selectedVariant.getPrice()));
+            }
+            if (tvStock != null) {
+                tvStock.setText("Còn " + selectedVariant.getStockQuantity() + " sản phẩm");
+            }
+            if (ivProduct != null && selectedVariant.getImageUrl() != null) {
+                Glide.with(getContext()).load(selectedVariant.getImageUrl()).into(ivProduct);
+            }
+        }
     }
 
     private void setupActions() {
@@ -152,6 +263,7 @@ public class VariantBottomSheetDialog extends BottomSheetDialog {
         View btnApply = findViewById(R.id.btnVariantApply);
         if (btnApply != null) {
             btnApply.setOnClickListener(v -> {
+                Log.d("VariantBottomSheet", "Apply variant: " + (selectedVariant != null ? selectedVariant.getVariantName() : "none") + ", qty: " + quantity);
                 if (listener != null) {
                     listener.onVariantApplied(selectedVariant, quantity);
                 }

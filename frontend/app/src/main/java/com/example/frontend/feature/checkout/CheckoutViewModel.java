@@ -48,7 +48,7 @@ public class CheckoutViewModel extends AndroidViewModel {
         checkoutRepository.prepareCheckout(checkoutSession);
     }
 
-    public void setMockDataFromCart(List<CartItemDto> selectedItems, double coinsDiscount) {
+    public void setMockDataFromCart(List<CartItemDto> selectedItems, double coinsDiscount, com.example.frontend.data.model.coupon.CouponDto selectedVoucher) {
         if (!USE_MOCK_CHECKOUT) return;
 
         CheckoutSessionDto session = new CheckoutSessionDto();
@@ -72,7 +72,21 @@ public class CheckoutViewModel extends AndroidViewModel {
         session.setSubtotalAmount(subtotal);
         
         double shipping = 30000;
-        double discount = subtotal > 0 ? 100000 : 0;
+        double discount = 0;
+        if (selectedVoucher != null) {
+            if ("percentage".equalsIgnoreCase(selectedVoucher.getDiscountType())) {
+                discount = subtotal * (selectedVoucher.getDiscountValue() / 100.0);
+                if (selectedVoucher.getMaxDiscountAmount() > 0) {
+                    discount = Math.min(discount, selectedVoucher.getMaxDiscountAmount());
+                }
+            } else {
+                discount = selectedVoucher.getDiscountValue();
+            }
+            session.setCouponCode(selectedVoucher.getCouponCode());
+        } else {
+            discount = subtotal > 0 ? 100000 : 0; // Default mock discount
+        }
+
         double points = coinsDiscount;
         
         session.setShippingAmount(shipping);

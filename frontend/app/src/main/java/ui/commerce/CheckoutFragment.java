@@ -49,9 +49,11 @@ public class CheckoutFragment extends Fragment {
             java.util.List<com.example.frontend.data.model.cart.CartItemDto> selectedItems = 
                 (java.util.List<com.example.frontend.data.model.cart.CartItemDto>) getArguments().getSerializable("selected_items");
             double coinsDiscount = getArguments().getDouble("coins_discount", 0);
+            com.example.frontend.data.model.coupon.CouponDto selectedVoucher = 
+                (com.example.frontend.data.model.coupon.CouponDto) getArguments().getSerializable("selected_voucher");
             
             if (selectedItems != null && !selectedItems.isEmpty()) {
-                viewModel.setMockDataFromCart(selectedItems, coinsDiscount);
+                viewModel.setMockDataFromCart(selectedItems, coinsDiscount, selectedVoucher);
             }
         }
         
@@ -239,8 +241,15 @@ public class CheckoutFragment extends Fragment {
         TextView tvValue = card.findViewById(R.id.tvCheckoutOptionRightValue);
         TextView tvSecondary = card.findViewById(R.id.tvCheckoutOptionSecondary);
 
+        CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ? 
+            viewModel.getCheckoutSession().getValue().data : null;
+
         if (discountAmount > 0) {
-            tvPrimary.setText("GIẢM 100k");
+            if (session != null && session.getCouponCode() != null) {
+                tvPrimary.setText(session.getCouponCode());
+            } else {
+                tvPrimary.setText("GIẢM 100k");
+            }
             tvValue.setText("-" + formatPrice(discountAmount));
             tvValue.setVisibility(View.VISIBLE);
         } else {

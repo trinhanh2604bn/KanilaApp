@@ -17,6 +17,7 @@ public class CheckoutSessionDto {
     public void setShippingMethod(String shippingMethod) { this.shippingMethod = shippingMethod; }
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
     public void setItems(List<CheckoutItemDto> items) { this.items = items; }
+    public void setCouponCode(String couponCode) { this.couponCode = couponCode; }
 
     @SerializedName("customer_id")
     private String customerId;
@@ -26,6 +27,9 @@ public class CheckoutSessionDto {
 
     @SerializedName("session_status")
     private String sessionStatus;
+
+    @SerializedName("coupon_code")
+    private String couponCode;
 
     @SerializedName("subtotal_amount")
     private double subtotalAmount;
@@ -64,6 +68,7 @@ public class CheckoutSessionDto {
     public String getShippingMethod() { return shippingMethod; }
     public String getPaymentMethod() { return paymentMethod; }
     public List<CheckoutItemDto> getItems() { return items; }
+    public String getCouponCode() { return couponCode; }
 
     public static class CheckoutItemDto {
         @SerializedName("id")

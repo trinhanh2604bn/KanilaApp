@@ -173,6 +173,9 @@ public interface ApiService {
     @GET("api/coupons/available")
     Call<ApiResponse<List<CouponDto>>> getAvailableCoupons();
 
+    @POST("api/coupons/apply")
+    Call<ApiResponse<com.example.frontend.data.model.coupon.ApplyCouponResponse>> applyCoupon(@Body com.example.frontend.data.model.coupon.ApplyCouponRequest request);
+
     @GET("api/wishlists/me/items")
     Call<ApiResponse<PaginatedData<WishlistItemResponse>>> getMyWishlistItems(@Query("sort") String sort);
 

@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
 import com.example.frontend.data.model.cart.CartDto;
 import com.example.frontend.data.model.cart.CartItemDto;
+import com.example.frontend.data.model.coupon.CouponDto;
 import com.example.frontend.data.model.product.ProductDetailResponse;
 import com.example.frontend.data.remote.ApiClient;
 import com.example.frontend.data.remote.ApiResponse;
@@ -53,6 +54,7 @@ public class CartFragment extends Fragment {
 
     private CartViewModel viewModel;
     private WishlistViewModel wishlistViewModel;
+    private CouponDto selectedVoucher;
     private boolean useCoins = false;
     private boolean isUpdatingSelectAll = false;
 
@@ -641,9 +643,15 @@ public class CartFragment extends Fragment {
     private void setupActions() {
         if (btnChooseVoucher != null) {
             btnChooseVoucher.setOnClickListener(v -> {
-                if (getContext() != null) {
-                    new VoucherBottomSheetDialog(getContext()).show();
-                }
+                VoucherBottomSheetDialog dialog = new VoucherBottomSheetDialog();
+                dialog.setOnVoucherAppliedListener(voucher -> {
+                    selectedVoucher = voucher;
+                    if (btnChooseVoucher instanceof com.google.android.material.button.MaterialButton) {
+                        ((com.google.android.material.button.MaterialButton) btnChooseVoucher).setText(voucher.getCouponCode());
+                    }
+                    updateSummaryLocal();
+                });
+                dialog.show(getChildFragmentManager(), "VoucherSheet");
             });
         }
 
@@ -679,6 +687,9 @@ public class CartFragment extends Fragment {
                     Bundle args = new Bundle();
                     args.putSerializable("selected_items", (java.io.Serializable) selectedItems);
                     args.putDouble("coins_discount", useCoins ? 20000.0 : 0.0);
+                    if (selectedVoucher != null) {
+                        args.putSerializable("selected_voucher", selectedVoucher);
+                    }
                     checkoutFragment.setArguments(args);
 
                     getActivity().getSupportFragmentManager().beginTransaction()
@@ -733,7 +744,19 @@ public class CartFragment extends Fragment {
             }
         }
 
-        double discount = subtotal > 0 ? 100000 : 0;
+        double discount = 0;
+        if (selectedVoucher != null) {
+            if ("percentage".equalsIgnoreCase(selectedVoucher.getDiscountType())) {
+                discount = subtotal * (selectedVoucher.getDiscountValue() / 100.0);
+                if (selectedVoucher.getMaxDiscountAmount() > 0) {
+                    discount = Math.min(discount, selectedVoucher.getMaxDiscountAmount());
+                }
+            } else {
+                discount = selectedVoucher.getDiscountValue();
+            }
+        }
+        discount = Math.min(discount, subtotal);
+
         double coins = useCoins ? 20000 : 0;
         double total = subtotal - discount - coins;
         if (total < 0) total = 0;
@@ -746,6 +769,9 @@ public class CartFragment extends Fragment {
             String text = "-" + formatPrice(discount);
             if (useCoins) {
                 text += " - " + formatPrice(coins) + " xu";
+            }
+            if (selectedVoucher != null) {
+                text += " (" + selectedVoucher.getCouponCode() + ")";
             }
             tvDiscountValue.setText(text + ", miễn phí vận chuyển");
         }

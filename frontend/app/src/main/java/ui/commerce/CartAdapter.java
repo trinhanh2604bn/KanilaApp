@@ -31,6 +31,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         void onVariantClick(CartItemDto item, int position);
         void onDeleteClick(CartItemDto item, int position);
         void onWishlistClick(CartItemDto item, int position);
+        void onSimilarClick(CartItemDto item, int position);
     }
 
     public void setOnCartItemChangeListener(OnCartItemChangeListener listener) {
@@ -218,7 +219,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             });
 
             tvActionSimilar.setOnClickListener(v -> {
-                // Feature logic for similar products
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION && listener != null) {
+                    listener.onSimilarClick(item, pos);
+                }
             });
         }
 

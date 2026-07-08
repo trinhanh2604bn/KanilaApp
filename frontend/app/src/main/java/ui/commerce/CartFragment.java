@@ -279,6 +279,17 @@ public class CartFragment extends Fragment {
                     com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
                 }
             }
+
+            @Override
+            public void onSimilarClick(CartItemDto item, int position) {
+                if (getActivity() != null) {
+                    // Điều hướng sang trang ProductListingFragment với category mặc định "Face" (hoặc logic tương tự)
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, com.example.frontend.ui.category.ProductListingFragment.newCategoryInstance("Face"))
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
         });
 
         setupSwipeToReveal();

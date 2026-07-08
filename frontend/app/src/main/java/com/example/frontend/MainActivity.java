@@ -17,10 +17,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,6 +48,7 @@ import ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
 import ui.commerce.CheckoutFragment;
 import ui.common.BottomNavigationHelper;
+import com.example.frontend.feature.community.reels.ReelsFeedFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -97,6 +100,23 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupBannerSlider();
         setupProductLists();
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main);
+                if (currentFragment instanceof ReelsFeedFragment) {
+                    // Navigate back to Home
+                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                    setEnabled(true);
+                }
+            }
+        });
 
         observeViewModel();
         
@@ -256,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
                             .commit();
                 } else if (tabIndex == BottomNavigationHelper.TAB_REELS) {
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new com.example.frontend.feature.community.reels.ReelsFeedFragment())
+                            .replace(R.id.main, new ReelsFeedFragment())
                             .commit();
                 } else if (tabIndex == BottomNavigationHelper.TAB_COMMUNITY) {
                     Toast.makeText(this, "Community coming soon!", Toast.LENGTH_SHORT).show();

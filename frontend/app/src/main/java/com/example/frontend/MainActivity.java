@@ -223,7 +223,9 @@ public class MainActivity extends AppCompatActivity {
                 } else if (tabIndex == BottomNavigationHelper.TAB_REELS) {
                     Toast.makeText(this, "Reels coming soon!", Toast.LENGTH_SHORT).show();
                 } else if (tabIndex == BottomNavigationHelper.TAB_COMMUNITY) {
-                    Toast.makeText(this, "Community coming soon!", Toast.LENGTH_SHORT).show();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ui.community.CommunityHomeFragment())
+                            .commit();
                 } else if (tabIndex == BottomNavigationHelper.TAB_HOME) {
                     // Refresh current activity to show home content again
                     Intent intent = new Intent(this, MainActivity.class);

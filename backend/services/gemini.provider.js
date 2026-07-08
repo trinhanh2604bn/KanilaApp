@@ -8,10 +8,15 @@
  */
 
 const { GoogleGenAI } = require("@google/genai");
-const { KANILA_SYSTEM_PROMPT } = require("./chatbot.prompt");
+const { KANILA_SYSTEM_PROMPT, buildProductContextMessage } = require("./chatbot.prompt");
 
-// Resolve API key: prefer environment variable
-const geminiApiKey = process.env.GEMINI_API_KEY;
+// ─────────────────────────────────────────────────────────────────────────────
+// TEMP DEV ONLY - remove before commit/deploy
+const TEMP_DEV_GEMINI_API_KEY = "PASTE_YOUR_GEMINI_KEY_HERE"; // TEMP DEV ONLY - remove before commit/deploy
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Resolve API key: prefer environment variable, fallback to dev key
+const geminiApiKey = process.env.GEMINI_API_KEY || TEMP_DEV_GEMINI_API_KEY;
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
@@ -24,9 +29,12 @@ const GEMINI_TIMEOUT_MS = 10000;
  */
 let _genAI = null;
 function getGenAI() {
-  if (!geminiApiKey) {
+  if (
+    !geminiApiKey ||
+    geminiApiKey === "PASTE_YOUR_GEMINI_KEY_HERE"
+  ) {
     const err = new Error(
-      "Gemini API key is missing or not configured. Set GEMINI_API_KEY in .env."
+      "Gemini API key is missing or not configured. Set GEMINI_API_KEY in .env or add a temporary dev key in gemini.provider.js."
     );
     err.code = "CHATBOT_CONFIG_ERROR";
     throw err;
@@ -38,27 +46,21 @@ function getGenAI() {
 }
 
 /**
- * Call Gemini with conversation history and the user's latest message.
- *
- * @param {string} userMessage — The latest user message text.
- * @param {Array<{role: string, parts: Array<{text: string}>}>} history
- *   — The last N messages formatted as Gemini Content objects (role: "user"|"model").
- * @returns {Promise<string>} — The assistant's text reply.
+ * Internal: run a Gemini chat call with timeout protection.
+ * @param {string} message — user message text (may include injected context)
+ * @param {Array} history — prior conversation turns in Gemini format
+ * @returns {Promise<string>}
  */
-async function generateChatReply(userMessage, history = []) {
-  const genAI = getGenAI(); // throws CHATBOT_CONFIG_ERROR if key missing
+async function _geminiChatWithTimeout(message, history = []) {
+  const genAI = getGenAI();
 
-  // Wrap the Gemini call with a timeout race
   const geminiPromise = (async () => {
     const chat = genAI.chats.create({
       model: GEMINI_MODEL,
-      config: {
-        systemInstruction: KANILA_SYSTEM_PROMPT,
-      },
+      config: { systemInstruction: KANILA_SYSTEM_PROMPT },
       history,
     });
-
-    const result = await chat.sendMessage({ message: userMessage });
+    const result = await chat.sendMessage({ message });
     return result.text;
   })();
 
@@ -71,14 +73,11 @@ async function generateChatReply(userMessage, history = []) {
   });
 
   try {
-    const replyText = await Promise.race([geminiPromise, timeoutPromise]);
-    return replyText;
+    return await Promise.race([geminiPromise, timeoutPromise]);
   } catch (err) {
-    // Re-throw structured errors (CONFIG or TIMEOUT) as-is
     if (err.code === "CHATBOT_CONFIG_ERROR" || err.code === "CHATBOT_TIMEOUT") {
       throw err;
     }
-    // Wrap unexpected Gemini SDK errors without leaking internals
     console.error("[Gemini] Provider error:", err.message);
     const wrapped = new Error("Gemini provider encountered an error.");
     wrapped.code = "CHATBOT_ERROR";
@@ -86,4 +85,30 @@ async function generateChatReply(userMessage, history = []) {
   }
 }
 
-module.exports = { generateChatReply };
+/**
+ * Call Gemini with conversation history and the user's latest message.
+ * Used for general chat (non-product intents).
+ *
+ * @param {string} userMessage — The latest user message text.
+ * @param {Array<{role: string, parts: Array<{text: string}>}>} history
+ * @returns {Promise<string>}
+ */
+async function generateChatReply(userMessage, history = []) {
+  return _geminiChatWithTimeout(userMessage, history);
+}
+
+/**
+ * Call Gemini to produce a Vietnamese explanation for a list of recommended products.
+ * Products are injected as KANILA_PRODUCT_CONTEXT — Gemini must NOT invent product data.
+ *
+ * @param {object[]} products — normalized product objects (from chatbotProduct.tool.js)
+ * @param {string} userMessage — original user message
+ * @param {Array} history — prior conversation turns
+ * @returns {Promise<string>}
+ */
+async function generateProductExplanation(products, userMessage, history = []) {
+  const messageWithContext = buildProductContextMessage(products, userMessage);
+  return _geminiChatWithTimeout(messageWithContext, history);
+}
+
+module.exports = { generateChatReply, generateProductExplanation };

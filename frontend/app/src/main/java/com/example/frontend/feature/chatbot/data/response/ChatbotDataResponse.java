@@ -13,6 +13,9 @@ public class ChatbotDataResponse {
     @SerializedName("bot_message")
     private String botMessage;
 
+    @SerializedName("products")
+    private List<ChatProductResponse> products;
+
     @SerializedName("quick_replies")
     private List<String> quickReplies;
 
@@ -29,6 +32,10 @@ public class ChatbotDataResponse {
 
     public String getBotMessage() {
         return botMessage;
+    }
+
+    public List<ChatProductResponse> getProducts() {
+        return products;
     }
 
     public List<String> getQuickReplies() {

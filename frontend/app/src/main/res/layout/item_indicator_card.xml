@@ -3,12 +3,15 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="88dp"
-    android:layout_height="116dp"
-    android:layout_marginEnd="8dp"
+    android:layout_width="100dp"
+    android:layout_height="130dp"
+    android:layout_marginEnd="10dp"
+    android:clickable="true"
+    android:focusable="true"
     app:cardBackgroundColor="@color/background_main"
-    app:cardCornerRadius="14dp"
+    app:cardCornerRadius="20dp"
     app:cardElevation="0dp"
+    app:rippleColor="#20FFADBE"
     app:strokeColor="@color/border_divider"
     app:strokeWidth="1dp">
 
@@ -21,14 +24,13 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="12dp">
 
             <ImageView
                 android:id="@+id/ivIndicatorIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:contentDescription="@string/app_name"
-                android:padding="5dp"
                 android:src="@drawable/ic_drops"
                 app:tint="@color/button" />
 
@@ -36,7 +38,7 @@
                 android:id="@+id/tvIndicatorScore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="6dp"
                 android:fontFamily="@font/nunito_bold"
                 android:text="0/100"
                 android:textColor="@color/button"
@@ -50,7 +52,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/nunito_semibold"
                 android:gravity="center"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="Chỉ số"
                 android:textColor="@color/accent_dark"
                 android:textSize="10sp" />

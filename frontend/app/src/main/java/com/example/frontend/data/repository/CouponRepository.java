@@ -7,6 +7,7 @@ import com.example.frontend.data.remote.ApiResponse;
 import com.example.frontend.data.remote.ApiService;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.data.model.coupon.CouponDto;
+import com.example.frontend.data.model.common.PaginatedData;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,7 +28,12 @@ public class CouponRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<List<CouponDto>> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
-                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                        List<CouponDto> items = apiResponse.getData();
+                        if (items != null) {
+                            result.setValue(NetworkResult.success(items));
+                        } else {
+                            result.setValue(NetworkResult.empty());
+                        }
                     } else {
                         result.setValue(NetworkResult.error(apiResponse.getMessage()));
                     }
@@ -51,7 +57,12 @@ public class CouponRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<List<CouponDto>> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
-                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                        List<CouponDto> items = apiResponse.getData();
+                        if (items != null) {
+                            result.setValue(NetworkResult.success(items));
+                        } else {
+                            result.setValue(NetworkResult.empty());
+                        }
                     } else {
                         result.setValue(NetworkResult.error(apiResponse.getMessage()));
                     }

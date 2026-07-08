@@ -11,12 +11,16 @@ const {
   addMyWishlistProduct,
   deleteMyWishlistProductByProductId,
   bulkDeleteMyWishlistItems,
+  clearMyWishlist,
+  getMyWishlistStatus,
   createWishlist,
   updateWishlist,
   deleteWishlist,
 } = require("../controllers/wishlist.controller");
 router.get("/me", authMiddleware, getMyWishlist);
+router.get("/me/status", authMiddleware, getMyWishlistStatus);
 router.get("/me/items", authMiddleware, getMyWishlistItems);
+router.delete("/me/items", authMiddleware, clearMyWishlist);
 router.post("/me/items/bulk-delete", authMiddleware, bulkDeleteMyWishlistItems);
 router.delete("/me/items/:id", authMiddleware, deleteMyWishlistItem);
 router.post("/", authMiddleware, addMyWishlistProduct);

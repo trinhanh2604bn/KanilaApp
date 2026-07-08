@@ -279,6 +279,10 @@
     <!-- C. Fixed bottom area -->
     <include
         android:id="@+id/includeFaceBottomNavigation"
-        layout="@layout/view_bottom_navigation" />
+        layout="@layout/view_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 
 </LinearLayout>

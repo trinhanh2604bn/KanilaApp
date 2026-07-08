@@ -14,10 +14,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
-import com.example.frontend.data.remote.NetworkResult;
-import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.core.auth.AuthNavigationHelper;
+import com.example.frontend.core.auth.PendingAuthAction;
 import com.example.frontend.data.model.cart.AddToCartRequest;
 import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.data.remote.TokenManager;
+import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.feature.wishlist.WishlistViewModel;
 import com.example.frontend.model.Product;
 
 import java.util.ArrayList;
@@ -47,6 +50,7 @@ public class SearchActivity extends AppCompatActivity {
     private SearchSuggestedProductAdapter productAdapter;
 
     private SearchViewModel viewModel;
+    private WishlistViewModel wishlistViewModel;
     private CartViewModel cartViewModel;
 
     @Override
@@ -55,8 +59,9 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         viewModel = new ViewModelProvider(this).get(SearchViewModel.class);
+        wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
         cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
-        
+
         initViews();
         setupSearchHeader();
         setupHistory();
@@ -184,10 +189,11 @@ public class SearchActivity extends AppCompatActivity {
     private void setupRecommendProducts() {
         recommendAdapter = new SearchRecommendProductAdapter();
         rvRecommendProducts.setAdapter(recommendAdapter);
-        // This should eventually come from API as well
+        
         recommendAdapter.setOnProductClickListener(new SearchRecommendProductAdapter.OnProductClickListener() {
             @Override
             public void onProductClick(Product product) {
+                // R.id.main is not in SearchActivity layout, using Toast as per existing Activity pattern
                 Toast.makeText(SearchActivity.this, "Sản phẩm: " + product.getName(), Toast.LENGTH_SHORT).show();
             }
 
@@ -196,6 +202,8 @@ public class SearchActivity extends AppCompatActivity {
                 handleAddToCart(product);
             }
         });
+        
+        recommendAdapter.setOnWishlistClickListener(this::onWishlistClick);
     }
 
     private void setupQuickDiscovery() {
@@ -203,7 +211,6 @@ public class SearchActivity extends AppCompatActivity {
         rvQuickDiscovery.setAdapter(discoveryAdapter);
 
         List<SearchQuickDiscovery> discoveryItems = new ArrayList<>();
-        // These can stay as they are likely static entry points
         discoveryItems.add(new SearchQuickDiscovery("Da dầu mụn", "Gợi ý cho bạn", R.drawable.kpn_1));
         discoveryItems.add(new SearchQuickDiscovery("Trang điểm", "Phong cách tự nhiên", R.drawable.kpn_2));
 
@@ -217,10 +224,7 @@ public class SearchActivity extends AppCompatActivity {
         productAdapter.setOnProductClickListener(new SearchSuggestedProductAdapter.OnProductClickListener() {
             @Override
             public void onProductClick(Product product) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
-                        .addToBackStack(null)
-                        .commit();
+                Toast.makeText(SearchActivity.this, "Sản phẩm: " + product.getName(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -228,6 +232,7 @@ public class SearchActivity extends AppCompatActivity {
                 handleAddToCart(product);
             }
         });
+        productAdapter.setOnWishlistClickListener(this::onWishlistClick);
     }
 
     private void focusSearchInput() {
@@ -274,7 +279,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void handleAddToCart(Product product) {
-        if (product.getId() == null) return;
+        if (product == null || product.getId() == null) return;
 
         AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
         cartViewModel.addToCart(request);
@@ -292,5 +297,25 @@ public class SearchActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void onWishlistClick(Product product, int position) {
+        if (TokenManager.getInstance(this).isLoggedIn()) {
+            wishlistViewModel.toggleWishlist(product.getId(), product.isFavorite());
+            product.setFavorite(!product.isFavorite());
+            
+            if (recommendAdapter != null) recommendAdapter.notifyDataSetChanged();
+            if (productAdapter != null) productAdapter.notifyDataSetChanged();
+            
+            String msg = product.isFavorite() ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích";
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        } else {
+            Bundle extras = new Bundle();
+            extras.putString("productId", product.getId());
+            extras.putBoolean("wasWishlisted", product.isFavorite());
+            // returnDestinationId = 0 since activity_search lacks R.id.main
+            PendingAuthAction action = new PendingAuthAction(PendingAuthAction.ActionType.ADD_TO_WISHLIST, "SearchActivity", 0, extras);
+            AuthNavigationHelper.showAuthPrompt(this, action);
+        }
     }
 }

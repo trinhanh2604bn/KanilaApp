@@ -173,7 +173,7 @@ public class CartRepository {
 
     public void addToCart(AddToCartRequest request, MutableLiveData<NetworkResult<CartDto>> result) {
         result.setValue(NetworkResult.loading());
-        
+
         Call<ApiResponse<CartDto>> call;
         if (tokenManager.isLoggedIn()) {
             call = apiService.addToCart(request);

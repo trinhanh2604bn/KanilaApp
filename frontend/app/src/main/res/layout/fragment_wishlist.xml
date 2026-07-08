@@ -36,6 +36,18 @@
             android:layout_weight="1" />
 
         <TextView
+            android:id="@+id/tvClearAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/spacing_m"
+            android:fontFamily="@font/nunito_bold"
+            android:text="Xóa tất cả"
+            android:textColor="@color/pink_primary"
+            android:textSize="14sp"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
             android:id="@+id/tvSelectAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

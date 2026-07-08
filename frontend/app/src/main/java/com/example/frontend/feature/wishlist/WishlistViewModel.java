@@ -15,6 +15,7 @@ public class WishlistViewModel extends AndroidViewModel {
     private final WishlistRepository repository;
     private final MutableLiveData<NetworkResult<List<WishlistItemResponse>>> wishlistResult = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<WishlistActionResponse>> toggleResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<java.util.Map<String, Boolean>>> statusResult = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<Object>> bulkDeleteResult = new MutableLiveData<>();
     private String currentSort = "latest";
 
@@ -31,12 +32,22 @@ public class WishlistViewModel extends AndroidViewModel {
         return toggleResult;
     }
 
+    public LiveData<NetworkResult<java.util.Map<String, Boolean>>> getStatusResult() {
+        return statusResult;
+    }
+
     public LiveData<NetworkResult<Object>> getBulkDeleteResult() {
         return bulkDeleteResult;
     }
 
     public void loadWishlist() {
         repository.getMyWishlistItems(currentSort, wishlistResult);
+    }
+
+    public void loadWishlistStatus(List<String> productIds) {
+        if (productIds == null || productIds.isEmpty()) return;
+        String ids = String.join(",", productIds);
+        repository.getWishlistStatus(ids, statusResult);
     }
 
     public void setSort(String sort) {
@@ -65,5 +76,9 @@ public class WishlistViewModel extends AndroidViewModel {
 
     public void bulkDelete(List<String> itemIds) {
         repository.bulkDeleteWishlistItems(itemIds, bulkDeleteResult);
+    }
+
+    public void clearWishlist() {
+        repository.clearWishlist(bulkDeleteResult); // Reusing bulkDeleteResult or creating a new one
     }
 }

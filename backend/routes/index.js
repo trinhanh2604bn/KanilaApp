@@ -79,12 +79,14 @@ const adminRoutes = require("./admin.route");
 const setupRoutes = require("./setup.route");
 const guestSessionRoutes = require("./guestSession.route");
 const recommendationRoutes = require("./recommendation.route");
+const mobileProductRoutes = require("./mobileProduct.routes");
 
 router.use("/brands", brandRoutes);
 router.use("/categories", categoryRoutes);
 router.use("/products", productRoutes);
 router.use("/catalog", catalogRoutes);
 router.use("/product-categories", productCategoryRoutes);
+router.use("/mobile/products", mobileProductRoutes);
 
 router.use("/auth", authRoutes);
 router.use("/accounts", accountRoutes);

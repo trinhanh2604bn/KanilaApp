@@ -1,5 +1,6 @@
 package ui.category;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,13 +51,7 @@ public class ProductCategoryFragment extends Fragment {
         setupStaticCategories(view);
         setupStaticBrands(view);
 
-        BottomNavigationHelper.setup(view, tabIndex -> {
-            if (tabIndex == BottomNavigationHelper.TAB_HOME) {
-                if (getActivity() != null) {
-                    getActivity().getSupportFragmentManager().popBackStack();
-                }
-            }
-        });
+        BottomNavigationHelper.setupStandardNavigation(this, view);
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
 
         TextView tvSeeAllBrands = view.findViewById(R.id.tvSeeAllBrands);

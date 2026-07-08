@@ -25,7 +25,8 @@
             android:paddingHorizontal="10dp"
             android:paddingVertical="4dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+           >
 
             <TextView
                 android:id="@+id/tvProductBadge"
@@ -34,14 +35,14 @@
                 android:fontFamily="@font/nunito_bold"
                 android:text="New"
                 android:textColor="@color/accent_dark"
-                android:textSize="12sp" />
+                android:textSize="10sp" />
         </LinearLayout>
 
         <!-- Wishlist Button -->
         <ImageButton
             android:id="@+id/btnWishlist"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Add to wishlist"
             android:padding="6dp"
@@ -51,13 +52,13 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/selector_post_action_tint" />
 
-        <!-- Selection Checkbox -->
+        <!-- CheckBox for selection mode -->
         <CheckBox
             android:id="@+id/cbSelect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Product Image -->
@@ -68,9 +69,10 @@
             android:layout_marginTop="8dp"
             android:scaleType="centerInside"
             android:contentDescription="@string/product_image_desc"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layoutProductStatusBadge"
+            app:layout_constraintTop_toBottomOf="@id/btnWishlist"
             tools:src="@drawable/ic_product" />
 
         <!-- Brand Name -->
@@ -78,7 +80,7 @@
             android:id="@+id/tvProductBrand"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:fontFamily="@font/nunito_bold"
             android:textColor="@color/text_main"
             android:textSize="14sp"
@@ -108,7 +110,7 @@
             android:id="@+id/layoutRating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="6dp"
             android:gravity="center_vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvProductName">
@@ -120,7 +122,8 @@
                 android:layout_height="wrap_content"
                 android:numStars="5"
                 android:progressTint="@color/button"
-                android:rating="4.5" />
+                android:rating="4.5"
+                android:isIndicator="true"/>
 
             <TextView
                 android:id="@+id/tvProductReviewCount"
@@ -129,7 +132,7 @@
                 android:layout_marginStart="4dp"
                 android:fontFamily="@font/nunito_regular"
                 android:textColor="@color/text_secondary"
-                android:textSize="11sp"
+                android:textSize="10sp"
                 tools:text="(1.2k)" />
         </LinearLayout>
 
@@ -138,7 +141,7 @@
             android:id="@+id/tvProductPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:fontFamily="@font/nunito_bold"
             android:textColor="@color/button"
             android:textSize="14sp"
@@ -149,34 +152,31 @@
         <!-- Add to Cart Button -->
         <ImageButton
             android:id="@+id/btnAddToCart"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/bg_circle_primary"
             android:contentDescription="Add to cart"
             android:src="@drawable/ic_plus"
+            android:padding="6dp"
             app:layout_constraintBottom_toBottomOf="@id/tvProductPrice"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvProductPrice"
             tools:ignore="TouchTargetSizeCheck"
-            app:tint="@color/text_main" />
+            app:tint="#FFFFFF" />
 
-        <!-- Find Similar Action (Wishlist only) -->
+        <!-- Find Similar Action -->
         <TextView
             android:id="@+id/tvFindSimilar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:background="@drawable/bg_chip_outline"
             android:fontFamily="@font/nunito_bold"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="4dp"
-            android:text="Tìm tương tự"
-            android:textColor="@color/pink_primary"
-            android:textSize="10sp"
+            android:text="@string/action_find_similar"
+            android:textColor="@color/button"
+            android:textSize="12sp"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvProductPrice"
-            tools:visibility="visible" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvProductPrice" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -26,6 +26,8 @@ import com.example.frontend.feature.cart.CartViewModel;
 import java.util.List;
 import java.util.Locale;
 
+import ui.common.ViewUtils;
+
 public class CartFragment extends Fragment {
 
     private RecyclerView rvCartItems;
@@ -104,6 +106,7 @@ public class CartFragment extends Fragment {
 
         View btnBack = header.findViewById(R.id.btnTopBarBack);
         if (btnBack != null) {
+            ViewUtils.applyClickAnimation(btnBack);
             btnBack.setOnClickListener(v -> {
                 if (getActivity() != null) {
                     getActivity().getOnBackPressedDispatcher().onBackPressed();

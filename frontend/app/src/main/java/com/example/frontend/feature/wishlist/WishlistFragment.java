@@ -32,7 +32,7 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
     private ProductAdapter adapter;
     private RecyclerView rvWishlist;
     private View layoutLoading, layoutEmpty, layoutControls, layoutBulkAction;
-    private TextView tvSelectAction, tvSelectedCount;
+    private TextView tvSelectAction, tvSelectedCount, tvClearAll;
     private Chip chipSort;
     private List<WishlistItemResponse> currentItems = new ArrayList<>();
 
@@ -58,7 +58,7 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
         View topBar = view.findViewById(R.id.layoutTopBar);
         if (topBar != null) {
             TextView tvTitle = topBar.findViewById(R.id.tvTopBarTitle);
-            if (tvTitle != null) tvTitle.setText("Danh sách yêu thích");
+            if (tvTitle != null) tvTitle.setText("Sản phẩm yêu thích");
             topBar.findViewById(R.id.btnTopBarBack).setOnClickListener(v -> {
                 if (getActivity() != null) getActivity().getOnBackPressedDispatcher().onBackPressed();
             });
@@ -70,6 +70,7 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
         layoutControls = view.findViewById(R.id.layoutWishlistControls);
         layoutBulkAction = view.findViewById(R.id.layoutBulkAction);
         tvSelectAction = view.findViewById(R.id.tvSelectAction);
+        tvClearAll = view.findViewById(R.id.tvClearAll);
         tvSelectedCount = view.findViewById(R.id.tvSelectedCount);
         chipSort = view.findViewById(R.id.chipSort);
 
@@ -107,6 +108,7 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
         rvWishlist.setLayoutManager(new GridLayoutManager(getContext(), 2));
         rvWishlist.setAdapter(adapter);
 
+        tvClearAll.setOnClickListener(v -> confirmClearAll());
         tvSelectAction.setOnClickListener(v -> toggleSelectionMode());
         view.findViewById(R.id.btnCancelSelect).setOnClickListener(v -> toggleSelectionMode());
         view.findViewById(R.id.btnBulkRemove).setOnClickListener(v -> confirmBulkRemove());
@@ -131,6 +133,7 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
         layoutBulkAction.setVisibility(isMode ? View.VISIBLE : View.GONE);
         layoutControls.setVisibility(isMode ? View.GONE : View.VISIBLE);
         tvSelectAction.setText(isMode ? "Hủy" : "Chọn");
+        tvClearAll.setVisibility(isMode ? View.GONE : View.VISIBLE);
         if (!isMode) {
             onSelectionChanged(0);
         }
@@ -152,6 +155,17 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
                             .collect(Collectors.toList());
                     viewModel.bulkDelete(itemIds);
                     toggleSelectionMode();
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    private void confirmClearAll() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Xóa tất cả sản phẩm yêu thích?")
+                .setMessage("Bạn có chắc muốn xóa toàn bộ wishlist không? Thao tác này không ảnh hưởng đến giỏ hàng.")
+                .setPositiveButton("Xóa tất cả", (dialog, which) -> {
+                    viewModel.clearWishlist();
                 })
                 .setNegativeButton("Hủy", null)
                 .show();

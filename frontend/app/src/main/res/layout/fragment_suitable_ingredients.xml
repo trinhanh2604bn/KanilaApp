@@ -31,6 +31,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:rippleColor="@color/secondary"
             app:strokeColor="@color/border_divider"
             app:strokeWidth="1dp">
 
@@ -47,35 +48,18 @@
         <!-- Tiêu đề -->
         <TextView
             android:id="@+id/tvTitle"
+            style="@style/Text.Kanila.H2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="64dp"
-            android:fontFamily="@font/nunito_bold"
             android:gravity="center"
             android:includeFontPadding="false"
             android:text="@string/suitable_ingredients_title"
             android:textColor="@color/accent_dark"
-            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- Nút lưu phía trên -->
-        <ImageView
-            android:id="@+id/btnEdit"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="16dp"
-            android:clickable="true"
-            android:contentDescription="Lưu thiết lập"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_tick"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/accent_dark" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -280,7 +264,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:columnCount="3">
+                android:columnCount="3"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
                 <!-- Niacinamide -->
                 <com.google.android.material.card.MaterialCardView
@@ -318,10 +304,10 @@
 
                         <ImageView
                             android:id="@+id/tickNiacinamide"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="top|end"
-                            android:layout_margin="2dp"
+                            android:layout_margin="4dp"
                             android:contentDescription="Đã chọn"
                             android:src="@drawable/ic_check_circle"
                             android:visibility="gone"
@@ -367,10 +353,10 @@
 
                         <ImageView
                             android:id="@+id/tickCeramide"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="top|end"
-                            android:layout_margin="2dp"
+                            android:layout_margin="4dp"
                             android:contentDescription="Đã chọn"
                             android:src="@drawable/ic_check_circle"
                             android:visibility="gone"
@@ -416,10 +402,10 @@
 
                         <ImageView
                             android:id="@+id/tickHyaluronicAcid"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="top|end"
-                            android:layout_margin="2dp"
+                            android:layout_margin="4dp"
                             android:contentDescription="Đã chọn"
                             android:src="@drawable/ic_check_circle"
                             android:visibility="gone"
@@ -465,10 +451,10 @@
 
                         <ImageView
                             android:id="@+id/tickBha"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="top|end"
-                            android:layout_margin="2dp"
+                            android:layout_margin="4dp"
                             android:contentDescription="Đã chọn"
                             android:src="@drawable/ic_check_circle"
                             android:visibility="gone"
@@ -514,10 +500,10 @@
 
                         <ImageView
                             android:id="@+id/tickVitaminC"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="top|end"
-                            android:layout_margin="2dp"
+                            android:layout_margin="4dp"
                             android:contentDescription="Đã chọn"
                             android:src="@drawable/ic_check_circle"
                             android:visibility="gone"
@@ -563,10 +549,10 @@
 
                         <ImageView
                             android:id="@+id/tickPeptide"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="top|end"
-                            android:layout_margin="2dp"
+                            android:layout_margin="4dp"
                             android:contentDescription="Đã chọn"
                             android:src="@drawable/ic_check_circle"
                             android:visibility="gone"
@@ -592,7 +578,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:columnCount="3">
+                android:columnCount="3"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
                 <!-- Cồn khô -->
                 <com.google.android.material.card.MaterialCardView
@@ -630,10 +618,10 @@
 
                         <ImageView
                             android:id="@+id/tickAlcohol"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="top|end"
-                            android:layout_margin="2dp"
+                            android:layout_margin="4dp"
                             android:contentDescription="Đã chọn"
                             android:src="@drawable/ic_check_circle"
                             android:visibility="gone"
@@ -679,10 +667,10 @@
 
                         <ImageView
                             android:id="@+id/tickFragrance"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="top|end"
-                            android:layout_margin="2dp"
+                            android:layout_margin="4dp"
                             android:contentDescription="Đã chọn"
                             android:src="@drawable/ic_check_circle"
                             android:visibility="gone"
@@ -728,10 +716,10 @@
 
                         <ImageView
                             android:id="@+id/tickParaben"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="top|end"
-                            android:layout_margin="2dp"
+                            android:layout_margin="4dp"
                             android:contentDescription="Đã chọn"
                             android:src="@drawable/ic_check_circle"
                             android:visibility="gone"
@@ -777,10 +765,10 @@
 
                         <ImageView
                             android:id="@+id/tickRetinol"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="top|end"
-                            android:layout_margin="2dp"
+                            android:layout_margin="4dp"
                             android:contentDescription="Đã chọn"
                             android:src="@drawable/ic_check_circle"
                             android:visibility="gone"
@@ -826,10 +814,10 @@
 
                         <ImageView
                             android:id="@+id/tickEssentialOil"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="top|end"
-                            android:layout_margin="2dp"
+                            android:layout_margin="4dp"
                             android:contentDescription="Đã chọn"
                             android:src="@drawable/ic_check_circle"
                             android:visibility="gone"
@@ -864,11 +852,23 @@
 
                     <TextView
                         style="@style/Text.Kanila.BodyMedium"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:text="@string/sensitive_skin_treatment"
                         android:textColor="@color/text_main" />
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_marginStart="6dp"
+                        android:alpha="0.5"
+                        android:src="@drawable/ic_shortcut_help"
+                        app:tint="@color/text_main" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchSensitiveTreatment"
@@ -880,41 +880,53 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Thông báo gợi ý -->
+            <!-- Thông báo gợi ý (Smart Insight) -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardSmartInsight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/icon_bg_pink"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="0dp">
+                android:layout_marginBottom="32dp"
+                app:cardBackgroundColor="@color/background_main"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border_divider"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
-                    <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                    <FrameLayout
+                        android:id="@+id/layoutSmartInsightIcon"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:background="@drawable/bg_circle"
-                        android:backgroundTint="@color/background_main"
-                        android:contentDescription="@string/priority"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_verified"
-                        app:tint="@color/button" />
+                        android:backgroundTint="@color/background_sub">
+
+                        <ImageView
+                            android:id="@+id/ivSmartInsightIcon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_goal_sparkle"
+                            app:tint="@color/text_tertiary" />
+                    </FrameLayout>
 
                     <TextView
+                        android:id="@+id/tvSmartInsightMessage"
                         style="@style/Text.Kanila.Caption"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
                         android:layout_weight="1"
                         android:text="@string/priority_formula_msg"
-                        android:textColor="@color/text_main" />
+                        android:textColor="@color/text_tertiary"
+                        android:lineSpacingExtra="2dp"
+                        android:fontFamily="@font/nunito_medium" />
 
                 </LinearLayout>
 

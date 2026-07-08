@@ -11,12 +11,18 @@ import com.example.frontend.data.remote.TokenManager;
 import com.example.frontend.feature.chatbot.data.ChatbotRepository;
 import com.example.frontend.feature.chatbot.data.request.ChatbotContextRequest;
 import com.example.frontend.feature.chatbot.data.request.ChatbotMessageRequest;
+import com.example.frontend.feature.chatbot.data.response.ChatOrderResponse;
+import com.example.frontend.feature.chatbot.data.response.ChatOrderTimelineResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatProductResponse;
+import com.example.frontend.feature.chatbot.data.response.ChatTicketResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatbotDataResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatbotMessageResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatbotSessionHistoryResponse;
 import com.example.frontend.feature.chatbot.model.ChatMessageUiModel;
+import com.example.frontend.feature.chatbot.model.ChatOrderTimelineUiModel;
+import com.example.frontend.feature.chatbot.model.ChatOrderUiModel;
 import com.example.frontend.feature.chatbot.model.ChatProductUiModel;
+import com.example.frontend.feature.chatbot.model.ChatTicketUiModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,6 +145,16 @@ public class ChatbotViewModel extends AndroidViewModel {
                     }
                 }
 
+                ChatOrderUiModel orderUiModel = null;
+                if (data.getOrder() != null) {
+                    orderUiModel = mapToUiModel(data.getOrder());
+                }
+
+                ChatTicketUiModel ticketUiModel = null;
+                if (data.getTicket() != null) {
+                    ticketUiModel = mapToUiModel(data.getTicket());
+                }
+
                 ChatMessageUiModel botMsg = new ChatMessageUiModel(
                         UUID.randomUUID().toString(),
                         data.getBotMessage(),
@@ -146,6 +162,8 @@ public class ChatbotViewModel extends AndroidViewModel {
                         System.currentTimeMillis(),
                         false,
                         productUiModels,
+                        orderUiModel,
+                        ticketUiModel,
                         data.getReplyType()
                 );
                 messageList.add(botMsg);
@@ -188,6 +206,47 @@ public class ChatbotViewModel extends AndroidViewModel {
                 p.getReviewCount() != null ? String.valueOf(p.getReviewCount()) : "0",
                 p.getStockStatus(),
                 p.getReason()
+        );
+    }
+
+    private ChatOrderUiModel mapToUiModel(ChatOrderResponse o) {
+        List<ChatOrderTimelineUiModel> timeline = new ArrayList<>();
+        if (o.getTimeline() != null) {
+            for (ChatOrderTimelineResponse t : o.getTimeline()) {
+                timeline.add(new ChatOrderTimelineUiModel(
+                        t.getStatus(),
+                        t.getLabel(),
+                        t.getTime(),
+                        t.getDescription()
+                ));
+            }
+        }
+        return new ChatOrderUiModel(
+                o.getOrderId(),
+                o.getOrderCode(),
+                o.getStatus(),
+                o.getStatusLabel(),
+                o.getPaymentStatus(),
+                o.getPaymentStatusLabel(),
+                o.getTotalAmount(),
+                o.getCreatedAt(),
+                o.getEstimatedDelivery(),
+                o.getItemsCount(),
+                timeline,
+                o.getNextAction()
+        );
+    }
+
+    private ChatTicketUiModel mapToUiModel(ChatTicketResponse t) {
+        return new ChatTicketUiModel(
+                t.getTicketId(),
+                t.getTicketCode(),
+                t.getStatus(),
+                t.getStatusLabel(),
+                t.getCategory(),
+                t.getCategoryLabel(),
+                t.getCreatedAt(),
+                t.getMessage()
         );
     }
 

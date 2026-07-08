@@ -60,6 +60,24 @@
             tools:listitem="@layout/item_chat_product_card"
             tools:visibility="visible" />
 
+        <FrameLayout
+            android:id="@+id/layoutOrderCardContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible">
+            <include layout="@layout/item_chat_order_card" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/layoutTicketCardContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible">
+            <include layout="@layout/item_chat_ticket_card" />
+        </FrameLayout>
+
         <TextView
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"

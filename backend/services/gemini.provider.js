@@ -8,7 +8,12 @@
  */
 
 const { GoogleGenAI } = require("@google/genai");
-const { KANILA_SYSTEM_PROMPT, buildProductContextMessage } = require("./chatbot.prompt");
+const {
+  KANILA_SYSTEM_PROMPT,
+  buildProductContextMessage,
+  buildOrderContextMessage,
+  buildTicketContextMessage,
+} = require("./chatbot.prompt");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TEMP DEV ONLY - remove before commit/deploy
@@ -85,12 +90,14 @@ async function _geminiChatWithTimeout(message, history = []) {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Public functions
+// ─────────────────────────────────────────────────────────────────────────────
+
 /**
- * Call Gemini with conversation history and the user's latest message.
- * Used for general chat (non-product intents).
- *
- * @param {string} userMessage — The latest user message text.
- * @param {Array<{role: string, parts: Array<{text: string}>}>} history
+ * General chat — used for non-product, non-order intents.
+ * @param {string} userMessage
+ * @param {Array} history
  * @returns {Promise<string>}
  */
 async function generateChatReply(userMessage, history = []) {
@@ -98,12 +105,11 @@ async function generateChatReply(userMessage, history = []) {
 }
 
 /**
- * Call Gemini to produce a Vietnamese explanation for a list of recommended products.
- * Products are injected as KANILA_PRODUCT_CONTEXT — Gemini must NOT invent product data.
- *
- * @param {object[]} products — normalized product objects (from chatbotProduct.tool.js)
- * @param {string} userMessage — original user message
- * @param {Array} history — prior conversation turns
+ * Product recommendation explanation.
+ * Products are injected as KANILA_PRODUCT_CONTEXT — Gemini must NOT invent data.
+ * @param {object[]} products
+ * @param {string} userMessage
+ * @param {Array} history
  * @returns {Promise<string>}
  */
 async function generateProductExplanation(products, userMessage, history = []) {
@@ -111,4 +117,35 @@ async function generateProductExplanation(products, userMessage, history = []) {
   return _geminiChatWithTimeout(messageWithContext, history);
 }
 
-module.exports = { generateChatReply, generateProductExplanation };
+/**
+ * Order tracking explanation.
+ * Order data is injected as KANILA_ORDER_CONTEXT — Gemini must NOT invent delivery/refund data.
+ * @param {object} order — normalized order object
+ * @param {string} userMessage
+ * @param {Array} history
+ * @returns {Promise<string>}
+ */
+async function generateOrderExplanation(order, userMessage, history = []) {
+  const messageWithContext = buildOrderContextMessage(order, userMessage);
+  return _geminiChatWithTimeout(messageWithContext, history);
+}
+
+/**
+ * Support ticket confirmation.
+ * Ticket data is injected as KANILA_TICKET_CONTEXT.
+ * @param {object} ticket — normalized ticket object
+ * @param {string} userMessage
+ * @param {Array} history
+ * @returns {Promise<string>}
+ */
+async function generateTicketConfirmation(ticket, userMessage, history = []) {
+  const messageWithContext = buildTicketContextMessage(ticket, userMessage);
+  return _geminiChatWithTimeout(messageWithContext, history);
+}
+
+module.exports = {
+  generateChatReply,
+  generateProductExplanation,
+  generateOrderExplanation,
+  generateTicketConfirmation,
+};

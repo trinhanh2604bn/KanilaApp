@@ -10,23 +10,29 @@ public class ChatMessageUiModel {
     private final long timestamp;
     private final boolean isTyping;
     private final List<ChatProductUiModel> products;
+    private final ChatOrderUiModel order;
+    private final ChatTicketUiModel ticket;
     private final String replyType;
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp) {
-        this(id, content, isUser, timestamp, false, new ArrayList<>(), null);
+        this(id, content, isUser, timestamp, false, new ArrayList<>(), null, null, null);
     }
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping) {
-        this(id, content, isUser, timestamp, isTyping, new ArrayList<>(), null);
+        this(id, content, isUser, timestamp, isTyping, new ArrayList<>(), null, null, null);
     }
 
-    public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping, List<ChatProductUiModel> products, String replyType) {
+    public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping, 
+                             List<ChatProductUiModel> products, ChatOrderUiModel order, 
+                             ChatTicketUiModel ticket, String replyType) {
         this.id = id;
         this.content = content;
         this.isUser = isUser;
         this.timestamp = timestamp;
         this.isTyping = isTyping;
         this.products = products != null ? products : new ArrayList<>();
+        this.order = order;
+        this.ticket = ticket;
         this.replyType = replyType;
     }
 
@@ -52,6 +58,14 @@ public class ChatMessageUiModel {
 
     public List<ChatProductUiModel> getProducts() {
         return products;
+    }
+
+    public ChatOrderUiModel getOrder() {
+        return order;
+    }
+
+    public ChatTicketUiModel getTicket() {
+        return ticket;
     }
 
     public String getReplyType() {

@@ -1,7 +1,7 @@
 /**
  * chatbot.prompt.js
  * System instruction for the Kanila AI Assistant.
- * This prompt is sent to Gemini with every request to define the assistant's persona and rules.
+ * Covers: general chat, product recommendation, order tracking, support ticket.
  */
 
 const KANILA_SYSTEM_PROMPT = `Bạn là Kanila AI Assistant, trợ lý mua sắm làm đẹp thông minh của ứng dụng Kanila.
@@ -21,14 +21,27 @@ Quy tắc khi tư vấn sản phẩm (KANILA_PRODUCT_CONTEXT):
 10. Khi nhận được KANILA_PRODUCT_CONTEXT, CHỈ giới thiệu các sản phẩm có trong danh sách đó. Không bịa thêm sản phẩm khác.
 11. Dựa vào thông tin trong KANILA_PRODUCT_CONTEXT để giải thích tại sao sản phẩm phù hợp với người dùng.
 12. Nếu KANILA_PRODUCT_CONTEXT rỗng, hãy xin lỗi và hỏi thêm thông tin để tìm sản phẩm phù hợp hơn.
-13. Không được tự đặt giá, tồn kho, đánh giá, hay thông tin sản phẩm ngoài KANILA_PRODUCT_CONTEXT.`;
+13. Không được tự đặt giá, tồn kho, đánh giá, hay thông tin sản phẩm ngoài KANILA_PRODUCT_CONTEXT.
+
+Quy tắc khi tra cứu đơn hàng (KANILA_ORDER_CONTEXT):
+14. Khi nhận được KANILA_ORDER_CONTEXT, chỉ giải thích thông tin đơn hàng có trong đó.
+15. Không bịa đặt ngày giao hàng, mã vận chuyển, nhà vận chuyển, tình trạng hoàn tiền, hay bất kỳ thông tin nào không có trong KANILA_ORDER_CONTEXT.
+16. Giải thích trạng thái đơn hàng một cách thân thiện và rõ ràng bằng tiếng Việt.
+17. Luôn gợi ý hành động tiếp theo phù hợp với trạng thái đơn hàng.
+
+Quy tắc khi tạo yêu cầu hỗ trợ (KANILA_TICKET_CONTEXT):
+18. Khi nhận được KANILA_TICKET_CONTEXT, xác nhận đã ghi nhận yêu cầu và an ủi người dùng.
+19. Không hứa hẹn thời gian xử lý cụ thể nếu không có dữ liệu từ KANILA_TICKET_CONTEXT.
+20. Khuyến khích người dùng cung cấp thêm thông tin nếu hỗ trợ tốt hơn.`;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Context builders
+// ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Build a product-context prompt string to inject into the user message turn.
- * Gemini will see this as part of the conversation context.
- *
- * @param {object[]} products — normalized product objects from chatbotProduct.tool.js
- * @param {string} userMessage — original user message
+ * Build a product-context message string for Gemini.
+ * @param {object[]} products
+ * @param {string} userMessage
  * @returns {string}
  */
 function buildProductContextMessage(products, userMessage) {
@@ -36,7 +49,6 @@ function buildProductContextMessage(products, userMessage) {
     return `${userMessage}\n\nKANILA_PRODUCT_CONTEXT: []`;
   }
 
-  // Build a compact, safe product summary for Gemini — no internal IDs or costs
   const productSummary = products.map((p, i) => {
     const lines = [
       `Sản phẩm ${i + 1}: ${p.name}`,
@@ -57,4 +69,66 @@ function buildProductContextMessage(products, userMessage) {
   return `${userMessage}\n\nKANILA_PRODUCT_CONTEXT:\n${productSummary.join("\n\n")}`;
 }
 
-module.exports = { KANILA_SYSTEM_PROMPT, buildProductContextMessage };
+/**
+ * Build an order-context message string for Gemini.
+ * Only passes safe, normalized order fields — never raw DB fields.
+ * @param {object} order — normalized order from chatbotOrder.tool.js
+ * @param {string} userMessage
+ * @returns {string}
+ */
+function buildOrderContextMessage(order, userMessage) {
+  if (!order) {
+    return `${userMessage}\n\nKANILA_ORDER_CONTEXT: null`;
+  }
+
+  const lines = [
+    `Mã đơn hàng: ${order.order_code}`,
+    `Trạng thái đơn: ${order.status_label}`,
+    `Trạng thái giao hàng: ${order.fulfillment_status_label}`,
+    `Trạng thái thanh toán: ${order.payment_status_label}`,
+    order.total_amount != null
+      ? `Tổng tiền: ${order.total_amount.toLocaleString("vi-VN")}đ`
+      : null,
+    `Số lượng sản phẩm: ${order.items_count}`,
+    order.items_preview && order.items_preview.length > 0
+      ? `Sản phẩm: ${order.items_preview.map((i) => `${i.name} x${i.quantity}`).join(", ")}`
+      : null,
+    `Đặt lúc: ${order.created_at ? new Date(order.created_at).toLocaleDateString("vi-VN") : "Không rõ"}`,
+    `Hành động tiếp theo: ${order.next_action}`,
+    `Lịch sử trạng thái: ${order.timeline
+      .slice(-3)
+      .map((t) => `${t.label} (${t.time ? new Date(t.time).toLocaleDateString("vi-VN") : "?"})`)
+      .join(" → ")}`,
+  ].filter(Boolean);
+
+  return `${userMessage}\n\nKANILA_ORDER_CONTEXT:\n${lines.join("\n")}`;
+}
+
+/**
+ * Build a ticket-context message string for Gemini.
+ * @param {object} ticket — normalized ticket from chatbotSupport.tool.js
+ * @param {string} userMessage
+ * @returns {string}
+ */
+function buildTicketContextMessage(ticket, userMessage) {
+  if (!ticket) {
+    return `${userMessage}\n\nKANILA_TICKET_CONTEXT: null`;
+  }
+
+  const lines = [
+    `Mã ticket: ${ticket.ticket_code}`,
+    `Loại hỗ trợ: ${ticket.category_label}`,
+    `Trạng thái: ${ticket.status_label}`,
+    `Ưu tiên: ${ticket.priority === "high" ? "Cao" : "Bình thường"}`,
+    `Ngày tạo: ${ticket.created_at ? new Date(ticket.created_at).toLocaleDateString("vi-VN") : "Vừa tạo"}`,
+  ];
+
+  return `${userMessage}\n\nKANILA_TICKET_CONTEXT:\n${lines.join("\n")}`;
+}
+
+module.exports = {
+  KANILA_SYSTEM_PROMPT,
+  buildProductContextMessage,
+  buildOrderContextMessage,
+  buildTicketContextMessage,
+};

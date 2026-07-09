@@ -168,6 +168,50 @@ public class CheckoutFragment extends Fragment {
         if (voucherCard != null) {
             ((TextView) voucherCard.findViewById(R.id.tvCheckoutOptionTitle)).setText(R.string.checkout_voucher_title);
             ((ImageView) voucherCard.findViewById(R.id.ivCheckoutOptionIcon)).setImageResource(R.drawable.ic_coupon);
+
+            View.OnClickListener voucherClickListener = v -> {
+                VoucherBottomSheetDialog bottomSheet = new VoucherBottomSheetDialog();
+                bottomSheet.setOnVoucherAppliedListener(voucher -> {
+                    if (voucher != null) {
+                        android.util.Log.d("CheckoutFragment", "Voucher selected from bottom sheet: " + voucher.getCouponCode());
+                        // Update the session via ViewModel
+                        CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ?
+                                viewModel.getCheckoutSession().getValue().data : null;
+
+                        if (session != null) {
+                            // Calculate new discount
+                            double subtotal = session.getSubtotalAmount() != null ? session.getSubtotalAmount() : 0.0;
+                            double discount = 0;
+                            if ("percentage".equalsIgnoreCase(voucher.getDiscountType())) {
+                                discount = subtotal * (voucher.getDiscountValue() / 100.0);
+                                if (voucher.getMaxDiscountAmount() > 0) {
+                                    discount = Math.min(discount, voucher.getMaxDiscountAmount());
+                                }
+                            } else {
+                                discount = voucher.getDiscountValue();
+                            }
+
+                            session.setCouponCode(voucher.getCouponCode());
+                            session.setDiscountAmount(discount);
+
+                            // Recalculate total
+                            double shipping = session.getShippingAmount() != null ? session.getShippingAmount() : 0.0;
+                            double points = session.getPointsAmount() != null ? session.getPointsAmount() : 0.0;
+                            double total = subtotal + shipping - discount - points;
+                            session.setTotalAmount(Math.max(0, total));
+
+                            viewModel.updateCheckoutSession(session);
+                        }
+                    }
+                });
+                bottomSheet.show(getChildFragmentManager(), "VoucherBottomSheet");
+            };
+
+            View btnEdit = voucherCard.findViewById(R.id.tvCheckoutOptionEdit);
+            if (btnEdit != null) {
+                btnEdit.setOnClickListener(voucherClickListener);
+            }
+            voucherCard.setOnClickListener(voucherClickListener);
         }
     }
 

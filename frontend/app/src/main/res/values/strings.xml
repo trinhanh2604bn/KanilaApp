@@ -435,7 +435,6 @@
     <string name="see_all_requests">Xem tất cả yêu cầu</string>
     <string name="status_processing">Đang xử lý</string>
     <string name="last_updated_format">Cập nhật lần cuối: %s</string>
-    <string name="chat_assistant_title">Kanila AI Assistant</string>
 
     <!-- Chat Conversation -->
     <string name="chat_assistant_title">Kanila Makeup Assistant</string>

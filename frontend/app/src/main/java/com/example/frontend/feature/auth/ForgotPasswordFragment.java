@@ -72,7 +72,7 @@ public class ForgotPasswordFragment extends Fragment {
     }
 
     private void observeViewModel() {
-        viewModel.getAuthResult().observe(getViewLifecycleOwner(), result -> {
+        viewModel.getForgotPasswordResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             switch (result.status) {
                 case LOADING:
@@ -111,7 +111,7 @@ public class ForgotPasswordFragment extends Fragment {
 
     private void navigateToOtp(String channel, String identifier) {
         OtpVerificationFragment fragment = OtpVerificationFragment.newInstance(
-                channel, identifier, "reset_password"
+                channel, identifier, "forgot_password"
         );
         getParentFragmentManager().beginTransaction()
                 .replace(R.id.main_fragment_container, fragment)

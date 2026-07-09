@@ -15,15 +15,36 @@ public class AuthResultHandler {
         // 1. Merge guest cart
         mergeGuestCart(activity);
 
-        // 2. Fetch profile and execute pending action
+        // 2. Clear auth screens and execute pending action or navigate to account
+        popAuthFlow(activity);
+        
         if (AuthRequiredManager.getInstance().hasPendingAction()) {
             PendingAuthAction action = AuthRequiredManager.getInstance().getPendingAction();
             executeAction(activity, action);
             AuthRequiredManager.getInstance().clearPendingAction();
         } else {
-            // Default behavior - go back
-            activity.getSupportFragmentManager().popBackStack();
-            activity.getSupportFragmentManager().popBackStack();
+            // Default behavior - navigate to Account
+            ui.common.FragmentNavigationHelper.replaceFragment(activity, new ui.account.AccountFragment());
+        }
+    }
+
+    private static void popAuthFlow(FragmentActivity activity) {
+        androidx.fragment.app.FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        while (fragmentManager.getBackStackEntryCount() > 0) {
+            androidx.fragment.app.Fragment fragment = fragmentManager.findFragmentById(R.id.main_fragment_container);
+            if (fragment == null) {
+                fragment = fragmentManager.findFragmentById(R.id.main);
+            }
+            
+            if (fragment instanceof com.example.frontend.feature.auth.LoginFragment ||
+                fragment instanceof com.example.frontend.feature.auth.RegisterFragment ||
+                fragment instanceof com.example.frontend.feature.auth.OtpVerificationFragment ||
+                fragment instanceof com.example.frontend.feature.auth.ForgotPasswordFragment ||
+                fragment instanceof com.example.frontend.feature.auth.ResetPasswordFragment) {
+                fragmentManager.popBackStackImmediate();
+            } else {
+                break;
+            }
         }
     }
 
@@ -35,15 +56,13 @@ public class AuthResultHandler {
         result.observe(activity, networkResult -> {
             if (networkResult.status == NetworkResult.Status.SUCCESS) {
                 Toast.makeText(activity, "Giỏ hàng của bạn đã được đồng bộ", Toast.LENGTH_SHORT).show();
+                // Clear guest session after successful merge
+                com.example.frontend.data.remote.TokenManager.getInstance(activity).clearGuestSession();
             }
         });
     }
 
     private static void executeAction(FragmentActivity activity, PendingAuthAction action) {
-        // Pop back to the screen that initiated auth
-        activity.getSupportFragmentManager().popBackStack(); // Pop OTP
-        activity.getSupportFragmentManager().popBackStack(); // Pop Login/Register
-
         switch (action.getActionType()) {
             case ADD_TO_WISHLIST:
                 String productId = action.getExtras().getString("productId");
@@ -55,16 +74,25 @@ public class AuthResultHandler {
                 }
                 break;
             case START_CHECKOUT:
-                activity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_fragment_container, new ui.commerce.CheckoutFragment())
-                        .addToBackStack(null)
-                        .commit();
+                ui.common.FragmentNavigationHelper.replaceFragment(activity, new ui.commerce.CheckoutFragment());
                 break;
             case OPEN_ACCOUNT:
-                activity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_fragment_container, new ui.account.AccountFragment())
-                        .addToBackStack(null)
-                        .commit();
+                ui.common.FragmentNavigationHelper.replaceFragment(activity, new ui.account.AccountFragment());
+                break;
+            case OPEN_ORDER_LIST:
+                ui.common.FragmentNavigationHelper.replaceFragment(activity, new com.example.frontend.feature.order.OrderListFragment());
+                break;
+            case OPEN_VOUCHER_WALLET:
+                ui.common.FragmentNavigationHelper.replaceFragment(activity, new com.example.frontend.feature.voucher.VoucherListFragment());
+                break;
+            case OPEN_WISHLIST:
+                ui.common.FragmentNavigationHelper.replaceFragment(activity, new com.example.frontend.feature.wishlist.WishlistFragment());
+                break;
+            case SAVE_BEAUTY_PROFILE:
+                ui.common.FragmentNavigationHelper.replaceFragment(activity, new ui.account.BeautyProfileOverviewFragment());
+                break;
+            case OPEN_LOYALTY:
+                ui.common.FragmentNavigationHelper.replaceFragment(activity, new ui.loyalty.LoyaltyFragment());
                 break;
         }
     }

@@ -37,6 +37,33 @@ public class CommunityChallengeFragment extends Fragment {
                 case 2: tab.setText(R.string.challenge_tab_leaderboard); break;
             }
         }).attach();
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 1) { // "Đã tham gia" tab
+                    if (!ui.community.util.CommunityAuthGuard.checkMember(CommunityChallengeFragment.this, com.example.frontend.core.auth.PendingAuthAction.ActionType.JOIN_CHALLENGE)) {
+                        // Switch back to "Ongoing" tab
+                        tabLayout.post(() -> {
+                            TabLayout.Tab ongoingTab = tabLayout.getTabAt(0);
+                            if (ongoingTab != null) {
+                                ongoingTab.select();
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 1) {
+                    ui.community.util.CommunityAuthGuard.checkMember(CommunityChallengeFragment.this, com.example.frontend.core.auth.PendingAuthAction.ActionType.JOIN_CHALLENGE);
+                }
+            }
+        });
     }
 
     private static class ChallengePagerAdapter extends FragmentStateAdapter {

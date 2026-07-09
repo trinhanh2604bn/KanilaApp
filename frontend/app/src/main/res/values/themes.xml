@@ -56,6 +56,10 @@
         <item name="cornerSize">8dp</item>
     </style>
 
+    <style name="RoundedImageMedium" parent="">
+        <item name="cornerSize">@dimen/radius_m</item>
+    </style>
+
     <style name="CircleImage" parent="">
         <item name="cornerSize">50%</item>
     </style>

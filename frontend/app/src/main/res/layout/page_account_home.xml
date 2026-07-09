@@ -687,6 +687,7 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
+    <!-- Bottom Navigation -->
 
 
 </LinearLayout>

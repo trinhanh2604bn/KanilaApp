@@ -42,6 +42,7 @@ public class RewardCenterFragment extends Fragment {
 
     private void setupRewards() {
         adapter = new RewardAdapter();
+        rvRewards.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
         rvRewards.setAdapter(adapter);
 
         List<RewardItem> rewards = new ArrayList<>();

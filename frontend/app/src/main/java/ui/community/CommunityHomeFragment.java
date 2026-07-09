@@ -30,6 +30,7 @@ public class CommunityHomeFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private ImageButton btnSearch;
+    private ImageButton btnProfile;
     private View layoutSearchBarContainer;
     private EditText edtSearch;
     private View layoutNotification;
@@ -47,6 +48,7 @@ public class CommunityHomeFragment extends Fragment {
         setupTabs();
         setupSearch();
         setupNotifications();
+        setupHeaderActions();
         return view;
     }
 
@@ -56,6 +58,7 @@ public class CommunityHomeFragment extends Fragment {
         btnSearch = view.findViewById(R.id.btnSearch);
         layoutSearchBarContainer = view.findViewById(R.id.layoutSearchBarContainer);
         edtSearch = view.findViewById(R.id.edtSearch);
+        btnProfile = view.findViewById(R.id.btnProfile);
         layoutNotification = view.findViewById(R.id.layoutNotification);
         tvNotificationBadge = view.findViewById(R.id.tvNotificationBadge);
     }
@@ -81,7 +84,6 @@ public class CommunityHomeFragment extends Fragment {
                 case 0: tvTabTitle.setText(R.string.tab_feed); break;
                 case 1: tvTabTitle.setText(R.string.tab_challenge); break;
                 case 2: tvTabTitle.setText(R.string.tab_blog); break;
-                case 3: tvTabTitle.setText(R.string.tab_profile); break;
             }
             tab.setCustomView(customView);
         }).attach();
@@ -164,6 +166,16 @@ public class CommunityHomeFragment extends Fragment {
         });
     }
 
+    private void setupHeaderActions() {
+        btnProfile.setOnClickListener(v -> {
+            if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT)) {
+                if (getActivity() instanceof com.example.frontend.MainActivity) {
+                    ((com.example.frontend.MainActivity) getActivity()).loadFragment(new CommunityProfileFragment());
+                }
+            }
+        });
+    }
+
     private void showKeyboard() {
         InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(INPUT_METHOD_SERVICE);
         if (imm != null) {
@@ -190,14 +202,13 @@ public class CommunityHomeFragment extends Fragment {
                 case 0: return new CommunityFeedFragment();
                 case 1: return new CommunityChallengeFragment();
                 case 2: return new CommunityBlogFragment();
-                case 3: return new CommunityProfileFragment();
                 default: return new PlaceholderFragment();
             }
         }
 
         @Override
         public int getItemCount() {
-            return 4;
+            return 3;
         }
     }
 }

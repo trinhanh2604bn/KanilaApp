@@ -1,30 +1,46 @@
 package ui.community;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.ChipGroup;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ChallengeProgressPostFragment extends Fragment {
 
     private static final String ARG_CHALLENGE_ID = "challenge_id";
+    private static final int MAX_MEDIA_COUNT = 10;
+    
     private String challengeId;
     private ChallengeViewModel viewModel;
     private Challenge challenge;
@@ -39,9 +55,15 @@ public class ChallengeProgressPostFragment extends Fragment {
     private ChallengeTaskAdapter taskAdapter;
     private ProductThumbnailAdapter productsAdapter;
 
+    private Uri pendingCameraUri;
+    private boolean isVideoPending = false;
+
+    private ActivityResultLauncher<Uri> takePictureLauncher;
+    private ActivityResultLauncher<Intent> recordVideoLauncher;
+    private ActivityResultLauncher<Intent> galleryLauncher;
+    private ActivityResultLauncher<String> cameraPermissionLauncher;
+
     public static ChallengeProgressPostFragment newInstance(String challengeId) {
-
-
         ChallengeProgressPostFragment fragment = new ChallengeProgressPostFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CHALLENGE_ID, challengeId);
@@ -55,7 +77,63 @@ public class ChallengeProgressPostFragment extends Fragment {
         if (getArguments() != null) {
             challengeId = getArguments().getString(ARG_CHALLENGE_ID);
         }
+        setupActivityResultLaunchers();
     }
+
+    private void setupActivityResultLaunchers() {
+        takePictureLauncher = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                result -> {
+                    if (result && pendingCameraUri != null) {
+                        addSelectedMedia(pendingCameraUri);
+                    }
+                }
+        );
+
+        recordVideoLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == android.app.Activity.RESULT_OK && result.getData() != null) {
+                        Uri videoUri = result.getData().getData();
+                        if (videoUri != null) {
+                            addSelectedMedia(videoUri);
+                        }
+                    }
+                }
+        );
+
+        galleryLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == android.app.Activity.RESULT_OK && result.getData() != null) {
+                        if (result.getData().getClipData() != null) {
+                            int count = result.getData().getClipData().getItemCount();
+                            for (int i = 0; i < count; i++) {
+                                addSelectedMedia(result.getData().getClipData().getItemAt(i).getUri());
+                            }
+                        } else if (result.getData().getData() != null) {
+                            addSelectedMedia(result.getData().getData());
+                        }
+                    }
+                }
+        );
+
+        cameraPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        if (isVideoPending) {
+                            openCameraForVideo();
+                        } else {
+                            openCameraForPhoto();
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "Camera permission is required", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+    }
+
 
     @Nullable
     @Override
@@ -80,7 +158,7 @@ public class ChallengeProgressPostFragment extends Fragment {
         view.findViewById(R.id.btnBack).setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
 
-        view.findViewById(R.id.btnAddMedia).setOnClickListener(v -> openMediaPicker());
+        view.findViewById(R.id.btnAddMedia).setOnClickListener(v -> showMediaSourceBottomSheet());
 
         edtCaption.addTextChangedListener(new TextWatcher() {
             @Override
@@ -137,14 +215,85 @@ public class ChallengeProgressPostFragment extends Fragment {
         });
     }
 
-    private void openMediaPicker() {
-        CommunityMediaPickerBottomSheet picker = new CommunityMediaPickerBottomSheet();
-        picker.setInitialSelectedUris(new ArrayList<>(selectedMediaUris));
-        picker.setOnMediaPickedListener(uris -> {
-            selectedMediaUris.clear();
-            selectedMediaUris.addAll(uris);
-            mediaAdapter.setMediaUris(new ArrayList<>(selectedMediaUris));
+    private void showMediaSourceBottomSheet() {
+        MediaSourceBottomSheet bottomSheet = new MediaSourceBottomSheet();
+        bottomSheet.setOnMediaSourceSelectedListener(new MediaSourceBottomSheet.OnMediaSourceSelectedListener() {
+            @Override
+            public void onTakePhotoSelected() {
+                isVideoPending = false;
+                checkCameraPermissionAndOpen();
+            }
+
+            @Override
+            public void onChooseGallerySelected() {
+                openGallery();
+            }
+
+            @Override
+            public void onRecordVideoSelected() {
+                isVideoPending = true;
+                checkCameraPermissionAndOpen();
+            }
         });
-        picker.show(getChildFragmentManager(), "MediaPicker");
+        bottomSheet.show(getChildFragmentManager(), "MediaSourceBottomSheet");
+    }
+
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/* video/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*", "video/*"});
+        galleryLauncher.launch(Intent.createChooser(intent, "Chọn ảnh/video"));
+    }
+
+    private void checkCameraPermissionAndOpen() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            if (isVideoPending) {
+                openCameraForVideo();
+            } else {
+                openCameraForPhoto();
+            }
+        } else {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    private void openCameraForPhoto() {
+        try {
+            File photoFile = createImageFile();
+            pendingCameraUri = FileProvider.getUriForFile(requireContext(),
+                    requireContext().getPackageName() + ".fileprovider",
+                    photoFile);
+            takePictureLauncher.launch(pendingCameraUri);
+        } catch (IOException e) {
+            Toast.makeText(getContext(), "Error creating file", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void openCameraForVideo() {
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        if (intent.resolveActivity(requireContext().getPackageManager()) != null) {
+            recordVideoLauncher.launch(intent);
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(imageFileName, ".jpg", storageDir);
+    }
+
+    private void addSelectedMedia(Uri uri) {
+        if (uri == null) return;
+        if (selectedMediaUris.size() >= MAX_MEDIA_COUNT) {
+            Toast.makeText(getContext(), R.string.max_media_reached, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!selectedMediaUris.contains(uri)) {
+            selectedMediaUris.add(uri);
+            mediaAdapter.setMediaUris(new ArrayList<>(selectedMediaUris));
+        }
     }
 }

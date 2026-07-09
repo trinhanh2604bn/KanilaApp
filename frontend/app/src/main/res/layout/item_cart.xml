@@ -68,7 +68,9 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <include layout="@layout/item_variant_selection" />
+                <include
+                    android:id="@+id/item_variant_selection"
+                    layout="@layout/item_variant_selection" />
             </LinearLayout>
 
             <LinearLayout

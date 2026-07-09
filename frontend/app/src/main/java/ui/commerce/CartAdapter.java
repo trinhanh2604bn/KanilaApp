@@ -108,7 +108,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             btnDecrease = layoutFront.findViewById(R.id.btnDecreaseQuantity);
             btnIncrease = layoutFront.findViewById(R.id.btnIncreaseQuantity);
             btnWishlist = layoutFront.findViewById(R.id.btnCartWishlist);
-            layoutVariant = layoutFront.findViewById(R.id.layoutCartVariant);
+            layoutVariant = layoutFront.findViewById(R.id.item_variant_selection);
 
             tvActionSimilar = layoutAction.findViewById(R.id.tvActionSimilar);
             tvActionDelete = layoutAction.findViewById(R.id.tvActionDelete);

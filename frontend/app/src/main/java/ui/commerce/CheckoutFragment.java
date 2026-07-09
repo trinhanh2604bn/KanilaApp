@@ -25,6 +25,8 @@ import com.example.frontend.feature.checkout.CheckoutAddressViewModel;
 import com.example.frontend.feature.checkout.CheckoutViewModel;
 import com.example.frontend.feature.checkout.ShippingViewModel;
 import com.example.frontend.data.model.shipping.ShippingMethodDto;
+import com.example.frontend.feature.product.VariantSelectorBottomSheet;
+import com.example.frontend.data.repository.ProductRepository;
 
 import java.util.Locale;
 
@@ -50,24 +52,24 @@ public class CheckoutFragment extends Fragment {
         viewModel = new ViewModelProvider(requireActivity()).get(CheckoutViewModel.class);
         addressViewModel = new ViewModelProvider(requireActivity()).get(CheckoutAddressViewModel.class);
         shippingViewModel = new ViewModelProvider(requireActivity()).get(ShippingViewModel.class);
-        
+
         initViews(view);
         setupHeader(view);
         observeViewModel();
 
         if (getArguments() != null) {
-            java.util.List<com.example.frontend.data.model.cart.CartItemDto> selectedItems = 
-                (java.util.List<com.example.frontend.data.model.cart.CartItemDto>) getArguments().getSerializable("selected_items");
+            java.util.List<com.example.frontend.data.model.cart.CartItemDto> selectedItems =
+                    (java.util.List<com.example.frontend.data.model.cart.CartItemDto>) getArguments().getSerializable("selected_items");
             double coinsDiscount = getArguments().getDouble("coins_discount", 0);
-            com.example.frontend.data.model.coupon.CouponDto selectedVoucher = 
-                (com.example.frontend.data.model.coupon.CouponDto) getArguments().getSerializable("selected_voucher");
-            
+            com.example.frontend.data.model.coupon.CouponDto selectedVoucher =
+                    (com.example.frontend.data.model.coupon.CouponDto) getArguments().getSerializable("selected_voucher");
+
             if (selectedItems != null && !selectedItems.isEmpty()) {
                 android.util.Log.d("CheckoutFragment", "Setting mock data from cart arguments. Item count: " + selectedItems.size());
                 viewModel.setMockDataFromCart(selectedItems, coinsDiscount, selectedVoucher);
             }
         }
-        
+
         viewModel.prepareCheckout();
         shippingViewModel.loadShippingMethods();
 
@@ -84,7 +86,7 @@ public class CheckoutFragment extends Fragment {
         tvDiscount = view.findViewById(R.id.tvCheckoutPriceDiscountValue);
         tvPoints = view.findViewById(R.id.tvCheckoutPricePointsValue);
         tvTotal = view.findViewById(R.id.tvCheckoutTotalFinal);
-        
+
         // Find option card titles for specific cards
         bindOptionCardHeaders(view);
     }
@@ -99,7 +101,7 @@ public class CheckoutFragment extends Fragment {
                 if (getActivity() != null) {
                     boolean isLoggedIn = TokenManager.getInstance(getContext()).isLoggedIn();
                     Fragment targetFragment;
-                    
+
                     if (isLoggedIn) {
                         NetworkResult<java.util.List<AddressDto>> result = addressViewModel.getAddressResult().getValue();
                         if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null && !result.data.isEmpty()) {
@@ -111,7 +113,7 @@ public class CheckoutFragment extends Fragment {
                         targetFragment = new CheckoutAddressAddFragment();
                         Bundle args = new Bundle();
                         args.putBoolean("is_guest", true);
-                        
+
                         // Pass current guest address if available
                         AddressDto current = viewModel.getSelectedAddress().getValue();
                         if (current != null) {
@@ -120,7 +122,7 @@ public class CheckoutFragment extends Fragment {
 
                         targetFragment.setArguments(args);
                     }
-                    
+
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.main, targetFragment)
                             .addToBackStack(null)
@@ -148,7 +150,7 @@ public class CheckoutFragment extends Fragment {
                             .commit();
                 }
             };
-            
+
             View btnEdit = shippingCard.findViewById(R.id.tvCheckoutOptionEdit);
             if (btnEdit != null) {
                 btnEdit.setOnClickListener(shippingClickListener);
@@ -178,7 +180,7 @@ public class CheckoutFragment extends Fragment {
 
         View btnSearch = header.findViewById(R.id.btnTopBarSearch);
         if (btnSearch != null) btnSearch.setVisibility(View.GONE);
-        
+
         View btnBack = header.findViewById(R.id.btnTopBarBack);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
@@ -190,7 +192,7 @@ public class CheckoutFragment extends Fragment {
     private void observeViewModel() {
         viewModel.getCheckoutSession().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
-            
+
             switch (result.status) {
                 case LOADING:
                     // showLoading();
@@ -212,7 +214,7 @@ public class CheckoutFragment extends Fragment {
                 android.util.Log.d("CheckoutFragment", "Address result is null or data is null");
                 return;
             }
-            
+
             if (result.status == NetworkResult.Status.SUCCESS) {
                 android.util.Log.d("CheckoutFragment", "Address list size: " + result.data.size());
                 if (result.data.isEmpty()) {
@@ -235,7 +237,7 @@ public class CheckoutFragment extends Fragment {
                         break;
                     }
                 }
-                
+
                 // If no default, pick first
                 if (viewModel.getSelectedAddress().getValue() == null && !result.data.isEmpty()) {
                     android.util.Log.d("CheckoutFragment", "No default address found, picking first: " + result.data.get(0).getRecipientName());
@@ -246,11 +248,11 @@ public class CheckoutFragment extends Fragment {
 
         shippingViewModel.getShippingMethodsResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null || result.status != NetworkResult.Status.SUCCESS || result.data == null) return;
-            
+
             android.util.Log.d("CheckoutFragment", "Shipping methods received. Count: " + result.data.size());
-            CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ? 
-                viewModel.getCheckoutSession().getValue().data : null;
-            
+            CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ?
+                    viewModel.getCheckoutSession().getValue().data : null;
+
             if (session != null && (session.getShippingMethod() == null || session.getShippingMethod().isEmpty())) {
                 // Find default shipping method
                 for (ShippingMethodDto method : result.data) {
@@ -269,15 +271,15 @@ public class CheckoutFragment extends Fragment {
                 setupAddress(null);
                 return;
             }
-            
-            CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ? 
-                viewModel.getCheckoutSession().getValue().data : null;
-            
+
+            CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ?
+                    viewModel.getCheckoutSession().getValue().data : null;
+
             if (session != null) {
                 CheckoutSessionDto.CheckoutAddressDto checkoutAddress = new CheckoutSessionDto.CheckoutAddressDto();
                 checkoutAddress.setFullName(address.getRecipientName());
                 checkoutAddress.setPhone(address.getPhone());
-                
+
                 // Format for secondary text
                 StringBuilder sb = new StringBuilder();
                 appendIfNotEmpty(sb, address.getAddressLine1());
@@ -286,7 +288,7 @@ public class CheckoutFragment extends Fragment {
                 appendIfNotEmpty(sb, address.getDistrict());
                 appendIfNotEmpty(sb, address.getCity());
                 checkoutAddress.setAddressLine(sb.toString());
-                
+
                 session.setShippingAddress(checkoutAddress);
                 setupAddress(checkoutAddress);
             }
@@ -308,13 +310,13 @@ public class CheckoutFragment extends Fragment {
 
         // 1. Address
         setupAddress(session.getShippingAddress());
-        
+
         // 2. Shipping
         setupShipping(session.getShippingMethod(), session.getShippingAmount(), session.getEstimatedDelivery());
 
         // 3. Payment
         // ...
-        
+
         // 4. Voucher
         setupVoucher(session.getDiscountAmount());
 
@@ -359,8 +361,8 @@ public class CheckoutFragment extends Fragment {
         TextView tvValue = card.findViewById(R.id.tvCheckoutOptionRightValue);
         TextView tvSecondary = card.findViewById(R.id.tvCheckoutOptionSecondary);
 
-        CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ? 
-            viewModel.getCheckoutSession().getValue().data : null;
+        CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ?
+                viewModel.getCheckoutSession().getValue().data : null;
 
         if (discountAmount > 0) {
             if (session != null && session.getCouponCode() != null) {
@@ -374,7 +376,7 @@ public class CheckoutFragment extends Fragment {
             tvPrimary.setText("Chọn hoặc nhập mã");
             tvValue.setVisibility(View.GONE);
         }
-        
+
         if (tvSecondary != null) tvSecondary.setVisibility(View.GONE);
     }
 
@@ -409,7 +411,7 @@ public class CheckoutFragment extends Fragment {
 
         boolean hasMethod = method != null && !method.isEmpty();
         tvPrimary.setText(hasMethod ? method : "Tiêu chuẩn");
-        
+
         if (tvSecondary != null) {
             if (estimate != null && !estimate.isEmpty()) {
                 tvSecondary.setText("Dự kiến giao: " + estimate);
@@ -419,7 +421,7 @@ public class CheckoutFragment extends Fragment {
                 tvSecondary.setVisibility(View.GONE);
             }
         }
-        
+
         if (tvValue != null) {
             if (amount > 0 || hasMethod) {
                 tvValue.setText(formatPrice(amount));
@@ -446,17 +448,33 @@ public class CheckoutFragment extends Fragment {
     private void bindItems(java.util.List<CheckoutSessionDto.CheckoutItemDto> items) {
         if (items == null || layoutCheckoutItemsList == null) return;
         layoutCheckoutItemsList.removeAllViews();
-        
-        for (CheckoutSessionDto.CheckoutItemDto item : items) {
+
+        for (int i = 0; i < items.size(); i++) {
+            CheckoutSessionDto.CheckoutItemDto item = items.get(i);
+
             View itemView = getLayoutInflater().inflate(R.layout.item_cart_selected, layoutCheckoutItemsList, false);
             TextView tvName = itemView.findViewById(R.id.tvSelectedCartProductName);
-            TextView tvVariant = itemView.findViewById(R.id.tvSelectedCartVariant);
+            
+            View layoutVariant = itemView.findViewById(R.id.item_variant_selection);
+            TextView tvVariantDisplay = null;
+            if (layoutVariant != null) {
+                tvVariantDisplay = layoutVariant.findViewById(R.id.tvVariantName);
+            } else {
+                // Fallback to original ID if include was not added/rolled back
+                layoutVariant = itemView.findViewById(R.id.tvSelectedCartVariant);
+                if (layoutVariant instanceof TextView) {
+                    tvVariantDisplay = (TextView) layoutVariant;
+                }
+            }
+            
             TextView tvPrice = itemView.findViewById(R.id.tvSelectedCartPrice);
             TextView tvQuantity = itemView.findViewById(R.id.tvSelectedCartQuantity);
             ImageView ivProduct = itemView.findViewById(R.id.ivSelectedCartProductImage);
 
             tvName.setText(item.getProductName());
-            tvVariant.setText(item.getVariantName());
+            if (tvVariantDisplay != null) {
+                tvVariantDisplay.setText(getDisplayVariantName(item));
+            }
             tvPrice.setText(formatPrice(item.getPrice()));
             tvQuantity.setText("Số lượng: " + item.getQuantity());
 
@@ -465,71 +483,91 @@ public class CheckoutFragment extends Fragment {
                     .placeholder(R.drawable.ic_product)
                     .error(R.drawable.ic_product)
                     .into(ivProduct);
-            
-            itemView.setOnClickListener(v -> {
-                if (getContext() == null) return;
-                
-                // Convert CheckoutItemDto to CartItemDto for dialog
-                com.example.frontend.data.model.cart.CartItemDto cartItem = 
-                    com.example.frontend.data.model.cart.CartItemDto.createMock(
-                        item.getId(), item.getProductName(), item.getVariantName(), 
-                        item.getPrice(), item.getQuantity(), true, item.getImageUrl()
-                    );
-                cartItem.setProductId(item.getProductId());
-                cartItem.setVariantId(item.getVariantId());
-                cartItem.setBrandNameSnapshot(item.getBrandName());
-                cartItem.setStockStatus(item.getStockStatus());
 
-                VariantBottomSheetDialog dialog = new VariantBottomSheetDialog(getContext(), cartItem);
-                dialog.setOnVariantAppliedListener((variant, quantity) -> {
-                    if (variant != null) {
-                        item.setVariantId(variant.getId());
-                        item.setVariantName(variant.getVariantName());
-                        if (variant.getPrice() != null) {
-                            item.setPrice(variant.getPrice());
+            if (layoutVariant != null) {
+                layoutVariant.setOnClickListener(v -> {
+                    if (getContext() == null || item.getProductId() == null) return;
+
+                    android.util.Log.d("CheckoutFragment", "Variant click for product: " + item.getProductName());
+                    ProductRepository repo = new ProductRepository(getContext());
+                    repo.getProductDetail(item.getProductId()).observe(getViewLifecycleOwner(), result -> {
+                        if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+                            VariantSelectorBottomSheet bottomSheet = VariantSelectorBottomSheet.newInstance(
+                                    result.data.getProduct(),
+                                    result.data.getVariants(),
+                                    VariantSelectorBottomSheet.ActionMode.CONFIRM
+                            );
+                            bottomSheet.setListener((variant, mode, newQuantity) -> {
+                                if (variant != null) {
+                                    android.util.Log.d("CheckoutFragment", "New variant selected: " + variant.getVariantName() + ", Qty: " + newQuantity);
+                                    
+                                    // Update item data
+                                    item.setVariantId(variant.getId());
+                                    item.setVariantName(variant.getVariantName());
+                                    if (variant.getPrice() != null) {
+                                        item.setPrice(variant.getPrice());
+                                    }
+                                    if (variant.getImageUrl() != null && !variant.getImageUrl().isEmpty()) {
+                                        item.setImageUrl(variant.getImageUrl());
+                                    }
+                                    item.setQuantity(newQuantity);
+
+                                    // Refresh display
+                                    bindItems(items);
+                                    
+                                    // Recalculate totals in ViewModel
+                                    CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ? 
+                                            viewModel.getCheckoutSession().getValue().data : null;
+                                    if (session != null) {
+                                        double subtotal = 0;
+                                        for (CheckoutSessionDto.CheckoutItemDto it : items) {
+                                            subtotal += it.getPrice() * it.getQuantity();
+                                        }
+                                        session.setSubtotalAmount(subtotal);
+                                        double total = subtotal + session.getShippingAmount() - session.getDiscountAmount() - session.getPointsAmount();
+                                        session.setTotalAmount(Math.max(0, total));
+                                        
+                                        // Update ViewModel state
+                                        viewModel.updateCheckoutSession(session);
+                                    }
+                                }
+                            });
+                            bottomSheet.show(getChildFragmentManager(), "VariantSelector");
+                        } else if (result != null && result.status == NetworkResult.Status.ERROR) {
+                            Toast.makeText(getContext(), "Không thể tải thông tin sản phẩm", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                    item.setQuantity(quantity);
-                    
-                    // Update UI locally
-                    tvVariant.setText(item.getVariantName());
-                    tvPrice.setText(formatPrice(item.getPrice()));
-                    tvQuantity.setText("Số lượng: " + item.getQuantity());
-                    
-                    // TODO: Update summary in ViewModel if price/quantity changed
-                    updatePriceSummaryLocally();
+                    });
                 });
-                dialog.show();
-            });
+            }
 
             layoutCheckoutItemsList.addView(itemView);
         }
     }
 
-    private void updatePriceSummaryLocally() {
-        if (viewModel == null) return;
-        
-        CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ? 
-            viewModel.getCheckoutSession().getValue().data : null;
-            
-        if (session == null || session.getItems() == null) return;
-        
-        double subtotal = 0;
-        for (CheckoutSessionDto.CheckoutItemDto item : session.getItems()) {
-            subtotal += item.getPrice() * item.getQuantity();
+    private String getDisplayVariantName(CheckoutSessionDto.CheckoutItemDto item) {
+        String variantName = item.getVariantName();
+        String productName = item.getProductName();
+
+        if (variantName == null || variantName.isEmpty()) return "Mặc định";
+        if (productName == null || productName.isEmpty()) return variantName;
+
+        String display = variantName;
+
+        // Xử lý loại bỏ tên sản phẩm nếu nó nằm trong tên variant
+        if (display.contains(productName + " - ")) {
+            display = display.replace(productName + " - ", "");
+        } else if (display.startsWith(productName)) {
+            String potential = display.substring(productName.length()).trim();
+            if (!potential.isEmpty()) {
+                if (potential.startsWith("-") || potential.startsWith(":") || potential.startsWith("•")) {
+                    display = potential.substring(1).trim();
+                } else {
+                    display = potential;
+                }
+            }
         }
-        
-        session.setSubtotalAmount(subtotal);
-        double total = subtotal + session.getShippingAmount() - session.getDiscountAmount() - session.getPointsAmount();
-        session.setTotalAmount(Math.max(0, total));
-        
-        tvSubtotal.setText(formatPrice(session.getSubtotalAmount()));
-        tvTotal.setText(formatPrice(session.getTotalAmount()));
-        
-        TextView tvSubtotalLabel = getView().findViewById(R.id.tvCheckoutPriceSubtotalLabel);
-        if (tvSubtotalLabel != null) {
-            tvSubtotalLabel.setText("Tạm tính (" + session.getItems().size() + " sản phẩm)");
-        }
+
+        return display.isEmpty() ? "Mặc định" : display;
     }
 
     private String formatPrice(double price) {

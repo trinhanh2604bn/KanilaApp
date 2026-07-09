@@ -188,33 +188,45 @@ public class CartFragment extends Fragment {
             public void onVariantClick(CartItemDto item, int position) {
                 if (item == null || getContext() == null) return;
 
-                Log.d("CartFragment", "Variant click: " + item.getProductNameSnapshot());
+                Log.d("CartFragment", "Variant click for product: " + item.getProductNameSnapshot());
                 
-                VariantBottomSheetDialog dialog = new VariantBottomSheetDialog(getContext(), item);
-                dialog.setOnVariantAppliedListener((variant, quantity) -> {
-                    if (variant != null) {
-                        Log.d("CartFragment", "New variant applied: " + variant.getVariantName() + ", Qty: " + quantity);
-                        
-                        // Update UI locally
-                        item.setVariantId(variant.getId());
-                        item.setVariantNameSnapshot(variant.getVariantName());
-                        item.setSkuSnapshot(variant.getSku());
-                        if (variant.getImageUrl() != null && !variant.getImageUrl().isEmpty()) {
-                            item.setImageUrlSnapshot(variant.getImageUrl());
-                        }
-                        if (variant.getPrice() != null) {
-                            item.setFinalUnitPriceAmount(variant.getPrice());
-                        }
-                        item.setQuantity(quantity);
-                        
-                        adapter.notifyItemChanged(position);
-                        updateSummaryLocal();
+                // Show loading or just fetch
+                com.example.frontend.data.repository.ProductRepository repo = new com.example.frontend.data.repository.ProductRepository(getContext());
+                repo.getProductDetail(item.getProductId()).observe(getViewLifecycleOwner(), result -> {
+                    if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+                        VariantSelectorBottomSheet bottomSheet = VariantSelectorBottomSheet.newInstance(
+                                result.data.getProduct(),
+                                result.data.getVariants(),
+                                VariantSelectorBottomSheet.ActionMode.CONFIRM
+                        );
+                        bottomSheet.setListener((variant, mode, quantity) -> {
+                            if (variant != null) {
+                                Log.d("CartFragment", "New variant selected: " + variant.getVariantName() + ", Qty: " + quantity);
+                                
+                                // Update UI locally
+                                item.setVariantId(variant.getId());
+                                item.setVariantNameSnapshot(variant.getVariantName());
+                                item.setSkuSnapshot(variant.getSku());
+                                if (variant.getImageUrl() != null && !variant.getImageUrl().isEmpty()) {
+                                    item.setImageUrlSnapshot(variant.getImageUrl());
+                                }
+                                if (variant.getPrice() != null) {
+                                    item.setFinalUnitPriceAmount(variant.getPrice());
+                                }
+                                item.setQuantity(quantity);
+                                
+                                adapter.notifyItemChanged(position);
+                                updateSummaryLocal();
 
-                        // Sync with backend
-                        viewModel.updateItemVariant(item.getId(), variant.getId(), quantity);
+                                // Sync with backend
+                                viewModel.updateItemVariant(item.getId(), variant.getId(), quantity);
+                            }
+                        });
+                        bottomSheet.show(getChildFragmentManager(), "VariantSelector");
+                    } else if (result != null && result.status == NetworkResult.Status.ERROR) {
+                        Toast.makeText(getContext(), "Không thể tải thông tin sản phẩm: " + result.message, Toast.LENGTH_SHORT).show();
                     }
                 });
-                dialog.show();
             }
 
             @Override

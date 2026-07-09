@@ -82,6 +82,12 @@ public class CheckoutViewModel extends AndroidViewModel {
         }
     }
 
+    public void updateCheckoutSession(CheckoutSessionDto session) {
+        if (session != null) {
+            checkoutSession.postValue(NetworkResult.success(session));
+        }
+    }
+
     public void setMockDataFromCart(List<CartItemDto> selectedItems, double coinsDiscount, com.example.frontend.data.model.coupon.CouponDto selectedVoucher) {
         if (!USE_MOCK_CHECKOUT) return;
 

@@ -17,16 +17,10 @@ public class AuthNavigationHelper {
     }
 
     public static void navigateToLogin(FragmentActivity activity) {
-        activity.getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_fragment_container, new LoginFragment())
-                .addToBackStack(null)
-                .commit();
+        ui.common.FragmentNavigationHelper.replaceFragment(activity, new LoginFragment());
     }
 
     public static void navigateToRegister(FragmentActivity activity) {
-        activity.getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_fragment_container, new RegisterFragment())
-                .addToBackStack(null)
-                .commit();
+        ui.common.FragmentNavigationHelper.replaceFragment(activity, new RegisterFragment());
     }
 }

@@ -132,7 +132,9 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Tài khoản -->
-                <com.google.android.material.card.MaterialCardView style="@style/GridItemCard"
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/catAccount"
+                    style="@style/GridItemCard"
                     android:layout_height="110dp"
                     android:layout_marginTop="8dp">
                     <LinearLayout style="@style/GridItemContent">
@@ -223,6 +225,7 @@
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" android:alpha="0.3" />
 
                     <TextView
+                        android:id="@+id/btnViewAllFaqs"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="16dp"
@@ -231,18 +234,21 @@
                         android:fontFamily="@font/nunito_semibold"
                         android:textSize="13sp"
                         android:gravity="start|center_vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
                         app:drawableEndCompat="@drawable/ic_arrow_right"
                         app:drawableTint="@color/button"
                         android:drawablePadding="8dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Featured Articles Section -->
+            <!-- More Info Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="@string/featured_articles"
+                android:text="@string/help_more_info_title"
                 style="@style/Text.Kanila.H3"
                 android:textColor="@color/accent_dark" />
 
@@ -250,58 +256,71 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                app:cardBackgroundColor="@color/background_sub"
+                app:cardBackgroundColor="@color/background_main"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="0dp">
+                app:cardElevation="0dp"
+                app:strokeColor="#F5F5F5"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:orientation="vertical">
 
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/hinh_nen"
-                        android:contentDescription="@string/article_title"
-                        app:shapeAppearanceOverlay="@style/RoundedProductImage" />
-
+                    <!-- Chăm sóc khách hàng ưu tiên -->
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:id="@+id/itemPrioritySupport"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/article_title"
-                            style="@style/Text.Kanila.BodyMedium"
-                            android:textColor="@color/accent_dark"
-                            android:textStyle="bold" />
+                            android:layout_weight="1"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/priority_customer_service"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_arrow_right"
+                            app:tint="@color/border_divider"
+                            android:contentDescription="@string/priority_customer_service" />
+                    </LinearLayout>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="@string/article_desc"
-                            style="@style/Text.Kanila.Micro"
-                            android:alpha="0.7" />
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" android:alpha="0.3" />
 
+                    <!-- Gọi cho tổng đài -->
+                    <LinearLayout
+                        android:id="@+id/itemCallSupport"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:text="@string/view_detail"
-                            android:textColor="@color/button"
-                            android:fontFamily="@font/nunito_semibold"
-                            android:textSize="12sp"
-                            app:drawableEndCompat="@drawable/ic_arrow_right"
-                            app:drawableTint="@color/button"
-                            android:drawablePadding="4dp" />
+                            android:layout_weight="1"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/call_center"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_arrow_right"
+                            app:tint="@color/border_divider"
+                            android:contentDescription="@string/call_center" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

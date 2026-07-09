@@ -124,9 +124,11 @@ public class SkinAnalysisFragment extends Fragment {
             ViewUtils.applyClickAnimation(btnViewFullRoutine);
             btnViewFullRoutine.setOnClickListener(v -> {
                 // Chuyển sang màn hình Look & Quy trình đã được thiết kế Editorial
+                int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                        ? R.id.main_fragment_container : R.id.main;
                 getParentFragmentManager().beginTransaction()
                         .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(R.id.main_fragment_container, new RecommendationLookFragment())
+                        .replace(containerId, new RecommendationLookFragment())
                         .addToBackStack(null)
                         .commit();
             });
@@ -147,11 +149,15 @@ public class SkinAnalysisFragment extends Fragment {
         }
         
         ViewUtils.applyClickAnimation(card);
-        card.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_fragment_container, StepProductSuggestionsFragment.newInstance("Sản phẩm chứa " + name))
-                .addToBackStack(null)
-                .commit());
+        card.setOnClickListener(v -> {
+            int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                    ? R.id.main_fragment_container : R.id.main;
+            getParentFragmentManager().beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(containerId, StepProductSuggestionsFragment.newInstance("Sản phẩm chứa " + name))
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     private void handleBackNavigation() {

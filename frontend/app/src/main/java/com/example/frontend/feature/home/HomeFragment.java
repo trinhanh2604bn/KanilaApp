@@ -12,8 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,13 +21,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.feature.community.reels.ReelsFeedFragment;
 import com.example.frontend.feature.search.SearchActivity;
@@ -42,15 +38,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import ui.common.FragmentNavigationHelper;
 import ui.account.BeautyProfileOverviewFragment;
-import ui.support.ChatSupportFragment;
 import ui.support.HelpCenterFragment;
 
 public class HomeFragment extends Fragment {
 
     private ViewPager2 vpHomeBanner;
     private View layoutSearchBar;
-    private ImageButton btnNotification, btnCart, btnWishlist;
+    private android.widget.ImageButton btnNotification, btnCart, btnWishlist;
     private RecyclerView rvHomeShortcuts;
     private RecyclerView rvRecommendedProducts;
     private RecyclerView rvAllProducts;
@@ -58,9 +54,10 @@ public class HomeFragment extends Fragment {
     
     private View layoutKanilaReelsCard, layoutReelThumbOne, layoutReelThumbTwo, layoutReelThumbThree;
     private ImageView ivReelThumbOne, ivReelThumbTwo, ivReelThumbThree;
+    private android.widget.VideoView vvReelOne, vvReelTwo, vvReelThree;
+
     private View layoutKanilaChallengeCard, btnJoinChallenge;
     private TextView tvChallengeProgress, tvChallengeParticipants, tvChallengeReward;
-    private android.widget.VideoView vvReelOne, vvReelTwo, vvReelThree;
 
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
@@ -91,17 +88,40 @@ public class HomeFragment extends Fragment {
         setupHomeShortcuts();
         setupProductLists();
         setupSocialSection();
-        
+        setupReelsVideos();
+
         observeViewModel();
-        viewModel.loadHomeData();
+
+        // Delay load to prevent ANR like in MainActivity
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (isAdded()) {
+                viewModel.loadHomeData();
+                checkAuthStatus();
+            }
+        }, 500);
+    }
+
+    private void checkAuthStatus() {
+        com.example.frontend.data.remote.TokenManager tm = com.example.frontend.data.remote.TokenManager.getInstance(requireContext());
+        if (tm.isLoggedIn()) {
+            com.example.frontend.data.remote.ApiClient.getClient(requireContext())
+                    .create(com.example.frontend.data.remote.ApiService.class)
+                    .getMe()
+                    .enqueue(new retrofit2.Callback<com.example.frontend.data.remote.ApiResponse<Object>>() {
+                        @Override
+                        public void onResponse(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, retrofit2.Response<com.example.frontend.data.remote.ApiResponse<Object>> response) {
+                            if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
+                                tm.clearToken();
+                                if (isAdded()) Toast.makeText(requireContext(), "Phiên đăng nhập hết hạn", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        @Override
+                        public void onFailure(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, Throwable t) {}
+                    });
+        }
     }
 
     private void setupSearchBar(View view) {
-        layoutSearchBar = view.findViewById(R.id.layoutSearchBar);
-        btnNotification = view.findViewById(R.id.btnNotification);
-        btnCart = view.findViewById(R.id.btnCart);
-        btnWishlist = view.findViewById(R.id.btnWishlist);
-
         if (layoutSearchBar != null) {
             layoutSearchBar.setOnClickListener(v -> {
                 Intent intent = new Intent(requireActivity(), SearchActivity.class);
@@ -109,25 +129,26 @@ public class HomeFragment extends Fragment {
             });
         }
 
-        if (btnCart != null) {
-            btnCart.setOnClickListener(v -> ((MainActivity)requireActivity()).loadFragment(new ui.commerce.CartFragment()));
-        }
+        if (btnCart != null) btnCart.setOnClickListener(v -> navigateToFragment(new ui.commerce.CartFragment()));
 
         if (btnNotification != null) {
-            btnNotification.setOnClickListener(v -> {
-                ((MainActivity)requireActivity()).loadFragment(new ui.notification.NotificationCenterFragment());
-            });
+            btnNotification.setOnClickListener(v -> navigateToFragment(new ui.notification.NotificationCenterFragment()));
         }
 
         if (btnWishlist != null) {
             btnWishlist.setOnClickListener(v -> {
                 if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
-                    ((MainActivity)requireActivity()).loadFragment(new com.example.frontend.feature.wishlist.WishlistFragment());
+                    navigateToFragment(new com.example.frontend.feature.wishlist.WishlistFragment());
                 } else {
-                    Toast.makeText(requireContext(), "Please login to see wishlist", Toast.LENGTH_SHORT).show();
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(),
+                        new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT, "Home", 0, null));
                 }
             });
         }
+    }
+
+    private void navigateToFragment(Fragment fragment) {
+        FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
     }
 
     private void initViews(View view) {
@@ -153,6 +174,7 @@ public class HomeFragment extends Fragment {
         vvReelOne = view.findViewById(R.id.vvReelOne);
         vvReelTwo = view.findViewById(R.id.vvReelTwo);
         vvReelThree = view.findViewById(R.id.vvReelThree);
+
         layoutKanilaChallengeCard = view.findViewById(R.id.layoutKanilaChallengeCard);
         btnJoinChallenge = view.findViewById(R.id.btnJoinChallenge);
         tvChallengeProgress = view.findViewById(R.id.tvChallengeProgress);
@@ -160,35 +182,27 @@ public class HomeFragment extends Fragment {
         tvChallengeReward = view.findViewById(R.id.tvChallengeReward);
 
         view.findViewById(R.id.btnViewAllRecommended).setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "See All Recommended", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Gợi ý cho bạn", Toast.LENGTH_SHORT).show();
         });
     }
-
 
     private void setupHomeShortcuts() {
         shortcutAdapter = new HomeShortcutAdapter();
         shortcutAdapter.setOnShortcutClickListener(item -> {
-            if ("kanila_beauty".equals(item.getId())) {
-                ((MainActivity)requireActivity()).loadFragment(new BeautyProfileOverviewFragment());
-            } else if ("support".equals(item.getId())) {
-                ((MainActivity)requireActivity()).loadFragment(new HelpCenterFragment());
-            } else if ("orders".equals(item.getId())) {
-                ((MainActivity)requireActivity()).loadFragment(new com.example.frontend.feature.order.OrderListFragment());
-            } else {
-                Toast.makeText(requireContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
-            }
+            if ("kanila_beauty".equals(item.getId())) navigateToFragment(new BeautyProfileOverviewFragment());
+            else if ("orders".equals(item.getId())) navigateToFragment(new com.example.frontend.feature.order.OrderListFragment());
+            else if ("support".equals(item.getId())) navigateToFragment(new HelpCenterFragment());
+            else Toast.makeText(requireContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
         });
 
         rvHomeShortcuts.setAdapter(shortcutAdapter);
-
         List<HomeShortcutItem> shortcuts = new ArrayList<>();
         shortcuts.add(new HomeShortcutItem("orders", "Đơn hàng", R.drawable.ic_shortcut_order, "orders", "", false, false));
         shortcuts.add(new HomeShortcutItem("voucher", "Voucher", R.drawable.ic_shortcut_voucher, "voucher", "", false, false));
         shortcuts.add(new HomeShortcutItem("ar", "AR", R.drawable.ic_shortcut_ar, "ar_try_on", "", false, false));
         shortcuts.add(new HomeShortcutItem("kanila_beauty", "Kanila Beauty", R.drawable.ic_shortcut_kanila_beauty, "beauty", "", false, false));
-        shortcuts.add(new HomeShortcutItem("support", "Hỗ trợ", R.drawable.ic_shortcut_help, "support", "", false, false));
+        shortcuts.add(new HomeShortcutItem("support", "Trợ giúp", R.drawable.ic_shortcut_help, "support", "", false, false));
         shortcuts.add(new HomeShortcutItem("policy", "Chính sách", R.drawable.ic_shortcut_policy, "policy", "", false, false));
-
         shortcutAdapter.setItems(shortcuts);
     }
 
@@ -196,7 +210,6 @@ public class HomeFragment extends Fragment {
         bannerAdapter = new HomeBannerAdapter();
         vpHomeBanner.setAdapter(bannerAdapter);
         vpHomeBanner.setOffscreenPageLimit(3);
-
         CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
         compositePageTransformer.addTransformer(new MarginPageTransformer((int) getResources().getDimension(R.dimen.spacing_s)));
         vpHomeBanner.setPageTransformer(compositePageTransformer);
@@ -215,8 +228,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void run() {
                 if (vpHomeBanner == null) return;
-                int nextItem = vpHomeBanner.getCurrentItem() + 1;
-                vpHomeBanner.setCurrentItem(nextItem, true);
+                vpHomeBanner.setCurrentItem(vpHomeBanner.getCurrentItem() + 1, true);
                 autoSlideHandler.postDelayed(this, 4000);
             }
         };
@@ -225,8 +237,6 @@ public class HomeFragment extends Fragment {
 
     private void setupProductLists() {
         recommendedProductAdapter = new HomeProductAdapter();
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        recommendedProductAdapter.setItemWidth((int) (screenWidth * 0.46));
         rvRecommendedProducts.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         rvRecommendedProducts.setAdapter(recommendedProductAdapter);
 
@@ -237,11 +247,36 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupSocialSection() {
-        View.OnClickListener reelsClick = v -> ((MainActivity)requireActivity()).loadFragment(new ReelsFeedFragment());
+        View.OnClickListener reelsClick = v -> navigateToFragment(new ReelsFeedFragment());
         if (layoutKanilaReelsCard != null) layoutKanilaReelsCard.setOnClickListener(reelsClick);
         if (layoutReelThumbOne != null) layoutReelThumbOne.setOnClickListener(reelsClick);
         if (layoutReelThumbTwo != null) layoutReelThumbTwo.setOnClickListener(reelsClick);
         if (layoutReelThumbThree != null) layoutReelThumbThree.setOnClickListener(reelsClick);
+    }
+
+    private void setupReelsVideos() {
+        if (vvReelOne == null) return;
+        vvReelOne.setVideoURI(Uri.parse("https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"));
+        vvReelTwo.setVideoURI(Uri.parse("https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"));
+        vvReelThree.setVideoURI(Uri.parse("https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"));
+
+        setupHomeVideo(vvReelOne, ivReelThumbOne);
+        setupHomeVideo(vvReelTwo, ivReelThumbTwo);
+        setupHomeVideo(vvReelThree, ivReelThumbThree);
+    }
+
+    private void setupHomeVideo(android.widget.VideoView videoView, ImageView thumbnail) {
+        videoView.setOnPreparedListener(mp -> {
+            mp.setVolume(0f, 0f);
+            mp.setLooping(true);
+            videoView.start();
+        });
+        videoView.setOnInfoListener((mp, what, extra) -> {
+            if (what == android.media.MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+                thumbnail.setVisibility(View.GONE);
+            }
+            return false;
+        });
     }
 
     private void observeViewModel() {
@@ -270,6 +305,22 @@ public class HomeFragment extends Fragment {
         layoutHomeStateContainer.setVisibility(View.VISIBLE);
         viewHomeError.setVisibility(View.VISIBLE);
         ((TextView)viewHomeError.findViewById(R.id.tvErrorTitle)).setText(message);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (vvReelOne != null) vvReelOne.start();
+        if (vvReelTwo != null) vvReelTwo.start();
+        if (vvReelThree != null) vvReelThree.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (vvReelOne != null) vvReelOne.pause();
+        if (vvReelTwo != null) vvReelTwo.pause();
+        if (vvReelThree != null) vvReelThree.pause();
     }
 
     @Override

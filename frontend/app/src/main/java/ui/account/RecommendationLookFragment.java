@@ -25,6 +25,7 @@ import ui.common.ViewUtils;
 public class RecommendationLookFragment extends Fragment {
 
     private SavedRoutineDto routineData;
+    private com.example.frontend.feature.beauty.BeautyProfileViewModel viewModel;
 
     public static RecommendationLookFragment newInstance(SavedRoutineDto routine) {
         RecommendationLookFragment fragment = new RecommendationLookFragment();
@@ -53,6 +54,7 @@ public class RecommendationLookFragment extends Fragment {
             @Nullable Bundle savedInstanceState
     ) {
         super.onViewCreated(view, savedInstanceState);
+        viewModel = new androidx.lifecycle.ViewModelProvider(requireActivity()).get(com.example.frontend.feature.beauty.BeautyProfileViewModel.class);
 
         if (routineData != null) {
             TextView tvTitle = view.findViewById(R.id.tvTitle);
@@ -103,9 +105,11 @@ public class RecommendationLookFragment extends Fragment {
     }
 
     private void navigateToStepProducts(String stepName) {
+        int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                ? R.id.main_fragment_container : R.id.main;
         getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_fragment_container, StepProductSuggestionsFragment.newInstance(stepName))
+                .replace(containerId, StepProductSuggestionsFragment.newInstance(stepName))
                 .addToBackStack(null)
                 .commit();
     }
@@ -152,10 +156,32 @@ public class RecommendationLookFragment extends Fragment {
                 .setNegativeButton("Hủy", (d, which) -> d.dismiss())
                 .setPositiveButton("Lưu", (d, which) -> {
                     d.dismiss();
-                    showSaveSuccessPopup();
+                    performSaveLook();
                 })
                 .show();
         ViewUtils.customizeDialogButtons(dialog);
+    }
+
+    private void performSaveLook() {
+        if (routineData == null) {
+            // If we opened this from "Analysis" it might not have data, create default
+            routineData = new SavedRoutineDto(
+                    String.valueOf(System.currentTimeMillis()),
+                    "Quy trình của bạn",
+                    System.currentTimeMillis(),
+                    R.drawable.hinh_nen
+            );
+        } else {
+            // Update timestamp to now when user explicitly saves
+            routineData = new SavedRoutineDto(
+                    routineData.getId(),
+                    routineData.getName(),
+                    System.currentTimeMillis(),
+                    routineData.getImageRes()
+            );
+        }
+        viewModel.saveRoutine(routineData);
+        showSaveSuccessPopup();
     }
 
     /**

@@ -340,9 +340,11 @@ public class BeautyProfileOverviewFragment extends Fragment {
         View btnSavedRoutines = view.findViewById(R.id.btnSavedRoutines);
         if (btnSavedRoutines != null) {
             btnSavedRoutines.setOnClickListener(v -> {
+                int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                        ? R.id.main_fragment_container : R.id.main;
                 getParentFragmentManager().beginTransaction()
                         .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(R.id.main_fragment_container, new SavedBeautyRoutinesFragment())
+                        .replace(containerId, new SavedBeautyRoutinesFragment())
                         .addToBackStack("beauty_profile_to_saved")
                         .commit();
             });
@@ -351,9 +353,11 @@ public class BeautyProfileOverviewFragment extends Fragment {
         View btnAnalyzeSkin = view.findViewById(R.id.btnAnalyzeSkin);
         if (btnAnalyzeSkin != null) {
             btnAnalyzeSkin.setOnClickListener(v -> {
+                int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                        ? R.id.main_fragment_container : R.id.main;
                 getParentFragmentManager().beginTransaction()
                         .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(R.id.main_fragment_container, new SkinAnalysisFragment())
+                        .replace(containerId, new SkinAnalysisFragment())
                         .addToBackStack("beauty_profile_to_analysis")
                         .commit();
             });
@@ -366,9 +370,11 @@ public class BeautyProfileOverviewFragment extends Fragment {
     }
 
     private void navigateToEditProfile() {
+        int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                ? R.id.main_fragment_container : R.id.main;
         getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_fragment_container, new EditSkinProfileFragment())
+                .replace(containerId, new EditSkinProfileFragment())
                 .addToBackStack("beauty_profile_to_edit")
                 .commit();
     }

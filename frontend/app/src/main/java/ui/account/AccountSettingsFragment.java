@@ -21,6 +21,7 @@ import com.example.frontend.data.remote.TokenManager;
 
 import ui.commerce.CheckoutAddressFragment;
 import ui.commerce.PaymentMethodFragment;
+import ui.common.FragmentNavigationHelper;
 
 public class AccountSettingsFragment extends Fragment {
 
@@ -60,17 +61,11 @@ public class AccountSettingsFragment extends Fragment {
         });
 
         setupMenuItem(view.findViewById(R.id.menuAddress), "Địa chỉ", v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_fragment_container, new CheckoutAddressFragment())
-                    .addToBackStack(null)
-                    .commit();
+            FragmentNavigationHelper.replaceFragment(requireActivity(), new CheckoutAddressFragment());
         });
 
         setupMenuItem(view.findViewById(R.id.menuPayment), "Tài khoản / Thẻ ngân hàng", v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_fragment_container, new PaymentMethodFragment())
-                    .addToBackStack(null)
-                    .commit();
+            FragmentNavigationHelper.replaceFragment(requireActivity(), new PaymentMethodFragment());
         });
 
         // Nhóm: Cài đặt
@@ -171,9 +166,7 @@ public class AccountSettingsFragment extends Fragment {
         getParentFragmentManager().popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         // 4. Navigate back to AccountFragment which will now show Guest State
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.main_fragment_container, new AccountFragment())
-                .commit();
+        FragmentNavigationHelper.replaceFragment(requireActivity(), new AccountFragment());
 
         Toast.makeText(getContext(), "Đã đăng xuất thành công", Toast.LENGTH_SHORT).show();
     }

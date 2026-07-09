@@ -666,4 +666,7 @@
     <string name="chat_product_review_count">(%s)</string>
     <string name="chat_view_product_detail">Xem chi tiết</string>
     <string name="chat_product_detail_next_phase">Tính năng xem chi tiết sản phẩm sẽ được kết nối ở bước tiếp theo.</string>
+    <string name="help_more_info_title">Bạn có muốn tìm thêm thông tin gì không?</string>
+    <string name="priority_customer_service">Chăm sóc khách hàng ưu tiên</string>
+    <string name="call_center">Gọi cho tổng đài</string>
 </resources>

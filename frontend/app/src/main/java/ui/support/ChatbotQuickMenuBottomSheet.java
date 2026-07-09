@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.example.frontend.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import ui.common.FragmentNavigationHelper;
 
 public class ChatbotQuickMenuBottomSheet extends BottomSheetDialogFragment {
 
@@ -33,29 +34,21 @@ public class ChatbotQuickMenuBottomSheet extends BottomSheetDialogFragment {
             // Logic for Ingredients Check
             dismiss();
         });
-        view.findViewById(R.id.menuSkinRoutine).setOnClickListener(v -> {
+        view.findViewById(R.id.menuCreateRoutine).setOnClickListener(v -> {
             // Logic for Skin Routine
             dismiss();
         });
-        view.findViewById(R.id.menuCreateSupport).setOnClickListener(v -> {
+        view.findViewById(R.id.menuGetSupport).setOnClickListener(v -> {
             replaceFragment(new CreateTicketFragment());
             dismiss();
         });
-        view.findViewById(R.id.menuTalkHuman).setOnClickListener(v -> {
-            replaceFragment(new HumanHandoffFragment());
-            dismiss();
-        });
-        view.findViewById(R.id.menuClearChat).setOnClickListener(v -> {
+        view.findViewById(R.id.menuProductConsult).setOnClickListener(v -> {
+            // Logic for Product Consult
             dismiss();
         });
     }
 
     private void replaceFragment(androidx.fragment.app.Fragment fragment) {
-        if (getActivity() == null) return;
-        int containerId = R.id.main_fragment_container;
-        getParentFragmentManager().beginTransaction()
-                .replace(containerId, fragment)
-                .addToBackStack(null)
-                .commit();
+        FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
     }
 }

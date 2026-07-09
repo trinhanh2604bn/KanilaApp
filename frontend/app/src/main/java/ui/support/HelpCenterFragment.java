@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.frontend.R;
+import ui.common.FragmentNavigationHelper;
 
 public class HelpCenterFragment extends Fragment {
 
@@ -36,41 +37,62 @@ public class HelpCenterFragment extends Fragment {
             replaceFragment(new SupportHistoryFragment());
         });
 
-        view.findViewById(R.id.catReturns).setOnClickListener(v -> {
-            replaceFragment(new ReturnAssistantFragment());
+        view.findViewById(R.id.catOrders).setOnClickListener(v -> {
+            replaceFragment(FaqTopicFragment.newInstance("Đơn hàng"));
         });
 
-        view.findViewById(R.id.catOrders).setOnClickListener(v -> {
-            replaceFragment(new OrderTrackingResultFragment());
+        view.findViewById(R.id.catReturns).setOnClickListener(v -> {
+            replaceFragment(FaqTopicFragment.newInstance("Đổi trả"));
         });
 
         view.findViewById(R.id.catPayment).setOnClickListener(v -> {
-            replaceFragment(new PaymentSupportFragment());
+            replaceFragment(FaqTopicFragment.newInstance("Thanh toán"));
         });
 
-        view.findViewById(R.id.catPromotion).setOnClickListener(v -> {
-            replaceFragment(new com.example.frontend.feature.voucher.VoucherListFragment());
+        view.findViewById(R.id.catAccount).setOnClickListener(v -> {
+            replaceFragment(FaqTopicFragment.newInstance("Tài khoản"));
         });
 
         view.findViewById(R.id.catProduct).setOnClickListener(v -> {
-            replaceFragment(new ProductSupportFragment());
+            replaceFragment(FaqTopicFragment.newInstance("Sản phẩm"));
+        });
+
+        view.findViewById(R.id.catPromotion).setOnClickListener(v -> {
+            replaceFragment(FaqTopicFragment.newInstance("Khuyến mãi"));
         });
 
         view.findViewById(R.id.chatNowFooter).setOnClickListener(v -> {
             replaceFragment(new ChatConversationFragment());
         });
 
-        // "Tôi cần hỗ trợ về đơn hàng" - Example FAQ
+        // "Xem tất cả" FAQ button
+        view.findViewById(R.id.btnViewAllFaqs).setOnClickListener(v -> {
+            replaceFragment(FaqTopicFragment.newInstance("Tất cả câu hỏi"));
+        });
+
+        // FAQ manual items (Example: FAQ 1)
         view.findViewById(R.id.faq1).setOnClickListener(v -> {
-            replaceFragment(new OrderTrackingResultFragment());
+            replaceFragment(FaqTopicFragment.newInstance("Đơn hàng"));
+        });
+
+        // More Info Section
+        view.findViewById(R.id.itemPrioritySupport).setOnClickListener(v -> {
+            replaceFragment(new ChatConversationFragment());
+        });
+
+        view.findViewById(R.id.itemCallSupport).setOnClickListener(v -> {
+            // Action for calling
+            try {
+                android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_DIAL);
+                intent.setData(android.net.Uri.parse("tel:19001234"));
+                startActivity(intent);
+            } catch (Exception e) {
+                android.widget.Toast.makeText(requireContext(), "Không thể thực hiện cuộc gọi", android.widget.Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
     private void replaceFragment(Fragment fragment) {
-        if (getActivity() == null) return;
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.main_fragment_container, fragment)
-                .addToBackStack(null)
-                .commit();
+        FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
     }
 }

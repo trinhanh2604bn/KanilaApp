@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.frontend.R;
 import com.google.android.material.tabs.TabLayout;
+import ui.common.FragmentNavigationHelper;
 
 public class SupportHistoryFragment extends Fragment {
 
@@ -61,11 +62,6 @@ public class SupportHistoryFragment extends Fragment {
     }
 
     private void replaceFragment(Fragment fragment) {
-        if (getActivity() == null) return;
-        int containerId = R.id.main_fragment_container;
-        getParentFragmentManager().beginTransaction()
-                .replace(containerId, fragment)
-                .addToBackStack(null)
-                .commit();
+        FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
     }
 }

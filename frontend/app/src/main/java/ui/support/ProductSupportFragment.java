@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.frontend.R;
+import ui.common.FragmentNavigationHelper;
 
 public class ProductSupportFragment extends Fragment {
 
@@ -52,11 +53,6 @@ public class ProductSupportFragment extends Fragment {
     }
 
     private void replaceFragment(Fragment fragment) {
-        if (getActivity() == null) return;
-        int containerId = R.id.main_fragment_container;
-        getParentFragmentManager().beginTransaction()
-                .replace(containerId, fragment)
-                .addToBackStack(null)
-                .commit();
+        FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
     }
 }

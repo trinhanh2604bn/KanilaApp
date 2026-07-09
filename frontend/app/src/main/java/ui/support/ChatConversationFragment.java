@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.frontend.R;
+import ui.common.FragmentNavigationHelper;
 
 public class ChatConversationFragment extends Fragment {
 
@@ -27,6 +28,12 @@ public class ChatConversationFragment extends Fragment {
 
     private void setupEvents(View view) {
         EditText edtMessage = view.findViewById(R.id.edtMessage);
+
+        view.findViewById(R.id.btnBack).setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
+            }
+        });
 
         view.findViewById(R.id.btnMenu).setOnClickListener(v -> {
             ChatbotQuickMenuBottomSheet.newInstance().show(getParentFragmentManager(), "ChatbotQuickMenu");
@@ -58,11 +65,6 @@ public class ChatConversationFragment extends Fragment {
     }
 
     private void replaceFragment(Fragment fragment) {
-        if (getActivity() == null) return;
-        int containerId = R.id.main_fragment_container;
-        getParentFragmentManager().beginTransaction()
-                .replace(containerId, fragment)
-                .addToBackStack(null)
-                .commit();
+        FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
     }
 }

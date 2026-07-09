@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
 import com.google.android.material.card.MaterialCardView;
+import ui.common.FragmentNavigationHelper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -310,11 +311,6 @@ public class CreateTicketFragment extends Fragment {
     }
 
     private void replaceFragment(Fragment fragment) {
-        if (getActivity() == null) return;
-        int containerId = R.id.main_fragment_container;
-        getParentFragmentManager().beginTransaction()
-                .replace(containerId, fragment)
-                .addToBackStack(null)
-                .commit();
+        FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
     }
 }

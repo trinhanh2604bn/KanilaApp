@@ -5,18 +5,18 @@ import java.io.Serializable;
 public class SavedRoutineDto implements Serializable {
     private String id;
     private String name;
-    private String savedDate;
+    private long savedTimestamp; // Store as timestamp for relative time calculation
     private int imageRes;
 
-    public SavedRoutineDto(String id, String name, String savedDate, int imageRes) {
+    public SavedRoutineDto(String id, String name, long savedTimestamp, int imageRes) {
         this.id = id;
         this.name = name;
-        this.savedDate = savedDate;
+        this.savedTimestamp = savedTimestamp;
         this.imageRes = imageRes;
     }
 
     public String getId() { return id; }
     public String getName() { return name; }
-    public String getSavedDate() { return savedDate; }
+    public long getSavedTimestamp() { return savedTimestamp; }
     public int getImageRes() { return imageRes; }
 }

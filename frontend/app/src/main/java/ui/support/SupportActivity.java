@@ -1,4 +1,4 @@
-package com.example.frontend;
+package ui.support;
 
 import android.os.Bundle;
 import android.view.View;
@@ -9,14 +9,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import com.example.frontend.R;
+import com.example.frontend.feature.home.HomeFragment;
 import ui.account.AccountFragment;
 import ui.category.ProductCategoryFragment;
 import ui.common.BottomNavigationHelper;
-import ui.support.HelpCenterFragment;
+import com.example.frontend.feature.chatbot.ChatbotQuickMenuBottomSheet;
 
-import com.example.frontend.feature.home.HomeFragment;
-
-public class MainActivity7 extends AppCompatActivity {
+public class SupportActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +34,7 @@ public class MainActivity7 extends AppCompatActivity {
         }
 
         setupBottomNavigation();
+        setupChatbot();
 
         if (savedInstanceState == null) {
             loadFragment(new HelpCenterFragment());
@@ -54,15 +55,24 @@ public class MainActivity7 extends AppCompatActivity {
                 } else if (tabIndex == BottomNavigationHelper.TAB_REELS) {
                     loadFragment(new HelpCenterFragment());
                 } else if (tabIndex == BottomNavigationHelper.TAB_COMMUNITY) {
-                    Toast.makeText(MainActivity7.this, "Community coming soon", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SupportActivity.this, "Community coming soon", Toast.LENGTH_SHORT).show();
                 }
             });
             BottomNavigationHelper.setSelectedTab(bottomNav, BottomNavigationHelper.TAB_REELS);
         }
     }
 
-    private void loadFragment(Fragment fragment) {
-        // The ID container7 is defined in activity_main7.xml
+    private void setupChatbot() {
+        View ivChatbot = findViewById(R.id.ivChatbot);
+        if (ivChatbot != null) {
+            ivChatbot.setOnClickListener(v -> {
+                ChatbotQuickMenuBottomSheet.newInstance()
+                        .show(getSupportFragmentManager(), "ChatbotQuickMenu");
+            });
+        }
+    }
+
+    public void loadFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_fragment_container, fragment)
                 .commit();

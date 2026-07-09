@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.frontend.R;
+import ui.common.FragmentNavigationHelper;
 
 public class CardManagementFragment extends Fragment {
 
@@ -30,12 +31,7 @@ public class CardManagementFragment extends Fragment {
         });
 
         view.findViewById(R.id.btnAddCard).setOnClickListener(v -> {
-            if (getActivity() == null) return;
-            int containerId = R.id.main_fragment_container;
-            getParentFragmentManager().beginTransaction()
-                    .replace(containerId, new AddCardFragment())
-                    .addToBackStack(null)
-                    .commit();
+            FragmentNavigationHelper.replaceFragment(requireActivity(), new AddCardFragment());
         });
     }
 }

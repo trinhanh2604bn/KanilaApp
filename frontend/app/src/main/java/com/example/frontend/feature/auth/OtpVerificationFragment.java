@@ -139,12 +139,10 @@ public class OtpVerificationFragment extends Fragment {
         });
 
         binding.btnResend.setOnClickListener(v -> {
-            if (purpose.equals("login")) {
+            if (purpose.equals("register")) {
                 viewModel.login(targetType, targetValue);
-            } else {
-                // For register, we don't have all data here, might need another approach
-                // but usually login endpoint also works to re-issue OTP if account exists
-                viewModel.login(targetType, targetValue);
+            } else if (purpose.equals("reset_password")) {
+                viewModel.forgotPassword(targetType, targetValue);
             }
             startResendTimer();
             binding.btnResend.setVisibility(View.GONE);
@@ -191,7 +189,7 @@ public class OtpVerificationFragment extends Fragment {
                                     .addToBackStack(null)
                                     .commit();
                         }
-                    } else {
+                    } else if (purpose.equals("register")) {
                         Toast.makeText(getContext(), "Xác minh thành công", Toast.LENGTH_SHORT).show();
                         AuthResultHandler.handleSuccess(requireActivity());
                     }

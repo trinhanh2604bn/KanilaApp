@@ -4,10 +4,11 @@
  * Authentication for Kanila supporting both Email and Phone.
  *
  * Flows:
- *   1. Register  → POST /api/auth/register
- *   2. Login     → POST /api/auth/login
- *   3. Verify    → POST /api/auth/verify-otp
- *   4. Me        → GET  /api/auth/me (protected)
+ *   1. Register  → POST /api/auth/register  (creates pending account + sends OTP)
+ *   2. Verify    → POST /api/auth/verify-otp (activates account)
+ *   3. Login     → POST /api/auth/login      (email/phone + password → tokens)
+ *   4. Me        → GET  /api/auth/me         (protected)
+ *   5. Forgot    → POST /api/auth/forgot-password + verify-otp + reset-password
  */
 
 const jwt = require("jsonwebtoken");
@@ -168,11 +169,16 @@ const generateTokens = (account) => {
 
 const register = async (req, res) => {
   try {
-    const { registration_channel, full_name, email, phone } = req.body;
+    const { registration_channel, full_name, email, phone, password } = req.body;
     console.log(`[AUTH] Register request: channel=${registration_channel}, name=${full_name}, email=${email}, phone=${phone}`);
 
     if (!registration_channel || !full_name) {
       return res.status(400).json({ success: false, message: "registration_channel and full_name are required" });
+    }
+
+    // Password is required for new accounts
+    if (!password || String(password).length < 8) {
+      return res.status(400).json({ success: false, message: "Mật khẩu phải có ít nhất 8 ký tự." });
     }
 
     const target_type = registration_channel;
@@ -183,6 +189,10 @@ const register = async (req, res) => {
       return res.status(400).json({ success: false, message: `${target_type} is required for ${target_type} registration` });
     }
 
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const password_hash = await bcrypt.hash(String(password), salt);
+
     // Check duplicate
     const query = target_type === "email" ? { email: target_value } : { phone: target_value };
     let account = await Account.findOne(query);
@@ -192,15 +202,18 @@ const register = async (req, res) => {
       if (account.account_status !== "pending") {
         return res.status(400).json({ success: false, message: `${target_type === 'email' ? 'Email' : 'Số điện thoại'} đã được đăng ký.` });
       }
-      // If pending, continue to issue new OTP and update name
+      // If pending, update name and password
+      account.password_hash = password_hash;
+      await account.save();
       await Customer.findOneAndUpdate({ account_id: account._id }, { full_name: String(full_name).trim() });
     } else {
       console.log(`[AUTH] Creating new pending account for ${target_value}`);
-      // Create pending account
+      // Create pending account with hashed password
       const accountData = {
         registration_channel,
         account_status: "pending",
         account_type: "customer",
+        password_hash,
       };
       if (target_type === "email") accountData.email = target_value;
       else accountData.phone = target_value;
@@ -217,7 +230,7 @@ const register = async (req, res) => {
       });
     }
 
-    // Issue OTP
+    // Issue OTP for email/phone verification
     const otp = await issueOtp(target_type, target_value, "register", account._id, req);
     await sendOtp(target_type, target_value, otp, "register");
 
@@ -237,34 +250,83 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { login_channel, identifier } = req.body;
+    const { login_channel, identifier, password } = req.body;
     console.log(`[AUTH] Login request: channel=${login_channel}, identifier=${identifier}`);
 
     if (!login_channel || !identifier) {
       return res.status(400).json({ success: false, message: "login_channel and identifier are required" });
     }
 
+    if (!password) {
+      return res.status(400).json({ success: false, message: "password is required" });
+    }
+
     const target_value = normalizeIdentifier(identifier, login_channel);
     console.log(`[AUTH] Normalized target: ${target_value}`);
     const query = login_channel === "email" ? { email: target_value } : { phone: target_value };
 
-    const account = await Account.findOne(query);
+    // Fetch account including the hidden password_hash field
+    const account = await Account.findOne(query).select("+password_hash");
 
-    if (account && account.account_status !== "locked") {
-      console.log(`[AUTH] Account found: id=${account._id}, issuing OTP`);
-      const otp = await issueOtp(login_channel, target_value, "login", account._id, req);
-      await sendOtp(login_channel, target_value, otp, "login");
-    } else {
-      console.log(`[AUTH] Account not found or locked for ${target_value}`);
+    // Use a generic error message to avoid leaking account existence
+    const INVALID_CREDENTIALS = "Thông tin đăng nhập không chính xác.";
+
+    if (!account) {
+      console.log(`[AUTH] Account not found for ${target_value}`);
+      return res.status(401).json({ success: false, message: INVALID_CREDENTIALS });
     }
 
-    // Generic response
+    if (account.account_status === "locked") {
+      console.log(`[AUTH] Account locked: id=${account._id}`);
+      return res.status(403).json({ success: false, message: "Tài khoản của bạn đã bị khoá. Vui lòng liên hệ hỗ trợ." });
+    }
+
+    if (account.account_status === "pending") {
+      console.log(`[AUTH] Account pending verification: id=${account._id}`);
+      return res.status(403).json({ success: false, message: "Tài khoản chưa được xác thực. Vui lòng hoàn tất đăng ký." });
+    }
+
+    if (!account.password_hash) {
+      console.log(`[AUTH] Account has no password set: id=${account._id}`);
+      return res.status(401).json({ success: false, message: INVALID_CREDENTIALS });
+    }
+
+    // Verify password
+    const passwordValid = await bcrypt.compare(String(password), account.password_hash);
+    if (!passwordValid) {
+      console.log(`[AUTH] Wrong password for account: id=${account._id}`);
+      account.failed_login_count = (account.failed_login_count || 0) + 1;
+      await account.save();
+      return res.status(401).json({ success: false, message: INVALID_CREDENTIALS });
+    }
+
+    // Update login metadata
+    account.last_login_at = new Date();
+    account.failed_login_count = 0;
+    await account.save();
+
+    const { accessToken, refreshToken } = generateTokens(account);
+    const customer = await Customer.findOne({ account_id: account._id }).lean();
+
+    console.log(`[AUTH] Login successful for account: ${account._id}`);
     return res.status(200).json({
       success: true,
-      message: "Nếu thông tin hợp lệ, Kanila sẽ gửi mã xác minh.",
       data: {
-        verification_required: true,
-      }
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        account: {
+          _id: account._id,
+          email: account.email,
+          phone: account.phone,
+          account_type: account.account_type,
+          account_status: account.account_status,
+        },
+        customer: customer ? {
+          _id: customer._id,
+          customer_code: customer.customer_code,
+          full_name: customer.full_name,
+        } : null,
+      },
     });
   } catch (error) {
     console.error(`[AUTH] Login error:`, error);

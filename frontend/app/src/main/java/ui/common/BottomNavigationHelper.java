@@ -68,24 +68,23 @@ public class BottomNavigationHelper {
                 fragment.startActivity(intent);
             } else if (tabIndex == TAB_CATEGORY) {
                 if (!(fragment instanceof ProductCategoryFragment)) {
-                    fragment.getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main, new ProductCategoryFragment())
-                            .commit();
+                    FragmentNavigationHelper.replaceFragment(fragment.requireActivity(), new ProductCategoryFragment());
                 }
             } else if (tabIndex == TAB_ACCOUNT) {
                 if (!(fragment instanceof AccountFragment)) {
-                    fragment.getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main, new AccountFragment())
-                            .commit();
+                    FragmentNavigationHelper.replaceFragment(fragment.requireActivity(), new AccountFragment());
                 }
             } else if (tabIndex == TAB_REELS) {
                 if (!(fragment instanceof ReelsFeedFragment)) {
-                    fragment.getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main, new ReelsFeedFragment())
-                            .commit();
+                    FragmentNavigationHelper.replaceFragment(fragment.requireActivity(), new ReelsFeedFragment());
                 }
             } else if (tabIndex == TAB_COMMUNITY) {
-                Toast.makeText(fragment.getContext(), "Community coming soon!", Toast.LENGTH_SHORT).show();
+                FragmentNavigationHelper.replaceFragment(fragment.requireActivity(), new ui.support.HelpCenterFragment());
+                if (!(fragment instanceof ui.community.CommunityHomeFragment)) {
+                    fragment.getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main, new ui.community.CommunityHomeFragment())
+                            .commit();
+                }
             }
         });
     }
@@ -99,24 +98,22 @@ public class BottomNavigationHelper {
                     activity.startActivity(intent);
                 }
             } else if (tabIndex == TAB_CATEGORY) {
-                activity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ProductCategoryFragment())
-                        .commit();
+                FragmentNavigationHelper.replaceFragment(activity, new ProductCategoryFragment());
             } else if (tabIndex == TAB_ACCOUNT) {
-                activity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new AccountFragment())
-                        .commit();
+                FragmentNavigationHelper.replaceFragment(activity, new AccountFragment());
             } else if (tabIndex == TAB_REELS) {
-                activity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ReelsFeedFragment())
-                        .commit();
+                FragmentNavigationHelper.replaceFragment(activity, new ReelsFeedFragment());
             } else if (tabIndex == TAB_COMMUNITY) {
-                Toast.makeText(activity, "Community coming soon!", Toast.LENGTH_SHORT).show();
+                FragmentNavigationHelper.replaceFragment(activity, new ui.support.HelpCenterFragment());
+                activity.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.community.CommunityHomeFragment())
+                        .commit();
             }
         });
     }
 
     public static void setSelectedTab(View root, int tabIndex) {
+        if (root == null) return;
         int[] itemIds = {R.id.navHome, R.id.navCategory, R.id.navReels, R.id.navCommunity, R.id.navAccount};
         int[] iconIds = {R.id.ivHome, R.id.ivCategory, R.id.ivReels, R.id.ivCommunity, R.id.ivAccount};
         int[] textIds = {R.id.tvHome, R.id.tvCategory, R.id.tvReels, R.id.tvCommunity, R.id.tvAccount};
@@ -156,6 +153,7 @@ public class BottomNavigationHelper {
     }
 
     public static void showBadge(View root, int tabIndex, boolean show) {
+        if (root == null) return;
         int[] badgeIds = {R.id.badgeHome, R.id.badgeCategory, R.id.badgeReels, R.id.badgeCommunity, R.id.badgeAccount};
         if (tabIndex >= 0 && tabIndex < badgeIds.length) {
             View badge = root.findViewById(badgeIds[tabIndex]);
@@ -166,6 +164,7 @@ public class BottomNavigationHelper {
     }
 
     public static void setBadgeText(View root, int tabIndex, String text) {
+        if (root == null) return;
         int[] badgeIds = {R.id.badgeHome, R.id.badgeCategory, R.id.badgeReels, R.id.badgeCommunity, R.id.badgeAccount};
         if (tabIndex >= 0 && tabIndex < badgeIds.length) {
             TextView badge = root.findViewById(badgeIds[tabIndex]);
@@ -177,6 +176,7 @@ public class BottomNavigationHelper {
     }
 
     public static void clearAllBadges(View root) {
+        if (root == null) return;
         int[] badgeIds = {R.id.badgeHome, R.id.badgeCategory, R.id.badgeReels, R.id.badgeCommunity, R.id.badgeAccount};
         for (int id : badgeIds) {
             View badge = root.findViewById(id);

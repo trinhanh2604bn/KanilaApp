@@ -32,6 +32,7 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
+import com.example.frontend.feature.chatbot.ChatbotQuickMenuBottomSheet;
 import com.example.frontend.feature.home.HomeBannerAdapter;
 import com.example.frontend.feature.home.HomeProductAdapter;
 import com.example.frontend.feature.home.HomeShortcutAdapter;
@@ -59,7 +60,9 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvRecommendedProducts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
-    private ImageView ivChatbot;
+    private View ivChatbot;
+    private View layoutHomeScroll;
+    private View mainFragmentContainer;
 
     private View layoutSearchExpandedBar;
     private EditText edtExpandedSearchQuery;
@@ -104,12 +107,9 @@ public class MainActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main);
-                if (currentFragment instanceof ReelsFeedFragment) {
-                    // Navigate back to Home
-                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
+                if (currentFragment != null) {
+                    getSupportFragmentManager().popBackStack();
                 } else {
                     setEnabled(false);
                     getOnBackPressedDispatcher().onBackPressed();
@@ -151,11 +151,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void navigateToCart() {
+    public void loadFragment(Fragment fragment) {
+        if (fragment == null) return;
+        
+        if (layoutHomeScroll != null) layoutHomeScroll.setVisibility(View.GONE);
+        if (mainFragmentContainer != null) mainFragmentContainer.setVisibility(View.VISIBLE);
+
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main, new CartFragment())
+                .replace(R.id.main_fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    public void navigateToCart() {
+        loadFragment(new CartFragment());
     }
 
     private void initViews() {
@@ -171,6 +180,8 @@ public class MainActivity extends AppCompatActivity {
         viewHomeLoading = findViewById(R.id.viewHomeLoading);
         viewHomeError = findViewById(R.id.viewHomeError);
         ivChatbot = findViewById(R.id.ivChatbot);
+        layoutHomeScroll = findViewById(R.id.layoutHomeScroll);
+        mainFragmentContainer = findViewById(R.id.main_fragment_container);
 
         layoutKanilaReelsCard = findViewById(R.id.layoutKanilaReelsCard);
         layoutReelThumbOne = findViewById(R.id.layoutReelThumbOne);
@@ -192,44 +203,43 @@ public class MainActivity extends AppCompatActivity {
         edtExpandedSearchQuery = findViewById(R.id.edtExpandedSearchQuery);
         btnExpandedSearchBack = findViewById(R.id.btnExpandedSearchBack);
 
-        findViewById(R.id.btnViewAllRecommended).setOnClickListener(v -> {
-            Toast.makeText(this, "See All Recommended", Toast.LENGTH_SHORT).show();
-        });
+        if (findViewById(R.id.btnViewAllRecommended) != null) {
+            findViewById(R.id.btnViewAllRecommended).setOnClickListener(v -> {
+                Toast.makeText(this, "See All Recommended", Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 
     private void setupSearchBehavior() {
-        layoutSearchBar.setOnClickListener(v -> {
-            Intent intent = new Intent(this, SearchActivity.class);
-            startActivity(intent);
-        });
+        if (layoutSearchBar != null) {
+            layoutSearchBar.setOnClickListener(v -> {
+                Intent intent = new Intent(this, SearchActivity.class);
+                startActivity(intent);
+            });
+        }
 
-        btnCart.setOnClickListener(v -> navigateToCart());
+        if (btnCart != null) btnCart.setOnClickListener(v -> navigateToCart());
 
-        btnNotification.setOnClickListener(v -> {
-            // Mo NotificationCenterFragment
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, new ui.notification.NotificationCenterFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        if (btnNotification != null) {
+            btnNotification.setOnClickListener(v -> {
+                loadFragment(new ui.notification.NotificationCenterFragment());
+            });
+        }
 
-        btnWishlist.setOnClickListener(v -> {
-            if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
-                        .addToBackStack(null)
-                        .commit();
-            } else {
-                showLoginPrompt();
-            }
-        });
+        if (btnWishlist != null) {
+            btnWishlist.setOnClickListener(v -> {
+                if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                    loadFragment(new com.example.frontend.feature.wishlist.WishlistFragment());
+                } else {
+                    showLoginPrompt();
+                }
+            });
+        }
 
         if (ivChatbot != null) {
             ivChatbot.setOnClickListener(v -> {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ui.support.ChatSupportFragment())
-                        .addToBackStack(null)
-                        .commit();
+                ChatbotQuickMenuBottomSheet.newInstance()
+                        .show(getSupportFragmentManager(), "ChatbotQuickMenu");
             });
         }
 
@@ -239,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupReelsVideos() {
+        if (vvReelOne == null) return;
         vvReelOne.setVideoURI(Uri.parse(com.example.frontend.feature.community.reels.mock.MockReelsDataSource.VIDEO_URL_01));
         vvReelTwo.setVideoURI(Uri.parse(com.example.frontend.feature.community.reels.mock.MockReelsDataSource.VIDEO_URL_02));
         vvReelThree.setVideoURI(Uri.parse(com.example.frontend.feature.community.reels.mock.MockReelsDataSource.VIDEO_URL_03));
@@ -256,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
         });
         videoView.setOnInfoListener((mp, what, extra) -> {
             if (what == android.media.MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
-                thumbnail.setVisibility(View.GONE);
+                if (thumbnail != null) thumbnail.setVisibility(View.GONE);
             }
             return false;
         });
@@ -267,24 +278,21 @@ public class MainActivity extends AppCompatActivity {
         if (bottomNav != null) {
             BottomNavigationHelper.setup(bottomNav, tabIndex -> {
                 if (tabIndex == BottomNavigationHelper.TAB_ACCOUNT) {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new AccountFragment())
-                            .commit();
+                    loadFragment(new AccountFragment());
                 } else if (tabIndex == BottomNavigationHelper.TAB_CATEGORY) {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new ProductCategoryFragment())
-                            .commit();
+                    loadFragment(new ProductCategoryFragment());
                 } else if (tabIndex == BottomNavigationHelper.TAB_REELS) {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new ReelsFeedFragment())
-                            .commit();
+                    loadFragment(new ReelsFeedFragment());
                 } else if (tabIndex == BottomNavigationHelper.TAB_COMMUNITY) {
-                    Toast.makeText(this, "Community coming soon!", Toast.LENGTH_SHORT).show();
+                    loadFragment(new ui.community.CommunityHomeFragment());
                 } else if (tabIndex == BottomNavigationHelper.TAB_HOME) {
-                    // Refresh current activity to show home content again
-                    Intent intent = new Intent(this, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
+                    // Back to Activity UI (remove fragments)
+                    if (layoutHomeScroll != null) layoutHomeScroll.setVisibility(View.VISIBLE);
+                    if (mainFragmentContainer != null) mainFragmentContainer.setVisibility(View.GONE);
+
+                    while (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                        getSupportFragmentManager().popBackStackImmediate();
+                    }
                 }
             });
             BottomNavigationHelper.setSelectedTab(bottomNav, BottomNavigationHelper.TAB_HOME);
@@ -295,10 +303,7 @@ public class MainActivity extends AppCompatActivity {
         recommendedProductAdapter = new HomeProductAdapter();
 
         recommendedProductAdapter.setOnProductClickListener(product -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
-                    .addToBackStack(null)
-                    .commit();
+            loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()));
         });
 
         recommendedProductAdapter.setOnWishlistToggleListener((product, wasWishlisted) -> {
@@ -322,17 +327,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        rvRecommendedProducts.setLayoutManager(new GridLayoutManager(this, 2));
-        rvRecommendedProducts.setAdapter(recommendedProductAdapter);
-        rvRecommendedProducts.setNestedScrollingEnabled(false);
+        if (rvRecommendedProducts != null) {
+            rvRecommendedProducts.setLayoutManager(new GridLayoutManager(this, 2));
+            rvRecommendedProducts.setAdapter(recommendedProductAdapter);
+            rvRecommendedProducts.setNestedScrollingEnabled(false);
+        }
 
         // All Products (Vertical Grid)
         allProductAdapter = new HomeProductAdapter();
         allProductAdapter.setOnProductClickListener(product -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
-                    .addToBackStack(null)
-                    .commit();
+            loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()));
         });
 
         allProductAdapter.setOnWishlistToggleListener((product, wasWishlisted) -> {
@@ -356,12 +360,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        rvAllProducts.setLayoutManager(new GridLayoutManager(this, 2));
-        rvAllProducts.setAdapter(allProductAdapter);
-        rvAllProducts.setNestedScrollingEnabled(false);
+        if (rvAllProducts != null) {
+            rvAllProducts.setLayoutManager(new GridLayoutManager(this, 2));
+            rvAllProducts.setAdapter(allProductAdapter);
+            rvAllProducts.setNestedScrollingEnabled(false);
+        }
     }
 
     private void observeViewModel() {
+        if (viewModel == null) return;
         viewModel.getUiState().observe(this, state -> {
             if (state == null) return;
 
@@ -391,19 +398,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        wishlistViewModel.getStatusResult().observe(this, result -> {
-            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && result.data != null) {
-                updateProductFavoriteStates(result.data);
-            }
-        });
+        if (wishlistViewModel != null) {
+            wishlistViewModel.getStatusResult().observe(this, result -> {
+                if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && result.data != null) {
+                    updateProductFavoriteStates(result.data);
+                }
+            });
 
-        wishlistViewModel.getToggleResult().observe(this, result -> {
-            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.ERROR) {
-                Toast.makeText(this, "Lỗi: " + result.message, Toast.LENGTH_SHORT).show();
-                // We might need to refresh status to rollback UI accurately
-                viewModel.loadHomeData();
-            }
-        });
+            wishlistViewModel.getToggleResult().observe(this, result -> {
+                if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.ERROR) {
+                    Toast.makeText(this, "Lỗi: " + result.message, Toast.LENGTH_SHORT).show();
+                    // We might need to refresh status to rollback UI accurately
+                    viewModel.loadHomeData();
+                }
+            });
+        }
     }
 
     private void updateProductFavoriteStates(java.util.Map<String, Boolean> statusMap) {
@@ -434,85 +443,84 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showLoading() {
-        layoutHomeStateContainer.setVisibility(View.VISIBLE);
-        viewHomeLoading.setVisibility(View.VISIBLE);
-        viewHomeError.setVisibility(View.GONE);
-        findViewById(R.id.layoutHomeRecommendation).setVisibility(View.GONE);
-        findViewById(R.id.layoutHomeCatalog).setVisibility(View.GONE);
+        if (layoutHomeStateContainer != null) layoutHomeStateContainer.setVisibility(View.VISIBLE);
+        if (viewHomeLoading != null) viewHomeLoading.setVisibility(View.VISIBLE);
+        if (viewHomeError != null) viewHomeError.setVisibility(View.GONE);
+        if (findViewById(R.id.layoutHomeRecommendation) != null) findViewById(R.id.layoutHomeRecommendation).setVisibility(View.GONE);
+        if (findViewById(R.id.layoutHomeCatalog) != null) findViewById(R.id.layoutHomeCatalog).setVisibility(View.GONE);
     }
 
     private void showContent() {
-        layoutHomeStateContainer.setVisibility(View.GONE);
-        findViewById(R.id.layoutHomeRecommendation).setVisibility(View.VISIBLE);
-        findViewById(R.id.layoutHomeCatalog).setVisibility(View.VISIBLE);
+        if (layoutHomeStateContainer != null) layoutHomeStateContainer.setVisibility(View.GONE);
+        if (findViewById(R.id.layoutHomeRecommendation) != null) findViewById(R.id.layoutHomeRecommendation).setVisibility(View.VISIBLE);
+        if (findViewById(R.id.layoutHomeCatalog) != null) findViewById(R.id.layoutHomeCatalog).setVisibility(View.VISIBLE);
     }
 
     private void showError(String message) {
-        layoutHomeStateContainer.setVisibility(View.VISIBLE);
-        viewHomeLoading.setVisibility(View.GONE);
-        viewHomeError.setVisibility(View.VISIBLE);
-        findViewById(R.id.layoutHomeRecommendation).setVisibility(View.GONE);
-        findViewById(R.id.layoutHomeCatalog).setVisibility(View.GONE);
+        if (layoutHomeStateContainer != null) layoutHomeStateContainer.setVisibility(View.VISIBLE);
+        if (viewHomeLoading != null) viewHomeLoading.setVisibility(View.GONE);
+        if (viewHomeError != null) viewHomeError.setVisibility(View.VISIBLE);
+        if (findViewById(R.id.layoutHomeRecommendation) != null) findViewById(R.id.layoutHomeRecommendation).setVisibility(View.GONE);
+        if (findViewById(R.id.layoutHomeCatalog) != null) findViewById(R.id.layoutHomeCatalog).setVisibility(View.GONE);
 
-        TextView tvError = viewHomeError.findViewById(R.id.tvErrorTitle);
-        if (tvError != null) tvError.setText(message);
+        if (viewHomeError != null) {
+            TextView tvError = viewHomeError.findViewById(R.id.tvErrorTitle);
+            if (tvError != null) tvError.setText(message);
 
-        View btnRetry = viewHomeError.findViewById(R.id.btnErrorRetry);
-        if (btnRetry != null) btnRetry.setOnClickListener(v -> viewModel.loadHomeData());
+            View btnRetry = viewHomeError.findViewById(R.id.btnErrorRetry);
+            if (btnRetry != null) btnRetry.setOnClickListener(v -> viewModel.loadHomeData());
+        }
     }
 
     private void setupSocialSection() {
-        layoutKanilaReelsCard.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.community.reels.ReelsFeedFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        if (layoutKanilaReelsCard != null) {
+            layoutKanilaReelsCard.setOnClickListener(v -> {
+                loadFragment(new com.example.frontend.feature.community.reels.ReelsFeedFragment());
+            });
+        }
 
-        layoutReelThumbOne.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.community.reels.ReelsFeedFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        if (layoutReelThumbOne != null) {
+            layoutReelThumbOne.setOnClickListener(v -> {
+                loadFragment(new com.example.frontend.feature.community.reels.ReelsFeedFragment());
+            });
+        }
 
-        layoutReelThumbTwo.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.community.reels.ReelsFeedFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        if (layoutReelThumbTwo != null) {
+            layoutReelThumbTwo.setOnClickListener(v -> {
+                loadFragment(new com.example.frontend.feature.community.reels.ReelsFeedFragment());
+            });
+        }
 
-        layoutReelThumbThree.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.community.reels.ReelsFeedFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        if (layoutReelThumbThree != null) {
+            layoutReelThumbThree.setOnClickListener(v -> {
+                loadFragment(new com.example.frontend.feature.community.reels.ReelsFeedFragment());
+            });
+        }
 
-        layoutKanilaChallengeCard.setOnClickListener(v -> Toast.makeText(this, "Kanila Challenge", Toast.LENGTH_SHORT).show());
+        if (layoutKanilaChallengeCard != null) layoutKanilaChallengeCard.setOnClickListener(v -> Toast.makeText(this, "Kanila Challenge", Toast.LENGTH_SHORT).show());
 
-        btnJoinChallenge.setOnClickListener(v -> Toast.makeText(this, "Tham gia challenge", Toast.LENGTH_SHORT).show());
+        if (btnJoinChallenge != null) btnJoinChallenge.setOnClickListener(v -> Toast.makeText(this, "Tham gia challenge", Toast.LENGTH_SHORT).show());
 
-        tvChallengeProgress.setText(getString(R.string.home_social_challenge_progress_format, "8", "14"));
-        tvChallengeParticipants.setText(getString(R.string.home_social_challenge_participants_format, "12.6K"));
-        tvChallengeReward.setText(getString(R.string.home_social_challenge_reward_format, "200"));
+        if (tvChallengeProgress != null) tvChallengeProgress.setText(getString(R.string.home_social_challenge_progress_format, "8", "14"));
+        if (tvChallengeParticipants != null) tvChallengeParticipants.setText(getString(R.string.home_social_challenge_participants_format, "12.6K"));
+        if (tvChallengeReward != null) tvChallengeReward.setText(getString(R.string.home_social_challenge_reward_format, "200"));
     }
 
     private void setupHomeShortcuts() {
         shortcutAdapter = new HomeShortcutAdapter();
         shortcutAdapter.setOnShortcutClickListener(item -> {
             if ("orders".equals(item.getId())) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ui.account.BeautyProfileOverviewFragment())
-                        .addToBackStack(null)
-                        .commit();
+                loadFragment(new com.example.frontend.feature.order.OrderListFragment());
+            } else if ("kanila_beauty".equals(item.getId())) {
+                loadFragment(new ui.account.BeautyProfileOverviewFragment());
+            } else if ("support".equals(item.getId())) {
+                loadFragment(new ui.support.HelpCenterFragment());
             } else {
                 Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
 
-        rvHomeShortcuts.setAdapter(shortcutAdapter);
+        if (rvHomeShortcuts != null) rvHomeShortcuts.setAdapter(shortcutAdapter);
 
         List<HomeShortcutItem> shortcuts = new ArrayList<>();
         shortcuts.add(new HomeShortcutItem("orders", "Don hang", R.drawable.ic_shortcut_order, "orders", "", false, false));
@@ -521,7 +529,7 @@ public class MainActivity extends AppCompatActivity {
         shortcuts.add(new HomeShortcutItem("kanila_beauty", "Kanila Beauty", R.drawable.ic_shortcut_kanila_beauty, "beauty", "", false, false));
         shortcuts.add(new HomeShortcutItem("creator", "Creator", R.drawable.ic_shortcut_creator, "creator", "", false, false));
         shortcuts.add(new HomeShortcutItem("royalty", "Royalty", R.drawable.ic_shortcut_royalty, "loyalty", "", false, false));
-        shortcuts.add(new HomeShortcutItem("help", "Tro giup", R.drawable.ic_shortcut_help, "support", "", false, false));
+        shortcuts.add(new HomeShortcutItem("support", "Tro giup", R.drawable.ic_shortcut_help, "support", "", false, false));
         shortcuts.add(new HomeShortcutItem("policy", "Chinh sach", R.drawable.ic_shortcut_policy, "policy", "", false, false));
 
         shortcutAdapter.setItems(shortcuts);
@@ -531,35 +539,37 @@ public class MainActivity extends AppCompatActivity {
         bannerAdapter = new HomeBannerAdapter();
         bannerAdapter.setOnBannerClickListener(item -> Toast.makeText(this, "Clicked: " + item.getButtonText(), Toast.LENGTH_SHORT).show());
 
-        vpHomeBanner.setAdapter(bannerAdapter);
-        vpHomeBanner.setOffscreenPageLimit(3);
+        if (vpHomeBanner != null) {
+            vpHomeBanner.setAdapter(bannerAdapter);
+            vpHomeBanner.setOffscreenPageLimit(3);
 
-        CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
-        compositePageTransformer.addTransformer(new MarginPageTransformer((int) getResources().getDimension(R.dimen.spacing_s)));
-        compositePageTransformer.addTransformer((page, position) -> {
-            float r = 1 - Math.abs(position);
-            page.setScaleY(0.85f + r * 0.15f);
-            page.setAlpha(0.5f + r * 0.5f);
-            float translationOffset = position * -getResources().getDimension(R.dimen.spacing_m) * 2;
-            page.setTranslationX(translationOffset);
-        });
+            CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
+            compositePageTransformer.addTransformer(new MarginPageTransformer((int) getResources().getDimension(R.dimen.spacing_s)));
+            compositePageTransformer.addTransformer((page, position) -> {
+                float r = 1 - Math.abs(position);
+                page.setScaleY(0.85f + r * 0.15f);
+                page.setAlpha(0.5f + r * 0.5f);
+                float translationOffset = position * -getResources().getDimension(R.dimen.spacing_m) * 2;
+                page.setTranslationX(translationOffset);
+            });
 
-        vpHomeBanner.setPageTransformer(compositePageTransformer);
+            vpHomeBanner.setPageTransformer(compositePageTransformer);
 
-        List<HomeBannerItem> items = new ArrayList<>();
-        items.add(new HomeBannerItem("1", "", "", "", "Kham pha ngay", null, R.drawable.bg_slide_1, "category", "123", true, 1));
-        items.add(new HomeBannerItem("2", "", "", "", "Mua ngay", null, R.drawable.bg_slide_2, "product", "456", true, 2));
-        items.add(new HomeBannerItem("3", "", "", "", "Xem uu dai", null, R.drawable.bg_slide_3, "promotion", "789", true, 3));
-        items.add(new HomeBannerItem("4", "", "", "", "Goi y cho ban", null, R.drawable.bg_slide_4, "recommendation", "012", true, 4));
-        items.add(new HomeBannerItem("5", "", "", "", "Nhan voucher", null, R.drawable.bg_slide_5, "voucher", "345", true, 5));
+            List<HomeBannerItem> items = new ArrayList<>();
+            items.add(new HomeBannerItem("1", "", "", "", "Kham pha ngay", null, R.drawable.bg_slide_1, "category", "123", true, 1));
+            items.add(new HomeBannerItem("2", "", "", "", "Mua ngay", null, R.drawable.bg_slide_2, "product", "456", true, 2));
+            items.add(new HomeBannerItem("3", "", "", "", "Xem uu dai", null, R.drawable.bg_slide_3, "promotion", "789", true, 3));
+            items.add(new HomeBannerItem("4", "", "", "", "Goi y cho ban", null, R.drawable.bg_slide_4, "recommendation", "012", true, 4));
+            items.add(new HomeBannerItem("5", "", "", "", "Nhan voucher", null, R.drawable.bg_slide_5, "voucher", "345", true, 5));
 
-        bannerAdapter.setItems(items);
+            bannerAdapter.setItems(items);
 
-        int startPosition = (Integer.MAX_VALUE / 2) - ((Integer.MAX_VALUE / 2) % items.size());
-        vpHomeBanner.setCurrentItem(startPosition, false);
+            int startPosition = (Integer.MAX_VALUE / 2) - ((Integer.MAX_VALUE / 2) % items.size());
+            vpHomeBanner.setCurrentItem(startPosition, false);
 
-        // Delay auto-slide start to prevent blocking main thread during layout
-        vpHomeBanner.post(() -> setupAutoSlide(items.size()));
+            // Delay auto-slide start to prevent blocking main thread during layout
+            vpHomeBanner.post(() -> setupAutoSlide(items.size()));
+        }
     }
 
     private void setupAutoSlide(int size) {
@@ -578,18 +588,20 @@ public class MainActivity extends AppCompatActivity {
 
         autoSlideHandler.postDelayed(autoSlideRunnable, 4000);
 
-        vpHomeBanner.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                autoSlideHandler.removeCallbacks(autoSlideRunnable);
-                autoSlideHandler.postDelayed(autoSlideRunnable, 4000);
-            }
-        });
+        if (vpHomeBanner != null) {
+            vpHomeBanner.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    autoSlideHandler.removeCallbacks(autoSlideRunnable);
+                    autoSlideHandler.postDelayed(autoSlideRunnable, 4000);
+                }
+            });
+        }
     }
 
     private void smoothScrollTo(int position, long duration) {
-        if (vpHomeBanner.isFakeDragging()) return;
+        if (vpHomeBanner == null || vpHomeBanner.isFakeDragging()) return;
 
         int currentItem = vpHomeBanner.getCurrentItem();
         int itemsToScroll = position - currentItem;

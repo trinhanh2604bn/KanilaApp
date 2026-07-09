@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical">
+
+    <!-- Header Toolbar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="@color/background_main"
+        android:elevation="4dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:contentDescription="@string/content_desc_back"
+            android:padding="8dp"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/accent_dark" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            style="@style/Text.Kanila.H2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="64dp"
+            android:gravity="center"
+            android:text="@string/order_detail_title"
+            android:textColor="@color/accent_dark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Order Basic Info Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border_divider"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        <TextView
+                            style="@style/Text.Kanila.H3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="#KN20458"
+                            android:textStyle="bold"
+                            tools:ignore="HardcodedText" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_chip_pill"
+                            android:backgroundTint="@color/status_shipping_bg"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="4dp"
+                            android:text="@string/order_status_shipping"
+                            android:textColor="@color/status_shipping_text"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            tools:ignore="SmallSp" />
+                    </LinearLayout>
+
+                    <TextView
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Ngày đặt: 16/05/2025 - 10:15"
+                        android:alpha="0.6"
+                        tools:ignore="HardcodedText" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Shipping Address -->
+            <TextView
+                style="@style/Text.Kanila.H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/shipping_address_title"
+                android:textColor="@color/accent_dark" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border_divider"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView
+                        style="@style/Text.Kanila.BodyMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nguyễn Minh Phú"
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText" />
+                    <TextView
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="(+84) 901 234 567"
+                        android:alpha="0.8"
+                        tools:ignore="HardcodedText" />
+                    <TextView
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="123 Đường Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh"
+                        android:alpha="0.8"
+                        tools:ignore="HardcodedText" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Product List -->
+            <TextView
+                style="@style/Text.Kanila.H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/order_summary_title"
+                android:textColor="@color/accent_dark" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border_divider"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            app:cardCornerRadius="8dp"
+                            app:cardElevation="0dp"
+                            app:strokeColor="@color/border_divider"
+                            app:strokeWidth="0.5dp">
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="4dp"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/cl_product"
+                                android:contentDescription="@null" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                style="@style/Text.Kanila.Caption"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Serum Niacinamide 10% Kanila"
+                                android:textStyle="bold"
+                                tools:ignore="HardcodedText" />
+                            <TextView
+                                style="@style/Text.Kanila.Micro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Phân loại: 30ml"
+                                android:alpha="0.6"
+                                tools:ignore="HardcodedText" />
+                            <TextView
+                                style="@style/Text.Kanila.Micro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="x1"
+                                tools:ignore="HardcodedText" />
+                        </LinearLayout>
+
+                        <TextView
+                            style="@style/Text.Kanila.Caption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="299.000đ"
+                            android:textColor="@color/button"
+                            android:textStyle="bold"
+                            tools:ignore="HardcodedText" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="@color/border_divider"
+                        android:alpha="0.5" />
+
+                    <!-- Pricing -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            style="@style/Text.Kanila.Micro"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Tạm tính"
+                            tools:ignore="HardcodedText" />
+                        <TextView
+                            style="@style/Text.Kanila.Micro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="450.000đ"
+                            tools:ignore="HardcodedText" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:orientation="horizontal">
+                        <TextView
+                            style="@style/Text.Kanila.Micro"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Phí vận chuyển"
+                            tools:ignore="HardcodedText" />
+                        <TextView
+                            style="@style/Text.Kanila.Micro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="39.000đ"
+                            tools:ignore="HardcodedText" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal">
+                        <TextView
+                            style="@style/Text.Kanila.BodyMedium"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Tổng cộng"
+                            android:textStyle="bold"
+                            tools:ignore="HardcodedText" />
+                        <TextView
+                            style="@style/Text.Kanila.H3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="489.000đ"
+                            android:textColor="@color/button"
+                            android:textStyle="bold"
+                            tools:ignore="HardcodedText" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Support Action -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnContactSupport"
+                style="@style/Widget.Kanila.Button.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="32dp"
+                android:text="Cần hỗ trợ về đơn hàng này?"
+                android:backgroundTint="@color/accent_dark"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

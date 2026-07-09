@@ -223,7 +223,6 @@
                                 android:layout_height="wrap_content"
                                 android:text="Đơn hàng"
                                 android:textStyle="bold"
-                                android:textSize="11sp"
                                 android:textAppearance="@style/Text.Kanila.Caption"
                                 android:textColor="@color/accent_dark" />
 
@@ -639,7 +638,7 @@
 
                 <!-- Trung tâm hỗ trợ (Giao diện tĩnh, chưa kết nối) -->
                 <LinearLayout
-                    android:id="@+id/menuHelpCenter"
+                    android:id="@+id/menuSupportCenter"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:gravity="center_vertical"
@@ -650,6 +649,7 @@
                     android:background="?attr/selectableItemBackground">
 
                     <ImageView
+                        android:id="@+id/ivMenu6"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:background="@drawable/bg_chatbot_soft_dot"

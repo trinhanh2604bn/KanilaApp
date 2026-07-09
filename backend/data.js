@@ -798,9 +798,9 @@ async function seedCustomersAndProfiles() {
           preference_key: key,
           preference_value:
             key === "locale" ? "vi-VN" :
-            key === "currency" ? "VND" :
-            key === "theme" ? "light" :
-            i % 4 === 0 ? "false" : "true",
+              key === "currency" ? "VND" :
+                key === "theme" ? "light" :
+                  i % 4 === 0 ? "false" : "true",
           updated_at: daysAgo(i),
         });
       }

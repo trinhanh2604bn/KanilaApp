@@ -26,8 +26,6 @@ import ui.category.BrandPageFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import ui.common.BottomNavigationHelper;
-
 public class ProductCategoryFragment extends Fragment {
 
     private ViewPager2 vpCategoryBanner;
@@ -51,18 +49,10 @@ public class ProductCategoryFragment extends Fragment {
         setupStaticCategories(view);
         setupStaticBrands(view);
 
-        BottomNavigationHelper.setupStandardNavigation(this, view);
-        BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
-
         TextView tvSeeAllBrands = view.findViewById(R.id.tvSeeAllBrands);
         if (tvSeeAllBrands != null) {
             tvSeeAllBrands.setOnClickListener(v -> {
-                if (getActivity() != null) {
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new BrandPageFragment())
-                            .addToBackStack(null)
-                            .commit();
-                }
+                ui.common.FragmentNavigationHelper.replaceFragment(getActivity(), new BrandPageFragment());
             });
         }
     }
@@ -173,11 +163,8 @@ public class ProductCategoryFragment extends Fragment {
         if (ivProduct != null) ivProduct.setImageResource(imgRes);
 
         card.setOnClickListener(v -> {
-            if (destination != null && getActivity() != null) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, destination)
-                        .addToBackStack(null)
-                        .commit();
+            if (destination != null) {
+                ui.common.FragmentNavigationHelper.replaceFragment(getActivity(), destination);
             } else {
                 Toast.makeText(getContext(), getString(titleRes), Toast.LENGTH_SHORT).show();
             }
@@ -197,12 +184,7 @@ public class ProductCategoryFragment extends Fragment {
         ImageView ivLogo = card.findViewById(R.id.ivBrandLogo);
         if (ivLogo != null) ivLogo.setImageResource(logoRes);
         card.setOnClickListener(v -> {
-            if (getActivity() != null) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, ProductListingFragment.newBrandInstance(brandName))
-                        .addToBackStack(null)
-                        .commit();
-            }
+            ui.common.FragmentNavigationHelper.replaceFragment(getActivity(), ProductListingFragment.newBrandInstance(brandName));
         });
     }
 

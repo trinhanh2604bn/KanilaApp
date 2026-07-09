@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp"
+    android:paddingBottom="32dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_drag_handle" />
+
+    <TextView
+        android:id="@+id/tvSheetTitle"
+        style="@style/Text.Kanila.H2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="24dp"
+        android:text="Liên kết Ví MoMo"
+        android:textColor="@color/accent_dark"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        style="@style/Text.Kanila.H3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Số điện thoại đăng ký ví"
+        android:textColor="@color/text_main"
+        tools:ignore="HardcodedText" />
+
+    <EditText
+        android:id="@+id/edtWalletPhone"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_kanila_input_default"
+        android:hint="09xx xxx xxx"
+        android:inputType="phone"
+        android:paddingHorizontal="16dp"
+        android:textSize="15sp"
+        android:importantForAutofill="no" />
+
+    <TextView
+        style="@style/Text.Kanila.Micro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Lưu ý: Một mã OTP sẽ được gửi về số điện thoại này để xác thực liên kết."
+        android:alpha="0.7"
+        tools:ignore="HardcodedText" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSubmitLink"
+        style="@style/Widget.Kanila.Button.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="32dp"
+        android:text="Tiếp tục"
+        android:backgroundTint="@color/burgundy"
+        tools:ignore="HardcodedText" />
+
+</LinearLayout>

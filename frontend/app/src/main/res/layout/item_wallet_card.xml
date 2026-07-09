@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/border_divider"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardIconContainer"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp">
+            <ImageView
+                android:id="@+id/ivWalletIcon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp"
+                android:src="@drawable/ic_wallet"
+                android:contentDescription="Wallet" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvWalletName"
+                style="@style/Text.Kanila.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ví MoMo"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText" />
+            <TextView
+                android:id="@+id/tvWalletStatus"
+                style="@style/Text.Kanila.Micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chưa liên kết"
+                android:alpha="0.6"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnAction"
+            style="@style/Text.Kanila.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Liên kết"
+            android:textColor="@color/button"
+            android:textStyle="bold"
+            android:padding="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

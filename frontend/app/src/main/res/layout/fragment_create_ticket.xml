@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main">
+
+    <!-- Header Toolbar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_main"
+        android:paddingTop="32dp"
+        android:paddingBottom="12dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="@color/border_divider"
+            app:strokeWidth="1dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/content_desc_back"
+                android:padding="10dp"
+                android:src="@drawable/ic_back"
+                app:tint="@color/accent_dark" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/tvTitle"
+            style="@style/Text.Kanila.H2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_ticket_title"
+            android:textColor="@color/accent_dark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toTopOf="@+id/btnSubmit"
+        app:layout_constraintTop_toBottomOf="@id/layoutToolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Subject Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_subject"
+                    android:textColor="@color/text_main" />
+                <ImageView
+                    android:id="@+id/ivErrorSubject"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_error_outline"
+                    app:tint="@color/error"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/layoutSubjectPicker"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_kanila_input_default"
+                android:paddingHorizontal="16dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/tvSubject"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/hint_subject"
+                    android:textColor="@color/text_tertiary" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:src="@drawable/ic_chevron_down"
+                    app:tint="@color/text_tertiary" />
+            </FrameLayout>
+
+            <!-- Order ID Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_order_id"
+                    android:textColor="@color/text_main" />
+                <ImageView
+                    android:id="@+id/ivErrorOrderId"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_error_outline"
+                    app:tint="@color/error"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_kanila_input_default"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp">
+
+                <EditText
+                    android:id="@+id/edtOrderId"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="@string/hint_order_id"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/btnScanQr"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_qr"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:tint="@color/button" />
+            </LinearLayout>
+
+            <!-- Description Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_description"
+                    android:textColor="@color/text_main" />
+                <ImageView
+                    android:id="@+id/ivErrorDescription"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_error_outline"
+                    app:tint="@color/error"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_kanila_input_default"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <EditText
+                    android:id="@+id/edtDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:background="@null"
+                    android:gravity="top"
+                    android:hint="@string/hint_description"
+                    android:importantForAutofill="no"
+                    android:inputType="textMultiLine"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvCharCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="0/500"
+                    android:textColor="@color/text_tertiary"
+                    android:textSize="12sp"
+                    tools:ignore="HardcodedText" />
+            </LinearLayout>
+
+            <!-- Attachments -->
+            <TextView
+                style="@style/Text.Kanila.H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_attachment"
+                android:textColor="@color/text_main" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvImages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_upload_image"
+                tools:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/layoutUpload"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/bg_dashed_border"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_image"
+                    app:tint="@color/button" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/upload_placeholder"
+                    android:textColor="@color/button"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/upload_limit"
+                    android:textColor="@color/text_tertiary"
+                    android:textSize="10sp"
+                    tools:ignore="SmallSp" />
+            </LinearLayout>
+
+            <!-- Issue Type Chips -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_issue_type"
+                    android:textColor="@color/text_main" />
+                <ImageView
+                    android:id="@+id/ivErrorIssueType"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_error_outline"
+                    app:tint="@color/error"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutIssueTypes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="24dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Issue Return -->
+                    <LinearLayout
+                        android:id="@+id/chipReturn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/bg_chip_pink"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="12dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:id="@+id/ivIconReturn"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_refresh"
+                            android:contentDescription="@null"
+                            app:tint="@color/button" />
+                        <TextView
+                            android:id="@+id/tvTextReturn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="@string/issue_return"
+                            android:textColor="@color/button"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Issue Missing -->
+                    <LinearLayout
+                        android:id="@+id/chipMissing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/bg_chip_outline"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="12dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:id="@+id/ivIconMissing"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_list"
+                            android:contentDescription="@null"
+                            app:tint="@color/text_tertiary" />
+                        <TextView
+                            android:id="@+id/tvTextMissing"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="@string/issue_missing"
+                            android:textColor="@color/text_main"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <!-- Issue Payment -->
+                    <LinearLayout
+                        android:id="@+id/chipPayment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/bg_chip_outline"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="12dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:id="@+id/ivIconPayment"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_wallet"
+                            android:contentDescription="@null"
+                            app:tint="@color/text_tertiary" />
+                        <TextView
+                            android:id="@+id/tvTextPayment"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="@string/issue_payment"
+                            android:textColor="@color/text_main"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Issue Consult -->
+                    <LinearLayout
+                        android:id="@+id/chipConsult"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/bg_chip_outline"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="12dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:id="@+id/ivIconConsult"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_skincare"
+                            android:contentDescription="@null"
+                            app:tint="@color/text_tertiary" />
+                        <TextView
+                            android:id="@+id/tvTextConsult"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="@string/issue_consult"
+                            android:textColor="@color/text_main"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <!-- Issue Other -->
+                    <LinearLayout
+                        android:id="@+id/chipOther"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/bg_chip_outline"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="12dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:id="@+id/ivIconOther"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_more_horiz"
+                            android:contentDescription="@null"
+                            app:tint="@color/text_tertiary" />
+                        <TextView
+                            android:id="@+id/tvTextOther"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="@string/issue_other"
+                            android:textColor="@color/text_main"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Contact Method -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_contact_method"
+                    android:textColor="@color/text_main" />
+                <ImageView
+                    android:id="@+id/ivErrorContactMethod"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_error_outline"
+                    app:tint="@color/error"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutContactMethods"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="24dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardContactCall"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/border_divider"
+                    app:strokeWidth="1dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <LinearLayout
+                        android:id="@+id/innerContactCall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+                        <ImageView
+                            android:id="@+id/ivIconContactCall"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_support"
+                            app:tint="@color/text_secondary" />
+                        <TextView
+                            android:id="@+id/tvTextContactCall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="@string/contact_call"
+                            android:textColor="@color/text_main"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/tvSubContactCall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/contact_call_sub"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="8sp"
+                            tools:ignore="SmallSp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardContactEmail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="3dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/border_divider"
+                    app:strokeWidth="1dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <LinearLayout
+                        android:id="@+id/innerContactEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+                        <ImageView
+                            android:id="@+id/ivIconContactEmail"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_mail"
+                            app:tint="@color/text_secondary" />
+                        <TextView
+                            android:id="@+id/tvTextContactEmail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="@string/contact_email"
+                            android:textColor="@color/text_main"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/tvSubContactEmail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/contact_email_sub"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="8sp"
+                            tools:ignore="SmallSp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardContactChat"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    app:cardBackgroundColor="@color/pink_bg"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/button"
+                    app:strokeWidth="1dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:id="@+id/innerContactChat"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+                            <ImageView
+                                android:id="@+id/ivIconContactChat"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_chat_placeholder"
+                                app:tint="@color/button" />
+                            <TextView
+                                android:id="@+id/tvTextContactChat"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/contact_chat"
+                                android:textColor="@color/button"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tvSubContactChat"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="@string/contact_chat_sub"
+                                android:textColor="@color/button"
+                                android:textSize="8sp"
+                                android:alpha="0.8"
+                                tools:ignore="SmallSp" />
+                        </LinearLayout>
+                        <ImageView
+                            android:id="@+id/ivCheckContactChat"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="4dp"
+                            android:src="@drawable/ic_check_circle"
+                            app:tint="@color/button" />
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <!-- Feedback Banner -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                app:cardBackgroundColor="@color/pink_bg"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_time"
+                        app:tint="@color/burgundy" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ticket_banner_title"
+                            android:textColor="@color/accent_dark"
+                            android:textStyle="bold"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/ticket_banner_desc"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_shield_star"
+                        app:tint="@color/burgundy"
+                        android:alpha="0.2" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Submit Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSubmit"
+        style="@style/Widget.Kanila.Button.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="24dp"
+        android:text="@string/btn_submit_ticket"
+        android:backgroundTint="@color/burgundy"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

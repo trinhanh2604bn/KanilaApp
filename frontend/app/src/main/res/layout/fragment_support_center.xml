@@ -52,7 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@id/layoutBottomNavigation"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appBarLayout">
 
         <LinearLayout
@@ -562,13 +562,5 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <!-- Bottom Navigation Footer -->
-    <include
-        android:id="@+id/layoutBottomNavigation"
-        layout="@layout/view_bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

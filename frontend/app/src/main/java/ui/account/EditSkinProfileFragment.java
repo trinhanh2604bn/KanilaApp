@@ -10,17 +10,19 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.frontend.R;
+import com.example.frontend.data.model.beauty.CustomerBeautyProfileDto;
+import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.feature.beauty.BeautyProfileViewModel;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
@@ -31,12 +33,21 @@ import ui.common.ViewUtils;
 public class EditSkinProfileFragment extends Fragment {
 
     private final List<SelectableItem> skinTypeGroup = new ArrayList<>();
-    private final List<SelectableItem> skinToneGroup = new ArrayList<>();
+    private final List<SelectableItem> skinConditionGroup = new ArrayList<>();
+    private final List<SelectableItem> sensitivityGroup = new ArrayList<>();
+    private final List<SelectableItem> skinColorGroup = new ArrayList<>();
+    private final List<SelectableItem> skinUndertoneGroup = new ArrayList<>();
+    private final List<SelectableItem> finishGroup = new ArrayList<>();
+    private final List<SelectableItem> lipstickGroup = new ArrayList<>();
+    private final List<SelectableItem> makeupStyleGroup = new ArrayList<>();
     private final List<SelectableItem> budgetGroup = new ArrayList<>();
     private final List<SelectableItem> avoidIngredientsGroup = new ArrayList<>();
 
     private MaterialButton btnSaveBottom;
     private boolean isDirty = false;
+    private BeautyProfileViewModel viewModel;
+
+    private int brandPink, softPinkBg, darkText, grayBorder, dp1;
 
     public EditSkinProfileFragment() {
         super(R.layout.fragment_edit_skin_profile);
@@ -45,164 +56,249 @@ public class EditSkinProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(BeautyProfileViewModel.class);
 
+        initColors();
         initViews(view);
         setupEvents(view);
+        loadCurrentData();
+    }
+
+    private void initColors() {
+        brandPink = ContextCompat.getColor(requireContext(), R.color.button);
+        softPinkBg = Color.parseColor("#FFF9FA");
+        darkText = ContextCompat.getColor(requireContext(), R.color.accent_dark);
+        grayBorder = ContextCompat.getColor(requireContext(), R.color.border_divider);
+        dp1 = Math.round(1 * getResources().getDisplayMetrics().density);
     }
 
     private void initViews(View view) {
-        // 1. Skin Type Group (Single Choice)
-        addSelectableItem(view, R.id.cardSkinOily, skinTypeGroup, "Da dầu", R.drawable.ic_drops_filled, true);
-        addSelectableItem(view, R.id.cardSkinDry, skinTypeGroup, "Da khô", R.drawable.ic_drops, false);
-        addSelectableItem(view, R.id.cardSkinMixed, skinTypeGroup, "Da hỗn hợp", R.drawable.ic_skin_mixed, false);
-        addSelectableItem(view, R.id.cardSkinNormal, skinTypeGroup, "Da thường", R.drawable.ic_skin_normal, false);
-        addSelectableItem(view, R.id.cardSkinSensitive, skinTypeGroup, "Da nhạy cảm", R.drawable.ic_skin_sensitive, false);
-        addSelectableItem(view, R.id.cardSkinUnsure, skinTypeGroup, "Chưa chắc chắn", R.drawable.ic_unsure, false);
+        // 1. Skin Type (Single)
+        addSelectableItem(view, R.id.cardSkinOily, skinTypeGroup, "Da dầu", R.drawable.ic_drops_filled, false, true);
+        addSelectableItem(view, R.id.cardSkinDry, skinTypeGroup, "Da khô", R.drawable.ic_drops, false, true);
+        addSelectableItem(view, R.id.cardSkinCombination, skinTypeGroup, "Da hỗn hợp", R.drawable.ic_skin_mixed, false, true);
+        addSelectableItem(view, R.id.cardSkinNormal, skinTypeGroup, "Da thường", R.drawable.ic_skin_normal, false, true);
+        addSelectableItem(view, R.id.cardSkinSensitive, skinTypeGroup, "Da nhạy cảm", R.drawable.ic_skin_sensitive, false, true);
+        addSelectableItem(view, R.id.cardSkinUnknown, skinTypeGroup, "Chưa xác định", R.drawable.ic_unsure, false, true);
 
-        // 2. Skin Tone Group (Single Choice)
-        addSelectableItem(view, R.id.cardToneLight, skinToneGroup, "Sáng", R.drawable.ic_sun, true);
-        addSelectableItem(view, R.id.cardToneMedium, skinToneGroup, "Trung bình", R.drawable.ic_sun, false);
-        addSelectableItem(view, R.id.cardToneDark, skinToneGroup, "Ngăm", R.drawable.ic_sun, false);
+        // 2. Skin Condition (Multi)
+        addSelectableItem(view, R.id.cardConditionAcne, skinConditionGroup, "Mụn", R.drawable.ic_skin_acne, true, true);
+        addSelectableItem(view, R.id.cardConditionDarkSpots, skinConditionGroup, "Thâm mụn", R.drawable.ic_skin_spots, true, true);
+        addSelectableItem(view, R.id.cardConditionMelasma, skinConditionGroup, "Nám, sạm màu", R.drawable.ic_skin_spots, true, true);
+        addSelectableItem(view, R.id.cardConditionDullness, skinConditionGroup, "Da xỉn màu", R.drawable.ic_skin_dullness, true, true);
+        addSelectableItem(view, R.id.cardConditionLargePores, skinConditionGroup, "Lỗ chân lông to", R.drawable.ic_skin_pores, true, true);
+        addSelectableItem(view, R.id.cardConditionBlackheads, skinConditionGroup, "Mụn đầu đen", R.drawable.ic_skin_acne, true, true);
+        addSelectableItem(view, R.id.cardConditionRedness, skinConditionGroup, "Da dễ đỏ", R.drawable.ic_skin_redness, true, true);
+        addSelectableItem(view, R.id.cardConditionDehydrated, skinConditionGroup, "Da thiếu nước", R.drawable.ic_drops, true, true);
+        addSelectableItem(view, R.id.cardConditionWrinkles, skinConditionGroup, "Nếp nhăn, lão hóa", R.drawable.ic_skin_aging, true, true);
+        addSelectableItem(view, R.id.cardConditionUneven, skinConditionGroup, "Bề mặt da không mịn", R.drawable.ic_skin_mixed, true, true);
+        addSelectableItem(view, R.id.cardConditionDamaged, skinConditionGroup, "Hàng rào da yếu", R.drawable.ic_goal_recovery, true, true);
+        addSelectableItem(view, R.id.cardConditionSun, skinConditionGroup, "Da chịu tác động của nắng", R.drawable.ic_sun, true, true);
 
-        // 3. Budget Group (Single Choice)
-        addSelectableItem(view, R.id.cardBudgetUnder300, budgetGroup, "Dưới 300K", R.drawable.ic_wallet, false);
-        addSelectableItem(view, R.id.cardBudget300_500, budgetGroup, "300K - 500K", R.drawable.ic_wallet, true);
-        addSelectableItem(view, R.id.cardBudgetOver500, budgetGroup, "500K +", R.drawable.ic_wallet, false);
+        // 3. Sensitivity (Single)
+        addSelectableItem(view, R.id.cardSensitivityLow, sensitivityGroup, "Ít nhạy cảm", R.drawable.ic_shield_star, false, true);
+        addSelectableItem(view, R.id.cardSensitivityMedium, sensitivityGroup, "Dễ kích ứng nhẹ", R.drawable.ic_skin_sensitive, false, true);
+        addSelectableItem(view, R.id.cardSensitivityHigh, sensitivityGroup, "Rất nhạy cảm", R.drawable.ic_alert, false, true);
+        addSelectableItem(view, R.id.cardSensitivityReactive, sensitivityGroup, "Dễ đỏ hoặc rát khi đổi sản phẩm", R.drawable.ic_skin_redness, false, true);
 
-        // 4. Avoid Ingredients Group (Multi Choice)
-        addSelectableItem(view, R.id.cardAvoidFragrance, avoidIngredientsGroup, "Hương liệu", R.drawable.ic_drops, true);
-        addSelectableItem(view, R.id.cardAvoidAlcohol, avoidIngredientsGroup, "Cồn khô", R.drawable.ic_beaker, false);
-        addSelectableItem(view, R.id.cardAvoidEssentialOil, avoidIngredientsGroup, "Tinh dầu", R.drawable.ic_drops, false);
-        addSelectableItem(view, R.id.cardAvoidParaben, avoidIngredientsGroup, "Paraben", R.drawable.ic_beaker, false);
-        addSelectableItem(view, R.id.cardAvoidMineralOil, avoidIngredientsGroup, "Dầu khoáng", R.drawable.ic_drops, false);
-        addSelectableItem(view, R.id.cardAvoidSilicone, avoidIngredientsGroup, "Silicone", R.drawable.ic_beaker, false);
-        addSelectableItem(view, R.id.cardAvoidSulfate, avoidIngredientsGroup, "Sulfate", R.drawable.ic_beaker, false);
-        addSelectableItem(view, R.id.cardAvoidLanolin, avoidIngredientsGroup, "Lanolin", R.drawable.ic_beaker, false);
-        addSelectableItem(view, R.id.cardAvoidRetinoid, avoidIngredientsGroup, "Retinoid", R.drawable.ic_beaker, false);
-        addSelectableItem(view, R.id.cardAvoidHighAcid, avoidIngredientsGroup, "Acid cao", R.drawable.ic_beaker, false);
+        // 4. Color (Single) - Hide icon to simplify
+        addSelectableItem(view, R.id.cardColorFair, skinColorGroup, "Da rất sáng", 0, false, false);
+        addSelectableItem(view, R.id.cardColorLight, skinColorGroup, "Da sáng", 0, false, false);
+        addSelectableItem(view, R.id.cardColorMedium, skinColorGroup, "Da trung bình", 0, false, false);
+        addSelectableItem(view, R.id.cardColorTan, skinColorGroup, "Da ngăm", 0, false, false);
+        addSelectableItem(view, R.id.cardColorDeep, skinColorGroup, "Da sẫm màu", 0, false, false);
+
+        // 5. Undertone (Single) - Hide icon to simplify
+        addSelectableItem(view, R.id.cardUndertoneCool, skinUndertoneGroup, "Sắc lạnh", 0, false, false);
+        addSelectableItem(view, R.id.cardUndertoneWarm, skinUndertoneGroup, "Sắc ấm", 0, false, false);
+        addSelectableItem(view, R.id.cardUndertoneNeutral, skinUndertoneGroup, "Sắc trung tính", 0, false, false);
+        addSelectableItem(view, R.id.cardUndertoneOlive, skinUndertoneGroup, "Sắc ô liu", 0, false, false);
+        addSelectableItem(view, R.id.cardUndertoneUnknown, skinUndertoneGroup, "Chưa xác định", 0, false, false);
+
+        // 6. Finish (Single)
+        addSelectableItem(view, R.id.cardFinishNatural, finishGroup, "Tự nhiên", R.drawable.ic_face, false, true);
+        addSelectableItem(view, R.id.cardFinishBright, finishGroup, "Sáng hơn tông da", R.drawable.ic_lightbulb, false, true);
+        addSelectableItem(view, R.id.cardFinishWarm, finishGroup, "Căng bóng ánh ấm", R.drawable.ic_sun, false, true);
+        addSelectableItem(view, R.id.cardFinishPinkish, finishGroup, "Tươi sáng ánh hồng", R.drawable.ic_face, false, true);
+        addSelectableItem(view, R.id.cardFinishMatte, finishGroup, "Lì, ít bóng", R.drawable.ic_face, false, true);
+
+        // 7. Lipstick (Multi) - Hide icon to simplify
+        addSelectableItem(view, R.id.cardLipstickNude, lipstickGroup, "Màu nude", 0, true, false);
+        addSelectableItem(view, R.id.cardLipstickPink, lipstickGroup, "Màu hồng", 0, true, false);
+        addSelectableItem(view, R.id.cardLipstickCoral, lipstickGroup, "Màu cam san hô", 0, true, false);
+        addSelectableItem(view, R.id.cardLipstickRed, lipstickGroup, "Màu đỏ", 0, true, false);
+        addSelectableItem(view, R.id.cardLipstickBrown, lipstickGroup, "Màu nâu", 0, true, false);
+        addSelectableItem(view, R.id.cardLipstickMlbb, lipstickGroup, "Màu môi tự nhiên", 0, true, false);
+        addSelectableItem(view, R.id.cardLipstickBold, lipstickGroup, "Màu đậm, nổi bật", 0, true, false);
+
+        // 8. Makeup Style (Multi) - Hide icon to simplify
+        addSelectableItem(view, R.id.cardMakeupNatural, makeupStyleGroup, "Trang điểm tự nhiên", 0, true, false);
+        addSelectableItem(view, R.id.cardMakeupKorean, makeupStyleGroup, "Phong cách Hàn Quốc", 0, true, false);
+        addSelectableItem(view, R.id.cardMakeupGlam, makeupStyleGroup, "Trang điểm sắc sảo", 0, true, false);
+        addSelectableItem(view, R.id.cardMakeupOffice, makeupStyleGroup, "Trang điểm công sở", 0, true, false);
+        addSelectableItem(view, R.id.cardMakeupParty, makeupStyleGroup, "Trang điểm dự tiệc", 0, true, false);
+        addSelectableItem(view, R.id.cardMakeupDaily, makeupStyleGroup, "Trang điểm hằng ngày", 0, true, false);
+
+        // 9. Budget (Single) - Hide icon as requested
+        addSelectableItem(view, R.id.cardBudgetUnder300, budgetGroup, "Dưới 300K", 0, false, false);
+        addSelectableItem(view, R.id.cardBudget300_500, budgetGroup, "300K - 500K", 0, false, false);
+        addSelectableItem(view, R.id.cardBudgetOver500, budgetGroup, "500K +", 0, false, false);
+
+        // 10. Avoid Ingredients (Multi)
+        addSelectableItem(view, R.id.cardAvoidFragrance, avoidIngredientsGroup, "Hương liệu", R.drawable.ic_drops, true, true);
+        addSelectableItem(view, R.id.cardAvoidAlcohol, avoidIngredientsGroup, "Cồn khô", R.drawable.ic_beaker, true, true);
+        addSelectableItem(view, R.id.cardAvoidEssentialOil, avoidIngredientsGroup, "Tinh dầu", R.drawable.ic_drops, true, true);
+        addSelectableItem(view, R.id.cardAvoidParaben, avoidIngredientsGroup, "Paraben", R.drawable.ic_beaker, true, true);
+        addSelectableItem(view, R.id.cardAvoidMineralOil, avoidIngredientsGroup, "Dầu khoáng", R.drawable.ic_drops, true, true);
+        addSelectableItem(view, R.id.cardAvoidSilicone, avoidIngredientsGroup, "Silicone", R.drawable.ic_beaker, true, true);
+        addSelectableItem(view, R.id.cardAvoidSulfate, avoidIngredientsGroup, "Sulfate", R.drawable.ic_beaker, true, true);
+        addSelectableItem(view, R.id.cardAvoidLanolin, avoidIngredientsGroup, "Lanolin", R.drawable.ic_beaker, true, true);
+        addSelectableItem(view, R.id.cardAvoidRetinoid, avoidIngredientsGroup, "Retinoid", R.drawable.ic_beaker, true, true);
+        addSelectableItem(view, R.id.cardAvoidHighAcid, avoidIngredientsGroup, "Acid cao", R.drawable.ic_beaker, true, true);
     }
 
-    private void addSelectableItem(View root, int id, List<SelectableItem> group, String label, int iconRes, boolean selected) {
+    private void addSelectableItem(View root, int id, List<SelectableItem> group, String label, int iconRes, boolean isMultiChoice, boolean showIcon) {
         View itemRoot = root.findViewById(id);
-        if (itemRoot instanceof MaterialCardView) {
-            MaterialCardView card = (MaterialCardView) itemRoot;
+        if (itemRoot != null) {
             ImageView icon = itemRoot.findViewById(R.id.ivIcon);
             TextView tvLabel = itemRoot.findViewById(R.id.tvLabel);
             ImageView tick = itemRoot.findViewById(R.id.ivTick);
 
-            icon.setImageResource(iconRes);
-            tvLabel.setText(label);
+            if (icon != null) {
+                if (showIcon && iconRes != 0) {
+                    icon.setImageResource(iconRes);
+                    icon.setVisibility(View.VISIBLE);
+                } else {
+                    icon.setVisibility(View.GONE);
+                }
+            }
+            if (tvLabel != null) tvLabel.setText(label);
 
-            SelectableItem item = new SelectableItem(card, icon, tvLabel, tick, label, selected);
+            SelectableItem item = new SelectableItem(itemRoot, icon, tvLabel, tick, label, false);
             group.add(item);
-            updateItemUI(item);
+            updateItemUI(item, false);
 
-            ViewUtils.applyClickAnimation(card);
-            card.setOnClickListener(v -> {
-                boolean isMultiChoice = (group == avoidIngredientsGroup);
+            ViewUtils.applyClickAnimation(itemRoot);
+            itemRoot.setOnClickListener(v -> {
                 if (isMultiChoice) {
                     item.selected = !item.selected;
-                    updateItemUI(item);
                 } else {
-                    if (!item.selected) {
-                        for (SelectableItem i : group) {
-                            if (i.selected) {
-                                i.selected = false;
-                                updateItemUI(i);
-                            }
+                    // Single choice logic
+                    if (item.selected) return; // Already selected
+                    for (SelectableItem other : group) {
+                        if (other.selected) {
+                            other.selected = false;
+                            updateItemUI(other, true);
                         }
-                        item.selected = true;
-                        updateItemUI(item);
                     }
+                    item.selected = true;
                 }
-                onDataChanged(); // Thông báo có thay đổi dữ liệu
+                updateItemUI(item, true);
+                onDataChanged();
             });
         }
     }
 
-    private void updateItemUI(SelectableItem item) {
-        int brandPink = ContextCompat.getColor(requireContext(), R.color.button);
-        int softPinkBg = Color.parseColor("#FFF9FA");
-        int darkText = ContextCompat.getColor(requireContext(), R.color.accent_dark);
-        int grayBorder = ContextCompat.getColor(requireContext(), R.color.border_divider);
-
+    private void updateItemUI(SelectableItem item, boolean animate) {
         if (item.selected) {
-            animateCardTransition(item.card, Color.WHITE, softPinkBg, grayBorder, Color.TRANSPARENT, true);
-            item.label.setTextColor(brandPink);
-            item.icon.setImageTintList(ColorStateList.valueOf(brandPink));
-            item.tick.setVisibility(View.VISIBLE);
-            item.tick.setAlpha(0f);
-            item.tick.setScaleX(0.7f);
-            item.tick.setScaleY(0.7f);
-            item.tick.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(300).start();
+            item.view.setBackgroundResource(R.drawable.bg_chip_pink);
+            if (item.label != null) item.label.setTextColor(brandPink);
+            if (item.icon != null) item.icon.setImageTintList(ColorStateList.valueOf(brandPink));
+            if (item.tick != null) item.tick.setVisibility(View.VISIBLE);
+            if (animate) {
+                item.view.animate().scaleX(1.05f).scaleY(1.05f).setDuration(200).start();
+            } else {
+                item.view.setScaleX(1.05f);
+                item.view.setScaleY(1.05f);
+            }
         } else {
-            animateCardTransition(item.card, softPinkBg, Color.WHITE, Color.TRANSPARENT, grayBorder, false);
-            item.label.setTextColor(darkText);
-            item.icon.setImageTintList(ColorStateList.valueOf(darkText));
-            item.tick.animate().alpha(0f).scaleX(0.7f).scaleY(0.7f).setDuration(200).withEndAction(() -> item.tick.setVisibility(View.GONE)).start();
+            item.view.setBackgroundResource(R.drawable.bg_card);
+            if (item.label != null) item.label.setTextColor(darkText);
+            if (item.icon != null) item.icon.setImageTintList(ColorStateList.valueOf(darkText));
+            if (item.tick != null) item.tick.setVisibility(View.GONE);
+            if (animate) {
+                item.view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(200).start();
+            } else {
+                item.view.setScaleX(1.0f);
+                item.view.setScaleY(1.0f);
+            }
         }
     }
 
-    private void animateCardTransition(MaterialCardView card, int fromBg, int toBg, int fromStroke, int toStroke, boolean selected) {
-        float scale = selected ? 1.05f : 1.0f;
-        float elevation = selected ? dpToPx(4) : 0;
-        
-        card.animate()
-                .scaleX(scale)
-                .scaleY(scale)
-                .translationZ(elevation)
-                .setDuration(350)
-                .setInterpolator(new androidx.interpolator.view.animation.FastOutSlowInInterpolator())
-                .start();
+    private void loadCurrentData() {
+        NetworkResult<CustomerBeautyProfileDto> result = viewModel.getProfileResult().getValue();
+        if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+            CustomerBeautyProfileDto profile = result.data;
+            if (profile.getSkinType() != null) syncSelection(skinTypeGroup, profile.getSkinType());
+            if (profile.getSkinConcerns() != null) syncMultiSelection(skinConditionGroup, profile.getSkinConcerns());
+            if (profile.getSensitivityLevel() != null) syncSelection(sensitivityGroup, profile.getSensitivityLevel());
+            if (profile.getSkinColor() != null) syncSelection(skinColorGroup, profile.getSkinColor());
+            if (profile.getSkinUndertone() != null) syncSelection(skinUndertoneGroup, profile.getSkinUndertone());
+            if (profile.getFoundationFinish() != null) syncSelection(finishGroup, profile.getFoundationFinish());
+            if (profile.getLipstickColors() != null) syncMultiSelection(lipstickGroup, profile.getLipstickColors());
+            if (profile.getMakeupStyles() != null) syncMultiSelection(makeupStyleGroup, profile.getMakeupStyles());
+            if (profile.getBudget() != null) syncSelection(budgetGroup, profile.getBudget());
+            if (profile.getAvoidIngredients() != null) syncMultiSelection(avoidIngredientsGroup, profile.getAvoidIngredients());
+            isDirty = false;
+            updateSaveButtonsState(false);
+        }
+    }
 
-        android.animation.ValueAnimator colorAnim = android.animation.ValueAnimator.ofFloat(0f, 1f);
-        colorAnim.setDuration(350);
-        android.animation.ArgbEvaluator evaluator = new android.animation.ArgbEvaluator();
-        
-        colorAnim.addUpdateListener(animation -> {
-            float fraction = animation.getAnimatedFraction();
-            int bg = (int) evaluator.evaluate(fraction, fromBg, toBg);
-            int stroke = (int) evaluator.evaluate(fraction, fromStroke, toStroke);
-            
-            card.setCardBackgroundColor(bg);
-            card.setStrokeColor(stroke);
-            if (selected) {
-                card.setStrokeWidth(Math.round(dpToPx(1) * (1 - fraction)));
-            } else {
-                card.setStrokeWidth(Math.round(dpToPx(1) * fraction));
-            }
-        });
-        colorAnim.start();
+    private void syncSelection(List<SelectableItem> group, String selectedName) {
+        for (SelectableItem item : group) {
+            item.selected = item.name.equalsIgnoreCase(selectedName);
+            updateItemUI(item, false);
+        }
+    }
+
+    private void syncMultiSelection(List<SelectableItem> group, List<String> selectedNames) {
+        if (selectedNames == null) return;
+        for (SelectableItem item : group) {
+            item.selected = selectedNames.contains(item.name);
+            updateItemUI(item, false);
+        }
     }
 
     private void setupEvents(View view) {
-        View btnBack = view.findViewById(R.id.btnBack);
-        if (btnBack != null) {
-            ViewUtils.applyClickAnimation(btnBack);
-            btnBack.setOnClickListener(v -> handleBackNavigation());
-        }
-
+        view.findViewById(R.id.btnBack).setOnClickListener(v -> handleBackNavigation());
         btnSaveBottom = view.findViewById(R.id.btnSaveProfile);
-        if (btnSaveBottom != null) {
-            ViewUtils.applyClickAnimation(btnSaveBottom);
-            btnSaveBottom.setOnClickListener(v -> {
-                if (isDirty) saveProfile();
+        btnSaveBottom.setOnClickListener(v -> { if (isDirty) saveProfile(); });
+        
+        setupSeeMore(view, R.id.tvSeeMoreSkinType, R.id.layoutMoreSkinType);
+        setupSeeMore(view, R.id.tvSeeMoreCondition, R.id.layoutMoreCondition);
+        setupSeeMore(view, R.id.tvSeeMoreSensitivity, R.id.layoutMoreSensitivity);
+        setupSeeMore(view, R.id.tvSeeMoreColor, R.id.layoutMoreColor);
+        setupSeeMore(view, R.id.tvSeeMoreUndertone, R.id.layoutMoreUndertone);
+        setupSeeMore(view, R.id.tvSeeMoreFinish, R.id.layoutMoreFinish);
+        setupSeeMore(view, R.id.tvSeeMoreLipstick, R.id.layoutMoreLipstick);
+        setupSeeMore(view, R.id.tvSeeMoreMakeup, R.id.layoutMoreMakeup);
+        setupSeeMore(view, R.id.tvSeeMoreAvoid, R.id.layoutMoreAvoid);
+
+        updateSaveButtonsState(false);
+    }
+
+    private void setupSeeMore(View root, int btnId, int layoutId) {
+        TextView btn = root.findViewById(btnId);
+        View layout = root.findViewById(layoutId);
+        if (btn != null && layout != null) {
+            btn.setOnClickListener(v -> {
+                if (layout.getVisibility() == View.GONE) {
+                    layout.setVisibility(View.VISIBLE);
+                    btn.setText(R.string.action_collapse);
+                } else {
+                    layout.setVisibility(View.GONE);
+                    btn.setText(R.string.action_see_more);
+                }
             });
         }
-        
-        updateSaveButtonsState(false); // Ban đầu chưa có thay đổi
     }
 
     private void onDataChanged() {
-        if (!isDirty) {
-            updateSaveButtonsState(true);
-        }
+        if (!isDirty) updateSaveButtonsState(true);
     }
 
     private void updateSaveButtonsState(boolean dirty) {
         this.isDirty = dirty;
-        
-        // Nút dưới vẫn giữ nguyên để người dùng có chỗ nhấn chính thức
         if (btnSaveBottom != null) {
             btnSaveBottom.setEnabled(dirty);
             btnSaveBottom.setAlpha(dirty ? 1.0f : 0.4f);
@@ -210,15 +306,59 @@ public class EditSkinProfileFragment extends Fragment {
     }
 
     private void saveProfile() {
-        new MaterialAlertDialogBuilder(requireContext())
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Lưu hồ sơ làn da")
                 .setMessage("Bạn có muốn lưu các thay đổi này vào hồ sơ của mình không?")
-                .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
-                .setPositiveButton("Lưu", (dialog, which) -> {
-                    dialog.dismiss();
-                    showSaveSuccessPopup();
+                .setNegativeButton("Hủy", (d, which) -> d.dismiss())
+                .setPositiveButton("Lưu", (d, which) -> {
+                    d.dismiss();
+                    performSave();
                 })
                 .show();
+        ViewUtils.customizeDialogButtons(dialog);
+    }
+
+    private void performSave() {
+        CustomerBeautyProfileDto profile = viewModel.getProfileResult().getValue() != null && viewModel.getProfileResult().getValue().data != null 
+            ? viewModel.getProfileResult().getValue().data : new CustomerBeautyProfileDto();
+
+        profile.setSkinType(getSelectedName(skinTypeGroup));
+        profile.setSkinConcerns(getSelectedNames(skinConditionGroup));
+        profile.setSensitivityLevel(getSelectedName(sensitivityGroup));
+        profile.setSkinColor(getSelectedName(skinColorGroup));
+        profile.setSkinUndertone(getSelectedName(skinUndertoneGroup));
+        profile.setFoundationFinish(getSelectedName(finishGroup));
+        profile.setLipstickColors(getSelectedNames(lipstickGroup));
+        profile.setMakeupStyles(getSelectedNames(makeupStyleGroup));
+        profile.setBudget(getSelectedName(budgetGroup));
+        profile.setAvoidIngredients(getSelectedNames(avoidIngredientsGroup));
+        
+        int itemsSet = 0;
+        if (profile.getSkinType() != null) itemsSet++;
+        if (!profile.getSkinConcerns().isEmpty()) itemsSet++;
+        if (profile.getSensitivityLevel() != null) itemsSet++;
+        if (profile.getSkinColor() != null) itemsSet++;
+        if (profile.getSkinUndertone() != null) itemsSet++;
+        if (profile.getFoundationFinish() != null) itemsSet++;
+        if (!profile.getLipstickColors().isEmpty()) itemsSet++;
+        if (!profile.getMakeupStyles().isEmpty()) itemsSet++;
+        if (profile.getBudget() != null) itemsSet++;
+        if (!profile.getAvoidIngredients().isEmpty()) itemsSet++;
+        profile.setProfileCompletion((itemsSet * 100) / 10);
+
+        viewModel.updateProfileLocally(profile);
+        showSaveSuccessPopup();
+    }
+
+    private String getSelectedName(List<SelectableItem> group) {
+        for (SelectableItem item : group) if (item.selected) return item.name;
+        return null;
+    }
+
+    private List<String> getSelectedNames(List<SelectableItem> group) {
+        List<String> names = new ArrayList<>();
+        for (SelectableItem item : group) if (item.selected) names.add(item.name);
+        return names;
     }
 
     private void showSaveSuccessPopup() {
@@ -228,61 +368,41 @@ public class EditSkinProfileFragment extends Fragment {
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
 
-        TextView tvTitle = dialog.findViewById(R.id.tvPopupTitle);
-        TextView tvMessage = dialog.findViewById(R.id.tvPopupMessage);
-        
-        if (tvTitle != null) tvTitle.setText("Lưu thành công!");
-        if (tvMessage != null) tvMessage.setText("Hồ sơ làn da của bạn đã được cập nhật thành công.");
-
         MaterialButton btnPopupOk = dialog.findViewById(R.id.btnPopupOk);
         if (btnPopupOk != null) {
             btnPopupOk.setOnClickListener(v -> {
                 dialog.dismiss();
-                updateSaveButtonsState(false); // Sau khi lưu, nút Save sẽ mờ đi
+                updateSaveButtonsState(false);
+                handleBackNavigation();
             });
         }
-
         dialog.show();
 
         Window window = dialog.getWindow();
         if (window != null) {
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            WindowManager.LayoutParams layoutParams = window.getAttributes();
-            layoutParams.dimAmount = 0.5f;
-            window.setAttributes(layoutParams);
-            window.setLayout(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT
-            );
+            WindowManager.LayoutParams lp = window.getAttributes();
+            lp.dimAmount = 0.5f;
+            window.setAttributes(lp);
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
         }
     }
 
     private void handleBackNavigation() {
-        FragmentManager fragmentManager = getParentFragmentManager();
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack();
-        } else {
-            requireActivity()
-                    .getOnBackPressedDispatcher()
-                    .onBackPressed();
-        }
-    }
-
-    private int dpToPx(int dp) {
-        return Math.round(dp * getResources().getDisplayMetrics().density);
+        if (getParentFragmentManager().getBackStackEntryCount() > 0) getParentFragmentManager().popBackStack();
+        else requireActivity().getOnBackPressedDispatcher().onBackPressed();
     }
 
     private static class SelectableItem {
-        MaterialCardView card;
+        View view;
         ImageView icon;
         TextView label;
         ImageView tick;
         String name;
         boolean selected;
-
-        SelectableItem(MaterialCardView card, ImageView icon, TextView label, ImageView tick, String name, boolean selected) {
-            this.card = card;
+        SelectableItem(View view, ImageView icon, TextView label, ImageView tick, String name, boolean selected) {
+            this.view = view;
             this.icon = icon;
             this.label = label;
             this.tick = tick;

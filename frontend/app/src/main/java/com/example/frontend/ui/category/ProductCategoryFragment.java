@@ -64,7 +64,7 @@ public class ProductCategoryFragment extends Fragment {
             tvSeeAllBrands.setOnClickListener(v -> {
                 if (getActivity() != null) {
                     getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new BrandPageFragment())
+                            .replace(R.id.main_fragment_container, new BrandPageFragment())
                             .addToBackStack(null)
                             .commit();
                 }
@@ -180,7 +180,7 @@ public class ProductCategoryFragment extends Fragment {
         card.setOnClickListener(v -> {
             if (destination != null && getActivity() != null) {
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, destination)
+                        .replace(R.id.main_fragment_container, destination)
                         .addToBackStack(null)
                         .commit();
             } else {
@@ -204,7 +204,7 @@ public class ProductCategoryFragment extends Fragment {
         card.setOnClickListener(v -> {
             if (getActivity() != null) {
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, ProductListingFragment.newBrandInstance(brandName))
+                        .replace(R.id.main_fragment_container, ProductListingFragment.newBrandInstance(brandName))
                         .addToBackStack(null)
                         .commit();
             }

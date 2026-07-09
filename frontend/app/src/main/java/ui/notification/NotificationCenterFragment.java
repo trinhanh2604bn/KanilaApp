@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
 import com.example.frontend.MainActivity;
+import ui.common.FragmentNavigationHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,9 +137,7 @@ public class NotificationCenterFragment extends Fragment {
 
         if (btnCart != null) {
             btnCart.setOnClickListener(v -> {
-                if (getActivity() instanceof MainActivity) {
-                    ((MainActivity) getActivity()).navigateToCart();
-                }
+                FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CartFragment());
             });
         }
 

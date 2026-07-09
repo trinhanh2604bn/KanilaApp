@@ -75,7 +75,7 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
         adapter.setOnProductClickListener(product -> {
             if (getActivity() != null) {
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                        .replace(R.id.main_fragment_container, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
                         .addToBackStack(null)
                         .commit();
             }

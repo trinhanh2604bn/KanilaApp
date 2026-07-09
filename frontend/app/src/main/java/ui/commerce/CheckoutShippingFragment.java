@@ -156,7 +156,7 @@ public class CheckoutShippingFragment extends Fragment {
     private void setupConfirmButton(View view) {
         View btnConfirm = view.findViewById(R.id.btnConfirmShippingMethod);
         if (btnConfirm instanceof TextView) {
-            ((TextView) btnConfirm).setText("Xác nhận phương thức vận chuyển");
+            ((TextView) btnConfirm).setText("Xác nhận");
         }
         
         btnConfirm.setOnClickListener(v -> {

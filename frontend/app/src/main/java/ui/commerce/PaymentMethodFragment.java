@@ -37,7 +37,7 @@ public class PaymentMethodFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         initViews(view);
         setupHeader();
         setupPaymentMethods();
@@ -46,17 +46,17 @@ public class PaymentMethodFragment extends Fragment {
 
     private void initViews(View view) {
         layoutHeader = view.findViewById(R.id.layoutHeader);
-        
+
         layoutCod = view.findViewById(R.id.layoutCod);
         layoutVnpay = view.findViewById(R.id.layoutVnpay);
         layoutMomo = view.findViewById(R.id.layoutMomo);
         layoutZalopay = view.findViewById(R.id.layoutZalopay);
         layoutBankCard = view.findViewById(R.id.layoutBankCard);
         layoutAppleGoogle = view.findViewById(R.id.layoutAppleGoogle);
-        
+
         cbInvoice = view.findViewById(R.id.cbInvoice);
         layoutInvoiceDetails = view.findViewById(R.id.layoutInvoiceDetails);
-        
+
         paymentRows.add(layoutCod);
         paymentRows.add(layoutVnpay);
         paymentRows.add(layoutMomo);
@@ -92,7 +92,7 @@ public class PaymentMethodFragment extends Fragment {
         for (LinearLayout row : paymentRows) {
             row.setOnClickListener(v -> updatePaymentSelection(row));
         }
-        
+
         // Default selection: COD
         updatePaymentSelection(layoutCod);
     }
@@ -100,7 +100,7 @@ public class PaymentMethodFragment extends Fragment {
     private void updatePaymentSelection(LinearLayout selectedRow) {
         for (LinearLayout row : paymentRows) {
             RadioButton rb = (RadioButton) row.getChildAt(0);
-            
+
             if (row == selectedRow) {
                 row.setBackgroundResource(R.drawable.bg_selection_selected);
                 rb.setChecked(true);

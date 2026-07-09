@@ -49,10 +49,16 @@ public class CheckoutViewModel extends AndroidViewModel {
                 session.setShippingAmount(method.getShippingFee());
                 session.setEstimatedDelivery(method.getEstimatedDelivery());
                 // Update total
-                double total = session.getSubtotalAmount() + method.getShippingFee() - session.getDiscountAmount() - session.getPointsAmount();
+                double subtotal = session.getSubtotalAmount() != null ? session.getSubtotalAmount() : 0.0;
+                double discount = session.getDiscountAmount() != null ? session.getDiscountAmount() : 0.0;
+                double points = session.getPointsAmount() != null ? session.getPointsAmount() : 0.0;
+                
+                double total = subtotal + method.getShippingFee() - discount - points;
                 session.setTotalAmount(Math.max(0, total));
                 android.util.Log.d("CheckoutViewModel", "Mock session updated. New total: " + session.getTotalAmount());
-                checkoutSession.postValue(NetworkResult.success(session));
+                
+                // Use setValue for immediate update if on main thread
+                checkoutSession.setValue(NetworkResult.success(session));
             } else {
                 android.util.Log.e("CheckoutViewModel", "Cannot update shipping: Session is null");
             }
@@ -62,15 +68,144 @@ public class CheckoutViewModel extends AndroidViewModel {
         CheckoutSessionDto currentSession = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
         if (currentSession != null && currentSession.getId() != null) {
             boolean isGuest = !com.example.frontend.data.remote.TokenManager.getInstance(getApplication()).isLoggedIn();
-            checkoutRepository.updateShippingMethod(currentSession.getId(), method.getId(), isGuest, checkoutSession);
+            
+            MutableLiveData<NetworkResult<CheckoutSessionDto>> updateResult = new MutableLiveData<>();
+            updateResult.observeForever(new androidx.lifecycle.Observer<NetworkResult<CheckoutSessionDto>>() {
+                @Override
+                public void onChanged(NetworkResult<CheckoutSessionDto> result) {
+                    if (result != null && result.status == NetworkResult.Status.SUCCESS) {
+                        mergeSession(result.data);
+                        updateResult.removeObserver(this);
+                    } else if (result != null && result.status == NetworkResult.Status.ERROR) {
+                        checkoutSession.postValue(NetworkResult.error(result.message));
+                        updateResult.removeObserver(this);
+                    }
+                }
+            });
+            
+            checkoutRepository.updateShippingMethod(currentSession.getId(), method.getId(), isGuest, updateResult);
         }
+    }
+
+    public void applyCoupon(String couponCode) {
+        CheckoutSessionDto currentSession = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
+        if (currentSession != null && currentSession.getId() != null) {
+            boolean isGuest = !com.example.frontend.data.remote.TokenManager.getInstance(getApplication()).isLoggedIn();
+            
+            java.util.Map<String, Object> body = new java.util.HashMap<>();
+            body.put("couponCode", couponCode);
+            
+            MutableLiveData<NetworkResult<CheckoutSessionDto>> updateResult = new MutableLiveData<>();
+            updateResult.observeForever(new androidx.lifecycle.Observer<NetworkResult<CheckoutSessionDto>>() {
+                @Override
+                public void onChanged(NetworkResult<CheckoutSessionDto> result) {
+                    if (result != null && result.status == NetworkResult.Status.SUCCESS) {
+                        mergeSession(result.data);
+                        updateResult.removeObserver(this);
+                    } else if (result != null && result.status == NetworkResult.Status.ERROR) {
+                        checkoutSession.postValue(NetworkResult.error(result.message));
+                        updateResult.removeObserver(this);
+                    }
+                }
+            });
+            
+            checkoutRepository.updateCheckoutSession(currentSession.getId(), body, isGuest, updateResult);
+        }
+    }
+
+    public void updatePaymentMethod(String paymentMethod) {
+        CheckoutSessionDto currentSession = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
+        if (currentSession != null && currentSession.getId() != null) {
+            boolean isGuest = !com.example.frontend.data.remote.TokenManager.getInstance(getApplication()).isLoggedIn();
+            
+            java.util.Map<String, Object> body = new java.util.HashMap<>();
+            body.put("paymentMethod", paymentMethod);
+            
+            MutableLiveData<NetworkResult<CheckoutSessionDto>> updateResult = new MutableLiveData<>();
+            updateResult.observeForever(new androidx.lifecycle.Observer<NetworkResult<CheckoutSessionDto>>() {
+                @Override
+                public void onChanged(NetworkResult<CheckoutSessionDto> result) {
+                    if (result != null && result.status == NetworkResult.Status.SUCCESS) {
+                        mergeSession(result.data);
+                        updateResult.removeObserver(this);
+                    } else if (result != null && result.status == NetworkResult.Status.ERROR) {
+                        checkoutSession.postValue(NetworkResult.error(result.message));
+                        updateResult.removeObserver(this);
+                    }
+                }
+            });
+            
+            checkoutRepository.updateCheckoutSession(currentSession.getId(), body, isGuest, updateResult);
+        }
+    }
+
+    private void mergeSession(CheckoutSessionDto newSession) {
+        if (newSession == null) return;
+        
+        CheckoutSessionDto current = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
+        if (current == null) {
+            checkoutSession.postValue(NetworkResult.success(newSession));
+            return;
+        }
+
+        // Logs BEFORE merge
+        android.util.Log.d("CheckoutViewModel", "[MERGE] BEFORE - Items: " + (current.getItems() != null ? current.getItems().size() : 0) 
+            + ", Voucher: " + current.getCouponCode() 
+            + ", Payment: " + current.getPaymentMethod() 
+            + ", Shipping: " + current.getShippingMethod());
+
+        // Merge logic: Keep existing if new is missing/null
+        if (newSession.getItems() == null || newSession.getItems().isEmpty()) {
+            newSession.setItems(current.getItems());
+        }
+        
+        if (newSession.getCouponCode() == null || newSession.getCouponCode().isEmpty()) {
+            newSession.setCouponCode(current.getCouponCode());
+        }
+        
+        if (newSession.getPaymentMethod() == null || newSession.getPaymentMethod().isEmpty()) {
+            newSession.setPaymentMethod(current.getPaymentMethod());
+        }
+        
+        if (newSession.getShippingAddress() == null) {
+            newSession.setShippingAddress(current.getShippingAddress());
+        }
+        
+        // Merge amounts
+        if (newSession.getSubtotalAmount() == null) {
+            newSession.setSubtotalAmount(current.getSubtotalAmount());
+        }
+        if (newSession.getShippingAmount() == null) {
+            newSession.setShippingAmount(current.getShippingAmount());
+        }
+        if (newSession.getDiscountAmount() == null) {
+            newSession.setDiscountAmount(current.getDiscountAmount());
+        }
+        if (newSession.getPointsAmount() == null) {
+            newSession.setPointsAmount(current.getPointsAmount());
+        }
+        if (newSession.getTotalAmount() == null) {
+            newSession.setTotalAmount(current.getTotalAmount());
+        }
+
+        // Logs AFTER merge
+        android.util.Log.d("CheckoutViewModel", "[MERGE] AFTER - Items: " + (newSession.getItems() != null ? newSession.getItems().size() : 0) 
+            + ", Voucher: " + newSession.getCouponCode() 
+            + ", Payment: " + newSession.getPaymentMethod() 
+            + ", Shipping: " + newSession.getShippingMethod());
+
+        checkoutSession.postValue(NetworkResult.success(newSession));
     }
 
     public void prepareCheckout() {
         if (USE_MOCK_CHECKOUT) {
-            // If already set by setMockDataFromCart, don't overwrite with default mock
-            if (checkoutSession.getValue() == null || checkoutSession.getValue().data == null) {
+            // If already set by setMockDataFromCart (has items), don't overwrite
+            CheckoutSessionDto current = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
+            if (current == null || current.getItems() == null || current.getItems().isEmpty()) {
+                android.util.Log.d("CheckoutViewModel", "Preparing default mock session (current is empty)");
                 checkoutSession.postValue(NetworkResult.success(createDefaultMockSession()));
+            } else {
+                android.util.Log.d("CheckoutViewModel", "Skipping prepareCheckout: Session already has " + current.getItems().size() + " items");
             }
             return;
         }
@@ -91,9 +226,13 @@ public class CheckoutViewModel extends AndroidViewModel {
     public void setMockDataFromCart(List<CartItemDto> selectedItems, double coinsDiscount, com.example.frontend.data.model.coupon.CouponDto selectedVoucher) {
         if (!USE_MOCK_CHECKOUT) return;
 
+        // Try to get existing session to preserve shipping/address selection
+        CheckoutSessionDto existingSession = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
+        
         CheckoutSessionDto session = new CheckoutSessionDto();
         session.setId("mock_checkout_session");
         
+        // 1. Update Items and Subtotal from Cart
         List<CheckoutSessionDto.CheckoutItemDto> checkoutItems = new ArrayList<>();
         double subtotal = 0;
         for (CartItemDto cartItem : selectedItems) {
@@ -111,7 +250,30 @@ public class CheckoutViewModel extends AndroidViewModel {
         session.setItems(checkoutItems);
         session.setSubtotalAmount(subtotal);
         
-        double shipping = 30000;
+        // 2. Preserve or Initialize Shipping/Address
+        if (existingSession != null && existingSession.getShippingMethod() != null && !existingSession.getShippingMethod().isEmpty()) {
+            android.util.Log.d("CheckoutViewModel", "Preserving existing shipping: " + existingSession.getShippingMethod());
+            session.setShippingMethod(existingSession.getShippingMethod());
+            session.setShippingAmount(existingSession.getShippingAmount());
+            session.setEstimatedDelivery(existingSession.getEstimatedDelivery());
+        } else {
+            session.setShippingMethod(""); // Trigger auto-select logic in Fragment
+            session.setShippingAmount(0.0);
+        }
+
+        if (existingSession != null && existingSession.getShippingAddress() != null) {
+            session.setShippingAddress(existingSession.getShippingAddress());
+        } else {
+            session.setShippingAddress(null);
+        }
+
+        if (existingSession != null && existingSession.getPaymentMethod() != null) {
+            session.setPaymentMethod(existingSession.getPaymentMethod());
+        } else {
+            session.setPaymentMethod("Thanh toán khi nhận hàng (COD)");
+        }
+
+        // 3. Update Voucher/Discount from Cart
         double discount = 0;
         if (selectedVoucher != null) {
             if ("percentage".equalsIgnoreCase(selectedVoucher.getDiscountType())) {
@@ -124,24 +286,18 @@ public class CheckoutViewModel extends AndroidViewModel {
             }
             session.setCouponCode(selectedVoucher.getCouponCode());
         } else {
-            discount = subtotal > 0 ? 100000 : 0; // Default mock discount
+            discount = 0;
         }
 
         double points = coinsDiscount;
-        
-        session.setShippingAmount(shipping);
         session.setDiscountAmount(discount);
         session.setPointsAmount(points);
         
-        double total = subtotal + shipping - discount - points;
+        // 4. Calculate Total
+        double shippingFee = session.getShippingAmount() != null ? session.getShippingAmount() : 0.0;
+        double total = subtotal + shippingFee - discount - points;
         if (total < 0) total = 0;
         session.setTotalAmount(total);
-
-        // Remove Mock Address to allow "Hãy nhập địa chỉ nhận hàng" logic
-        session.setShippingAddress(null);
-
-        session.setShippingMethod(""); // Clear mock shipping to allow default logic
-        session.setPaymentMethod("Thanh toán khi nhận hàng (COD)");
 
         checkoutSession.setValue(NetworkResult.success(session));
     }
@@ -149,7 +305,8 @@ public class CheckoutViewModel extends AndroidViewModel {
     private CheckoutSessionDto createDefaultMockSession() {
         CheckoutSessionDto session = new CheckoutSessionDto();
         // Just return a basic one if no cart items were passed
-        session.setShippingMethod(""); // Clear mock shipping
+        session.setShippingMethod(""); 
+        session.setShippingAmount(0.0);
         session.setPaymentMethod("Thanh toán khi nhận hàng (COD)");
         
         // Remove Mock Address to allow "Hãy nhập địa chỉ nhận hàng" logic

@@ -249,19 +249,46 @@ public class CheckoutFragment extends Fragment {
         shippingViewModel.getShippingMethodsResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null || result.status != NetworkResult.Status.SUCCESS || result.data == null) return;
 
-            android.util.Log.d("CheckoutFragment", "Shipping methods received. Count: " + result.data.size());
             CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ?
                     viewModel.getCheckoutSession().getValue().data : null;
 
-            if (session != null && (session.getShippingMethod() == null || session.getShippingMethod().isEmpty())) {
-                // Find default shipping method
+            String currentMethod = session != null ? session.getShippingMethod() : null;
+            android.util.Log.d("CheckoutFragment", "Shipping methods received. Current method in session: '" + currentMethod + "'");
+
+            if (session != null && (currentMethod == null || currentMethod.trim().isEmpty())) {
+                android.util.Log.d("CheckoutFragment", "Shipping method is empty, finding default...");
+                // Find default shipping method from Database
+                ShippingMethodDto defaultMethod = null;
+                
+                // Priority 1: Check is_default flag
                 for (ShippingMethodDto method : result.data) {
                     if (method.isDefault()) {
-                        android.util.Log.d("CheckoutFragment", "Automatically selecting default shipping: " + method.getName() + " (ID: " + method.getId() + ")");
-                        viewModel.updateShippingMethod(method);
+                        defaultMethod = method;
                         break;
                     }
                 }
+                
+                // Priority 2: Check for "Tiêu chuẩn" name if no default flag
+                if (defaultMethod == null) {
+                    for (ShippingMethodDto method : result.data) {
+                        if (method.getName() != null && method.getName().toLowerCase().contains("tiêu chuẩn")) {
+                            defaultMethod = method;
+                            break;
+                        }
+                    }
+                }
+                
+                // Priority 3: Just pick the first one
+                if (defaultMethod == null && !result.data.isEmpty()) {
+                    defaultMethod = result.data.get(0);
+                }
+
+                if (defaultMethod != null) {
+                    android.util.Log.d("CheckoutFragment", "Automatically selecting default shipping: " + defaultMethod.getName());
+                    viewModel.updateShippingMethod(defaultMethod);
+                }
+            } else {
+                android.util.Log.d("CheckoutFragment", "Shipping method already set, skipping auto-select.");
             }
         });
 
@@ -365,10 +392,10 @@ public class CheckoutFragment extends Fragment {
                 viewModel.getCheckoutSession().getValue().data : null;
 
         if (discountAmount > 0) {
-            if (session != null && session.getCouponCode() != null) {
+            if (session != null && session.getCouponCode() != null && !session.getCouponCode().isEmpty()) {
                 tvPrimary.setText(session.getCouponCode());
             } else {
-                tvPrimary.setText("GIẢM 100k");
+                tvPrimary.setText("Ưu đãi đã áp dụng");
             }
             tvValue.setText("-" + formatPrice(discountAmount));
             tvValue.setVisibility(View.VISIBLE);
@@ -410,25 +437,26 @@ public class CheckoutFragment extends Fragment {
         TextView tvValue = card.findViewById(R.id.tvCheckoutOptionRightValue);
 
         boolean hasMethod = method != null && !method.isEmpty();
-        tvPrimary.setText(hasMethod ? method : "Tiêu chuẩn");
-
-        if (tvSecondary != null) {
-            if (estimate != null && !estimate.isEmpty()) {
-                tvSecondary.setText("Dự kiến giao: " + estimate);
-            } else if (!hasMethod) {
-                tvSecondary.setText("Dự kiến giao: 2 - 3 ngày");
-            } else {
-                tvSecondary.setVisibility(View.GONE);
+        
+        if (hasMethod) {
+            tvPrimary.setText(method);
+            if (tvSecondary != null) {
+                if (estimate != null && !estimate.isEmpty()) {
+                    tvSecondary.setText("Dự kiến giao: " + estimate);
+                    tvSecondary.setVisibility(View.VISIBLE);
+                } else {
+                    tvSecondary.setVisibility(View.GONE);
+                }
             }
-        }
-
-        if (tvValue != null) {
-            if (amount > 0 || hasMethod) {
+            if (tvValue != null) {
                 tvValue.setText(formatPrice(amount));
-            } else {
-                tvValue.setText(formatPrice(15000)); // Default mock fee for "Tiêu chuẩn"
+                tvValue.setVisibility(View.VISIBLE);
             }
-            tvValue.setVisibility(View.VISIBLE);
+        } else {
+            // State when no method is selected yet (waiting for DB)
+            tvPrimary.setText("Đang tải phương thức vận chuyển...");
+            if (tvSecondary != null) tvSecondary.setVisibility(View.GONE);
+            if (tvValue != null) tvValue.setVisibility(View.GONE);
         }
     }
 
@@ -524,7 +552,12 @@ public class CheckoutFragment extends Fragment {
                                             subtotal += it.getPrice() * it.getQuantity();
                                         }
                                         session.setSubtotalAmount(subtotal);
-                                        double total = subtotal + session.getShippingAmount() - session.getDiscountAmount() - session.getPointsAmount();
+                                        
+                                        double shipping = session.getShippingAmount() != null ? session.getShippingAmount() : 0.0;
+                                        double discount = session.getDiscountAmount() != null ? session.getDiscountAmount() : 0.0;
+                                        double points = session.getPointsAmount() != null ? session.getPointsAmount() : 0.0;
+                                        
+                                        double total = subtotal + shipping - discount - points;
                                         session.setTotalAmount(Math.max(0, total));
                                         
                                         // Update ViewModel state

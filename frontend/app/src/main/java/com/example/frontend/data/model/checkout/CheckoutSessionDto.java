@@ -8,11 +8,11 @@ public class CheckoutSessionDto {
     private String id;
     
     public void setId(String id) { this.id = id; }
-    public void setSubtotalAmount(double subtotalAmount) { this.subtotalAmount = subtotalAmount; }
-    public void setShippingAmount(double shippingAmount) { this.shippingAmount = shippingAmount; }
-    public void setDiscountAmount(double discountAmount) { this.discountAmount = discountAmount; }
-    public void setPointsAmount(double pointsAmount) { this.pointsAmount = pointsAmount; }
-    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
+    public void setSubtotalAmount(Double subtotalAmount) { this.subtotalAmount = subtotalAmount; }
+    public void setShippingAmount(Double shippingAmount) { this.shippingAmount = shippingAmount; }
+    public void setDiscountAmount(Double discountAmount) { this.discountAmount = discountAmount; }
+    public void setPointsAmount(Double pointsAmount) { this.pointsAmount = pointsAmount; }
+    public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
     public void setShippingAddress(CheckoutAddressDto shippingAddress) { this.shippingAddress = shippingAddress; }
     public void setShippingMethod(String shippingMethod) { this.shippingMethod = shippingMethod; }
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
@@ -32,19 +32,19 @@ public class CheckoutSessionDto {
     private String couponCode;
 
     @SerializedName("subtotal_amount")
-    private double subtotalAmount;
+    private Double subtotalAmount;
 
     @SerializedName("shipping_amount")
-    private double shippingAmount;
+    private Double shippingAmount;
 
     @SerializedName("discount_amount")
-    private double discountAmount;
+    private Double discountAmount;
 
     @SerializedName("points_amount")
-    private double pointsAmount;
+    private Double pointsAmount;
 
     @SerializedName("total_amount")
-    private double totalAmount;
+    private Double totalAmount;
 
     @SerializedName("shipping_address")
     private CheckoutAddressDto shippingAddress;
@@ -62,11 +62,17 @@ public class CheckoutSessionDto {
     private List<CheckoutItemDto> items;
 
     public String getId() { return id; }
-    public double getSubtotalAmount() { return subtotalAmount; }
-    public double getShippingAmount() { return shippingAmount; }
-    public double getDiscountAmount() { return discountAmount; }
-    public double getPointsAmount() { return pointsAmount; }
-    public double getTotalAmount() { return totalAmount; }
+    public Double getSubtotalAmount() { return subtotalAmount; }
+    public Double getShippingAmount() { return shippingAmount; }
+    public Double getDiscountAmount() { return discountAmount; }
+    public Double getPointsAmount() { return pointsAmount; }
+    public Double getTotalAmount() { return totalAmount; }
+
+    public double getSubtotalAmountValue() { return subtotalAmount != null ? subtotalAmount : 0.0; }
+    public double getShippingAmountValue() { return shippingAmount != null ? shippingAmount : 0.0; }
+    public double getDiscountAmountValue() { return discountAmount != null ? discountAmount : 0.0; }
+    public double getPointsAmountValue() { return pointsAmount != null ? pointsAmount : 0.0; }
+    public double getTotalAmountValue() { return totalAmount != null ? totalAmount : 0.0; }
     public CheckoutAddressDto getShippingAddress() { return shippingAddress; }
     public String getShippingMethod() { return shippingMethod; }
     public String getEstimatedDelivery() { return estimatedDelivery; }

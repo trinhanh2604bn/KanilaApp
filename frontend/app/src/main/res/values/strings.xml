@@ -755,6 +755,19 @@
     <string name="reward_redeem_gift">Đổi quà tặng</string>
     <string name="reward_history">Lịch sử nhận thưởng</string>
 
+    <string name="reward_my_points">Điểm của bạn</string>
+    <string name="reward_redeem_button">Đổi quà</string>
+    <string name="reward_my_vouchers">Voucher của bạn</string>
+    <string name="reward_available_vouchers">Voucher khả dụng</string>
+    <string name="reward_use_voucher">Dùng voucher</string>
+    <string name="reward_activity_streak">Chuỗi hoạt động</string>
+    <string name="reward_streak_7_days">7 ngày liên tiếp</string>
+    <string name="reward_today_missions">Nhiệm vụ hôm nay</string>
+    <string name="reward_refresh_after">Làm mới sau: %1$s</string>
+    <string name="reward_view_all">Xem tất cả</string>
+    <string name="reward_tip_banner">Chia sẻ và tương tác nội dung chất lượng để nhận điểm và đổi quà hấp dẫn từ Kanila!</string>
+    <string name="reward_do_now">Làm ngay</string>
+
     <string name="progress_post_title">Đăng tiến trình</string>
     <string name="progress_feeling_label">Hôm nay bạn cảm thấy thế nào?</string>
     <string name="progress_visibility_public">Công khai</string>

@@ -110,4 +110,9 @@
     <!-- Brand Listing Page -->
     <dimen name="brand_card_height">120dp</dimen>
     <dimen name="brand_card_favorite_icon_size">28dp</dimen>
+
+    <!-- Reward Center -->
+    <dimen name="reward_card_height">110dp</dimen>
+    <dimen name="reward_icon_size">40dp</dimen>
+    <dimen name="reward_streak_dot_size">32dp</dimen>
 </resources>

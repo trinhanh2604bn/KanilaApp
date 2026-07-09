@@ -17,11 +17,11 @@
         <ImageView
             android:id="@+id/ivChallengeBanner"
             android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/bg_slide_1"
+            android:layout_height="128dp"
             android:contentDescription="@null"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:scaleType="fitXY"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/img_challenge1" />
 
         <TextView
             android:id="@+id/tvChallengeBadge"
@@ -31,116 +31,110 @@
             android:background="@drawable/bg_badge_hot"
             android:paddingHorizontal="@dimen/spacing_s"
             android:paddingVertical="@dimen/spacing_xs"
-            android:text="@string/home_social_challenge_hot"
             android:textColor="@color/white"
             android:textSize="11sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="HOT"
+            tools:visibility="visible" />
+
+        <!-- Hidden but kept for accessibility/binding -->
+        <TextView
+            android:id="@+id/tvChallengeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Progress Row -->
         <LinearLayout
+            android:id="@+id/layoutProgress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/spacing_l"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/spacing_l"
             app:layout_constraintTop_toBottomOf="@id/ivChallengeBanner">
 
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/progressIndicator"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:indicatorColor="@color/button"
+                app:trackColor="@color/secondary"
+                app:trackCornerRadius="@dimen/radius_s"
+                tools:progress="60" />
+
             <TextView
-                android:id="@+id/tvChallengeTitle"
-                android:layout_width="match_parent"
+                android:id="@+id/tvProgressText"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_bold"
+                android:layout_marginStart="@dimen/spacing_m"
+                android:fontFamily="@font/nunito_semibold"
                 android:textColor="@color/text_main"
-                android:textSize="16sp"
-                tools:text="14 ngày da sáng khỏe" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_s"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tvParticipants"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawablePadding="@dimen/spacing_xs"
-                    android:fontFamily="@font/nunito_medium"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
-                    app:drawableStartCompat="@drawable/ic_list"
-                    app:drawableTint="@color/text_tertiary"
-                    tools:text="1.250 tham gia" />
-
-                <View
-                    android:layout_width="4dp"
-                    android:layout_height="4dp"
-                    android:layout_marginHorizontal="@dimen/spacing_s"
-                    android:background="@drawable/bg_circle"
-                    android:backgroundTint="@color/border_divider" />
-
-                <TextView
-                    android:id="@+id/tvRewardPoints"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawablePadding="@dimen/spacing_xs"
-                    android:fontFamily="@font/nunito_medium"
-                    android:textColor="@color/icon_pink"
-                    android:textSize="12sp"
-                    app:drawableStartCompat="@drawable/ic_gift"
-                    app:drawableTint="@color/icon_pink"
-                    tools:text="500 điểm" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginVertical="@dimen/spacing_m"
-                android:background="@color/border_divider" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:id="@+id/layoutProgress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvProgressText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/nunito_semibold"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        tools:text="8/14 ngày" />
-
-                    <com.google.android.material.progressindicator.LinearProgressIndicator
-                        android:id="@+id/progressIndicator"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/spacing_xs"
-                        app:indicatorColor="@color/button"
-                        app:trackColor="@color/secondary"
-                        app:trackCornerRadius="@dimen/radius_s"
-                        tools:progress="60" />
-                </LinearLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnAction"
-                    style="@style/Widget.Kanila.Button.Primary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:layout_alignParentEnd="true"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:paddingHorizontal="@dimen/spacing_l"
-                    android:textSize="13sp"
-                    tools:text="Tham gia" />
-            </RelativeLayout>
+                android:textSize="13sp"
+                tools:text="8/14 ngày" />
         </LinearLayout>
+
+        <!-- Meta Row -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/spacing_l"
+            android:paddingTop="@dimen/spacing_m"
+            android:paddingBottom="@dimen/spacing_l"
+            app:layout_constraintTop_toBottomOf="@id/layoutProgress">
+
+            <TextView
+                android:id="@+id/tvParticipants"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/spacing_xs"
+                android:fontFamily="@font/nunito_medium"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                app:drawableStartCompat="@drawable/ic_list"
+                app:drawableTint="@color/text_tertiary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="12.6K người tham gia" />
+
+            <TextView
+                android:id="@+id/tvRewardPoints"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/spacing_xs"
+                android:fontFamily="@font/nunito_medium"
+                android:textColor="@color/icon_pink"
+                android:textSize="12sp"
+                app:drawableStartCompat="@drawable/ic_gift"
+                app:drawableTint="@color/icon_pink"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnAction"
+                app:layout_constraintStart_toEndOf="@id/tvParticipants"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="200 điểm" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAction"
+                style="@style/Widget.Kanila.Button.Primary"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Tham gia" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -1,19 +1,25 @@
 package ui.community;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
-import com.bumptech.glide.Glide;
+import androidx.viewpager2.widget.ViewPager2;
 import com.example.frontend.R;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommunityBlogFragment extends Fragment implements BlogAdapter.OnBlogClickListener {
@@ -21,9 +27,14 @@ public class CommunityBlogFragment extends Fragment implements BlogAdapter.OnBlo
     private BlogViewModel blogViewModel;
     private CommunityViewModel communityViewModel;
     private BlogAdapter adapter;
-    private ImageView ivHeroThumbnail;
-    private TextView tvHeroCategory, tvHeroTitle;
+    private BlogBannerAdapter bannerAdapter;
+    private ViewPager2 vpBlogBanner;
+    private View[] indicators;
     private List<BlogPost> allBlogs;
+    
+    private final Handler bannerHandler = new Handler(Looper.getMainLooper());
+    private Runnable bannerRunnable;
+    private int bannerCount = 0;
 
     @Nullable
     @Override
@@ -36,15 +47,50 @@ public class CommunityBlogFragment extends Fragment implements BlogAdapter.OnBlo
     }
 
     private void initViews(View view) {
-        ivHeroThumbnail = view.findViewById(R.id.ivHeroThumbnail);
-        tvHeroCategory = view.findViewById(R.id.tvHeroCategory);
-        tvHeroTitle = view.findViewById(R.id.tvHeroTitle);
+        vpBlogBanner = view.findViewById(R.id.vpBlogBanner);
+        indicators = new View[]{
+                view.findViewById(R.id.indicator0),
+                view.findViewById(R.id.indicator1),
+                view.findViewById(R.id.indicator2),
+                view.findViewById(R.id.indicator3)
+        };
+        
+        view.findViewById(R.id.btnViewAll).setOnClickListener(v -> {
+            // Reset filter and show all
+            if (communityViewModel != null) {
+                communityViewModel.setSearchQuery("");
+            }
+            Toast.makeText(getContext(), "Hiển thị tất cả bài viết", Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void setupRecyclerView(View view) {
+        // Main blog list
         RecyclerView rvBlogs = view.findViewById(R.id.rvBlogs);
         adapter = new BlogAdapter(this);
         rvBlogs.setAdapter(adapter);
+
+        // Hero banner
+        bannerAdapter = new BlogBannerAdapter();
+        bannerAdapter.setOnBannerClickListener(this::onBlogClick);
+        vpBlogBanner.setAdapter(bannerAdapter);
+        vpBlogBanner.setUserInputEnabled(true);
+        vpBlogBanner.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                updateIndicators(position);
+            }
+        });
+    }
+
+    private void updateIndicators(int position) {
+        for (int i = 0; i < indicators.length; i++) {
+            if (indicators[i] != null) {
+                indicators[i].setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                        getResources().getColor(i == position ? R.color.accent_dark : R.color.border_divider, null)
+                ));
+            }
+        }
     }
 
     private void setupViewModel() {
@@ -73,8 +119,9 @@ public class CommunityBlogFragment extends Fragment implements BlogAdapter.OnBlo
         }
 
         if (layoutHero != null) layoutHero.setVisibility(View.GONE);
+        stopAutoSlide();
 
-        java.util.List<BlogPost> filteredList = new java.util.ArrayList<>();
+        List<BlogPost> filteredList = new ArrayList<>();
         String lowerQuery = query.toLowerCase();
         for (BlogPost blog : blogs) {
             if (blog.getTitle().toLowerCase().contains(lowerQuery) ||
@@ -88,21 +135,83 @@ public class CommunityBlogFragment extends Fragment implements BlogAdapter.OnBlo
     }
 
     private void updateUI(List<BlogPost> blogs) {
-        if (blogs != null && !blogs.isEmpty()) {
-            // Restore hero section
-            View layoutHero = getView().findViewById(R.id.layoutHero);
-            if (layoutHero != null) {
-                layoutHero.setVisibility(View.VISIBLE);
-            }
-
-            BlogPost hero = blogs.get(0);
-            tvHeroTitle.setText(hero.getTitle());
-            tvHeroCategory.setText(hero.getCategory().toUpperCase());
-            if (hero.getThumbnailUrl() != null) {
-                Glide.with(this).load(hero.getThumbnailUrl()).placeholder(R.drawable.bg_slide_2).into(ivHeroThumbnail);
-            }
-            adapter.setBlogs(blogs.subList(1, blogs.size()));
+        if (blogs == null || blogs.isEmpty()) {
+            adapter.setBlogs(new ArrayList<>());
+            bannerAdapter.setItems(new ArrayList<>());
+            return;
         }
+
+        // Restore hero section
+        View layoutHero = getView() != null ? getView().findViewById(R.id.layoutHero) : null;
+        if (layoutHero != null) {
+            layoutHero.setVisibility(View.VISIBLE);
+        }
+
+        // Set top 4 blogs as featured banners
+        bannerCount = Math.min(blogs.size(), 4);
+        List<BlogPost> bannerBlogs = new ArrayList<>(blogs.subList(0, bannerCount));
+        bannerAdapter.setItems(bannerBlogs);
+        
+        // Update dots visibility
+        View layoutDots = getView() != null ? getView().findViewById(R.id.layoutDots) : null;
+        if (layoutDots != null) {
+            layoutDots.setVisibility(bannerCount > 1 ? View.VISIBLE : View.GONE);
+            for (int i = 0; i < indicators.length; i++) {
+                if (indicators[i] != null) {
+                    indicators[i].setVisibility(i < bannerCount ? View.VISIBLE : View.GONE);
+                }
+            }
+        }
+
+        // All blogs displayed in the list below
+        adapter.setBlogs(new ArrayList<>(blogs));
+        
+        startAutoSlide();
+    }
+
+    private void startAutoSlide() {
+        stopAutoSlide();
+        if (bannerCount <= 1) return;
+
+        bannerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (vpBlogBanner != null && bannerCount > 1) {
+                    int next = (vpBlogBanner.getCurrentItem() + 1) % bannerCount;
+                    vpBlogBanner.setCurrentItem(next, true);
+                    bannerHandler.postDelayed(this, 3000);
+                }
+            }
+        };
+        bannerHandler.postDelayed(bannerRunnable, 3000);
+    }
+
+    private void stopAutoSlide() {
+        if (bannerRunnable != null) {
+            bannerHandler.removeCallbacks(bannerRunnable);
+            bannerRunnable = null;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (allBlogs != null && (communityViewModel.getSearchQuery().getValue() == null || communityViewModel.getSearchQuery().getValue().isEmpty())) {
+            startAutoSlide();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopAutoSlide();
+    }
+
+    @Override
+    public void onDestroyView() {
+        stopAutoSlide();
+        vpBlogBanner = null;
+        super.onDestroyView();
     }
 
     @Override
@@ -120,5 +229,60 @@ public class CommunityBlogFragment extends Fragment implements BlogAdapter.OnBlo
         adapter.notifyDataSetChanged();
         String msg = blog.isSaved() ? "Đã lưu bài viết" : "Đã bỏ lưu bài viết";
         Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onLikeClick(BlogPost blog) {
+        boolean newLikedState = !blog.isLiked();
+        blog.setLiked(newLikedState);
+        
+        if (newLikedState) {
+            blog.setLikeCount(blog.getLikeCount() + 1);
+        } else {
+            blog.setLikeCount(Math.max(0, blog.getLikeCount() - 1));
+        }
+        
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onShareClick(BlogPost blog) {
+        showCommunityShareBottomSheet(blog);
+    }
+
+    private void showCommunityShareBottomSheet(BlogPost blog) {
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        View sheet = LayoutInflater.from(requireContext())
+                .inflate(R.layout.bottom_sheet_community_share, null, false);
+        dialog.setContentView(sheet);
+
+        String shareUrl = "https://kanila.com/blog/" + blog.getId();
+
+        sheet.findViewById(R.id.btnCopyLink).setOnClickListener(v -> {
+            ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Kanila Blog", shareUrl);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(requireContext(), "Đã sao chép liên kết", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        sheet.findViewById(R.id.btnShareOther).setOnClickListener(v -> {
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.setType("text/plain");
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, blog.getTitle());
+            sendIntent.putExtra(Intent.EXTRA_TEXT, blog.getTitle() + "\n" + shareUrl);
+            startActivity(Intent.createChooser(sendIntent, getString(R.string.action_share)));
+            dialog.dismiss();
+        });
+
+        View.OnClickListener developingListener = v -> {
+            Toast.makeText(requireContext(), "Tính năng đang được phát triển", Toast.LENGTH_SHORT).show();
+        };
+
+        sheet.findViewById(R.id.btnShareZalo).setOnClickListener(developingListener);
+        sheet.findViewById(R.id.btnShareMessenger).setOnClickListener(developingListener);
+        sheet.findViewById(R.id.btnShareInstagram).setOnClickListener(developingListener);
+
+        dialog.show();
     }
 }

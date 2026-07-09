@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.os.BundleCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -47,7 +48,7 @@ public class CheckoutFragment extends Fragment {
 
         if (getArguments() != null) {
             java.util.List<com.example.frontend.data.model.cart.CartItemDto> selectedItems = 
-                (java.util.List<com.example.frontend.data.model.cart.CartItemDto>) getArguments().getSerializable("selected_items");
+                BundleCompat.getSerializable(getArguments(), "selected_items", java.util.ArrayList.class);
             double coinsDiscount = getArguments().getDouble("coins_discount", 0);
             
             if (selectedItems != null && !selectedItems.isEmpty()) {

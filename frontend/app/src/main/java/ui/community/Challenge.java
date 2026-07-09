@@ -7,6 +7,7 @@ public class Challenge {
     private String title;
     private String description;
     private String bannerUrl;
+    private int imageResId;
     private int participantCount;
     private int rewardPoints;
     private int durationDays;
@@ -29,12 +30,25 @@ public class Challenge {
         this.isNew = isNew;
     }
 
+    public Challenge(String id, String title, int imageResId, int participantCount, int rewardPoints, int durationDays, boolean isHot, boolean isNew) {
+        this.id = id;
+        this.title = title;
+        this.imageResId = imageResId;
+        this.participantCount = participantCount;
+        this.rewardPoints = rewardPoints;
+        this.durationDays = durationDays;
+        this.isHot = isHot;
+        this.isNew = isNew;
+    }
+
     // Getters and setters
     public String getId() { return id; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     public String getBannerUrl() { return bannerUrl; }
+    public int getImageResId() { return imageResId; }
+    public void setImageResId(int imageResId) { this.imageResId = imageResId; }
     public int getParticipantCount() { return participantCount; }
     public int getRewardPoints() { return rewardPoints; }
     public int getDurationDays() { return durationDays; }

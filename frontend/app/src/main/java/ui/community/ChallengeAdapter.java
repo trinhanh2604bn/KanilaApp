@@ -71,23 +71,34 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
         }
 
         void bind(Challenge challenge, OnChallengeClickListener listener) {
+            // Hide title as it's already in the banner image
+            tvTitle.setVisibility(View.GONE);
             tvTitle.setText(challenge.getTitle());
+            
             tvParticipants.setText(itemView.getContext().getString(R.string.challenge_participants, String.valueOf(challenge.getParticipantCount())));
             tvRewardPoints.setText(itemView.getContext().getString(R.string.challenge_reward_points, String.valueOf(challenge.getRewardPoints())));
             
-            if (challenge.getBannerUrl() != null) {
+            if (challenge.getImageResId() != 0) {
+                ivBanner.setImageResource(challenge.getImageResId());
+            } else if (challenge.getBannerUrl() != null) {
                 Glide.with(itemView.getContext()).load(challenge.getBannerUrl()).placeholder(R.drawable.bg_slide_1).into(ivBanner);
             } else {
                 ivBanner.setImageResource(R.drawable.bg_slide_1);
             }
 
+            // Always show progress row if joined, otherwise hide it or show as 0 progress if required by design
+            // The prompt says "Ngay dưới banner là progress row", suggesting it's always there in the new design
+            // but usually we only show progress if joined. 
+            // Let's stick to showing it if joined as per existing logic, but UI will be restructured.
             if (challenge.isJoined()) {
                 layoutProgress.setVisibility(View.VISIBLE);
                 tvProgressText.setText(challenge.getCurrentProgress() + "/" + challenge.getDurationDays() + " ngày");
                 progressIndicator.setProgress((int) ((challenge.getCurrentProgress() / (float) challenge.getDurationDays()) * 100));
                 btnAction.setText(R.string.challenge_action_continue);
             } else {
-                layoutProgress.setVisibility(View.GONE);
+                layoutProgress.setVisibility(View.VISIBLE); // Show it but maybe with 0 progress?
+                tvProgressText.setText("0/" + challenge.getDurationDays() + " ngày");
+                progressIndicator.setProgress(0);
                 btnAction.setText(R.string.challenge_action_join);
             }
 

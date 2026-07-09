@@ -646,9 +646,6 @@ public class CartFragment extends Fragment {
                 VoucherBottomSheetDialog dialog = new VoucherBottomSheetDialog();
                 dialog.setOnVoucherAppliedListener(voucher -> {
                     selectedVoucher = voucher;
-                    if (btnChooseVoucher instanceof com.google.android.material.button.MaterialButton) {
-                        ((com.google.android.material.button.MaterialButton) btnChooseVoucher).setText(voucher.getCouponCode());
-                    }
                     updateSummaryLocal();
                 });
                 dialog.show(getChildFragmentManager(), "VoucherSheet");

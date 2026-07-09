@@ -17,7 +17,11 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.frontend.R;
+import com.example.frontend.data.model.address.AddressDto;
 import com.example.frontend.data.model.checkout.CheckoutSessionDto;
+import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.data.remote.TokenManager;
+import com.example.frontend.feature.checkout.CheckoutAddressViewModel;
 import com.example.frontend.feature.checkout.CheckoutViewModel;
 
 import java.util.Locale;
@@ -25,6 +29,7 @@ import java.util.Locale;
 public class CheckoutFragment extends Fragment {
 
     private CheckoutViewModel viewModel;
+    private CheckoutAddressViewModel addressViewModel;
     private View layoutCheckoutLoading;
     private LinearLayout layoutCheckoutItemsList;
     private TextView tvSubtotal, tvShipping, tvDiscount, tvPoints, tvTotal;
@@ -40,6 +45,7 @@ public class CheckoutFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(requireActivity()).get(CheckoutViewModel.class);
+        addressViewModel = new ViewModelProvider(requireActivity()).get(CheckoutAddressViewModel.class);
         
         initViews(view);
         setupHeader(view);
@@ -58,6 +64,11 @@ public class CheckoutFragment extends Fragment {
         }
         
         viewModel.prepareCheckout();
+
+        // Load address if logged in
+        if (TokenManager.getInstance(getContext()).isLoggedIn()) {
+            addressViewModel.loadCustomerAddresses();
+        }
     }
 
     private void initViews(View view) {
@@ -75,37 +86,57 @@ public class CheckoutFragment extends Fragment {
     private void bindOptionCardHeaders(View view) {
         View addressCard = view.findViewById(R.id.layoutCheckoutAddress);
         if (addressCard != null) {
-            ((TextView) addressCard.findViewById(R.id.tvCheckoutOptionTitle)).setText("Địa chỉ nhận hàng");
+            ((TextView) addressCard.findViewById(R.id.tvCheckoutOptionTitle)).setText(R.string.checkout_address_title);
             ((ImageView) addressCard.findViewById(R.id.ivCheckoutOptionIcon)).setImageResource(R.drawable.ic_location);
+
+            View.OnClickListener addressClickListener = v -> {
+                if (getActivity() != null) {
+                    boolean isLoggedIn = TokenManager.getInstance(getContext()).isLoggedIn();
+                    Fragment targetFragment;
+                    
+                    if (isLoggedIn) {
+                        NetworkResult<java.util.List<AddressDto>> result = addressViewModel.getAddressResult().getValue();
+                        if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null && !result.data.isEmpty()) {
+                            targetFragment = new CheckoutAddressFragment();
+                        } else {
+                            targetFragment = new CheckoutAddressAddFragment();
+                        }
+                    } else {
+                        targetFragment = new CheckoutAddressAddFragment();
+                        Bundle args = new Bundle();
+                        args.putBoolean("is_guest", true);
+                        targetFragment.setArguments(args);
+                    }
+                    
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, targetFragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            };
 
             View btnEdit = addressCard.findViewById(R.id.tvCheckoutOptionEdit);
             if (btnEdit != null) {
-                btnEdit.setOnClickListener(v -> {
-                    if (getActivity() != null) {
-                        getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.main, new CheckoutAddressFragment())
-                                .addToBackStack(null)
-                                .commit();
-                    }
-                });
+                btnEdit.setOnClickListener(addressClickListener);
             }
+            addressCard.setOnClickListener(addressClickListener);
         }
 
         View shippingCard = view.findViewById(R.id.layoutCheckoutShipping);
         if (shippingCard != null) {
-            ((TextView) shippingCard.findViewById(R.id.tvCheckoutOptionTitle)).setText("Phương thức vận chuyển");
+            ((TextView) shippingCard.findViewById(R.id.tvCheckoutOptionTitle)).setText(R.string.checkout_shipping_title);
             ((ImageView) shippingCard.findViewById(R.id.ivCheckoutOptionIcon)).setImageResource(R.drawable.ic_shipping);
         }
 
         View paymentCard = view.findViewById(R.id.layoutCheckoutPayment);
         if (paymentCard != null) {
-            ((TextView) paymentCard.findViewById(R.id.tvCheckoutOptionTitle)).setText("Phương thức thanh toán");
+            ((TextView) paymentCard.findViewById(R.id.tvCheckoutOptionTitle)).setText(R.string.checkout_payment_title);
             ((ImageView) paymentCard.findViewById(R.id.ivCheckoutOptionIcon)).setImageResource(R.drawable.ic_paymeny_card);
         }
 
         View voucherCard = view.findViewById(R.id.layoutCheckoutVoucher);
         if (voucherCard != null) {
-            ((TextView) voucherCard.findViewById(R.id.tvCheckoutOptionTitle)).setText("Kanila Voucher");
+            ((TextView) voucherCard.findViewById(R.id.tvCheckoutOptionTitle)).setText(R.string.checkout_voucher_title);
             ((ImageView) voucherCard.findViewById(R.id.ivCheckoutOptionIcon)).setImageResource(R.drawable.ic_coupon);
         }
     }
@@ -142,6 +173,34 @@ public class CheckoutFragment extends Fragment {
                 case ERROR:
                     Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
                     break;
+            }
+        });
+
+        addressViewModel.getAddressResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null || result.data == null) return;
+            
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                if (result.data.isEmpty()) {
+                    // No addresses, prompt to add
+                    viewModel.setSelectedAddress(null);
+                    return;
+                }
+
+                // If already has selection in checkoutViewModel, don't overwrite
+                if (viewModel.getSelectedAddress().getValue() != null) return;
+
+                // Find default address
+                for (AddressDto address : result.data) {
+                    if (address.isDefaultShipping()) {
+                        viewModel.setSelectedAddress(address);
+                        break;
+                    }
+                }
+                
+                // If no default, pick first
+                if (viewModel.getSelectedAddress().getValue() == null && !result.data.isEmpty()) {
+                    viewModel.setSelectedAddress(result.data.get(0));
+                }
             }
         });
 
@@ -184,7 +243,24 @@ public class CheckoutFragment extends Fragment {
         if (session == null) return;
 
         // 1. Address
-        setupAddress(session.getShippingAddress());
+        AddressDto selectedAddr = viewModel.getSelectedAddress().getValue();
+        if (selectedAddr != null) {
+            CheckoutSessionDto.CheckoutAddressDto checkoutAddress = new CheckoutSessionDto.CheckoutAddressDto();
+            checkoutAddress.setFullName(selectedAddr.getRecipientName());
+            checkoutAddress.setPhone(selectedAddr.getPhone());
+            
+            StringBuilder sb = new StringBuilder();
+            appendIfNotEmpty(sb, selectedAddr.getAddressLine1());
+            appendIfNotEmpty(sb, selectedAddr.getAddressLine2());
+            appendIfNotEmpty(sb, selectedAddr.getWard());
+            appendIfNotEmpty(sb, selectedAddr.getDistrict());
+            appendIfNotEmpty(sb, selectedAddr.getCity());
+            checkoutAddress.setAddressLine(sb.toString());
+            
+            setupAddress(checkoutAddress);
+        } else {
+            setupAddress(session.getShippingAddress());
+        }
 
         // 2. Shipping
         setupShipping(session.getShippingMethod(), session.getShippingAmount());
@@ -225,6 +301,11 @@ public class CheckoutFragment extends Fragment {
         View btnOrder = getView().findViewById(R.id.btnPlaceOrder);
         if (btnOrder != null) {
             btnOrder.setOnClickListener(v -> {
+                if (viewModel.getSelectedAddress().getValue() == null && session.getShippingAddress() == null) {
+                    Toast.makeText(getContext(), "Vui lòng thêm địa chỉ giao hàng", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Toast.makeText(getContext(), "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
                 if (getActivity() != null) {
                     getActivity().getSupportFragmentManager().popBackStack();
@@ -262,14 +343,22 @@ public class CheckoutFragment extends Fragment {
 
     private void setupAddress(CheckoutSessionDto.CheckoutAddressDto address) {
         View card = getView().findViewById(R.id.layoutCheckoutAddress);
-        if (card == null || address == null) return;
+        if (card == null) return;
 
         TextView tvPrimary = card.findViewById(R.id.tvCheckoutOptionPrimary);
         TextView tvSecondary = card.findViewById(R.id.tvCheckoutOptionSecondary);
         TextView tvValue = card.findViewById(R.id.tvCheckoutOptionRightValue);
 
-        tvPrimary.setText(address.getFullName() + " | " + address.getPhone());
-        tvSecondary.setText(address.getAddressLine());
+        if (address != null) {
+            tvPrimary.setText(address.getFullName() + " | " + address.getPhone());
+            tvSecondary.setText(address.getAddressLine());
+            tvSecondary.setVisibility(View.VISIBLE);
+        } else {
+            tvPrimary.setText("Chưa có địa chỉ giao hàng");
+            tvSecondary.setText("Vui lòng chọn hoặc thêm địa chỉ");
+            tvSecondary.setVisibility(View.VISIBLE);
+        }
+
         if (tvValue != null) tvValue.setVisibility(View.GONE);
     }
 

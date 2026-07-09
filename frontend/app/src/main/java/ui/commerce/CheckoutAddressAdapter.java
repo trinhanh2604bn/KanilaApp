@@ -25,6 +25,7 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
     public interface OnAddressClickListener {
         void onAddressSelected(AddressDto address, int position);
         void onAddressEdit(AddressDto address, int position);
+        void onSetDefault(AddressDto address, int position);
     }
 
     public CheckoutAddressAdapter(OnAddressClickListener listener) {
@@ -63,6 +64,15 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
         if (address.isDefaultShipping() && holder.tvDefaultText != null) {
             // Set runtime text for default badge
             holder.tvDefaultText.setText("Mặc định");
+        }
+        
+        if (holder.tvSetDefault != null) {
+            holder.tvSetDefault.setVisibility(!address.isDefaultShipping() ? View.VISIBLE : View.GONE);
+            holder.tvSetDefault.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onSetDefault(address, position);
+                }
+            });
         }
         
         boolean isSelected = address.isSelected();
@@ -135,7 +145,7 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvPhone, tvDetail, tvDefaultText;
+        TextView tvName, tvPhone, tvDetail, tvDefaultText, tvSetDefault;
         ImageView ivRadio, btnEdit;
         View layoutDefaultTag, layoutRoot;
 
@@ -149,6 +159,7 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
             btnEdit = itemView.findViewById(R.id.btnAddressEdit);
             layoutDefaultTag = itemView.findViewById(R.id.layoutAddressDefaultTag);
             tvDefaultText = itemView.findViewById(R.id.tvAddressDefaultText);
+            tvSetDefault = itemView.findViewById(R.id.tvSetDefault);
         }
     }
 }

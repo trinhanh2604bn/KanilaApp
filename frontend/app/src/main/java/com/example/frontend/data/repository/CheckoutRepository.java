@@ -42,6 +42,30 @@ public class CheckoutRepository {
         });
     }
 
+    public void prepareGuestCheckout(MutableLiveData<NetworkResult<CheckoutSessionDto>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.prepareGuestCheckout().enqueue(new Callback<ApiResponse<CheckoutSessionDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<CheckoutSessionDto>> call, Response<ApiResponse<CheckoutSessionDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<CheckoutSessionDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to prepare guest checkout"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<CheckoutSessionDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
     public void createBuyNowSession(String productId, String variantId, int quantity, MutableLiveData<NetworkResult<CheckoutSessionDto>> result) {
         result.setValue(NetworkResult.loading());
         com.example.frontend.data.model.cart.AddToCartRequest request = new com.example.frontend.data.model.cart.AddToCartRequest(productId, variantId, quantity);

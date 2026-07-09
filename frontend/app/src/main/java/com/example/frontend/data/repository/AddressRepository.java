@@ -105,4 +105,28 @@ public class AddressRepository {
             }
         });
     }
+
+    public void setDefaultAddress(String id, MutableLiveData<NetworkResult<AddressDto>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.setDefaultAddress(id).enqueue(new Callback<ApiResponse<AddressDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<AddressDto>> call, Response<ApiResponse<AddressDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<AddressDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to set default address"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<AddressDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
 }

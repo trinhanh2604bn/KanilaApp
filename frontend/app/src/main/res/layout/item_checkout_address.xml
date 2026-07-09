@@ -94,6 +94,23 @@
             tools:text="Mặc định" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvSetDefault"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_s"
+        android:background="@drawable/bg_button_outline"
+        android:fontFamily="@font/nunito_semibold"
+        android:paddingHorizontal="@dimen/spacing_m"
+        android:paddingVertical="@dimen/spacing_xs"
+        android:text="Thiết lập mặc định"
+        android:textColor="@color/button"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/tvAddressDetail"
+        app:layout_constraintTop_toBottomOf="@+id/tvAddressDetail"
+        tools:visibility="visible" />
+
     <ImageView
         android:id="@+id/btnAddressEdit"
         android:layout_width="48dp"

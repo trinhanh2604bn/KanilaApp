@@ -48,4 +48,12 @@ public class CheckoutAddressViewModel extends AndroidViewModel {
     public void addAddress(Object addressData) {
         repository.addAddress(addressData, saveResult);
     }
+
+    public void setDefaultAddress(String id) {
+        repository.setDefaultAddress(id, saveResult);
+    }
+
+    public void clearSaveResult() {
+        saveResult.setValue(null);
+    }
 }

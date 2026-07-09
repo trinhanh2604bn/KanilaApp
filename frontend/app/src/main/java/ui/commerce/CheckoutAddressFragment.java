@@ -101,6 +101,11 @@ public class CheckoutAddressFragment extends Fragment {
                                 .commit();
                     }
                 }
+
+                @Override
+                public void onSetDefault(AddressDto address, int position) {
+                    viewModel.setDefaultAddress(address.getId());
+                }
             });
             rvAddressList.setAdapter(adapter);
         }
@@ -109,7 +114,7 @@ public class CheckoutAddressFragment extends Fragment {
     private void setupFooter(View view) {
         MaterialButton btnAdd = view.findViewById(R.id.btnAddNewAddress);
         if (btnAdd != null) {
-            btnAdd.setText("Thêm địa chỉ mới");
+            btnAdd.setText(R.string.address_book_add_new);
             btnAdd.setOnClickListener(v -> {
                 if (getActivity() != null) {
                     getActivity().getSupportFragmentManager().beginTransaction()
@@ -122,11 +127,27 @@ public class CheckoutAddressFragment extends Fragment {
         
         TextView tvTitleList = view.findViewById(R.id.tvAddressListTitle);
         if (tvTitleList != null) {
-            tvTitleList.setText("Danh sách địa chỉ");
+            tvTitleList.setText(R.string.address_book_list_header);
         }
     }
 
     private void observeViewModel() {
+        viewModel.getSaveResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case LOADING:
+                    break;
+                case SUCCESS:
+                    Toast.makeText(getContext(), "Đã thiết lập địa chỉ mặc định", Toast.LENGTH_SHORT).show();
+                    viewModel.loadCustomerAddresses(); // Refresh list
+                    viewModel.clearSaveResult();
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
+
         viewModel.getAddressResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             switch (result.status) {

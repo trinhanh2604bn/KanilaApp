@@ -45,7 +45,12 @@ public class CheckoutViewModel extends AndroidViewModel {
             }
             return;
         }
-        checkoutRepository.prepareCheckout(checkoutSession);
+
+        if (com.example.frontend.data.remote.TokenManager.getInstance(getApplication()).isLoggedIn()) {
+            checkoutRepository.prepareCheckout(checkoutSession);
+        } else {
+            checkoutRepository.prepareGuestCheckout(checkoutSession);
+        }
     }
 
     public void setMockDataFromCart(List<CartItemDto> selectedItems, double coinsDiscount, com.example.frontend.data.model.coupon.CouponDto selectedVoucher) {

@@ -12,7 +12,7 @@ public class FragmentNavigationHelper {
         if (activity == null || fragment == null) return;
 
         if (activity instanceof MainActivity) {
-            ((MainActivity) activity).loadFragment(fragment);
+            ((MainActivity) activity) .loadFragment(fragment);
         } else if (activity instanceof SupportActivity) {
             ((SupportActivity) activity).loadFragment(fragment);
         } else {

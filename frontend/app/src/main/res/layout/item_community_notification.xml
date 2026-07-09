@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/spacing_l">
+
+    <ImageView
+        android:id="@+id/ivIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_circle"
+        android:backgroundTint="@color/background_sub"
+        android:padding="8dp"
+        android:src="@drawable/ic_notification" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_m"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            style="@style/Text.Kanila.H3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thông báo" />
+
+        <TextView
+            android:id="@+id/tvContent"
+            style="@style/Text.Kanila.Body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="Nội dung thông báo" />
+
+        <TextView
+            android:id="@+id/tvTime"
+            style="@style/Text.Kanila.Micro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="2 giờ trước"
+            android:textColor="@color/text_tertiary" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/viewUnread"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginStart="@dimen/spacing_s"
+        android:background="@drawable/bg_badge_dot" />
+
+</LinearLayout>

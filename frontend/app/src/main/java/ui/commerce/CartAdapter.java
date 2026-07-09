@@ -26,8 +26,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     private int swipedPosition = -1;
 
     public interface OnCartItemChangeListener {
-        void onItemSelectedChanged(CartItemDto item, boolean isSelected);
-        void onQuantityChanged(CartItemDto item, int newQuantity);
+        void onItemSelectedChanged(CartItemDto item, int position, boolean isSelected);
+        void onQuantityChanged(CartItemDto item, int position, int newQuantity);
         void onVariantClick(CartItemDto item, int position);
         void onDeleteClick(CartItemDto item, int position);
         void onWishlistClick(CartItemDto item, int position);
@@ -87,7 +87,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     class CartViewHolder extends RecyclerView.ViewHolder {
         CheckBox cbSelected;
         ImageView ivProduct;
-        TextView tvName, tvVariant, tvPrice, tvOldPrice, tvDiscount, tvQuantity;
+        TextView tvName, tvPrice, tvOldPrice, tvDiscount, tvQuantity;
         ImageButton btnDecrease, btnIncrease, btnWishlist;
         View layoutFront, layoutAction, layoutVariant;
         View tvActionSimilar, tvActionDelete;
@@ -115,18 +115,23 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         }
 
         public void bind(CartItemDto item, boolean isSwiped) {
-            tvName.setText(item.getProductNameSnapshot());
+            String name = item.getProductNameSnapshot();
+            String variant = getDisplayVariantName(item);
+            double price = item.getFinalUnitPriceAmount();
+
+            android.util.Log.d("CartAdapter", "Binding item: " + item.getId() + 
+                ", Name=" + name + ", Variant=" + variant + ", Price=" + price);
+
+            tvName.setText(name != null && !name.isEmpty() ? name : "Sản phẩm");
 
             if (layoutVariant != null) {
                 TextView tvVariantName = layoutVariant.findViewById(R.id.tvVariantName);
                 if (tvVariantName != null) {
-                    tvVariantName.setText(getDisplayVariantName(item));
+                    tvVariantName.setText(variant != null && !variant.isEmpty() ? variant : "Mặc định");
                 }
-            } else if (tvVariant != null) {
-                tvVariant.setText(getDisplayVariantName(item));
             }
 
-            tvPrice.setText(formatPrice(item.getFinalUnitPriceAmount()));
+            tvPrice.setText(formatPrice(price));
 
             if (tvOldPrice != null) {
                 double oldPrice = item.getCompareAtPriceAmount();
@@ -187,18 +192,23 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             cbSelected.setOnCheckedChangeListener(null);
             cbSelected.setChecked(item.isSelected());
             cbSelected.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (listener != null) listener.onItemSelectedChanged(item, isChecked);
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION && listener != null) {
+                    listener.onItemSelectedChanged(item, pos, isChecked);
+                }
             });
 
             btnDecrease.setOnClickListener(v -> {
-                if (item.getQuantity() > 1 && listener != null) {
-                    listener.onQuantityChanged(item, item.getQuantity() - 1);
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION && item.getQuantity() > 1 && listener != null) {
+                    listener.onQuantityChanged(item, pos, item.getQuantity() - 1);
                 }
             });
 
             btnIncrease.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onQuantityChanged(item, item.getQuantity() + 1);
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION && listener != null) {
+                    listener.onQuantityChanged(item, pos, item.getQuantity() + 1);
                 }
             });
 

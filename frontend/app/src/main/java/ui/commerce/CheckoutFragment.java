@@ -55,7 +55,7 @@ public class CheckoutFragment extends Fragment {
         setupHeader(view);
         observeViewModel();
 
-        if (getArguments() != null && (viewModel.getCheckoutSession().getValue() == null || viewModel.getCheckoutSession().getValue().data == null)) {
+        if (getArguments() != null) {
             java.util.List<com.example.frontend.data.model.cart.CartItemDto> selectedItems = 
                 (java.util.List<com.example.frontend.data.model.cart.CartItemDto>) getArguments().getSerializable("selected_items");
             double coinsDiscount = getArguments().getDouble("coins_discount", 0);
@@ -63,6 +63,7 @@ public class CheckoutFragment extends Fragment {
                 (com.example.frontend.data.model.coupon.CouponDto) getArguments().getSerializable("selected_voucher");
             
             if (selectedItems != null && !selectedItems.isEmpty()) {
+                android.util.Log.d("CheckoutFragment", "Setting mock data from cart arguments. Item count: " + selectedItems.size());
                 viewModel.setMockDataFromCart(selectedItems, coinsDiscount, selectedVoucher);
             }
         }
@@ -331,18 +332,8 @@ public class CheckoutFragment extends Fragment {
         tvDiscount.setText("-" + formatPrice(session.getDiscountAmount()));
         tvPoints.setText("-" + formatPrice(session.getPointsAmount()));
         tvTotal.setText(formatPrice(session.getTotalAmount()));
-        
-        // Coins
-        TextView tvCoinsAmount = getView().findViewById(R.id.tvCheckoutCoinsAmount);
-        if (tvCoinsAmount != null) {
-            tvCoinsAmount.setText(formatPrice(session.getPointsAmount()));
-        }
-        
-        ImageView ivCoinsCheck = getView().findViewById(R.id.ivCheckoutCoinsCheck);
-        if (ivCoinsCheck != null) {
-            ivCoinsCheck.setSelected(session.getPointsAmount() > 0);
-            ivCoinsCheck.setVisibility(session.getPointsAmount() > 0 ? View.VISIBLE : View.GONE);
-        }
+
+
 
         View btnOrder = getView().findViewById(R.id.btnPlaceOrder);
         if (btnOrder != null) {

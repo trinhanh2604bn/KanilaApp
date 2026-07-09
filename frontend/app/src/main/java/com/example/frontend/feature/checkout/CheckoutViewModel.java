@@ -137,7 +137,7 @@ public class CheckoutViewModel extends AndroidViewModel {
         session.setShippingMethod(""); // Clear mock shipping to allow default logic
         session.setPaymentMethod("Thanh toán khi nhận hàng (COD)");
 
-        checkoutSession.postValue(NetworkResult.success(session));
+        checkoutSession.setValue(NetworkResult.success(session));
     }
 
     private CheckoutSessionDto createDefaultMockSession() {

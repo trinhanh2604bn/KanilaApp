@@ -23,7 +23,6 @@ import com.example.frontend.R;
 import com.example.frontend.data.model.cart.CartDto;
 import com.example.frontend.data.model.cart.CartItemDto;
 import com.example.frontend.data.model.coupon.CouponDto;
-import com.example.frontend.data.model.product.ProductDetailResponse;
 import com.example.frontend.data.remote.ApiClient;
 import com.example.frontend.data.remote.ApiResponse;
 import com.example.frontend.data.remote.ApiService;
@@ -76,7 +75,6 @@ public class CartFragment extends Fragment {
         setupHeader(view);
         setupRecyclerView();
         setupSelectAll();
-        setupCoinToggle(view);
         setupActions();
         observeViewModel();
 
@@ -86,7 +84,6 @@ public class CartFragment extends Fragment {
     private void initViews(View view) {
         rvCartItems = view.findViewById(R.id.rvCartItems);
         cbSelectAll = view.findViewById(R.id.cbCartSelectAll);
-        ivUseCoinsCheck = view.findViewById(R.id.ivCartUseCoinsCheck);
         tvTotalValue = view.findViewById(R.id.tvCartTotalValue);
         tvDiscountValue = view.findViewById(R.id.tvCartDiscountValue);
         btnContinueCheckout = view.findViewById(R.id.btnCartContinueCheckout);
@@ -97,14 +94,6 @@ public class CartFragment extends Fragment {
         layoutCartContent = view.findViewById(R.id.layoutCartContent);
         layoutCartCheckoutSummary = view.findViewById(R.id.layoutCartCheckoutSummary);
 
-        TextView tvUseCoins = view.findViewById(R.id.tvCartUseCoins);
-        if (tvUseCoins != null) {
-            tvUseCoins.setText("Sử dụng Kanila xu");
-        }
-
-        if (ivUseCoinsCheck != null) {
-            ivUseCoinsCheck.setSelected(useCoins);
-        }
     }
 
     private void setupHeader(View view) {
@@ -168,9 +157,10 @@ public class CartFragment extends Fragment {
 
         adapter.setOnCartItemChangeListener(new CartAdapter.OnCartItemChangeListener() {
             @Override
-            public void onItemSelectedChanged(CartItemDto item, boolean isSelected) {
+            public void onItemSelectedChanged(CartItemDto item, int position, boolean isSelected) {
                 if (item == null || item.getId() == null) return;
 
+                Log.d("CartFragment", "Selection changed: ID=" + item.getId() + ", Selected=" + isSelected);
                 item.setSelected(isSelected);
                 updateSelectAllState();
                 updateSummaryLocal();
@@ -179,17 +169,16 @@ public class CartFragment extends Fragment {
             }
 
             @Override
-            public void onQuantityChanged(CartItemDto item, int newQuantity) {
+            public void onQuantityChanged(CartItemDto item, int position, int newQuantity) {
                 if (item == null || item.getId() == null) return;
 
-                String token = com.example.frontend.data.remote.TokenManager.getInstance(getContext()).getAccessToken();
-                Log.d("CartFragment", "Quantity update: ID=" + item.getId() +
+                Log.d("CartFragment", "Quantity update requested: ID=" + item.getId() +
                         ", Product=" + item.getProductNameSnapshot() +
-                        ", OldQty=" + item.getQuantity() +
-                        ", NewQty=" + newQuantity +
-                        ", TokenExists=" + (token != null && !token.isEmpty()));
+                        ", NewQty=" + newQuantity);
 
+                // Update UI locally first for responsiveness
                 item.setQuantity(newQuantity);
+                adapter.notifyItemChanged(position);
                 updateSummaryLocal();
 
                 viewModel.updateItemQuantity(item.getId(), newQuantity);
@@ -199,51 +188,33 @@ public class CartFragment extends Fragment {
             public void onVariantClick(CartItemDto item, int position) {
                 if (item == null || getContext() == null) return;
 
-                // Show loading or just start fetching
-                ApiService apiService = ApiClient.getClient(getContext()).create(ApiService.class);
-                apiService.getProductDetail(item.getProductId()).enqueue(new Callback<ApiResponse<ProductDetailResponse>>() {
-                    @Override
-                    public void onResponse(Call<ApiResponse<ProductDetailResponse>> call, Response<ApiResponse<ProductDetailResponse>> response) {
-                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                            ProductDetailResponse detail = response.body().getData();
-                            if (detail != null && detail.getProduct() != null) {
-                                VariantSelectorBottomSheet dialog = VariantSelectorBottomSheet.newInstance(
-                                        detail.getProduct(),
-                                        detail.getVariants(),
-                                        VariantSelectorBottomSheet.ActionMode.ADD_TO_CART
-                                );
-                                dialog.setListener((variant, mode, quantity) -> {
-                                    if (variant != null) {
-                                        item.setVariantId(variant.getId());
-                                        item.setVariantNameSnapshot(variant.getVariantName());
-                                        item.setSkuSnapshot(variant.getSku());
-                                        if (variant.getImageUrl() != null && !variant.getImageUrl().isEmpty()) {
-                                            item.setImageUrlSnapshot(variant.getImageUrl());
-                                        }
-                                        if (variant.getPrice() != null) {
-                                            item.setFinalUnitPriceAmount(variant.getPrice());
-                                        }
-
-                                        // Update UI immediately
-                                        item.setQuantity(quantity);
-                                        adapter.notifyItemChanged(position);
-                                        updateSummaryLocal();
-
-                                        viewModel.updateItemVariant(item.getId(), variant.getId(), quantity);
-                                    }
-                                });
-                                dialog.show(getChildFragmentManager(), "VariantSelector");
-                            }
-                        } else {
-                            Toast.makeText(getContext(), "Không thể tải thông tin sản phẩm", Toast.LENGTH_SHORT).show();
+                Log.d("CartFragment", "Variant click: " + item.getProductNameSnapshot());
+                
+                VariantBottomSheetDialog dialog = new VariantBottomSheetDialog(getContext(), item);
+                dialog.setOnVariantAppliedListener((variant, quantity) -> {
+                    if (variant != null) {
+                        Log.d("CartFragment", "New variant applied: " + variant.getVariantName() + ", Qty: " + quantity);
+                        
+                        // Update UI locally
+                        item.setVariantId(variant.getId());
+                        item.setVariantNameSnapshot(variant.getVariantName());
+                        item.setSkuSnapshot(variant.getSku());
+                        if (variant.getImageUrl() != null && !variant.getImageUrl().isEmpty()) {
+                            item.setImageUrlSnapshot(variant.getImageUrl());
                         }
-                    }
+                        if (variant.getPrice() != null) {
+                            item.setFinalUnitPriceAmount(variant.getPrice());
+                        }
+                        item.setQuantity(quantity);
+                        
+                        adapter.notifyItemChanged(position);
+                        updateSummaryLocal();
 
-                    @Override
-                    public void onFailure(Call<ApiResponse<ProductDetailResponse>> call, Throwable t) {
-                        Toast.makeText(getContext(), "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+                        // Sync with backend
+                        viewModel.updateItemVariant(item.getId(), variant.getId(), quantity);
                     }
                 });
+                dialog.show();
             }
 
             @Override
@@ -256,21 +227,26 @@ public class CartFragment extends Fragment {
             public void onWishlistClick(CartItemDto item, int position) {
                 if (item == null || item.getProductId() == null) return;
 
-                boolean wasWishlisted = !item.isFavorite(); // Since it was toggled in adapter
+                boolean isCurrentlyFavorite = item.isFavorite();
+                Log.d("CartFragment", "Wishlist toggle: Product=" + item.getProductId() + ", NewState=" + isCurrentlyFavorite);
 
                 if (com.example.frontend.data.remote.TokenManager.getInstance(getContext()).isLoggedIn()) {
-                    wishlistViewModel.toggleWishlist(item.getProductId(), wasWishlisted);
-
-                    String message = !wasWishlisted ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích";
+                    // WishlistViewModel.toggleWishlist takes (productId, isWishlistedNow) 
+                    // and if true it REMOVES. This is weird but we must follow it or pass old state.
+                    // Actually, let's just use it correctly: 
+                    // To ADD: pass false as second arg. To REMOVE: pass true as second arg.
+                    wishlistViewModel.toggleWishlist(item.getProductId(), !isCurrentlyFavorite);
+                    
+                    String message = isCurrentlyFavorite ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích";
                     Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                 } else {
-                    // Rollback UI state in adapter
-                    item.setFavorite(wasWishlisted);
+                    // Rollback UI state in adapter if not logged in
+                    item.setFavorite(!isCurrentlyFavorite);
                     adapter.notifyItemChanged(position);
 
                     Bundle extras = new Bundle();
                     extras.putString("productId", item.getProductId());
-                    extras.putBoolean("wasWishlisted", wasWishlisted);
+                    extras.putBoolean("wasWishlisted", !isCurrentlyFavorite);
 
                     com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
                             com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
@@ -304,11 +280,22 @@ public class CartFragment extends Fragment {
             switch (result.status) {
                 case LOADING:
                     Log.d("CartFragment", "Cart loading...");
-                    showLoading();
+                    // Only show full loading if we have no items yet
+                    if (adapter == null || adapter.getItemCount() == 0) {
+                        showLoading();
+                    }
                     break;
 
                 case SUCCESS:
-                    Log.d("CartFragment", "Cart API response received: " + (result.data != null ? result.data.getItems().size() : 0) + " items");
+                    if (result.data != null) {
+                        Log.d("CartFragment", "Cart Success: " + result.data.getItems().size() + " items");
+                        if (!result.data.getItems().isEmpty()) {
+                            CartItemDto first = result.data.getItems().get(0);
+                            Log.d("CartFragment", "Item 0: Name=" + first.getProductNameSnapshot() + 
+                                ", Variant=" + first.getVariantNameSnapshot() + 
+                                ", Price=" + first.getFinalUnitPriceAmount());
+                        }
+                    }
                     showContent(result.data);
                     break;
 
@@ -599,14 +586,13 @@ public class CartFragment extends Fragment {
     private void updateSelectAllState() {
         if (adapter == null || cbSelectAll == null) return;
 
-        boolean allSelected = true;
         List<CartItemDto> items = adapter.getItems();
-
         if (items == null || items.isEmpty()) {
             setSelectAllCheckedSilently(false);
             return;
         }
 
+        boolean allSelected = true;
         for (CartItemDto item : items) {
             if (item == null || !item.isSelected()) {
                 allSelected = false;
@@ -625,20 +611,6 @@ public class CartFragment extends Fragment {
         isUpdatingSelectAll = false;
     }
 
-    private void setupCoinToggle(View view) {
-        View layoutUseCoins = view.findViewById(R.id.layoutCartUseCoins);
-        if (layoutUseCoins != null) {
-            layoutUseCoins.setOnClickListener(v -> {
-                useCoins = !useCoins;
-
-                if (ivUseCoinsCheck != null) {
-                    ivUseCoinsCheck.setSelected(useCoins);
-                }
-
-                updateSummaryLocal();
-            });
-        }
-    }
 
     private void setupActions() {
         if (btnChooseVoucher != null) {

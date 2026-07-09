@@ -79,21 +79,25 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
             super(itemView);
             this.listener = listener;
             ivProductImage = itemView.findViewById(R.id.ivProductImage);
-            tvBrandName = itemView.findViewById(R.id.tvBrandName);
+            tvBrandName = itemView.findViewById(R.id.tvProductBrand);
             tvProductName = itemView.findViewById(R.id.tvProductName);
-            tvCategory = itemView.findViewById(R.id.tvCategory);
-            tvSalePrice = itemView.findViewById(R.id.tvSalePrice);
-            tvOriginalPrice = itemView.findViewById(R.id.tvOriginalPrice);
+            tvCategory = itemView.findViewById(R.id.tvProductCategory);
+            tvSalePrice = itemView.findViewById(R.id.tvProductPrice);
+            tvOriginalPrice = itemView.findViewById(R.id.tvProductOriginalPrice);
             tvMatchedReason = itemView.findViewById(R.id.tvMatchedReason);
-            tvRecommendationBadge = itemView.findViewById(R.id.tvRecommendationBadge);
-            btnViewDetail = itemView.findViewById(R.id.btnViewDetail);
-            btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
+            tvRecommendationBadge = itemView.findViewById(R.id.tvProductBadge);
+            btnViewDetail = itemView.findViewById(R.id.btnChatViewDetail);
+            btnAddToCart = itemView.findViewById(R.id.btnChatAddToCart);
         }
 
         void bind(ChatProductUiModel product, boolean customerContextUsed, OnAddToCartClickListener addToCartListener) {
             tvBrandName.setText(product.getBrandName());
             tvProductName.setText(product.getName());
-            tvCategory.setText(product.getCategoryName());
+            
+            if (tvCategory != null) {
+                tvCategory.setText(product.getCategoryName());
+                tvCategory.setVisibility(View.VISIBLE);
+            }
             
             // Handle prices
             String displayPrice = product.getFinalPriceText() != null ? product.getFinalPriceText() : product.getPriceText();
@@ -110,14 +114,36 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
                 tvOriginalPrice.setVisibility(View.GONE);
             }
 
-            tvMatchedReason.setText(product.getReason());
-            
-            if (product.getSuggestedUse() != null && !product.getSuggestedUse().isEmpty()) {
-                tvRecommendationBadge.setText(product.getSuggestedUse());
-                tvRecommendationBadge.setVisibility(View.VISIBLE);
-            } else {
-                tvRecommendationBadge.setVisibility(View.GONE);
+            if (tvMatchedReason != null) {
+                tvMatchedReason.setText(product.getReason());
+                tvMatchedReason.setVisibility(View.VISIBLE);
             }
+            
+            if (tvRecommendationBadge != null) {
+                if (product.getSuggestedUse() != null && !product.getSuggestedUse().isEmpty()) {
+                    tvRecommendationBadge.setText(product.getSuggestedUse());
+                    View parentBadge = (View) tvRecommendationBadge.getParent();
+                    if (parentBadge != null) parentBadge.setVisibility(View.VISIBLE);
+                } else {
+                    View parentBadge = (View) tvRecommendationBadge.getParent();
+                    if (parentBadge != null) parentBadge.setVisibility(View.GONE);
+                }
+            }
+
+            // Show chat actions if available
+            View chatActions = itemView.findViewById(R.id.layoutChatActions);
+            if (chatActions != null) {
+                chatActions.setVisibility(View.VISIBLE);
+            }
+
+            // Hide default add to cart button if we have chat actions
+            View defaultAddToCart = itemView.findViewById(R.id.btnAddToCart);
+            if (defaultAddToCart != null) {
+                defaultAddToCart.setVisibility(View.GONE);
+            }
+            
+            // Hide rating section in chat to keep it compact if needed, 
+            // or keep it if it looks good. Let's keep it for now.
 
             Glide.with(ivProductImage.getContext())
                     .load(product.getImageUrl())

@@ -54,7 +54,10 @@ async function _geminiChatWithTimeout(message, history = []) {
   const geminiPromise = (async () => {
     const chat = genAI.chats.create({
       model: GEMINI_MODEL,
-      config: { systemInstruction: KANILA_SYSTEM_PROMPT },
+      config: {
+        systemInstruction: KANILA_SYSTEM_PROMPT,
+        maxOutputTokens: 150,
+      },
       history,
     });
     const result = await chat.sendMessage({ message });

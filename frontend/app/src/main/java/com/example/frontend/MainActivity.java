@@ -32,7 +32,7 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
-import com.example.frontend.feature.chatbot.ChatbotQuickMenuBottomSheet;
+import com.example.frontend.feature.chatbot.ChatConversationFragment;
 import com.example.frontend.feature.home.HomeBannerAdapter;
 import com.example.frontend.feature.home.HomeProductAdapter;
 import com.example.frontend.feature.home.HomeShortcutAdapter;
@@ -227,8 +227,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (ivChatbot != null) {
             ivChatbot.setOnClickListener(v -> {
-                ChatbotQuickMenuBottomSheet.newInstance()
-                        .show(getSupportFragmentManager(), "ChatbotQuickMenu");
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, ChatConversationFragment.newInstance(null))
+                        .addToBackStack(null)
+                        .commit();
             });
         }
 

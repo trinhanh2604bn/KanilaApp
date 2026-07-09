@@ -30,21 +30,9 @@ public class AuthResultHandler {
 
     private static void popAuthFlow(FragmentActivity activity) {
         androidx.fragment.app.FragmentManager fragmentManager = activity.getSupportFragmentManager();
-        while (fragmentManager.getBackStackEntryCount() > 0) {
-            androidx.fragment.app.Fragment fragment = fragmentManager.findFragmentById(R.id.main_fragment_container);
-            if (fragment == null) {
-                fragment = fragmentManager.findFragmentById(R.id.main);
-            }
-            
-            if (fragment instanceof com.example.frontend.feature.auth.LoginFragment ||
-                fragment instanceof com.example.frontend.feature.auth.RegisterFragment ||
-                fragment instanceof com.example.frontend.feature.auth.OtpVerificationFragment ||
-                fragment instanceof com.example.frontend.feature.auth.ForgotPasswordFragment ||
-                fragment instanceof com.example.frontend.feature.auth.ResetPasswordFragment) {
-                fragmentManager.popBackStackImmediate();
-            } else {
-                break;
-            }
+        // Pop the entire backstack at once to avoid memory-intensive intermediate fragment restorations
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStackImmediate(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
     }
 

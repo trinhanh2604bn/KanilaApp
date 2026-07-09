@@ -26,7 +26,7 @@ public class AccountFragment extends Fragment {
 
     private AccountViewModel viewModel;
     
-    private View scrollAccountContent, layoutGuestState;
+    private View scrollAccountContent, layoutGuestState, layoutLoading;
     private ImageView ivAvatar;
     private TextView tvName, tvRankName, tvPointsHeader, tvPointsVal, tvOrderCount, tvVoucherCount, tvSavedCount;
 
@@ -44,7 +44,7 @@ public class AccountFragment extends Fragment {
         
         initViews(view);
         observeViewModel();
-        checkLoginStatus();
+        // checkLoginStatus() will be called in onResume()
     }
 
     @Override
@@ -55,11 +55,11 @@ public class AccountFragment extends Fragment {
 
     private void checkLoginStatus() {
         if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
-            scrollAccountContent.setVisibility(View.VISIBLE);
             layoutGuestState.setVisibility(View.GONE);
             viewModel.loadProfileHub();
         } else {
             scrollAccountContent.setVisibility(View.GONE);
+            layoutLoading.setVisibility(View.GONE);
             layoutGuestState.setVisibility(View.VISIBLE);
             setupGuestState();
         }
@@ -78,6 +78,7 @@ public class AccountFragment extends Fragment {
     private void initViews(View view) {
         scrollAccountContent = view.findViewById(R.id.scrollAccountContent);
         layoutGuestState = view.findViewById(R.id.layoutGuestState);
+        layoutLoading = view.findViewById(R.id.layoutLoading);
         ivAvatar = view.findViewById(R.id.ivAvatar);
         tvName = view.findViewById(R.id.tvName);
         tvRankName = view.findViewById(R.id.tvRankName);
@@ -186,10 +187,17 @@ public class AccountFragment extends Fragment {
         viewModel.getProfileHubResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             switch (result.status) {
+                case LOADING:
+                    layoutLoading.setVisibility(View.VISIBLE);
+                    scrollAccountContent.setVisibility(View.GONE);
+                    break;
                 case SUCCESS:
+                    layoutLoading.setVisibility(View.GONE);
+                    scrollAccountContent.setVisibility(View.VISIBLE);
                     bindData(result.data);
                     break;
                 case ERROR:
+                    layoutLoading.setVisibility(View.GONE);
                     Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
                     break;
             }

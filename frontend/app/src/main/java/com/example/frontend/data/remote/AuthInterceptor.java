@@ -24,12 +24,12 @@ public class AuthInterceptor implements Interceptor {
         String token = tokenManager.getAccessToken();
         if (token != null && !token.trim().isEmpty()) {
             builder.header("Authorization", "Bearer " + token);
-        } else {
-            // Only send guest session if not authenticated
-            String guestSessionId = tokenManager.getGuestSession();
-            if (guestSessionId != null && !guestSessionId.trim().isEmpty()) {
-                builder.header("X-Guest-Session-Id", guestSessionId);
-            }
+        }
+
+        // Always send guest session if available, it's used for merging carts after login
+        String guestSessionId = tokenManager.getGuestSession();
+        if (guestSessionId != null && !guestSessionId.trim().isEmpty()) {
+            builder.header("X-Guest-Session-Id", guestSessionId);
         }
 
         return chain.proceed(builder.build());

@@ -212,7 +212,10 @@ public class CheckoutFragment extends Fragment {
         });
 
         viewModel.getSelectedAddress().observe(getViewLifecycleOwner(), address -> {
-            if (address == null) return;
+            if (address == null) {
+                setupAddress(null);
+                return;
+            }
             
             CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ? 
                 viewModel.getCheckoutSession().getValue().data : null;

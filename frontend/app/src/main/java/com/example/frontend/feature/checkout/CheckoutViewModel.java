@@ -102,12 +102,8 @@ public class CheckoutViewModel extends AndroidViewModel {
         if (total < 0) total = 0;
         session.setTotalAmount(total);
 
-        // Mock Address
-        CheckoutSessionDto.CheckoutAddressDto address = new CheckoutSessionDto.CheckoutAddressDto();
-        address.setFullName("Nguyễn Thanh Thanh");
-        address.setPhone("0794 644 108");
-        address.setAddressLine("12 Trần Hưng Đạo, Phường Bến Thành, Hồ Chí Minh");
-        session.setShippingAddress(address);
+        // Remove Mock Address to allow "Hãy nhập địa chỉ nhận hàng" logic
+        session.setShippingAddress(null);
 
         session.setShippingMethod("Giao hàng tiêu chuẩn");
         session.setPaymentMethod("Thanh toán khi nhận hàng (COD)");
@@ -121,11 +117,8 @@ public class CheckoutViewModel extends AndroidViewModel {
         session.setShippingMethod("Giao hàng tiêu chuẩn");
         session.setPaymentMethod("Thanh toán khi nhận hàng (COD)");
         
-        CheckoutSessionDto.CheckoutAddressDto address = new CheckoutSessionDto.CheckoutAddressDto();
-        address.setFullName("Nguyễn Thanh Thanh");
-        address.setPhone("0794 644 108");
-        address.setAddressLine("12 Trần Hưng Đạo, Phường Bến Thành, Hồ Chí Minh");
-        session.setShippingAddress(address);
+        // Remove Mock Address to allow "Hãy nhập địa chỉ nhận hàng" logic
+        session.setShippingAddress(null);
         
         return session;
     }

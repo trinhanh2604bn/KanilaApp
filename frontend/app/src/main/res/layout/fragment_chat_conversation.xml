@@ -35,7 +35,7 @@
             android:layout_marginStart="@dimen/spacing_s"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnMenu"
+            app:layout_constraintEnd_toStartOf="@id/btnNewChat"
             app:layout_constraintStart_toEndOf="@id/btnBack"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -56,30 +56,20 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/btnHistory"
-            android:layout_width="44dp"
+        <TextView
+            android:id="@+id/btnNewChat"
+            style="@style/Text.Kanila.H3"
+            android:layout_width="wrap_content"
             android:layout_height="44dp"
-            android:layout_marginEnd="@dimen/spacing_s"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/support_history_title"
-            android:src="@drawable/ic_time"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnMenu"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/text_main" />
-
-        <ImageButton
-            android:id="@+id/btnMenu"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Menu"
-            android:src="@drawable/ic_list"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/spacing_s"
+            android:text="@string/chat_new_chat"
+            android:textColor="@color/button"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/text_main" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -160,121 +150,6 @@
                 android:text="@string/chat_suggestion_header"
                 android:textSize="15sp" />
 
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:clipToPadding="false"
-                android:paddingHorizontal="@dimen/spacing_m"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <!-- Da dầu nên dùng gì? -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/suggestOilySkin"
-                        android:layout_width="160dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/border_divider"
-                        app:strokeWidth="1dp">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-                            <ImageView
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:src="@drawable/ic_skincare"
-                                app:tint="@color/accent_dark" />
-                            <TextView
-                                style="@style/Text.Kanila.BodyMedium"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:gravity="center"
-                                android:text="@string/chat_suggest_oily"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Đơn hàng của tôi -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/suggestOrderStatus"
-                        android:layout_width="160dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/border_divider"
-                        app:strokeWidth="1dp">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-                            <ImageView
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:src="@drawable/ic_order_tracking"
-                                app:tint="@color/accent_dark" />
-                            <TextView
-                                style="@style/Text.Kanila.BodyMedium"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:gravity="center"
-                                android:text="@string/chat_suggest_order"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Chính sách đổi trả -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/suggestReturnPolicy"
-                        android:layout_width="160dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/border_divider"
-                        app:strokeWidth="1dp">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-                            <ImageView
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:src="@drawable/ic_refresh"
-                                app:tint="@color/accent_dark" />
-                            <TextView
-                                style="@style/Text.Kanila.BodyMedium"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:gravity="center"
-                                android:text="@string/chat_suggest_return"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                </LinearLayout>
-            </HorizontalScrollView>
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -289,6 +164,31 @@
         android:paddingHorizontal="@dimen/spacing_l"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/layoutInputArea" />
+
+    <!-- Full screen states -->
+    <FrameLayout
+        android:id="@+id/layoutStateContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/layoutInputArea"
+        app:layout_constraintTop_toBottomOf="@id/layoutHeader">
+
+        <include
+            android:id="@+id/viewLoading"
+            layout="@layout/view_loading_state"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/viewError"
+            layout="@layout/view_error_generic"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/viewNoInternet"
+            layout="@layout/view_error_offline"
+            android:visibility="gone" />
+    </FrameLayout>
 
     <!-- Input Area -->
     <LinearLayout
@@ -311,8 +211,9 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
-                android:layout_height="52dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minHeight="52dp"
                 app:cardBackgroundColor="@color/background_sub"
                 app:cardCornerRadius="26dp"
                 app:cardElevation="0dp">
@@ -321,12 +222,16 @@
                     android:id="@+id/edtMessage"
                     style="@style/Text.Kanila.Body"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     android:hint="@string/chat_input_hint"
                     android:imeOptions="actionSend"
-                    android:inputType="textCapSentences"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:maxLines="4"
+                    android:minHeight="52dp"
                     android:paddingHorizontal="20dp"
+                    android:paddingVertical="12dp"
+                    android:scrollbars="vertical"
                     android:textColor="@color/text_main"
                     android:textColorHint="@color/text_tertiary" />
 

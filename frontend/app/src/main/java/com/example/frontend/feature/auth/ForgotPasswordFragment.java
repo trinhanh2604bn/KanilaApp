@@ -111,7 +111,7 @@ public class ForgotPasswordFragment extends Fragment {
 
     private void navigateToOtp(String channel, String identifier) {
         OtpVerificationFragment fragment = OtpVerificationFragment.newInstance(
-                channel, identifier, "forgot_password"
+                channel, identifier, "reset_password"
         );
         getParentFragmentManager().beginTransaction()
                 .replace(R.id.main_fragment_container, fragment)

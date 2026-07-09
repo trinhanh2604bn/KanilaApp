@@ -141,7 +141,7 @@ public class OtpVerificationFragment extends Fragment {
         binding.btnResend.setOnClickListener(v -> {
             if (purpose.equals("register")) {
                 viewModel.login(targetType, targetValue);
-            } else if (purpose.equals("forgot_password")) {
+            } else if (purpose.equals("reset_password")) {
                 viewModel.forgotPassword(targetType, targetValue);
             }
             startResendTimer();
@@ -181,7 +181,7 @@ public class OtpVerificationFragment extends Fragment {
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnVerify.setEnabled(true);
 
-                    if (purpose.equals("forgot_password")) {
+                    if (purpose.equals("reset_password")) {
                         if (result.data != null && result.data.getResetToken() != null) {
                             ResetPasswordFragment fragment = ResetPasswordFragment.newInstance(result.data.getResetToken());
                             getParentFragmentManager().beginTransaction()

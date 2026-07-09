@@ -155,20 +155,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             tvShareCount.setText(String.valueOf(post.getShareCount()));
             
             layoutLike.setOnClickListener(v -> {
-                boolean newLikedState = !post.isLiked();
-                post.setLiked(newLikedState);
-                
-                int currentCount = post.getLikeCount();
-                if (newLikedState) {
-                    post.setLikeCount(currentCount + 1);
-                } else {
-                    post.setLikeCount(Math.max(0, currentCount - 1));
-                }
-                
-                ivLikeIcon.setImageResource(newLikedState ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
-                layoutLike.setSelected(newLikedState);
-                tvLikeCount.setText(String.valueOf(post.getLikeCount()));
-
                 if (listener != null) {
                     listener.onLikeClick(post);
                 }
@@ -189,11 +175,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             btnSave.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onSaveClick(post);
-                } else {
-                    boolean newSavedState = !post.isSaved();
-                    post.setSaved(newSavedState);
-                    btnSave.setImageResource(newSavedState ? R.drawable.ic_bookmark : R.drawable.ic_bookmark_outline);
-                    btnSave.setSelected(newSavedState);
                 }
             });
 

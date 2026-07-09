@@ -84,20 +84,44 @@ public class BlogDetailFragment extends Fragment {
         
         View.OnClickListener shareListener = v -> showShareBottomSheet();
 
-        view.findViewById(R.id.layoutLikeDetail).setOnClickListener(v -> toggleLike());
-        if (view.findViewById(R.id.btnLikeBottom) != null) {
-            view.findViewById(R.id.btnLikeBottom).setOnClickListener(v -> toggleLike());
-        }
-        
-        btnSaveDetail.setOnClickListener(v -> toggleSave());
-        
-        view.findViewById(R.id.btnSendComment).setOnClickListener(v -> {
-            EditText edt = view.findViewById(R.id.edtComment);
-            if (!edt.getText().toString().trim().isEmpty()) {
-                Toast.makeText(getContext(), "Đã gửi bình luận", Toast.LENGTH_SHORT).show();
-                edt.setText("");
+        view.findViewById(R.id.layoutLikeDetail).setOnClickListener(v -> {
+            if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+                toggleLike();
             }
         });
+        if (view.findViewById(R.id.btnLikeBottom) != null) {
+            view.findViewById(R.id.btnLikeBottom).setOnClickListener(v -> {
+                if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+                    toggleLike();
+                }
+            });
+        }
+        
+        btnSaveDetail.setOnClickListener(v -> {
+            if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+                toggleSave();
+            }
+        });
+        
+        EditText edtComment = view.findViewById(R.id.edtComment);
+        view.findViewById(R.id.btnSendComment).setOnClickListener(v -> {
+            if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+                if (edtComment != null && !edtComment.getText().toString().trim().isEmpty()) {
+                    Toast.makeText(getContext(), "Đã gửi bình luận", Toast.LENGTH_SHORT).show();
+                    edtComment.setText("");
+                }
+            }
+        });
+
+        if (edtComment != null) {
+            edtComment.setOnTouchListener((v, event) -> {
+                if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+                    v.performClick();
+                    return !ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION);
+                }
+                return false;
+            });
+        }
 
         if (view.findViewById(R.id.btnViewAllProducts) != null) {
             view.findViewById(R.id.btnViewAllProducts).setOnClickListener(v -> 

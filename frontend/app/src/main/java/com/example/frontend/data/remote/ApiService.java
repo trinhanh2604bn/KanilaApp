@@ -131,6 +131,9 @@ public interface ApiService {
     @GET("api/accounts/profile-hub")
     Call<ApiResponse<ProfileHubDto>> getProfileHub();
 
+    @PATCH("api/accounts/profile")
+    Call<ApiResponse<ProfileHubDto.AccountInfo>> patchMyProfile(@Body java.util.Map<String, Object> profileData);
+
     @GET("api/accounts/addresses")
     Call<ApiResponse<List<AddressDto>>> getMyAddresses();
 
@@ -185,8 +188,11 @@ public interface ApiService {
     @GET("api/orders/me/summary")
     Call<ApiResponse<Object>> getMyOrderSummary();
 
-    @GET("api/loyalty-accounts/me")
+    @GET("api/loyalty/me")
     Call<ApiResponse<Object>> getMyLoyaltyAccount();
+
+    @POST("api/coupons/save/{couponId}")
+    Call<ApiResponse<Object>> saveCoupon(@Path("couponId") String couponId);
 
     @GET("api/accounts")
     Call<ApiResponse<List<Object>>> getAccounts();

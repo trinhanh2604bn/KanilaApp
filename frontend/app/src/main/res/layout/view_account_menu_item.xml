@@ -3,10 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
+    android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp"
     android:clickable="true"
     android:focusable="true"
     android:background="?attr/selectableItemBackground">
@@ -20,16 +21,33 @@
         android:src="@drawable/ic_account"
         app:tint="@color/accent_dark" />
 
-    <TextView
-        android:id="@+id/tvMenuTitle"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_weight="1"
-        android:text="Tên Menu"
-        android:textAppearance="@style/H3"
-        android:textColor="@color/text_main"
-        tools:text="Beauty Profile" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvMenuTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tên Menu"
+            android:textAppearance="@style/H3"
+            android:textColor="@color/text_main"
+            tools:text="Beauty Profile" />
+
+        <TextView
+            android:id="@+id/tvMenuDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textAppearance="@style/Text.Kanila.Micro"
+            android:textColor="@color/text_tertiary"
+            android:visibility="gone"
+            tools:text="Mô tả menu"
+            tools:visibility="visible" />
+    </LinearLayout>
 
     <ImageView
         android:layout_width="20dp"

@@ -145,20 +145,6 @@ public class OrderDetailFragment extends Fragment {
             if (tvTitle != null) tvTitle.setText(R.string.order_detail_contact_shop);
             if (ivIcon != null) ivIcon.setImageResource(R.drawable.ic_support);
         }
-
-        View menuHelp = view.findViewById(R.id.menuHelpCenter);
-        if (menuHelp != null) {
-            TextView tvTitle = menuHelp.findViewById(R.id.tvMenuTitle);
-            ImageView ivIcon = menuHelp.findViewById(R.id.ivMenuIcon);
-            if (tvTitle != null) tvTitle.setText(R.string.order_detail_help_center);
-            if (ivIcon != null) ivIcon.setImageResource(R.drawable.ic_shortcut_help);
-            menuHelp.setOnClickListener(v -> {
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ui.support.HelpCenterFragment())
-                        .addToBackStack(null)
-                        .commit();
-            });
-        }
     }
 
     private void setupRecommendations(View view) {

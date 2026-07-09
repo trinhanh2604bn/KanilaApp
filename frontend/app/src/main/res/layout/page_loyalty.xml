@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_sub">
+
+    <include
+        android:id="@+id/layoutHeader"
+        layout="@layout/view_app_top_bar"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollLoyalty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutHeader"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- 1. Banner Hạng (Gradient) - Chứa cả Card tiến độ bên trong -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_banner_loyalty"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp">
+
+                <!-- Hàng trên: HẠNG ĐỒNG (trái)  +  Ưu đãi mỗi thứ hạng > (phải) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="4dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/Text.Kanila.Caption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/loyalty_member_label"
+                            android:textColor="@color/white"
+                            android:alpha="0.8"/>
+
+                        <TextView
+                            android:id="@+id/tvTierName"
+                            style="@style/Text.Kanila.H1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Đồng"
+                            android:textColor="@color/white" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvTierPerksLink"
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableEnd="@drawable/ic_chevron_right"
+                        android:drawablePadding="2dp"
+                        android:gravity="center_vertical"
+                        android:text="@string/loyalty_tier_perks"
+                        android:textColor="@color/white"
+                        app:drawableTint="@color/white" />
+                </LinearLayout>
+
+                <!-- Điểm tích lũy (nhỏ, mờ) -->
+                <TextView
+                    android:id="@+id/tvPointsBalance"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="4dp"
+                    android:alpha="0.9"
+                    android:text="Điểm tích lũy: 0"
+                    android:textColor="@color/white" />
+
+                <!-- 2. Card Tiến độ (Nằm gọn trong vùng màu hồng) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="@color/background_main"
+                    app:cardCornerRadius="@dimen/radius_m"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            style="@style/Text.Kanila.BodyMedium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/loyalty_progress_title"
+                            android:textColor="@color/button"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:orientation="horizontal">
+
+                            <!-- Đơn hàng col -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    style="@style/Text.Kanila.Caption"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/loyalty_orders_label"
+                                    android:textColor="@color/text_main" />
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:gravity="bottom"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:id="@+id/tvOrderProgress"
+                                        style="@style/Text.Kanila.H1"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="0"
+                                        android:textColor="@color/button" />
+
+                                    <TextView
+                                        style="@style/Text.Kanila.Body"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginBottom="4dp"
+                                        android:text="/3"
+                                        android:textColor="@color/text_secondary" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <ProgressBar
+                                        android:id="@+id/progressOrders"
+                                        style="?android:attr/progressBarStyleHorizontal"
+                                        android:layout_width="0dp"
+                                        android:layout_height="4dp"
+                                        android:layout_weight="1"
+                                        android:progress="0"
+                                        android:progressDrawable="@drawable/bg_progress_bar" />
+
+                                    <ImageView
+                                        android:layout_width="18dp"
+                                        android:layout_height="18dp"
+                                        android:layout_marginStart="6dp"
+                                        android:src="@drawable/ic_crown"
+                                        android:contentDescription="@null"
+                                        app:tint="@color/text_tertiary" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginHorizontal="16dp"
+                                android:background="@color/border_divider" />
+
+                            <!-- Chi tiêu col -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    style="@style/Text.Kanila.Caption"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/loyalty_spent_label"
+                                    android:textColor="@color/text_main" />
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:gravity="bottom"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:id="@+id/tvSpentProgress"
+                                        style="@style/Text.Kanila.H1"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="0đ"
+                                        android:textColor="@color/button" />
+
+                                    <TextView
+                                        style="@style/Text.Kanila.Body"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginBottom="4dp"
+                                        android:text="/1.000.000"
+                                        android:textColor="@color/text_secondary" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <ProgressBar
+                                        android:id="@+id/progressSpent"
+                                        style="?android:attr/progressBarStyleHorizontal"
+                                        android:layout_width="0dp"
+                                        android:layout_height="4dp"
+                                        android:layout_weight="1"
+                                        android:progress="0"
+                                        android:progressDrawable="@drawable/bg_progress_bar" />
+
+                                    <ImageView
+                                        android:layout_width="18dp"
+                                        android:layout_height="18dp"
+                                        android:layout_marginStart="6dp"
+                                        android:src="@drawable/ic_crown"
+                                        android:contentDescription="@null"
+                                        app:tint="@color/text_tertiary" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="16dp"
+                            android:background="@color/border_divider" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvUpdateInfo"
+                                style="@style/Text.Kanila.Micro"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/loyalty_update_date"
+                                android:textColor="@color/text_secondary"
+                                tools:text="Thứ hạng sẽ được cập nhật lại sau 31.12.2026" />
+
+                            <TextView
+                                android:id="@+id/tvProgressDetail"
+                                style="@style/Text.Kanila.Micro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:drawableEnd="@drawable/ic_chevron_right"
+                                android:drawablePadding="2dp"
+                                android:gravity="center_vertical"
+                                android:text="Chi tiết"
+                                android:textColor="@color/text_tertiary"
+                                app:drawableTint="@color/text_tertiary" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- 3. Ưu đãi Rewards -->
+            <TextView
+                style="@style/Text.Kanila.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/loyalty_rewards_section"
+                android:textColor="@color/button"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvLoyaltyVouchers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_loyalty_voucher"
+                tools:itemCount="2"/>
+
+            <!-- 4. Ưu đãi độc quyền khác -->
+            <TextView
+                style="@style/Text.Kanila.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/loyalty_exclusive_section"
+                android:textColor="@color/button"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/bg_card"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/menuTierPerks"
+                    layout="@layout/view_account_menu_item" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="56dp"
+                    android:background="@color/border_divider" />
+
+                <include
+                    android:id="@+id/menuKanilaPerks"
+                    layout="@layout/view_account_menu_item" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/layoutLoading"
+        layout="@layout/view_loading_state"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/layoutError"
+        layout="@layout/view_error_generic"
+        android:visibility="gone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

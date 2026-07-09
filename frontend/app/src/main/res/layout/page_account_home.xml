@@ -93,7 +93,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="..."
+                            android:text="User"
                             android:textAppearance="@style/H2"
                             android:textColor="@color/accent_dark" />
 
@@ -223,6 +223,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Đơn hàng"
                                 android:textStyle="bold"
+                                android:textSize="11sp"
                                 android:textAppearance="@style/Text.Kanila.Caption"
                                 android:textColor="@color/accent_dark" />
 
@@ -280,6 +281,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Ví voucher"
                                 android:textStyle="bold"
+                                android:textSize="11sp"
                                 android:textAppearance="@style/Text.Kanila.Caption"
                                 android:textColor="@color/accent_dark" />
 
@@ -342,6 +344,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Điểm thưởng"
+                                android:textSize="11sp"
                                 android:textStyle="bold"
                                 android:textAppearance="@style/Text.Kanila.Caption"
                                 android:textColor="@color/accent_dark" />
@@ -399,6 +402,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Đã lưu"
                                 android:textStyle="bold"
+                                android:textSize="11sp"
                                 android:textAppearance="@style/Text.Kanila.Caption"
                                 android:textColor="@color/accent_dark" />
 
@@ -633,7 +637,7 @@
                     android:layout_marginStart="56dp"
                     android:background="@color/border_divider" />
 
-                <!-- Hỗ trợ -->
+                <!-- Trung tâm hỗ trợ (Giao diện tĩnh, chưa kết nối) -->
                 <LinearLayout
                     android:id="@+id/menuHelpCenter"
                     android:layout_width="match_parent"
@@ -646,7 +650,6 @@
                     android:background="?attr/selectableItemBackground">
 
                     <ImageView
-                        android:id="@+id/ivMenu6"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:background="@drawable/bg_chatbot_soft_dot"

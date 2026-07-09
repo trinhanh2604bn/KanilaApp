@@ -1,0 +1,37 @@
+package ui.loyalty;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import com.example.frontend.R;
+
+public class LoyaltyInfoFragment extends Fragment {
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.page_loyalty_info, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        
+        setupHeader(view);
+    }
+
+    private void setupHeader(View view) {
+        View header = view.findViewById(R.id.layoutHeader);
+        if (header != null) {
+            TextView tvTitle = header.findViewById(R.id.tvTopBarTitle);
+            if (tvTitle != null) tvTitle.setText(R.string.loyalty_info_title);
+            View btnBack = header.findViewById(R.id.btnTopBarBack);
+            if (btnBack != null) btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+        }
+    }
+}

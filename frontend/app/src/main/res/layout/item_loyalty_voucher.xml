@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardBackgroundColor="@color/background_main"
+    app:cardCornerRadius="@dimen/radius_m"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/border_divider"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Left side: Member Badge -->
+        <LinearLayout
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_banner_loyalty"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+
+
+            <TextView
+                android:id="@+id/tvVoucherTierLabel"
+                style="@style/Text.Kanila.Micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:text="CLASSIC\nMEMBER"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                style="@style/Text.Kanila.Micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Hạng Thành Viên"
+                android:textColor="@color/white"
+                android:textSize="8sp" />
+        </LinearLayout>
+
+        <!-- Right side: Info and Action -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvVoucherTitle"
+                        style="@style/Text.Kanila.BodyMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Giảm đến 60k đơn 200k"
+                        android:textColor="@color/text_main"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvVoucherMinSpend"
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Đơn tối thiểu 200kđ"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSaveVoucher"
+                    style="@style/Widget.Kanila.Button.Pill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:minWidth="60dp"
+                    android:paddingHorizontal="12dp"
+                    android:text="Lưu"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvVoucherExpiry"
+                style="@style/Text.Kanila.Micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Hạn dùng đến 10.07.2026"
+                android:textColor="@color/text_tertiary" />
+
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

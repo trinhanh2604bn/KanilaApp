@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main">
+
+    <include
+        android:id="@+id/layoutHeader"
+        layout="@layout/view_app_top_bar"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutHeader">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="32dp">
+
+            <!-- Banner -->
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/banner_loyalty"
+                android:contentDescription="@string/loyalty_info_title" />
+
+            <!-- Content Container -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="24dp">
+
+                <!-- 1. Về Kanila Rewards -->
+                <TextView
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/loyalty_info_about"
+                    android:textColor="@color/button"
+                    android:background="@drawable/bg_chip_pink"
+                    android:paddingVertical="8dp" />
+
+                <TextView
+                    style="@style/Text.Kanila.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:lineSpacingExtra="4dp"
+                    android:text="@string/loyalty_info_intro_desc"
+                    android:textColor="@color/text_secondary" />
+
+                <!-- 2. Số đơn hàng & Chi tiêu quy định (Mới bổ sung) -->
+                <TextView
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:gravity="center"
+                    android:text="@string/loyalty_info_req_title"
+                    android:textColor="@color/button"
+                    android:background="@drawable/bg_chip_pink"
+                    android:paddingVertical="8dp" />
+
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:columnCount="2"
+                    android:useDefaultMargins="true">
+
+                    <!-- Bronze -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        app:cardBackgroundColor="@color/background_sub"
+                        app:cardCornerRadius="@dimen/radius_m"
+                        app:cardElevation="0dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="12dp"
+                            android:gravity="center">
+                            <TextView style="@style/Text.Kanila.Caption" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/loyalty_tier_bronze" android:textStyle="bold" android:textColor="@color/text_main" />
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/loyalty_bronze_req" android:textColor="@color/text_secondary" android:gravity="center" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Silver -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        app:cardBackgroundColor="@color/background_sub"
+                        app:cardCornerRadius="@dimen/radius_m"
+                        app:cardElevation="0dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="12dp"
+                            android:gravity="center">
+                            <TextView style="@style/Text.Kanila.Caption" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/loyalty_tier_silver" android:textStyle="bold" android:textColor="@color/text_main" />
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/loyalty_silver_req" android:textColor="@color/text_secondary" android:gravity="center" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Gold -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        app:cardBackgroundColor="@color/background_sub"
+                        app:cardCornerRadius="@dimen/radius_m"
+                        app:cardElevation="0dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="12dp"
+                            android:gravity="center">
+                            <TextView style="@style/Text.Kanila.Caption" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/loyalty_tier_gold" android:textStyle="bold" android:textColor="@color/text_main" />
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/loyalty_gold_req" android:textColor="@color/text_secondary" android:gravity="center" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Diamond -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        app:cardBackgroundColor="@color/background_sub"
+                        app:cardCornerRadius="@dimen/radius_m"
+                        app:cardElevation="0dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="12dp"
+                            android:gravity="center">
+                            <TextView style="@style/Text.Kanila.Caption" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/loyalty_tier_diamond" android:textStyle="bold" android:textColor="@color/text_main" />
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/loyalty_diamond_req" android:textColor="@color/text_secondary" android:gravity="center" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                </GridLayout>
+
+                <!-- 3. Ưu đãi dành riêng mỗi thứ hạng (Bảng đầy đủ) -->
+                <TextView
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:gravity="center"
+                    android:text="@string/loyalty_info_table_title"
+                    android:textColor="@color/button"
+                    android:background="@drawable/bg_chip_pink"
+                    android:paddingVertical="8dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="@color/background_main"
+                    app:cardCornerRadius="@dimen/radius_m"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/border_divider"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <!-- Header Row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/background_sub"
+                            android:orientation="horizontal"
+                            android:paddingVertical="12dp">
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.6" android:gravity="center" android:text="Quyền lợi" android:textStyle="bold" />
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="Đồng" android:textStyle="bold" />
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="Bạc" android:textStyle="bold" />
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="Vàng" android:textStyle="bold" />
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="K.Cương" android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" />
+
+                        <!-- Row: Freeship -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="12dp">
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.6" android:paddingStart="8dp" android:text="Freeship hằng tháng" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                        </LinearLayout>
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" />
+
+                        <!-- Row: Member Day -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="12dp">
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.6" android:paddingStart="8dp" android:text="Ngày hội Thành viên" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                        </LinearLayout>
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" />
+
+                        <!-- Row: Exclusive Price -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="12dp">
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.6" android:paddingStart="8dp" android:text="Sản phẩm giá hạng" />
+                            <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                        </LinearLayout>
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" />
+
+                        <!-- Row: HOT Voucher -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="12dp">
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.6" android:paddingStart="8dp" android:text="Voucher HOT từ Shop" />
+                            <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                        </LinearLayout>
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" />
+
+                        <!-- Row: Upgrade Voucher -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="12dp">
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.6" android:paddingStart="8dp" android:text="Voucher thăng hạng" />
+                            <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                            <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                        </LinearLayout>
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" />
+
+                        <!-- Row: Birthday -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="12dp">
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.6" android:paddingStart="8dp" android:text="Ưu đãi sinh nhật" />
+                            <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                            <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                        </LinearLayout>
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" />
+
+                        <!-- Row: Maintain -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="12dp">
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.6" android:paddingStart="8dp" android:text="Voucher duy trì hạng" />
+                            <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                            <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                            <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                        </LinearLayout>
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" />
+
+                        <!-- Row: Priority Support -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="12dp">
+                            <TextView style="@style/Text.Kanila.Micro" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.6" android:paddingStart="8dp" android:text="Ưu tiên hỗ trợ 24/7" />
+                            <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                            <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                            <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                            <ImageView android:layout_width="0dp" android:layout_height="14dp" android:layout_weight="1" android:src="@drawable/ic_star" app:tint="@color/button" android:contentDescription="@null" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 4. Cách nhận ưu đãi -->
+                <TextView
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:gravity="center"
+                    android:text="@string/loyalty_info_note_title"
+                    android:textColor="@color/button"
+                    android:background="@drawable/bg_chip_pink"
+                    android:paddingVertical="8dp" />
+
+                <TextView
+                    style="@style/Text.Kanila.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:lineSpacingExtra="4dp"
+                    android:text="@string/loyalty_info_note_desc"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

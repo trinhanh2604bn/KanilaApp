@@ -15,6 +15,7 @@ public class AccountViewModel extends AndroidViewModel {
     private final AccountRepository repository;
     private final MutableLiveData<NetworkResult<ProfileHubDto>> profileHubResult = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<List<AddressDto>>> addressesResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<ProfileHubDto.AccountInfo>> updateProfileResult = new MutableLiveData<>();
 
     public AccountViewModel(@NonNull Application application) {
         super(application);
@@ -29,11 +30,23 @@ public class AccountViewModel extends AndroidViewModel {
         return addressesResult;
     }
 
+    public LiveData<NetworkResult<ProfileHubDto.AccountInfo>> getUpdateProfileResult() {
+        return updateProfileResult;
+    }
+
     public void loadProfileHub() {
         repository.getProfileHub(profileHubResult);
     }
 
     public void loadAddresses() {
         repository.getAddresses(addressesResult);
+    }
+
+    public void updateProfile(java.util.Map<String, Object> data) {
+        repository.updateProfile(data, updateProfileResult);
+    }
+
+    public void resetUpdateProfileResult() {
+        updateProfileResult.setValue(null);
     }
 }

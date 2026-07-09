@@ -4,158 +4,215 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/spacing_l"
-    app:cardCornerRadius="@dimen/radius_l"
+    android:layout_marginBottom="@dimen/spacing_m"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="@dimen/radius_m"
     app:cardElevation="2dp"
     app:strokeWidth="0dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:padding="@dimen/spacing_m">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivBlogThumbnail"
+            android:layout_width="108dp"
+            android:layout_height="108dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/RoundedImageMedium"
+            tools:src="@drawable/img_blog1" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivAuthorAvatar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="@dimen/spacing_m"
+            android:src="@drawable/logo_community"
+            app:layout_constraintStart_toEndOf="@id/ivBlogThumbnail"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/CircleImage" />
+
+        <TextView
+            android:id="@+id/tvBlogAuthor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_s"
+            android:fontFamily="@font/nunito_bold"
+            android:textColor="@color/text_main"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="@id/ivAuthorAvatar"
+            app:layout_constraintStart_toEndOf="@id/ivAuthorAvatar"
+            app:layout_constraintTop_toTopOf="@id/ivAuthorAvatar"
+            tools:text="Kanila Official" />
 
         <ImageView
-            android:id="@+id/ivBlogThumbnail"
-            android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/bg_slide_3"
+            android:id="@+id/ivVerified"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_verified"
+            app:layout_constraintBottom_toBottomOf="@id/tvBlogAuthor"
+            app:layout_constraintStart_toEndOf="@id/tvBlogAuthor"
+            app:layout_constraintTop_toTopOf="@id/tvBlogAuthor"
+            app:tint="@color/button"
             android:contentDescription="@null" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+
+        <TextView
+            android:id="@+id/tvBlogMeta"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/spacing_l">
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/nunito_regular"
+            android:textColor="@color/text_tertiary"
+            android:textSize="11sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/ivAuthorAvatar"
+            app:layout_constraintTop_toBottomOf="@id/ivAuthorAvatar"
+            tools:text="2 ngày trước • Makeup Tips" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+        <!-- Hidden but kept for binding safety -->
+        <TextView
+            android:id="@+id/tvBlogCategory"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+        <TextView
+            android:id="@+id/tvBlogTime"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
-                <TextView
-                    android:id="@+id/tvBlogCategory"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_bold"
-                    android:textColor="@color/button"
-                    android:textSize="12sp"
-                    tools:text="MAKEUP TIPS" />
+        <TextView
+            android:id="@+id/tvBlogTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_s"
+            android:ellipsize="end"
+            android:fontFamily="@font/nunito_bold"
+            android:maxLines="2"
+            android:textColor="@color/text_main"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/ivAuthorAvatar"
+            app:layout_constraintTop_toBottomOf="@id/tvBlogMeta"
+            tools:text="Cách trang điểm phù hợp với mùa hè" />
 
-                <View
-                    android:layout_width="4dp"
-                    android:layout_height="4dp"
-                    android:layout_marginHorizontal="@dimen/spacing_s"
-                    android:background="@drawable/bg_circle"
-                    android:backgroundTint="@color/border_divider" />
+        <TextView
+            android:id="@+id/tvBlogExcerpt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/nunito_regular"
+            android:maxLines="2"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/ivAuthorAvatar"
+            app:layout_constraintTop_toBottomOf="@id/tvBlogTitle"
+            tools:text="Khám phá các bước makeup nhẹ nhàng, bền màu và giữ da luôn tươi tắn trong những ngày nắng nóng." />
 
-                <TextView
-                    android:id="@+id/tvBlogTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_regular"
-                    android:textColor="@color/text_tertiary"
-                    android:textSize="12sp"
-                    tools:text="3 ngày trước" />
-            </LinearLayout>
+        <LinearLayout
+            android:id="@+id/layoutStats"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/ivAuthorAvatar"
+            app:layout_constraintTop_toBottomOf="@id/tvBlogExcerpt">
+
+            <ImageView
+                android:id="@+id/ivLike"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_heart_outline"
+                app:tint="@color/accent_dark"
+                android:contentDescription="@null" />
 
             <TextView
-                android:id="@+id/tvBlogTitle"
-                android:layout_width="match_parent"
+                android:id="@+id/tvLikeCount"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_s"
-                android:fontFamily="@font/nunito_bold"
-                android:textColor="@color/text_main"
-                android:textSize="16sp"
-                tools:text="Top 3 kem nền kiềm dầu tốt nhất mùa hè 2025" />
-
-            <TextView
-                android:id="@+id/tvBlogExcerpt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_s"
-                android:ellipsize="end"
+                android:layout_marginStart="0dp"
                 android:fontFamily="@font/nunito_regular"
-                android:maxLines="2"
                 android:textColor="@color/text_secondary"
-                android:textSize="14sp"
-                tools:text="Bạn đang tìm kiếm lớp nền mịn lì bất chấp nắng nóng? Đừng bỏ qua danh sách này..." />
+                android:textSize="12sp"
+                tools:text="1.2K" />
+
+            <ImageView
+                android:id="@+id/ivComment"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="8dp"
+                android:layout_marginStart="@dimen/spacing_s"
+                android:src="@drawable/ic_comment"
+                app:tint="@color/text_tertiary"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/tvCommentCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:fontFamily="@font/nunito_regular"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                tools:text="126" />
+
+            <ImageView
+                android:id="@+id/ivShare"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginStart="@dimen/spacing_s"
+                android:src="@drawable/ic_share"
+                app:tint="@color/text_tertiary"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/tvShareCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:fontFamily="@font/nunito_regular"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                tools:text="89" />
 
             <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/spacing_l"
-                android:background="@color/border_divider" />
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_m">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/logo_community"
-                        app:shapeAppearanceOverlay="@style/CircleImage" />
-
-                    <TextView
-                        android:id="@+id/tvBlogAuthor"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/spacing_s"
-                        android:fontFamily="@font/nunito_semibold"
-                        android:textColor="@color/text_main"
-                        android:textSize="12sp"
-                        tools:text="Kanila Official" />
-
-                    <ImageView
-                        android:id="@+id/ivVerified"
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:layout_marginStart="4dp"
-                        android:src="@drawable/ic_verified"
-                        app:tint="@color/info"
-                        android:contentDescription="@null" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="@dimen/spacing_l"
-                        android:src="@drawable/ic_heart_outline"
-                        app:tint="@color/text_tertiary"
-                        android:contentDescription="@null" />
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="@dimen/spacing_l"
-                        android:src="@drawable/ic_comment"
-                        app:tint="@color/text_tertiary"
-                        android:contentDescription="@null" />
-
-                    <ImageView
-                        android:id="@+id/btnSave"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_bookmark_outline"
-                        app:tint="@color/text_tertiary"
-                        android:contentDescription="@null" />
-                </LinearLayout>
-            </RelativeLayout>
+            <ImageView
+                android:id="@+id/btnSave"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_bookmark_outline"
+                app:tint="@color/accent_dark"
+                android:contentDescription="@null" />
         </LinearLayout>
-    </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

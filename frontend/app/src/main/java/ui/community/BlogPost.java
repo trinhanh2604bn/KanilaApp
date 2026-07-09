@@ -15,6 +15,7 @@ public class BlogPost {
     private int likeCount;
     private int commentCount;
     private int shareCount;
+    private int imageResId;
     private boolean isLiked;
     private boolean isSaved;
     private List<String> productIds;
@@ -24,6 +25,17 @@ public class BlogPost {
         this.title = title;
         this.excerpt = excerpt;
         this.thumbnailUrl = thumbnailUrl;
+        this.authorName = authorName;
+        this.isAuthorVerified = isAuthorVerified;
+        this.createdAt = createdAt;
+        this.category = category;
+    }
+
+    public BlogPost(String id, String title, String excerpt, int imageResId, String authorName, boolean isAuthorVerified, String createdAt, String category) {
+        this.id = id;
+        this.title = title;
+        this.excerpt = excerpt;
+        this.imageResId = imageResId;
         this.authorName = authorName;
         this.isAuthorVerified = isAuthorVerified;
         this.createdAt = createdAt;
@@ -47,6 +59,8 @@ public class BlogPost {
     public void setCommentCount(int commentCount) { this.commentCount = commentCount; }
     public int getShareCount() { return shareCount; }
     public void setShareCount(int shareCount) { this.shareCount = shareCount; }
+    public int getImageResId() { return imageResId; }
+    public void setImageResId(int imageResId) { this.imageResId = imageResId; }
     public boolean isLiked() { return isLiked; }
     public void setLiked(boolean liked) { isLiked = liked; }
     public boolean isSaved() { return isSaved; }

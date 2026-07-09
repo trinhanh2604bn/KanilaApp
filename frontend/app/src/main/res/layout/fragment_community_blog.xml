@@ -11,84 +11,90 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Hero Banner -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- Hero Banner Slider -->
+        <FrameLayout
             android:id="@+id/layoutHero"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_margin="@dimen/spacing_l"
-            app:cardCornerRadius="@dimen/radius_l"
-            app:strokeWidth="0dp">
+            android:layout_margin="@dimen/spacing_l">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/vpBlogBanner"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent" />
 
-                <ImageView
-                    android:id="@+id/ivHeroThumbnail"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/bg_slide_2"
-                    android:contentDescription="@null" />
+            <LinearLayout
+                android:id="@+id/layoutDots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="@dimen/spacing_s"
+                android:orientation="horizontal">
 
                 <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/bg_banner_gradient" />
+                    android:id="@+id/indicator0"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:background="@drawable/bg_circle"
+                    android:backgroundTint="@color/accent_dark" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/spacing_l"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                <View
+                    android:id="@+id/indicator1"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:background="@drawable/bg_circle"
+                    android:backgroundTint="@color/border_divider" />
 
-                    <TextView
-                        android:id="@+id/tvHeroCategory"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_badge_hot"
-                        android:paddingHorizontal="@dimen/spacing_s"
-                        android:paddingVertical="@dimen/spacing_xs"
-                        android:textColor="@color/white"
-                        android:textSize="10sp"
-                        tools:text="SKINCARE ROUTINE"
-                        tools:ignore="SmallSp" />
+                <View
+                    android:id="@+id/indicator2"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:background="@drawable/bg_circle"
+                    android:backgroundTint="@color/border_divider" />
 
-                    <TextView
-                        android:id="@+id/tvHeroTitle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/spacing_s"
-                        android:fontFamily="@font/nunito_bold"
-                        android:textColor="@color/white"
-                        android:textSize="18sp"
-                        tools:text="5 bước skincare buổi sáng cho người bận rộn" />
-                </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
+                <View
+                    android:id="@+id/indicator3"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:background="@drawable/bg_circle"
+                    android:backgroundTint="@color/border_divider" />
+            </LinearLayout>
+        </FrameLayout>
 
-        <!-- Carousel Dots placeholder -->
-        <LinearLayout
-            android:layout_width="wrap_content"
+
+        <!-- Section Header -->
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/spacing_l"
-            android:orientation="horizontal">
-            <View android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_circle_pink" android:layout_margin="2dp" />
-            <View android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_circle_outline" android:layout_margin="2dp" />
-            <View android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_circle_outline" android:layout_margin="2dp" />
-        </LinearLayout>
+            android:layout_marginHorizontal="@dimen/spacing_l"
+            android:layout_marginBottom="@dimen/spacing_m">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_l"
-            android:fontFamily="@font/nunito_bold"
-            android:text="@string/blog_featured_title"
-            android:textColor="@color/text_main"
-            android:textSize="16sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/nunito_bold"
+                android:text="@string/blog_featured_title"
+                android:textColor="@color/text_main"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/btnViewAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/nunito_semibold"
+                android:text="@string/action_view_all"
+                android:textColor="@color/text_tertiary"
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true" />
+        </RelativeLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvBlogs"

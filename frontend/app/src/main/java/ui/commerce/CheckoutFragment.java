@@ -23,6 +23,8 @@ import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.data.remote.TokenManager;
 import com.example.frontend.feature.checkout.CheckoutAddressViewModel;
 import com.example.frontend.feature.checkout.CheckoutViewModel;
+import com.example.frontend.feature.checkout.ShippingViewModel;
+import com.example.frontend.data.model.shipping.ShippingMethodDto;
 
 import java.util.Locale;
 
@@ -30,6 +32,7 @@ public class CheckoutFragment extends Fragment {
 
     private CheckoutViewModel viewModel;
     private CheckoutAddressViewModel addressViewModel;
+    private ShippingViewModel shippingViewModel;
     private View layoutCheckoutLoading;
     private LinearLayout layoutCheckoutItemsList;
     private TextView tvSubtotal, tvShipping, tvDiscount, tvPoints, tvTotal;
@@ -46,12 +49,13 @@ public class CheckoutFragment extends Fragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(CheckoutViewModel.class);
         addressViewModel = new ViewModelProvider(requireActivity()).get(CheckoutAddressViewModel.class);
+        shippingViewModel = new ViewModelProvider(requireActivity()).get(ShippingViewModel.class);
         
         initViews(view);
         setupHeader(view);
         observeViewModel();
 
-        if (getArguments() != null) {
+        if (getArguments() != null && (viewModel.getCheckoutSession().getValue() == null || viewModel.getCheckoutSession().getValue().data == null)) {
             java.util.List<com.example.frontend.data.model.cart.CartItemDto> selectedItems = 
                 (java.util.List<com.example.frontend.data.model.cart.CartItemDto>) getArguments().getSerializable("selected_items");
             double coinsDiscount = getArguments().getDouble("coins_discount", 0);
@@ -64,6 +68,7 @@ public class CheckoutFragment extends Fragment {
         }
         
         viewModel.prepareCheckout();
+        shippingViewModel.loadShippingMethods();
 
         // Load address if logged in
         if (TokenManager.getInstance(getContext()).isLoggedIn()) {
@@ -133,6 +138,21 @@ public class CheckoutFragment extends Fragment {
         if (shippingCard != null) {
             ((TextView) shippingCard.findViewById(R.id.tvCheckoutOptionTitle)).setText(R.string.checkout_shipping_title);
             ((ImageView) shippingCard.findViewById(R.id.ivCheckoutOptionIcon)).setImageResource(R.drawable.ic_shipping);
+
+            View.OnClickListener shippingClickListener = v -> {
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new CheckoutShippingFragment())
+                            .addToBackStack(null)
+                            .commit();
+                }
+            };
+            
+            View btnEdit = shippingCard.findViewById(R.id.tvCheckoutOptionEdit);
+            if (btnEdit != null) {
+                btnEdit.setOnClickListener(shippingClickListener);
+            }
+            shippingCard.setOnClickListener(shippingClickListener);
         }
 
         View paymentCard = view.findViewById(R.id.layoutCheckoutPayment);
@@ -184,21 +204,32 @@ public class CheckoutFragment extends Fragment {
         });
 
         addressViewModel.getAddressResult().observe(getViewLifecycleOwner(), result -> {
-            if (result == null || result.data == null) return;
+            boolean isLoggedIn = TokenManager.getInstance(getContext()).isLoggedIn();
+            android.util.Log.d("CheckoutFragment", "Address result observed. Logged in: " + isLoggedIn);
+
+            if (result == null || result.data == null) {
+                android.util.Log.d("CheckoutFragment", "Address result is null or data is null");
+                return;
+            }
             
             if (result.status == NetworkResult.Status.SUCCESS) {
+                android.util.Log.d("CheckoutFragment", "Address list size: " + result.data.size());
                 if (result.data.isEmpty()) {
-                    // No addresses, prompt to add
+                    android.util.Log.d("CheckoutFragment", "Empty address state triggered");
                     viewModel.setSelectedAddress(null);
                     return;
                 }
 
                 // If already has selection in checkoutViewModel, don't overwrite
-                if (viewModel.getSelectedAddress().getValue() != null) return;
+                if (viewModel.getSelectedAddress().getValue() != null) {
+                    android.util.Log.d("CheckoutFragment", "Already have selected address: " + viewModel.getSelectedAddress().getValue().getRecipientName());
+                    return;
+                }
 
                 // Find default address
                 for (AddressDto address : result.data) {
                     if (address.isDefaultShipping()) {
+                        android.util.Log.d("CheckoutFragment", "Setting default shipping address: " + address.getRecipientName());
                         viewModel.setSelectedAddress(address);
                         break;
                     }
@@ -206,12 +237,33 @@ public class CheckoutFragment extends Fragment {
                 
                 // If no default, pick first
                 if (viewModel.getSelectedAddress().getValue() == null && !result.data.isEmpty()) {
+                    android.util.Log.d("CheckoutFragment", "No default address found, picking first: " + result.data.get(0).getRecipientName());
                     viewModel.setSelectedAddress(result.data.get(0));
                 }
             }
         });
 
+        shippingViewModel.getShippingMethodsResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null || result.status != NetworkResult.Status.SUCCESS || result.data == null) return;
+            
+            android.util.Log.d("CheckoutFragment", "Shipping methods received. Count: " + result.data.size());
+            CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ? 
+                viewModel.getCheckoutSession().getValue().data : null;
+            
+            if (session != null && (session.getShippingMethod() == null || session.getShippingMethod().isEmpty())) {
+                // Find default shipping method
+                for (ShippingMethodDto method : result.data) {
+                    if (method.isDefault()) {
+                        android.util.Log.d("CheckoutFragment", "Automatically selecting default shipping: " + method.getName() + " (ID: " + method.getId() + ")");
+                        viewModel.updateShippingMethod(method);
+                        break;
+                    }
+                }
+            }
+        });
+
         viewModel.getSelectedAddress().observe(getViewLifecycleOwner(), address -> {
+            android.util.Log.d("CheckoutFragment", "Selected address changed: " + (address != null ? address.getRecipientName() : "null"));
             if (address == null) {
                 setupAddress(null);
                 return;
@@ -251,32 +303,16 @@ public class CheckoutFragment extends Fragment {
 
     private void bindCheckoutData(CheckoutSessionDto session) {
         if (session == null) return;
+        android.util.Log.d("CheckoutFragment", "Binding checkout data. Shipping: " + session.getShippingMethod() + ", Fee: " + session.getShippingAmount());
 
         // 1. Address
-        AddressDto selectedAddr = viewModel.getSelectedAddress().getValue();
-        if (selectedAddr != null) {
-            CheckoutSessionDto.CheckoutAddressDto checkoutAddress = new CheckoutSessionDto.CheckoutAddressDto();
-            checkoutAddress.setFullName(selectedAddr.getRecipientName());
-            checkoutAddress.setPhone(selectedAddr.getPhone());
-            
-            StringBuilder sb = new StringBuilder();
-            appendIfNotEmpty(sb, selectedAddr.getAddressLine1());
-            appendIfNotEmpty(sb, selectedAddr.getAddressLine2());
-            appendIfNotEmpty(sb, selectedAddr.getWard());
-            appendIfNotEmpty(sb, selectedAddr.getDistrict());
-            appendIfNotEmpty(sb, selectedAddr.getCity());
-            checkoutAddress.setAddressLine(sb.toString());
-            
-            setupAddress(checkoutAddress);
-        } else {
-            setupAddress(session.getShippingAddress());
-        }
-
+        setupAddress(session.getShippingAddress());
+        
         // 2. Shipping
-        setupShipping(session.getShippingMethod(), session.getShippingAmount());
+        setupShipping(session.getShippingMethod(), session.getShippingAmount(), session.getEstimatedDelivery());
 
         // 3. Payment
-        setupPayment(session.getPaymentMethod());
+        // ...
         
         // 4. Voucher
         setupVoucher(session.getDiscountAmount());
@@ -371,7 +407,8 @@ public class CheckoutFragment extends Fragment {
         if (tvValue != null) tvValue.setVisibility(View.GONE);
     }
 
-    private void setupShipping(String method, double amount) {
+    private void setupShipping(String method, double amount, String estimate) {
+        android.util.Log.d("CheckoutFragment", "Displaying shipping info. Method: " + method + ", Fee: " + amount + ", Estimate: " + estimate);
         View card = getView().findViewById(R.id.layoutCheckoutShipping);
         if (card == null) return;
 
@@ -379,27 +416,26 @@ public class CheckoutFragment extends Fragment {
         TextView tvSecondary = card.findViewById(R.id.tvCheckoutOptionSecondary);
         TextView tvValue = card.findViewById(R.id.tvCheckoutOptionRightValue);
 
-        tvPrimary.setText(method != null ? method : "Giao hàng tiêu chuẩn");
+        boolean hasMethod = method != null && !method.isEmpty();
+        tvPrimary.setText(hasMethod ? method : "Tiêu chuẩn");
+        
         if (tvSecondary != null) {
-            tvSecondary.setText("Nhận hàng: Ngày 09/7");
-            tvSecondary.setVisibility(View.VISIBLE);
+            if (estimate != null && !estimate.isEmpty()) {
+                tvSecondary.setText("Dự kiến giao: " + estimate);
+            } else if (!hasMethod) {
+                tvSecondary.setText("Dự kiến giao: 2 - 3 ngày");
+            } else {
+                tvSecondary.setVisibility(View.GONE);
+            }
         }
         
         if (tvValue != null) {
-            tvValue.setText(formatPrice(amount));
+            if (amount > 0 || hasMethod) {
+                tvValue.setText(formatPrice(amount));
+            } else {
+                tvValue.setText(formatPrice(15000)); // Default mock fee for "Tiêu chuẩn"
+            }
             tvValue.setVisibility(View.VISIBLE);
-        }
-
-        View btnEdit = card.findViewById(R.id.tvCheckoutOptionEdit);
-        if (btnEdit != null) {
-            btnEdit.setOnClickListener(v -> {
-                if (getActivity() != null) {
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new CheckoutShippingFragment())
-                            .addToBackStack(null)
-                            .commit();
-                }
-            });
         }
     }
 

@@ -90,4 +90,38 @@ public class CheckoutRepository {
             }
         });
     }
+
+    public void updateShippingMethod(String sessionId, String shippingMethodId, boolean isGuest, MutableLiveData<NetworkResult<CheckoutSessionDto>> result) {
+        result.setValue(NetworkResult.loading());
+        java.util.Map<String, Object> body = new java.util.HashMap<>();
+        body.put("shippingMethodId", shippingMethodId);
+
+        Call<ApiResponse<CheckoutSessionDto>> call;
+        if (isGuest) {
+            call = apiService.updateGuestCheckoutSession(sessionId, body);
+        } else {
+            call = apiService.updateCheckoutSession(sessionId, body);
+        }
+
+        call.enqueue(new Callback<ApiResponse<CheckoutSessionDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<CheckoutSessionDto>> call, Response<ApiResponse<CheckoutSessionDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<CheckoutSessionDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to update shipping method"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<CheckoutSessionDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
 }

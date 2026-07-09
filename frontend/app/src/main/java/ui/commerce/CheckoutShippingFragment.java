@@ -6,24 +6,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
+import com.example.frontend.data.model.checkout.CheckoutSessionDto;
+import com.example.frontend.data.model.shipping.ShippingMethodDto;
+import com.example.frontend.feature.checkout.CheckoutViewModel;
+import com.example.frontend.feature.checkout.ShippingViewModel;
 import com.example.frontend.model.ShippingMethod;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class CheckoutShippingFragment extends Fragment {
 
     private RecyclerView rvShippingMethods;
     private ShippingMethodAdapter adapter;
-    private ShippingMethod selectedMethod;
+    private ShippingMethodDto selectedDto;
+    private ShippingViewModel shippingViewModel;
+    private CheckoutViewModel checkoutViewModel;
 
     @Nullable
     @Override
@@ -35,10 +44,16 @@ public class CheckoutShippingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        shippingViewModel = new ViewModelProvider(this).get(ShippingViewModel.class);
+        checkoutViewModel = new ViewModelProvider(requireActivity()).get(CheckoutViewModel.class);
+
         setupTopBar(view);
         setupSectionTitle(view);
         setupRecyclerView(view);
         setupConfirmButton(view);
+        observeViewModels();
+
+        shippingViewModel.loadShippingMethods();
     }
 
     private void setupTopBar(View view) {
@@ -47,7 +62,6 @@ public class CheckoutShippingFragment extends Fragment {
 
         TextView tvTitle = topBar.findViewById(R.id.tvTopBarTitle);
         if (tvTitle != null) {
-            // "Phương thức vận chuyển"
             tvTitle.setText(getString(R.string.checkout_shipping_title));
         }
 
@@ -72,30 +86,71 @@ public class CheckoutShippingFragment extends Fragment {
     private void setupRecyclerView(View view) {
         rvShippingMethods = view.findViewById(R.id.rvShippingMethods);
         rvShippingMethods.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        adapter = new ShippingMethodAdapter(method -> selectedMethod = method);
-        rvShippingMethods.setAdapter(adapter);
-
-        loadShippingMethods();
     }
 
-    private void loadShippingMethods() {
-        List<ShippingMethod> methods = new ArrayList<>();
+    private void observeViewModels() {
+        shippingViewModel.getShippingMethodsResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case LOADING:
+                    android.util.Log.d("CheckoutShipping", "Loading shipping methods...");
+                    break;
+                case SUCCESS:
+                    if (result.data != null) {
+                        android.util.Log.d("CheckoutShipping", "Loaded " + result.data.size() + " shipping methods");
+                        displayShippingMethods(result.data);
+                    }
+                    break;
+                case ERROR:
+                    android.util.Log.e("CheckoutShipping", "Error loading shipping methods: " + result.message);
+                    Toast.makeText(getContext(), "Lỗi: " + result.message, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
+    }
+
+    private void displayShippingMethods(List<ShippingMethodDto> dtos) {
+        List<ShippingMethod> uiModels = new ArrayList<>();
         
-        ShippingMethod standard = new ShippingMethod("1", "Tiêu chuẩn", "Dự kiến giao: 2 - 3 ngày", 
-                "Giao hàng tiêu chuẩn, phù hợp mọi đơn hàng", "15.000đ", R.drawable.ic_delivery_truck, "Phổ biến");
-        standard.setSelected(true);
-        selectedMethod = standard;
+        CheckoutSessionDto session = checkoutViewModel.getCheckoutSession().getValue() != null ? 
+                checkoutViewModel.getCheckoutSession().getValue().data : null;
+        
+        String currentMethodName = session != null ? session.getShippingMethod() : null;
 
-        methods.add(standard);
-        methods.add(new ShippingMethod("2", "Nhanh", "Dự kiến giao: 1 - 2 ngày", 
-                "Giao nhanh, tiết kiệm thời gian", "25.000đ", R.drawable.ic_delivery_truck));
-        methods.add(new ShippingMethod("3", "Hỏa tốc", "Dự kiến giao: Trong ngày", 
-                "Giao siêu tốc trong ngày (áp dụng nội thành)", "45.000đ", R.drawable.ic_delivery_truck));
-        methods.add(new ShippingMethod("4", "Nhận tại cửa hàng", "Dự kiến nhận: 2 - 3 ngày", 
-                "Nhận hàng tại cửa hàng Kanila gần bạn", "Miễn phí", R.drawable.ic_delivery_truck));
+        for (ShippingMethodDto dto : dtos) {
+            String priceStr = dto.getShippingFee() > 0 ? formatPrice(dto.getShippingFee()) : "Miễn phí";
+            ShippingMethod uiModel = new ShippingMethod(
+                    dto.getId(),
+                    dto.getName(),
+                    "Dự kiến giao: " + dto.getEstimatedDelivery(),
+                    dto.getDescription(),
+                    priceStr,
+                    R.drawable.ic_delivery_truck
+            );
+            
+            if (currentMethodName != null && currentMethodName.equals(dto.getName())) {
+                uiModel.setSelected(true);
+                selectedDto = dto;
+            }
+            
+            uiModels.add(uiModel);
+        }
 
-        adapter.setShippingMethods(methods);
+        if (selectedDto == null && !uiModels.isEmpty()) {
+            uiModels.get(0).setSelected(true);
+            selectedDto = dtos.get(0);
+        }
+
+        adapter = new ShippingMethodAdapter(method -> {
+            for (ShippingMethodDto dto : dtos) {
+                if (dto.getId().equals(method.getId())) {
+                    selectedDto = dto;
+                    break;
+                }
+            }
+        });
+        adapter.setShippingMethods(uiModels);
+        rvShippingMethods.setAdapter(adapter);
     }
 
     private void setupConfirmButton(View view) {
@@ -105,12 +160,16 @@ public class CheckoutShippingFragment extends Fragment {
         }
         
         btnConfirm.setOnClickListener(v -> {
-            if (selectedMethod != null) {
-                // TODO: Return selected method to CheckoutFragment
-                // Since I don't have a shared ViewModel or direct callback mechanism defined yet, 
-                // I will just pop the backstack as per instruction.
+            if (selectedDto != null) {
+                checkoutViewModel.updateShippingMethod(selectedDto);
                 requireActivity().getSupportFragmentManager().popBackStack();
+            } else {
+                Toast.makeText(getContext(), "Vui lòng chọn phương thức vận chuyển", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private String formatPrice(double price) {
+        return String.format(Locale.US, "%,.0fđ", price).replace(",", ".");
     }
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.frontend.data.model.cart.CartItemDto;
 import com.example.frontend.data.model.checkout.CheckoutSessionDto;
+import com.example.frontend.data.model.shipping.ShippingMethodDto;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.data.repository.CheckoutRepository;
 
@@ -35,6 +36,34 @@ public class CheckoutViewModel extends AndroidViewModel {
 
     public void setSelectedAddress(com.example.frontend.data.model.address.AddressDto address) {
         selectedAddress.setValue(address);
+    }
+
+    public void updateShippingMethod(ShippingMethodDto method) {
+        if (method == null) return;
+        android.util.Log.d("CheckoutViewModel", "Updating shipping method: " + method.getName() + ", ID: " + method.getId() + ", Fee: " + method.getShippingFee());
+
+        if (USE_MOCK_CHECKOUT) {
+            CheckoutSessionDto session = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
+            if (session != null) {
+                session.setShippingMethod(method.getName());
+                session.setShippingAmount(method.getShippingFee());
+                session.setEstimatedDelivery(method.getEstimatedDelivery());
+                // Update total
+                double total = session.getSubtotalAmount() + method.getShippingFee() - session.getDiscountAmount() - session.getPointsAmount();
+                session.setTotalAmount(Math.max(0, total));
+                android.util.Log.d("CheckoutViewModel", "Mock session updated. New total: " + session.getTotalAmount());
+                checkoutSession.postValue(NetworkResult.success(session));
+            } else {
+                android.util.Log.e("CheckoutViewModel", "Cannot update shipping: Session is null");
+            }
+            return;
+        }
+
+        CheckoutSessionDto currentSession = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
+        if (currentSession != null && currentSession.getId() != null) {
+            boolean isGuest = !com.example.frontend.data.remote.TokenManager.getInstance(getApplication()).isLoggedIn();
+            checkoutRepository.updateShippingMethod(currentSession.getId(), method.getId(), isGuest, checkoutSession);
+        }
     }
 
     public void prepareCheckout() {
@@ -105,7 +134,7 @@ public class CheckoutViewModel extends AndroidViewModel {
         // Remove Mock Address to allow "Hãy nhập địa chỉ nhận hàng" logic
         session.setShippingAddress(null);
 
-        session.setShippingMethod("Giao hàng tiêu chuẩn");
+        session.setShippingMethod(""); // Clear mock shipping to allow default logic
         session.setPaymentMethod("Thanh toán khi nhận hàng (COD)");
 
         checkoutSession.postValue(NetworkResult.success(session));
@@ -114,7 +143,7 @@ public class CheckoutViewModel extends AndroidViewModel {
     private CheckoutSessionDto createDefaultMockSession() {
         CheckoutSessionDto session = new CheckoutSessionDto();
         // Just return a basic one if no cart items were passed
-        session.setShippingMethod("Giao hàng tiêu chuẩn");
+        session.setShippingMethod(""); // Clear mock shipping
         session.setPaymentMethod("Thanh toán khi nhận hàng (COD)");
         
         // Remove Mock Address to allow "Hãy nhập địa chỉ nhận hàng" logic

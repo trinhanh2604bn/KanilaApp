@@ -134,6 +134,21 @@ public interface ApiService {
     @POST("api/checkout-sessions/me")
     Call<ApiResponse<CheckoutSessionDto>> createCheckoutSession(@Body Object request);
 
+    @GET("api/checkout-sessions/me/{id}")
+    Call<ApiResponse<CheckoutSessionDto>> getCheckoutSession(@Path("id") String sessionId);
+
+    @PATCH("api/checkout-sessions/{id}")
+    Call<ApiResponse<CheckoutSessionDto>> updateCheckoutSession(@Path("id") String sessionId, @Body java.util.Map<String, Object> body);
+
+    @GET("api/checkout-sessions/guest/me/{id}")
+    Call<ApiResponse<CheckoutSessionDto>> getGuestCheckoutSession(@Path("id") String sessionId);
+
+    @PATCH("api/checkout-sessions/guest/{id}")
+    Call<ApiResponse<CheckoutSessionDto>> updateGuestCheckoutSession(@Path("id") String sessionId, @Body java.util.Map<String, Object> body);
+
+    @GET("api/shipping-methods")
+    Call<ApiResponse<List<com.example.frontend.data.model.shipping.ShippingMethodDto>>> getShippingMethods();
+
     @POST("api/checkout-sessions/me/buy-now")
     Call<ApiResponse<CheckoutSessionDto>> createBuyNowSession(@Body AddToCartRequest request);
 

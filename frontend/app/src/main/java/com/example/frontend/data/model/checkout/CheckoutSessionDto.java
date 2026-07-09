@@ -52,6 +52,9 @@ public class CheckoutSessionDto {
     @SerializedName("shipping_method")
     private String shippingMethod;
 
+    @SerializedName("estimated_delivery")
+    private String estimatedDelivery;
+
     @SerializedName("payment_method")
     private String paymentMethod;
 
@@ -66,9 +69,12 @@ public class CheckoutSessionDto {
     public double getTotalAmount() { return totalAmount; }
     public CheckoutAddressDto getShippingAddress() { return shippingAddress; }
     public String getShippingMethod() { return shippingMethod; }
+    public String getEstimatedDelivery() { return estimatedDelivery; }
     public String getPaymentMethod() { return paymentMethod; }
     public List<CheckoutItemDto> getItems() { return items; }
     public String getCouponCode() { return couponCode; }
+
+    public void setEstimatedDelivery(String estimatedDelivery) { this.estimatedDelivery = estimatedDelivery; }
 
     public static class CheckoutItemDto {
         @SerializedName("id")

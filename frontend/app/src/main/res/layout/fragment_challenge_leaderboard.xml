@@ -155,7 +155,7 @@
                     <ImageView
                         android:layout_width="48dp"
                         android:layout_height="48dp"
-                        android:src="@drawable/ic_trophy" />
+                        android:src="@drawable/icon_trophy" />
                     <TextView
                         style="@style/Text.Kanila.Caption"
                         android:layout_width="wrap_content"
@@ -227,7 +227,7 @@
                     <ImageView
                         android:layout_width="48dp"
                         android:layout_height="48dp"
-                        android:src="@drawable/ic_gift" />
+                        android:src="@drawable/icon_gift" />
                     <TextView
                         style="@style/Text.Kanila.Caption"
                         android:layout_width="wrap_content"

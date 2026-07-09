@@ -37,7 +37,7 @@ public class CommunityProfileFragment extends Fragment {
 
     private CommunityProfileViewModel viewModel;
     private ImageView ivAvatar;
-    private TextView tvName, tvUsername, tvFollowers, tvFollowing, tvLikes;
+    private TextView tvName, tvFollowers, tvFollowing, tvLikes;
     private ViewPager2 viewPager;
     private TabLayout tabLayout;
 
@@ -103,7 +103,6 @@ public class CommunityProfileFragment extends Fragment {
     private void initViews(View view) {
         ivAvatar = view.findViewById(R.id.ivProfileAvatar);
         tvName = view.findViewById(R.id.tvProfileName);
-        tvUsername = view.findViewById(R.id.tvProfileUsername);
         tvFollowers = view.findViewById(R.id.tvFollowerCount);
         tvFollowing = view.findViewById(R.id.tvFollowingCount);
         tvLikes = view.findViewById(R.id.tvTotalLikes);
@@ -144,7 +143,6 @@ public class CommunityProfileFragment extends Fragment {
 
     private void updateHeader(CommunityProfile profile) {
         tvName.setText(profile.getName());
-        tvUsername.setText(getString(R.string.username_format, profile.getUsername()));
         tvFollowers.setText(String.valueOf(profile.getFollowerCount()));
         tvFollowing.setText(String.valueOf(profile.getFollowingCount()));
         tvLikes.setText(String.valueOf(profile.getTotalLikes()));

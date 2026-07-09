@@ -225,24 +225,28 @@ public class CommunityBlogFragment extends Fragment implements BlogAdapter.OnBlo
 
     @Override
     public void onSaveClick(BlogPost blog) {
-        blog.setSaved(!blog.isSaved());
-        adapter.notifyDataSetChanged();
-        String msg = blog.isSaved() ? "Đã lưu bài viết" : "Đã bỏ lưu bài viết";
-        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+        if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+            blog.setSaved(!blog.isSaved());
+            adapter.notifyDataSetChanged();
+            String msg = blog.isSaved() ? "Đã lưu bài viết" : "Đã bỏ lưu bài viết";
+            Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public void onLikeClick(BlogPost blog) {
-        boolean newLikedState = !blog.isLiked();
-        blog.setLiked(newLikedState);
-        
-        if (newLikedState) {
-            blog.setLikeCount(blog.getLikeCount() + 1);
-        } else {
-            blog.setLikeCount(Math.max(0, blog.getLikeCount() - 1));
+        if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+            boolean newLikedState = !blog.isLiked();
+            blog.setLiked(newLikedState);
+
+            if (newLikedState) {
+                blog.setLikeCount(blog.getLikeCount() + 1);
+            } else {
+                blog.setLikeCount(Math.max(0, blog.getLikeCount() - 1));
+            }
+
+            adapter.notifyDataSetChanged();
         }
-        
-        adapter.notifyDataSetChanged();
     }
 
     @Override

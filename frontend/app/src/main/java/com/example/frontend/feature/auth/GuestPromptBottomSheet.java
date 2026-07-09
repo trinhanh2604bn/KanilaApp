@@ -70,7 +70,13 @@ public class GuestPromptBottomSheet extends BottomSheetDialogFragment {
                 subtitle = "Đăng nhập để lưu hồ sơ làm đẹp và nhận gợi ý cá nhân hóa.";
                 break;
             case CREATE_COMMUNITY_POST:
-                subtitle = "Đăng nhập để đăng bài, bình luận và nhận thưởng tương tác.";
+                subtitle = "Đăng nhập để chia sẻ trải nghiệm và nhận thưởng tương tác.";
+                break;
+            case JOIN_CHALLENGE:
+                subtitle = "Đăng nhập để tham gia thử thách, theo dõi tiến trình và nhận quà tặng.";
+                break;
+            case COMMUNITY_INTERACTION:
+                subtitle = "Đăng nhập để yêu thích, lưu bài viết và thảo luận cùng cộng đồng.";
                 break;
             case SAVE_COUPON:
             case OPEN_VOUCHER_WALLET:

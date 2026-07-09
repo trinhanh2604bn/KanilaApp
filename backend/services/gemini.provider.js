@@ -18,6 +18,9 @@ const {
   buildCartSummaryMessage,
   buildBeautyConsultationMessage,
   buildComboRecommendationMessage,
+  buildProductComparisonMessage,
+  buildIngredientMessage,
+  buildMakeupProductContextMessage,
 } = require("./chatbot.prompt");
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -211,3 +214,61 @@ async function generateComboExplanation(combo, total, customerProfile, userMessa
   return _geminiChatWithTimeout(messageWithContext, history);
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 6A Product Comparison functions
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Phase 6A: Generate a product comparison reply based on structured differences.
+ */
+async function generateProductComparisonReply(userMessage, comparison, customerProfile, history = []) {
+  const messageWithContext = buildProductComparisonMessage(userMessage, comparison, customerProfile);
+  return _geminiChatWithTimeout(messageWithContext, history);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 7A Ingredient Intelligence functions
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Phase 7A: Generate an ingredient intelligence reply.
+ */
+async function generateIngredientReply(userMessage, contextObj, history = []) {
+  const messageWithContext = buildIngredientMessage(userMessage, contextObj);
+  return _geminiChatWithTimeout(messageWithContext, history);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 8: Makeup Commerce reply
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Phase 8: Generate a makeup-focused sales assistant reply.
+ * Context is pre-built by buildMakeupProductContextMessage in the handler.
+ * Accepts the fully-formed context string as `contextMessage`.
+ *
+ * @param {string} contextMessage — output of buildMakeupProductContextMessage()
+ * @param {Array}  history        — Gemini chat history
+ * @returns {Promise<string>}
+ */
+async function generateMakeupReply(contextMessage, history = []) {
+  return _geminiChatWithTimeout(contextMessage, history);
+}
+
+module.exports = {
+  generateChatReply,
+  generatePersonalizedProductExplanation,
+  generateProductExplanation,
+  generateMissingInfoQuestion,
+  generateOrderExplanation,
+  generateTicketConfirmation,
+  generateCartExplanation,
+  generateCartActionConfirmation,
+  generateCartSummaryReply,
+  generateBeautyConsultationReply,
+  generateComboExplanation,
+  generateProductComparisonReply,
+  generateIngredientReply,
+  // Phase 8: Makeup Commerce
+  generateMakeupReply,
+};

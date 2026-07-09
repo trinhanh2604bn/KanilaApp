@@ -2,12 +2,11 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="200dp"
+    android:layout_width="280dp"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="12dp"
-    android:layout_marginBottom="8dp"
-    app:cardBackgroundColor="@color/white"
-    app:cardCornerRadius="16dp"
+    android:layout_marginEnd="@dimen/spacing_m"
+    android:layout_marginBottom="@dimen/spacing_s"
+    app:cardCornerRadius="@dimen/radius_l"
     app:cardElevation="2dp"
     app:strokeColor="@color/border_divider"
     app:strokeWidth="1dp">
@@ -16,140 +15,145 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="@dimen/spacing_m">
 
-        <ImageView
-            android:id="@+id/ivProductImage"
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:scaleType="centerInside"
-            android:background="@drawable/bg_challenge_product_image_container"
-            android:contentDescription="@string/product_image_desc"
-            tools:src="@drawable/ic_product" />
-
-        <TextView
-            android:id="@+id/tvPersonalizedLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_chip_pink"
-            android:paddingHorizontal="6dp"
-            android:paddingVertical="2dp"
-            android:text="@string/chat_personalized_reason"
-            android:textColor="@color/accent_dark"
-            android:textSize="10sp"
-            android:fontFamily="@font/nunito_bold"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <TextView
-            android:id="@+id/tvBrandName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/nunito_bold"
-            android:textColor="@color/text_secondary"
-            android:textSize="11sp"
-            tools:text="Brand Name" />
-
-        <TextView
-            android:id="@+id/tvProductName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:ellipsize="end"
-            android:fontFamily="@font/nunito_bold"
-            android:maxLines="2"
-            android:textColor="@color/text_main"
-            android:textSize="13sp"
-            tools:text="Product Name" />
-
-        <LinearLayout
-            android:id="@+id/layoutRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <RatingBar
-                android:id="@+id/rbRating"
-                style="?android:attr/ratingBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:numStars="5"
-                android:progressTint="@color/button"
-                android:stepSize="0.1"
-                tools:rating="4.5" />
-
-            <TextView
-                android:id="@+id/tvReviewCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:fontFamily="@font/nunito_regular"
-                android:textColor="@color/text_tertiary"
-                android:textSize="10sp"
-                tools:text="(120)" />
-        </LinearLayout>
-
+        <!-- Matched Reason / Badge -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginBottom="@dimen/spacing_s"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tvPrice"
+                android:id="@+id/tvRecommendationBadge"
+                style="@style/Text.Kanila.Micro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_bold"
+                android:background="@drawable/bg_product_badge"
+                android:paddingStart="@dimen/spacing_s"
+                android:paddingTop="2dp"
+                android:paddingEnd="@dimen/spacing_s"
+                android:paddingBottom="2dp"
                 android:textColor="@color/button"
-                android:textSize="14sp"
-                tools:text="250.000đ" />
+                tools:text="Phù hợp da dầu" />
 
-            <TextView
-                android:id="@+id/tvCompareAtPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:fontFamily="@font/nunito_regular"
-                android:textColor="@color/text_tertiary"
-                android:textSize="11sp"
-                tools:text="300.000đ" />
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="8dp"
-            android:background="@color/border_divider" />
-
-        <TextView
-            android:id="@+id/tvReason"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="@font/nunito_regular"
-            android:textStyle="italic"
-            android:maxLines="2"
-            android:textColor="@color/text_secondary"
-            android:textSize="11sp"
-            tools:text="Phù hợp da dầu mụn và nằm trong ngân sách." />
+            android:orientation="horizontal">
 
+            <!-- Product Image -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivProductImage"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium"
+                tools:src="@drawable/cl_product" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_m"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvBrandName"
+                    style="@style/Text.Kanila.Micro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.6"
+                    android:textAllCaps="true"
+                    tools:text="L'OREAL PARIS" />
+
+                <TextView
+                    android:id="@+id/tvProductName"
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    tools:text="Serum Cấp Ẩm Hyaluronic Acid 1.5%" />
+
+                <TextView
+                    android:id="@+id/tvCategory"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.6"
+                    tools:text="Chăm sóc da mặt" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:gravity="bottom"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvSalePrice"
+                        style="@style/Text.Kanila.BodyMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/button"
+                        tools:text="359.000đ" />
+
+                    <TextView
+                        android:id="@+id/tvOriginalPrice"
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_s"
+                        android:alpha="0.5"
+                        tools:text="450.000đ" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Matched Reason -->
         <TextView
-            android:id="@+id/btnViewDetail"
+            android:id="@+id/tvMatchedReason"
+            style="@style/Text.Kanila.Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_button_outline"
-            android:gravity="center"
-            android:paddingVertical="6dp"
-            android:text="@string/chat_view_product_detail"
-            android:textColor="@color/button"
-            android:textSize="12sp"
-            android:fontFamily="@font/nunito_bold" />
+            android:layout_marginTop="@dimen/spacing_s"
+            android:background="@drawable/bg_recommendation_highlight"
+            android:padding="@dimen/spacing_s"
+            android:textColor="@color/text_main"
+            tools:text="Phù hợp vì bạn cần son đi học dưới 300k, màu tự nhiên" />
+
+        <!-- Actions -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnViewDetail"
+                style="@style/Widget.Kanila.Button.Primary"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/button_height_small"
+                android:layout_marginEnd="@dimen/spacing_s"
+                android:layout_weight="1"
+                android:text="@string/chat_view_product"
+                android:textSize="12sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddToCart"
+                style="@style/Widget.Kanila.Button.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/button_height_small"
+                android:layout_weight="1"
+                android:text="@string/chat_add_to_cart"
+                android:textSize="12sp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

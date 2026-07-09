@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -63,6 +64,7 @@ public class ChatConversationFragment extends Fragment {
         initViews(view);
         setupRecyclerViews(view);
         setupInputArea();
+        setupKeyboardHandling(view);
         observeViewModel();
 
         if (getArguments() != null) {
@@ -71,6 +73,31 @@ public class ChatConversationFragment extends Fragment {
                 edtMessage.setText(starterMessage);
             }
         }
+    }
+
+    private void setupKeyboardHandling(View view) {
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
+            androidx.core.graphics.Insets imeInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime());
+            androidx.core.graphics.Insets systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
+            
+            View inputArea = v.findViewById(R.id.layoutInputArea);
+            if (inputArea != null) {
+                // Adjust input area padding to avoid being covered by keyboard
+                // If keyboard is shown, imeInsets.bottom will be > 0
+                int bottomPadding = Math.max(imeInsets.bottom, systemBars.bottom);
+                inputArea.setPadding(
+                    inputArea.getPaddingLeft(),
+                    inputArea.getPaddingTop(),
+                    inputArea.getPaddingRight(),
+                    imeInsets.bottom > 0 ? (int) getResources().getDimension(R.dimen.spacing_m) : (int) getResources().getDimension(R.dimen.spacing_xl)
+                );
+                
+                ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) inputArea.getLayoutParams();
+                lp.bottomMargin = imeInsets.bottom > 0 ? imeInsets.bottom : 0;
+                inputArea.setLayoutParams(lp);
+            }
+            return insets;
+        });
     }
 
     private void initViews(View view) {
@@ -106,6 +133,7 @@ public class ChatConversationFragment extends Fragment {
     private void setupRecyclerViews(View view) {
         chatAdapter = new ChatMessageAdapter(
                 this::onProductClick,
+                this::onAddToCartClick,
                 this::onOrderClick,
                 this::onTicketClick,
                 this::onPreferenceClick,
@@ -139,17 +167,19 @@ public class ChatConversationFragment extends Fragment {
         rvQuickReplies.setAdapter(quickReplyAdapter);
 
         List<String> quickReplies = Arrays.asList(
-                getString(R.string.menu_product_consult),
-                getString(R.string.menu_create_routine),
-                getString(R.string.menu_ingredients_check),
-                getString(R.string.menu_track_order),
-                getString(R.string.menu_get_support)
+                getString(R.string.chat_suggest_oily),
+                getString(R.string.chat_suggest_order),
+                getString(R.string.chat_suggest_sensitive),
+                getString(R.string.chat_suggest_return),
+                getString(R.string.chat_suggest_mascara),
+                getString(R.string.chat_suggest_voucher)
         );
         quickReplyAdapter.setItems(quickReplies);
 
         quickReplyAdapter.setOnItemClickListener(text -> {
             edtMessage.setText(text);
             edtMessage.setSelection(text.length());
+            sendMessage();
         });
     }
 
@@ -186,6 +216,24 @@ public class ChatConversationFragment extends Fragment {
         if (!content.isEmpty()) {
             viewModel.sendMessage(content);
             edtMessage.setText("");
+        }
+    }
+
+    private void onAddToCartClick(ChatProductUiModel product) {
+        if (product == null) return;
+
+        if (product.getVariantId() != null && !product.getVariantId().isEmpty()) {
+            // If we have variantId, we could add directly. 
+            // However, the existing flow usually requires selecting variants.
+            // For now, let's navigate to detail to ensure user sees what they add, 
+            // OR if we want to be "Assistant-like", we add it and show a message.
+            
+            // To follow "Makeup Assistant" goal of smooth shopping:
+            // Check if user is logged in (handled by ViewModel potentially)
+            viewModel.addToCart(product.getProductId(), product.getVariantId());
+        } else {
+            // If no variantId, must go to detail to select
+            onProductClick(product);
         }
     }
 
@@ -274,13 +322,54 @@ public class ChatConversationFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.getUiState().observe(getViewLifecycleOwner(), state -> {
+            // Requirement 1: Log UI state changes
+            android.util.Log.d("CHATBOT_DEBUG", "Fragment UI State: messages=" + state.getMessages().size() + 
+                ", isLoading=" + state.isLoading() + ", error=" + state.getError());
+
             chatAdapter.setMessages(state.getMessages());
             if (!state.getMessages().isEmpty()) {
                 rvChat.scrollToPosition(state.getMessages().size() - 1);
             }
 
-            layoutWelcome.setVisibility(state.isWelcomeVisible() ? View.VISIBLE : View.GONE);
-            rvChat.setVisibility(state.isWelcomeVisible() ? View.GONE : View.VISIBLE);
+            // Update state views
+            View root = getView();
+            if (root == null) return;
+            
+            View layoutStateContainer = root.findViewById(R.id.layoutStateContainer);
+            View viewLoading = root.findViewById(R.id.viewLoading);
+            View viewError = root.findViewById(R.id.viewError);
+            View viewNoInternet = root.findViewById(R.id.viewNoInternet);
+
+            if (state.isLoading() && state.getMessages().isEmpty()) {
+                // Show full screen loading only for initial load or when no messages
+                layoutStateContainer.setVisibility(View.VISIBLE);
+                viewLoading.setVisibility(View.VISIBLE);
+                viewError.setVisibility(View.GONE);
+                viewNoInternet.setVisibility(View.GONE);
+                layoutWelcome.setVisibility(View.GONE);
+                rvChat.setVisibility(View.GONE);
+            } else if (state.getError() != null && state.getMessages().isEmpty()) {
+                layoutStateContainer.setVisibility(View.VISIBLE);
+                viewLoading.setVisibility(View.GONE);
+                
+                if ("no_internet".equals(state.getError())) {
+                    viewNoInternet.setVisibility(View.VISIBLE);
+                    viewError.setVisibility(View.GONE);
+                } else {
+                    viewError.setVisibility(View.VISIBLE);
+                    viewNoInternet.setVisibility(View.GONE);
+                    
+                    TextView tvErrorMsg = viewError.findViewById(R.id.tvErrorDescription);
+                    if (tvErrorMsg != null) tvErrorMsg.setText(state.getError());
+                }
+                
+                layoutWelcome.setVisibility(View.GONE);
+                rvChat.setVisibility(View.GONE);
+            } else {
+                layoutStateContainer.setVisibility(View.GONE);
+                layoutWelcome.setVisibility(state.isWelcomeVisible() ? View.VISIBLE : View.GONE);
+                rvChat.setVisibility(state.isWelcomeVisible() ? View.GONE : View.VISIBLE);
+            }
 
             // Update quick replies from state
             if (state.getQuickReplies() != null) {
@@ -302,6 +391,19 @@ public class ChatConversationFragment extends Fragment {
         viewModel.getHistoryResponse().observe(getViewLifecycleOwner(), result -> {
             if (result != null) {
                 viewModel.handleHistoryResponse(result);
+            }
+        });
+
+        viewModel.getAddToCartResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case SUCCESS:
+                    Toast.makeText(getContext(), R.string.chat_cart_add_success, Toast.LENGTH_SHORT).show();
+                    // Optionally show "View Cart" button or message in chat
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    break;
             }
         });
     }

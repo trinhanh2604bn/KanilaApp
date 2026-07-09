@@ -39,6 +39,7 @@ const {
   generateComboExplanation,
 } = require("./gemini.provider");
 const { findRecommendedProducts } = require("./chatbotProduct.tool");
+const { extractShoppingContext, CANONICAL_CATEGORY_MAP } = require("./chatbotShoppingContext");
 const { findOrderForUser } = require("./chatbotOrder.tool");
 const { createSupportTicket } = require("./chatbotSupport.tool");
 const { getCustomerContext } = require("./chatbotCustomerContext.service");
@@ -53,6 +54,12 @@ const {
   getRecommendationContext,
   buildComboRecommendation,
 } = require("./chatbotRecommendation.service");
+const { classifyIntent, resolveRoutingIntent } = require("./chatbotIntent.classifier");
+const { findMakeupProductsPipeline } = require("./makeupRecommendation.service");
+const { buildMakeupProductContextMessage } = require("./chatbot.prompt");
+const { generateMakeupReply, handleVoucherQuery } = require("./gemini.provider");
+const { loadConversationContext } = require("./chatbotConversationContext");
+const { buildMakeupBundle } = require("./chatbotMakeupBundle.service");
 
 const MAX_HISTORY_MESSAGES = 10;
 
@@ -896,6 +903,196 @@ async function handleAddToCart(message, user, productIds, history, cartItems = n
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 8: Makeup Commerce Handlers
+// ─────────────────────────────────────────────────────────────────────────────
+
+const INTENT_TO_CATEGORY_HINT = {
+  lipstick_recommendation:           ["CAT_LIP_TINT", "CAT_LIPSTICK"],
+  cushion_foundation_recommendation: ["CAT_CUSHION", "CAT_FOUNDATION"],
+  concealer_recommendation:          ["CAT_CONCEALER"],
+  blush_recommendation:              ["CAT_BLUSH"],
+  eye_makeup_recommendation:         ["CAT_MASCARA", "CAT_EYELINER", "CAT_EYESHADOW"],
+  base_makeup_recommendation:        ["CAT_PRIMER", "CAT_POWDER", "CAT_SETTING_SPRAY"],
+  makeup_set_builder:                null,
+  event_makeup_look:                 null,
+  daily_makeup_look:                 null,
+  shade_tone_advice:                 null,
+  product_availability:              null,
+};
+
+const MAKEUP_RECOMMEND_QUICK_REPLIES = [
+  "Thêm vào giỏ hàng",
+  "Xem chi tiết sản phẩm",
+  "Tìm sản phẩm tương tự",
+  "Có voucher makeup không?",
+];
+
+const MAKEUP_SET_QUICK_REPLIES = [
+  "Thêm toàn bộ vào giỏ",
+  "Đổi sản phẩm khác",
+  "Tư vấn kỹ hơn về makeup look này"
+];
+
+const SHADE_QUICK_REPLIES = [
+  "Màu này có hợp da ngăm không?",
+  "Có màu nào sáng hơn không?",
+  "Thêm vào giỏ hàng"
+];
+
+const VOUCHER_QUICK_REPLIES = [
+  "Xem tất cả ưu đãi",
+  "Mình muốn tìm son đang giảm giá",
+  "Cushion bán chạy nhất"
+];
+
+async function handleMakeupRecommendation(intent, message, user, history, followUpContext = null) {
+  let customerProfile = null;
+  try {
+    if (user && user.account_id) {
+      const ctx = await getCustomerContext({ accountId: user.account_id });
+      customerProfile = ctx?.customer_profile || null;
+    }
+  } catch (err) {}
+
+  let shoppingContext = extractShoppingContext(message, intent);
+
+  // PART 3: Fallback — if categoryNames empty, inject from INTENT_TO_CATEGORY_HINT
+  if ((!shoppingContext.categoryNames || shoppingContext.categoryNames.length === 0) && INTENT_TO_CATEGORY_HINT[intent]) {
+    const hintCodes = INTENT_TO_CATEGORY_HINT[intent];
+    if (hintCodes && hintCodes.length > 0) {
+      const fallbackNames = [];
+      for (const code of hintCodes) {
+        if (CANONICAL_CATEGORY_MAP && CANONICAL_CATEGORY_MAP[code]) {
+          fallbackNames.push(...CANONICAL_CATEGORY_MAP[code].names);
+        }
+      }
+      if (fallbackNames.length > 0) {
+        shoppingContext.categoryNames = fallbackNames;
+        shoppingContext.categoryCode = shoppingContext.categoryCode || hintCodes[0];
+      }
+    }
+  }
+
+  // PART 8: For event_makeup_look — auto-inject occasion if not already set
+  if (intent === "event_makeup_look" && !shoppingContext.occasion) {
+    const lower = message.toLowerCase();
+    // Try to infer occasion from common keywords not caught by parseOccasion
+    if (lower.includes("tiệc") || lower.includes("party") || lower.includes("gọp mặt")) {
+      shoppingContext.occasion = "party";
+    } else if (lower.includes("đám cưới") || lower.includes("wedding")) {
+      shoppingContext.occasion = "wedding";
+    } else if (lower.includes("đi học") || lower.includes("trường")) {
+      shoppingContext.occasion = "school";
+    } else if (lower.includes("đi làm") || lower.includes("văn phòng") || lower.includes("công sở")) {
+      shoppingContext.occasion = "office";
+    } else {
+      shoppingContext.occasion = "daily"; // safe default
+    }
+  }
+
+  // PART 8: For makeup_set_builder — set bundle=true and inject multi-category names
+  if (intent === "makeup_set_builder") {
+    shoppingContext.bundle = true;
+    // If no specific categories, pull all base makeup categories
+    if (!shoppingContext.categoryNames || shoppingContext.categoryNames.length === 0) {
+      shoppingContext.categoryNames = [
+        "Cushion", "Phấn nước", "Kem nền", "Foundation",
+        "Son tint", "Son thỏi", "Má hồng", "Phấn phủ",
+      ];
+    }
+  }
+
+  let products = [];
+  let filters = null;
+  let candidateCount = 0;
+  let dbFilter = {};
+
+  if (followUpContext) {
+    products = followUpContext.previousProducts || [];
+    filters = followUpContext.previousFilters || {};
+    shoppingContext.occasion = followUpContext.previousOccasion || shoppingContext.occasion;
+    shoppingContext.makeupStyle = followUpContext.previousMakeupStyle || shoppingContext.makeupStyle;
+    shoppingContext.isFollowUp = true;
+  } else if (intent === "event_makeup_look" || intent === "makeup_set_builder") {
+    try {
+      const bundleResult = await buildMakeupBundle(shoppingContext.occasion, shoppingContext);
+      if (bundleResult && bundleResult.slots.length > 0) {
+        products = bundleResult.slots;
+        filters = {}; // simplified for bundle
+        candidateCount = products.length;
+      } else {
+        const pipelineResult = await findMakeupProductsPipeline(shoppingContext, 5);
+        products = pipelineResult.products || [];
+        filters = pipelineResult.filters;
+        candidateCount = pipelineResult.candidateCount;
+        dbFilter = pipelineResult.dbFilter;
+      }
+    } catch (err) {
+      console.error("[MakeupBundle] error:", err.message);
+    }
+  } else {
+    try {
+      const pipelineResult = await findMakeupProductsPipeline(shoppingContext, 5);
+      products = pipelineResult.products || [];
+      filters = pipelineResult.filters;
+      candidateCount = pipelineResult.candidateCount;
+      dbFilter = pipelineResult.dbFilter;
+    } catch (err) {
+      console.error("[MakeupHandler] findMakeupProducts error:", err.message);
+    }
+  }
+
+  try {
+    if (process.env.NODE_ENV === "development" || process.env.CHATBOT_DEBUG === "true") {
+      const debugLog = {
+        USER: message,
+        INTENT: intent,
+        FOLLOW_UP: !!followUpContext,
+        SHOPPING_CONTEXT: {
+          categoryCode: shoppingContext.categoryCode,
+          categoryNames: shoppingContext.categoryNames,
+          budget: shoppingContext.budget,
+          skinType: shoppingContext.skinType,
+          occasion: shoppingContext.occasion,
+          bundle: shoppingContext.bundle,
+        },
+        DATABASE_QUERY: dbFilter || {},
+        PRODUCT_FOUND: candidateCount || products.length,
+        SELECTED_PRODUCTS: products.map(p => ({ name: p.name || p.productName, score: p._score || p.score })),
+        GEMINI_CONTEXT_LENGTH: JSON.stringify(products).length,
+      };
+      console.log("\n[CHATBOT_DEBUG]\n" + JSON.stringify(debugLog, null, 2) + "\n");
+    }
+  } catch (err) {
+    console.error("[MakeupHandler] log error:", err.message);
+  }
+
+  let quickReplies = MAKEUP_RECOMMEND_QUICK_REPLIES;
+  if (intent === "makeup_set_builder" || intent === "event_makeup_look") {
+    quickReplies = MAKEUP_SET_QUICK_REPLIES;
+  }
+
+  const supportActions = ["view_product_detail", "add_to_cart"];
+  if (filters?.maxPrice) supportActions.push("filter_by_price");
+
+  let botText;
+  try {
+    const promptMsg = buildMakeupProductContextMessage(products, message, filters, customerProfile, shoppingContext.isFollowUp);
+    botText = await generateMakeupReply(promptMsg, history);
+  } catch (err) {
+    if (products.length > 0) {
+      const topProduct = products[0];
+      botText = `Mình tìm được ${products.length} sản phẩm phù hợp cho bạn! Sản phẩm nổi bật: ${topProduct.name || topProduct.productName} (${topProduct.brand || topProduct.brandName}) - ${(topProduct.price || 0).toLocaleString("vi-VN")}đ.`;
+    } else {
+      botText = "Mình không tìm thấy sản phẩm phù hợp trong danh mục hiện tại. Bạn có thể thử điều chỉnh bộ lọc nhé!";
+    }
+  }
+
+  return { botText, products, filters, quickReplies, replyType: "makeup_recommendation", supportActions };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Main service function
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -903,8 +1100,105 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
   // 1. Resolve or create session
   const session = await resolveOrCreateSession(sessionId, user, sourceScreen);
 
-  // 2. Detect intent
-  const intent = detectIntent(message);
+  // 1.5 Handle Quick Reply JSON payload
+  let parsedQuickReply = null;
+  try {
+    if (message && message.trim().startsWith("{") && message.trim().endsWith("}")) {
+      const payload = JSON.parse(message);
+      if (payload.action && payload.action.type) {
+        parsedQuickReply = payload;
+        message = payload.text || message; // Use text for logging and history
+      }
+    }
+  } catch (e) {
+    // Ignore, it's just a regular message containing braces
+  }
+
+  // 1.8 Load previous conversation context (if it's a follow-up)
+  const { isFollowUp, resolvedContext } = await loadConversationContext(session._id, message.trim());
+
+  // 2. Intent classification
+  let classification = { intent: "find_product", needsClarification: false };
+  let fallbackIntent = "find_product";
+  
+  if (isFollowUp) {
+    classification.intent = resolvedContext.previousIntent;
+    fallbackIntent = resolvedContext.previousIntent;
+    classification.needsClarification = false;
+  } else if (parsedQuickReply && parsedQuickReply.action.type === "PRODUCT_SEARCH") {
+    // Bypass re-classification
+    classification.intent = parsedQuickReply.action.category || "find_product";
+    fallbackIntent = classification.intent;
+    classification.needsClarification = false;
+  } else {
+    classification = classifyIntent(message.trim());
+    fallbackIntent = detectIntent(message);
+  }
+
+  const intent = resolveRoutingIntent(classification.intent, fallbackIntent);
+
+  const shoppingContext = extractShoppingContext(message, intent);
+
+  // PART 6: High-level debug log — visible at start of every request
+  if (process.env.NODE_ENV === "development" || process.env.CHATBOT_DEBUG === "true") {
+    console.log("\n[CHATBOT_DEBUG]");
+    console.log("USER:", JSON.stringify(message));
+    console.log("INTENT:", intent);
+    console.log("SHOPPING_CONTEXT:", JSON.stringify({
+      categoryCode: shoppingContext.categoryCode || "",
+      categoryNames: shoppingContext.categoryNames || [],
+      budget: shoppingContext.budget || "",
+      skinType: shoppingContext.skinType || "",
+      occasion: shoppingContext.occasion || "",
+    }, null, 2));
+  }
+  const DIRECT_SEARCH_INTENTS = [
+    "cushion_foundation_recommendation",
+    "lipstick_recommendation",
+    "mascara_recommendation",
+    "eye_makeup_recommendation",
+    "blush_recommendation",
+    "concealer_recommendation",
+    "base_makeup_recommendation",
+    "makeup_set_builder",
+    "event_makeup_look",
+    "daily_makeup_look",
+    "shade_tone_advice",
+    // Classifier-specific intents (from chatbotIntent.classifier.js)
+    "find_sale_product",
+  ];
+  
+  let needsClarification = classification.needsClarification;
+  if (shoppingContext.categoryNames && shoppingContext.categoryNames.length > 0) needsClarification = false;
+  if (shoppingContext.occasion) needsClarification = false;
+  if (DIRECT_SEARCH_INTENTS.includes(intent)) needsClarification = false;
+
+  if (needsClarification && classification.clarificationPrompt && !["find_product", "order_tracking", "support_ticket"].includes(intent)) {
+    const history = await buildGeminiHistory(session._id);
+    await ChatbotMessage.create({
+      session_id: session._id,
+      sender_type: "user",
+      message_text: message.trim(),
+      intent,
+      response_type: "text",
+    });
+    const botText = classification.clarificationPrompt.text;
+    const quickReplies = classification.clarificationPrompt.quickReplies;
+    await ChatbotMessage.create({
+      session_id: session._id,
+      sender_type: "bot",
+      message_text: botText,
+      intent,
+      response_type: "text",
+      metadata: { reply_type: "text", quick_replies: quickReplies }
+    });
+    return {
+      session_id: session._id,
+      bot_message: botText,
+      products: [], quick_replies: quickReplies,
+      reply_type: "text", handoff_required: false, customer_context_used: false,
+    };
+  }
 
   // 3. Build Gemini history BEFORE saving current user message
   const history = await buildGeminiHistory(session._id);
@@ -945,6 +1239,8 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
   let cartAction = null;
   let upsellProducts = [];
   let needsVariantSelection = false;
+  let makeupFilters = null;
+  let supportActions = [];
 
   // Phase 5B: resolve product_ids / cart_items for add_to_cart
   // Android passes product_ids (simple) or cart_items (with variant+qty) when user confirms
@@ -983,6 +1279,22 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
       cartAction = r.cartAction || null;
       quickReplies = r.quickReplies;
       replyType = r.replyType;
+
+    } else if (DIRECT_SEARCH_INTENTS.includes(intent) || intent === "product_availability") {
+      const r = await handleMakeupRecommendation(intent, message.trim(), user, history, isFollowUp ? resolvedContext : null);
+      botText = r.botText;
+      products = r.products || [];
+      quickReplies = r.quickReplies;
+      replyType = r.replyType;
+      makeupFilters = r.filters || null;
+      supportActions = r.supportActions || [];
+
+    } else if (intent === "voucher_promotion_question") {
+      const r = await handleVoucherQuery(message.trim(), history);
+      botText = r.botText;
+      quickReplies = VOUCHER_QUICK_REPLIES;
+      replyType = "text";
+      supportActions = ["open_voucher_wallet"];
 
     } else if (intent === "product_recommendation") {
       // Phase 4A: personalized recommendation
@@ -1064,6 +1376,8 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
       cart_action: cartAction ? { success: cartAction.success, items_added: cartAction.items_added, cart_count: cartAction.cart_count, reason: cartAction.reason } : null,
       // Phase 5B
       needs_variant_selection: cartAction?.needs_variant_selection || null,
+      filters: makeupFilters,
+      support_actions: supportActions,
     },
   });
 
@@ -1071,6 +1385,13 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
   await ChatbotSession.findByIdAndUpdate(session._id, { last_intent: intent });
 
   // 9. Return full structured result (backward compatible + Phase 5A additions)
+  if (process.env.NODE_ENV === "development" || process.env.CHATBOT_DEBUG === "true") {
+    console.log("[CHATBOT_DEBUG] FINAL_RESPONSE:", JSON.stringify({
+      message: (botText || "").slice(0, 120),
+      productsCount: products.length,
+      replyType,
+    }, null, 2));
+  }
   return {
     session_id: session._id.toString(),
     reply_type: replyType,
@@ -1087,6 +1408,8 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
     upsell_products: upsellProducts,
     // Phase 5B: variant selection prompt
     needs_variant_selection: cartAction?.needs_variant_selection || null,
+    filters: makeupFilters,
+    support_actions: supportActions,
   };
 }
 

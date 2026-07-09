@@ -15,13 +15,17 @@ import com.example.frontend.feature.chatbot.model.ChatCartSummaryUiModel;
 import com.example.frontend.feature.chatbot.model.ChatMessageUiModel;
 import com.example.frontend.feature.chatbot.model.ChatOrderTimelineUiModel;
 import com.example.frontend.feature.chatbot.model.ChatOrderUiModel;
+import com.example.frontend.feature.chatbot.model.ChatProductUiModel;
 import com.example.frontend.feature.chatbot.model.ChatTicketUiModel;
+import com.example.frontend.feature.chatbot.model.ComparisonUiModel;
+import com.example.frontend.feature.chatbot.model.IngredientUiModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -49,17 +53,20 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final List<ChatMessageUiModel> messages = new ArrayList<>();
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private final ChatProductAdapter.OnProductClickListener productClickListener;
+    private final ChatProductAdapter.OnAddToCartClickListener addToCartClickListener;
     private final OnOrderClickListener orderClickListener;
     private final OnTicketClickListener ticketClickListener;
     private final OnPreferenceClickListener preferenceClickListener;
     private final OnAddComboClickListener addComboClickListener;
 
     public ChatMessageAdapter(ChatProductAdapter.OnProductClickListener productClickListener,
+                             ChatProductAdapter.OnAddToCartClickListener addToCartClickListener,
                              OnOrderClickListener orderClickListener,
                              OnTicketClickListener ticketClickListener,
                              OnPreferenceClickListener preferenceClickListener,
                              OnAddComboClickListener addComboClickListener) {
         this.productClickListener = productClickListener;
+        this.addToCartClickListener = addToCartClickListener;
         this.orderClickListener = orderClickListener;
         this.ticketClickListener = ticketClickListener;
         this.preferenceClickListener = preferenceClickListener;
@@ -124,9 +131,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     class BotMessageViewHolder extends RecyclerView.ViewHolder {
         TextView tvMessage, tvTime, tvPersonalizedBadge;
-        RecyclerView rvProducts, rvPreferenceOptions;
-        ChatProductAdapter productAdapter;
+        RecyclerView rvProducts, rvPreferenceOptions, rvUpsellProducts;
+        ChatProductAdapter productAdapter, upsellAdapter;
         QuickReplyAdapter preferenceAdapter;
+        View layoutUpsell;
         
         // Order card views
         View layoutOrderCard;
@@ -146,6 +154,17 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         View layoutCartDiscountRow;
         View btnAddCombo, btnViewCart;
 
+        // Comparison card views
+        View layoutComparisonCard;
+        ViewGroup layoutComparisonProducts, layoutDifferences;
+        View layoutRecommendation;
+        TextView tvRecommendationText;
+
+        // Ingredient card views
+        View layoutIngredientCard;
+        TextView tvIngredientName, tvCompatibilityBadge, tvCompatibilityReason, tvBenefits, tvSkinTypes, tvWarnings;
+        View layoutCompatibility, layoutWarnings;
+
         BotMessageViewHolder(@NonNull View itemView) {
             super(itemView);
             tvMessage = itemView.findViewById(R.id.tvMessage);
@@ -155,7 +174,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             rvPreferenceOptions = itemView.findViewById(R.id.rvPreferenceOptions);
             
             productAdapter = new ChatProductAdapter(productClickListener);
+            productAdapter.setOnAddToCartClickListener(addToCartClickListener);
             rvProducts.setAdapter(productAdapter);
+
+            rvUpsellProducts = itemView.findViewById(R.id.rvUpsellProducts);
+            layoutUpsell = itemView.findViewById(R.id.layoutUpsell);
+            upsellAdapter = new ChatProductAdapter(productClickListener);
+            upsellAdapter.setOnAddToCartClickListener(addToCartClickListener);
+            if (rvUpsellProducts != null) rvUpsellProducts.setAdapter(upsellAdapter);
 
             preferenceAdapter = new QuickReplyAdapter();
             preferenceAdapter.setOnItemClickListener(option -> {
@@ -202,6 +228,28 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 btnAddCombo = layoutCartSummary.findViewById(R.id.btnAddCombo);
                 btnViewCart = layoutCartSummary.findViewById(R.id.btnViewCart);
             }
+
+            // Init Comparison views
+            layoutComparisonCard = itemView.findViewById(R.id.layoutComparisonCardContainer);
+            if (layoutComparisonCard != null) {
+                layoutComparisonProducts = layoutComparisonCard.findViewById(R.id.layoutComparisonProducts);
+                layoutDifferences = layoutComparisonCard.findViewById(R.id.layoutDifferences);
+                layoutRecommendation = layoutComparisonCard.findViewById(R.id.layoutRecommendation);
+                tvRecommendationText = layoutComparisonCard.findViewById(R.id.tvRecommendationText);
+            }
+
+            // Init Ingredient views
+            layoutIngredientCard = itemView.findViewById(R.id.layoutIngredientCardContainer);
+            if (layoutIngredientCard != null) {
+                tvIngredientName = layoutIngredientCard.findViewById(R.id.tvIngredientName);
+                layoutCompatibility = layoutIngredientCard.findViewById(R.id.layoutCompatibility);
+                tvCompatibilityBadge = layoutIngredientCard.findViewById(R.id.tvCompatibilityBadge);
+                tvCompatibilityReason = layoutIngredientCard.findViewById(R.id.tvCompatibilityReason);
+                tvBenefits = layoutIngredientCard.findViewById(R.id.tvBenefits);
+                tvSkinTypes = layoutIngredientCard.findViewById(R.id.tvSkinTypes);
+                layoutWarnings = layoutIngredientCard.findViewById(R.id.layoutWarnings);
+                tvWarnings = layoutIngredientCard.findViewById(R.id.tvWarnings);
+            }
         }
 
         void bind(ChatMessageUiModel message) {
@@ -210,6 +258,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             // Personalized badge
             if (message.isCustomerContextUsed() && tvPersonalizedBadge != null) {
+                if ("ingredient_analysis".equals(message.getReplyType())) {
+                    tvPersonalizedBadge.setText(R.string.chat_personalized_skin_profile);
+                } else {
+                    tvPersonalizedBadge.setText(R.string.chat_personalized_badge);
+                }
                 tvPersonalizedBadge.setVisibility(View.VISIBLE);
             } else if (tvPersonalizedBadge != null) {
                 tvPersonalizedBadge.setVisibility(View.GONE);
@@ -221,6 +274,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 rvProducts.setVisibility(View.VISIBLE);
             } else {
                 rvProducts.setVisibility(View.GONE);
+            }
+
+            // Upsell Products
+            if (message.getUpsellProducts() != null && !message.getUpsellProducts().isEmpty() && layoutUpsell != null) {
+                upsellAdapter.setProducts(message.getUpsellProducts(), false);
+                layoutUpsell.setVisibility(View.VISIBLE);
+            } else if (layoutUpsell != null) {
+                layoutUpsell.setVisibility(View.GONE);
             }
 
             // Preference question
@@ -255,6 +316,22 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 layoutCartSummary.setVisibility(View.VISIBLE);
             } else if (layoutCartSummary != null) {
                 layoutCartSummary.setVisibility(View.GONE);
+            }
+
+            // Comparison
+            if (message.getComparison() != null && layoutComparisonCard != null) {
+                bindComparisonCard(message.getComparison(), message.isCustomerContextUsed());
+                layoutComparisonCard.setVisibility(View.VISIBLE);
+            } else if (layoutComparisonCard != null) {
+                layoutComparisonCard.setVisibility(View.GONE);
+            }
+
+            // Ingredient
+            if (message.getIngredientData() != null && layoutIngredientCard != null) {
+                bindIngredientCard(message.getIngredientData());
+                layoutIngredientCard.setVisibility(View.VISIBLE);
+            } else if (layoutIngredientCard != null) {
+                layoutIngredientCard.setVisibility(View.GONE);
             }
         }
 
@@ -362,6 +439,127 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             btnViewTicketDetail.setOnClickListener(v -> {
                 if (ticketClickListener != null) ticketClickListener.onTicketClick(ticket);
             });
+        }
+
+        private void bindComparisonCard(ComparisonUiModel comparison, boolean customerContextUsed) {
+            // Products
+            layoutComparisonProducts.removeAllViews();
+            if (comparison.getProducts() != null) {
+                for (ChatProductUiModel p : comparison.getProducts()) {
+                    View productView = LayoutInflater.from(itemView.getContext())
+                            .inflate(R.layout.item_chat_product_card, layoutComparisonProducts, false);
+                    
+                    ChatProductAdapter.ProductViewHolder holder = new ChatProductAdapter.ProductViewHolder(productView, productClickListener);
+                    holder.bind(p, customerContextUsed, null);
+                    
+                    layoutComparisonProducts.addView(productView);
+                }
+            }
+
+            // Differences
+            layoutDifferences.removeAllViews();
+            if (comparison.getDifferences() != null) {
+                for (Map.Entry<String, String> entry : comparison.getDifferences().entrySet()) {
+                    View diffView = LayoutInflater.from(itemView.getContext())
+                            .inflate(R.layout.item_comparison_difference_row, layoutDifferences, false);
+                    
+                    TextView tvTitle = diffView.findViewById(R.id.tvDifferenceTitle);
+                    TextView tvValue = diffView.findViewById(R.id.tvDifferenceValue);
+                    
+                    tvTitle.setText(entry.getKey());
+                    tvValue.setText(entry.getValue());
+                    
+                    layoutDifferences.addView(diffView);
+                }
+            }
+
+            // Recommendation
+            if (comparison.getRecommendation() != null && !comparison.getRecommendation().isEmpty()) {
+                tvRecommendationText.setText(comparison.getRecommendation());
+                layoutRecommendation.setVisibility(View.VISIBLE);
+            } else {
+                layoutRecommendation.setVisibility(View.GONE);
+            }
+        }
+
+        private void bindIngredientCard(IngredientUiModel ingredient) {
+            tvIngredientName.setText("🧪 " + ingredient.getIngredientName());
+
+            // Compatibility
+            if (ingredient.getCompatibilityLevel() != null && !ingredient.getCompatibilityLevel().isEmpty()) {
+                layoutCompatibility.setVisibility(View.VISIBLE);
+                
+                String level = ingredient.getCompatibilityLevel().toLowerCase();
+                int color;
+                int bgColor;
+                String label;
+
+                if ("safe".equals(level)) {
+                    color = ContextCompat.getColor(itemView.getContext(), R.color.success);
+                    bgColor = ContextCompat.getColor(itemView.getContext(), R.color.status_success_bg);
+                    label = "🟢 Phù hợp";
+                } else if ("warning".equals(level)) {
+                    color = ContextCompat.getColor(itemView.getContext(), R.color.status_pending_text);
+                    bgColor = ContextCompat.getColor(itemView.getContext(), R.color.status_pending_bg);
+                    label = "🟡 Cần lưu ý";
+                } else if ("avoid".equals(level)) {
+                    color = ContextCompat.getColor(itemView.getContext(), R.color.error);
+                    bgColor = ContextCompat.getColor(itemView.getContext(), R.color.status_payment_failed_bg);
+                    label = "🔴 Không nên kết hợp";
+                } else {
+                    color = ContextCompat.getColor(itemView.getContext(), R.color.text_tertiary);
+                    bgColor = ContextCompat.getColor(itemView.getContext(), R.color.border_divider);
+                    label = ingredient.getCompatibilityLevel();
+                }
+
+                tvCompatibilityBadge.setText(label);
+                tvCompatibilityBadge.setTextColor(color);
+                layoutCompatibility.setBackgroundTintList(android.content.res.ColorStateList.valueOf(bgColor));
+
+                if (ingredient.getCompatibilityReason() != null && !ingredient.getCompatibilityReason().isEmpty()) {
+                    tvCompatibilityReason.setText(ingredient.getCompatibilityReason());
+                    tvCompatibilityReason.setVisibility(View.VISIBLE);
+                } else {
+                    tvCompatibilityReason.setVisibility(View.GONE);
+                }
+            } else {
+                layoutCompatibility.setVisibility(View.GONE);
+                tvCompatibilityReason.setVisibility(View.GONE);
+            }
+
+            // Benefits
+            if (ingredient.getBenefits() != null && !ingredient.getBenefits().isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                for (String b : ingredient.getBenefits()) {
+                    sb.append("• ").append(b).append("\n");
+                }
+                tvBenefits.setText(sb.toString().trim());
+            } else {
+                tvBenefits.setText("Không có thông tin");
+            }
+
+            // Skin Types
+            if (ingredient.getSuitableSkinTypes() != null && !ingredient.getSuitableSkinTypes().isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                for (String s : ingredient.getSuitableSkinTypes()) {
+                    sb.append("• ").append(s).append("\n");
+                }
+                tvSkinTypes.setText(sb.toString().trim());
+            } else {
+                tvSkinTypes.setText("Không có thông tin");
+            }
+
+            // Warnings
+            if (ingredient.getWarnings() != null && !ingredient.getWarnings().isEmpty()) {
+                layoutWarnings.setVisibility(View.VISIBLE);
+                StringBuilder sb = new StringBuilder();
+                for (String w : ingredient.getWarnings()) {
+                    sb.append("• ").append(w).append("\n");
+                }
+                tvWarnings.setText(sb.toString().trim());
+            } else {
+                layoutWarnings.setVisibility(View.GONE);
+            }
         }
     }
 

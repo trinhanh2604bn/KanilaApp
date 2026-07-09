@@ -17,14 +17,30 @@
 function parseBudgetMax(message) {
   const text = message.toLowerCase();
 
-  // Pattern: number followed by "k" or "nghìn" (thousands)
+  // Pattern: number followed by "k" (thousands)
   const kPattern = /(?:dưới|khoảng|tầm|trong|tối đa|max)?\s*(\d+[\.,]?\d*)\s*k(?:đ|d)?/i;
+  // Pattern: number followed by "triệu" or "tr"
+  const mPattern = /(?:dưới|khoảng|tầm|trong|tối đa|max)?\s*(\d+[\.,]?\d*)\s*(?:triệu|tr)(?:đ|d)?/i;
+  // Pattern: number followed by "nghìn" or "ngàn"
+  const nPattern = /(?:dưới|khoảng|tầm|trong|tối đa|max)?\s*(\d+[\.,]?\d*)\s*(?:nghìn|ngàn)(?:đ|d)?/i;
   // Pattern: full VND amount (e.g. 300000, 300.000, 300,000)
   const vndPattern = /(?:dưới|khoảng|tầm|trong|tối đa|max)?\s*(\d{2,3}[\.,]\d{3}(?:[\.,]\d{3})?)\s*(?:đ|vnd|vnđ|₫)?/i;
   // Pattern: plain number followed by "đồng" or "vnd"
   const plainPattern = /(?:dưới|khoảng|tầm|trong|tối đa|max)?\s*(\d{4,7})\s*(?:đ|vnd|vnđ|₫|đồng)/i;
 
   let match = text.match(kPattern);
+  if (match) {
+    const raw = parseFloat(match[1].replace(",", "."));
+    return Math.round(raw * 1000);
+  }
+
+  match = text.match(mPattern);
+  if (match) {
+    const raw = parseFloat(match[1].replace(",", "."));
+    return Math.round(raw * 1000000);
+  }
+
+  match = text.match(nPattern);
   if (match) {
     const raw = parseFloat(match[1].replace(",", "."));
     return Math.round(raw * 1000);

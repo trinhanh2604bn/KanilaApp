@@ -76,6 +76,10 @@ const sendMessage = async (req, res) => {
 
   const { session_id, message, source_screen, product_ids, cart_items } = req.body;
 
+  console.log("\n[CHATBOT_DEBUG]");
+  console.log("USER:");
+  console.log(`"${message}"\n`);
+
   try {
     // 2. Delegate to service — passes req.user (may be undefined for guests)
     // Phase 5B: also forward product_ids (legacy) / cart_items (variant-explicit) for add_to_cart
@@ -96,6 +100,9 @@ const sendMessage = async (req, res) => {
       productIds:   Array.isArray(product_ids) ? product_ids.map(String) : undefined,
       cartItems:    sanitizedCartItems || undefined,
     });
+
+    console.log("GEMINI RESPONSE:\n" + (result.bot_message || "") + "\n");
+    console.log("FINAL RESPONSE:\n" + JSON.stringify(result, null, 2) + "\n");
 
     return res.status(200).json({
       success: true,

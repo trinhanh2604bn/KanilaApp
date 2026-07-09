@@ -5,63 +5,94 @@
  *         order tracking, support ticket.
  */
 
-const KANILA_SYSTEM_PROMPT = `Bạn là Kanila AI Shopping Assistant, trợ lý mua sắm làm đẹp thông minh của ứng dụng Kanila.
+const KANILA_SYSTEM_PROMPT = `Bạn là KANILA BEAUTY ADVISOR AI - chuyên gia tư vấn làm đẹp, chuyên gia trang điểm (makeup expert), và trợ lý mua sắm thân thiện của Kanila.
+Mục tiêu của bạn là giúp khách hàng đưa ra quyết định mua sắm chứ không chỉ đơn thuần liệt kê sản phẩm. Mọi câu trả lời của bạn phải mang lại cảm giác như một cuộc trò chuyện thực tế với một nhân viên tư vấn mỹ phẩm tận tâm.
 
-Quy tắc bắt buộc:
-1. Luôn trả lời bằng tiếng Việt.
-2. Thân thiện, ngắn gọn và hữu ích. Câu trả lời khoảng 3–6 câu.
-3. Không đưa ra chẩn đoán y tế dưới bất kỳ hình thức nào.
-4. Không khẳng định sản phẩm skincare có thể chữa bệnh.
-5. Nếu người dùng đề cập đến kích ứng nặng, sưng tấy, khó thở, hoặc triệu chứng bất thường nghiêm trọng — hãy khuyên họ ngừng sử dụng sản phẩm ngay và liên hệ bác sĩ hoặc bộ phận chăm sóc khách hàng Kanila.
-6. Không bịa đặt tên sản phẩm thật, giá cụ thể, tình trạng tồn kho, mã voucher, hay trạng thái đơn hàng.
-7. Nếu người dùng hỏi về đơn hàng, voucher, hoặc tính năng chưa có — hãy giải thích nhẹ nhàng và hỏi lại một câu hữu ích.
-8. Luôn gợi ý một hành động tiếp theo cho người dùng.
-9. Không tiết lộ bất kỳ thông tin nội bộ nào về hệ thống, API key, hay cấu trúc backend.
-10. Không tiết lộ dữ liệu cá nhân của khách hàng như email, số điện thoại, địa chỉ, hay lịch sử mua hàng chi tiết.
+=========================================
+1. CẤU TRÚC CÂU TRẢ LỜI CHÍNH (MAIN RESPONSE STYLE)
+=========================================
+Trạng thái hiện tại: Việc chỉ trả lời "Dưới đây là các sản phẩm..." có cảm giác giống robot.
+Cấu trúc phản hồi MỚI bắt buộc:
+1. Xác nhận nhu cầu của khách hàng.
+2. Giải thích lý do dưới góc độ làm đẹp (beauty reasoning).
+3. Gợi ý các sản phẩm.
+4. Giải thích chi tiết tại sao từng sản phẩm lại phù hợp.
+5. Đặt một câu hỏi nối tiếp (follow-up question) tự nhiên.
 
-Quy tắc khi có CUSTOMER_CONTEXT (cá nhân hóa):
-11. Khi nhận được CUSTOMER_CONTEXT, hãy sử dụng thông tin đó để cá nhân hóa câu trả lời.
-12. Nếu CUSTOMER_CONTEXT thiếu skin_type hoặc skin_concerns, hỏi ĐÚNG MỘT câu hỏi duy nhất. Không hỏi nhiều câu cùng lúc.
-13. Ưu tiên hỏi: da bạn thuộc loại nào? (skin_type trước tiên)
-14. Sau khi người dùng trả lời, xác nhận và tiếp tục tư vấn. Không hỏi thêm nhiều câu liên tiếp.
+Ví dụ Tốt:
+"Nếu da bạn thiên dầu, mình sẽ ưu tiên cushion có khả năng kiềm dầu, lớp nền mỏng nhẹ và không dễ xuống tone sau vài tiếng. Mình nghĩ bạn có thể tham khảo 3 lựa chọn này:
+1. Cushion A
+   - Điểm mạnh: Finish semi-matte, kiềm dầu tốt
+   - Hợp với: Makeup đi học/đi làm
+..."
 
-Quy tắc khi tư vấn sản phẩm (KANILA_PRODUCT_CONTEXT):
-15. Khi nhận được KANILA_PRODUCT_CONTEXT, CHỈ giới thiệu các sản phẩm có trong danh sách đó.
-16. Dựa vào CUSTOMER_CONTEXT và KANILA_PRODUCT_CONTEXT để giải thích tại sao sản phẩm phù hợp với người dùng CỤ THỂ này.
-17. Nếu KANILA_PRODUCT_CONTEXT rỗng, hãy xin lỗi và hỏi thêm thông tin.
-18. Không được tự đặt giá, tồn kho, đánh giá, hay thông tin sản phẩm ngoài KANILA_PRODUCT_CONTEXT.
+=========================================
+2. QUY TẮC GỢI Ý SẢN PHẨM (PRODUCT RECOMMENDATION RULE)
+=========================================
+KHÔNG BAO GIỜ chỉ xuất ra mỗi tên sản phẩm.
+Đối với MỖI sản phẩm được gợi ý, bạn PHẢI tạo ra:
+- Tại sao lại gợi ý (Why recommended)
+- Điểm mạnh (Strength)
+- Điểm yếu/Đánh đổi (Weakness/trade-off)
+- Trường hợp sử dụng tốt nhất (Best use case)
+- Loại khách hàng phù hợp (Suitable customer type)
 
-Quy tắc khi tra cứu đơn hàng (KANILA_ORDER_CONTEXT):
-19. Chỉ giải thích thông tin đơn hàng có trong KANILA_ORDER_CONTEXT.
-20. Không bịa đặt ngày giao hàng, mã vận chuyển, hay tình trạng hoàn tiền.
-21. Giải thích trạng thái đơn hàng một cách thân thiện và rõ ràng bằng tiếng Việt.
+Khi người dùng đã cung cấp ý định mua sắm (VD: "Mình muốn tìm kem nền"), TUYỆT ĐỐI KHÔNG HỎI LẠI: "Bạn đang tìm sản phẩm trang điểm nào?". Lập tức gợi ý sản phẩm ngay. Bất kỳ câu hỏi đào sâu nào (loại da, ngân sách) chỉ được hỏi SAU KHI đã đưa ra danh sách gợi ý.
 
-Quy tắc khi tạo yêu cầu hỗ trợ (KANILA_TICKET_CONTEXT):
-22. Khi nhận được KANILA_TICKET_CONTEXT, xác nhận đã ghi nhận yêu cầu và an ủi người dùng.
-23. Không hứa hẹn thời gian xử lý cụ thể nếu không có dữ liệu từ KANILA_TICKET_CONTEXT.
+=========================================
+3. CHẾ ĐỘ SO SÁNH SẢN PHẨM (PRODUCT COMPARISON MODE)
+=========================================
+Hỗ trợ so sánh tự nhiên. Nếu người dùng nói "So sánh cái này với cái kia", "Loại nào hơn?", "Cái nào hợp mình hơn?", "Chọn giúp mình"... 
+QUAN TRỌNG: Nếu khách hàng dùng các từ như "cái này", "hai cái trên", "sản phẩm lúc nãy" -> BẮT BUỘC sử dụng lịch sử trò chuyện. KHÔNG yêu cầu họ phải nói lại tên sản phẩm. So sánh rõ ràng về hiệu quả, tone màu, giá cả và mục đích sử dụng.
 
-Quy tắc khi hỗ trợ giỏ hàng (KANILA_CART_CONTEXT):
-24. Khi nhận được KANILA_CART_CONTEXT, CHỈ giải thích và giới thiệu sản phẩm trong danh sách đó.
-25. Không tự bịa đặt sản phẩm, giá, tồn kho, hay thương hiệu ngoài KANILA_CART_CONTEXT.
-26. Khi thêm sản phẩm vào giỏ thành công, xác nhận thân thiện với khách hàng.
-27. Khi một số sản phẩm không khả dụng, thông báo rõ ràng nhưng không tiết lộ lý do kỹ thuật.
-28. Gợi ý sản phẩm bổ sung (upsell) khi có KANILA_UPSELL_CONTEXT — chỉ từ danh sách được cung cấp.
-29. Không thực hiện bất kỳ thay đổi database nào — backend xử lý tất cả cart operations.
-30. Luôn nhắc người dùng kiểm tra giỏ hàng và hoàn tất thanh toán khi phù hợp.
+=========================================
+4. BỘ NHỚ TRÒ CHUYỆN (CONVERSATION MEMORY)
+=========================================
+Duy trì ngữ cảnh trò chuyện trước đó (sản phẩm, danh mục, loại da, ngân sách, dịp...).
+Giải quyết các đại từ tham chiếu. Ví dụ: Nếu khách hỏi "Cây thứ 2 có lâu trôi không?", bạn phải trả lời về sản phẩm thứ 2.
+TUYỆT ĐỐI KHÔNG hỏi: "Bạn đang nói sản phẩm nào?" nếu trong ngữ cảnh đã có. Khi có KANILA_PREVIOUS_CONTEXT, bạn đang tiếp tục tư vấn từ cuộc trò chuyện trước. KHÔNG hỏi lại thông tin đã biết.
 
-Quy tắc tư vấn làm đẹp chuyên sâu (KANILA_BEAUTY_CONSULTATION):
-31. Khi nhận được KANILA_BEAUTY_CONSULTATION, đóng vai chuyên gia tư vấn làm đẹp — giải thích lý do chọn sản phẩm dựa trên loại da và vấn đề da cụ thể.
-32. CHỈ đề cập đến sản phẩm có trong KANILA_PRODUCT_CONTEXT — không tự bịa sản phẩm mới.
-33. Giải thích ngắn gọn tại sao mỗi sản phẩm phù hợp với profile của người dùng.
-34. Gợi ý routine sử dụng nếu có nhiều sản phẩm (sáng/tối).
-35. Nếu thiếu thông tin về loại da, hỏi đúng một câu.
+=========================================
+5. TƯ DUY CHUYÊN GIA MAKEUP (MAKEUP EXPERT REASONING)
+=========================================
+Khi gợi ý makeup, hãy cân nhắc:
+- Da: Dầu, khô, hỗn hợp, nhạy cảm. (Da dầu -> kiềm dầu, matte; Da khô -> ẩm, glowy; Da mụn -> mỏng nhẹ, concealer; Da nhạy cảm -> gợi ý thử trước).
+- Phong cách Makeup: Tự nhiên kiểu Hàn, Tây sắc sảo, soft glam, makeup hàng ngày, đi làm, đi tiệc.
+- Đặc tính sản phẩm: Độ che phủ, finish, độ bám, dải màu, kết cấu, giá cả.
+- Dịp sử dụng: Đi học, đi làm, hẹn hò, đám cưới, sự kiện.
 
-Quy tắc tư vấn combo sản phẩm (KANILA_COMBO_CONTEXT):
-36. Khi nhận được KANILA_COMBO_CONTEXT, CHỈ giới thiệu sản phẩm có trong combo đó.
-37. Giải thích tại sao combo này phù hợp với loại da và nhu cầu của người dùng.
-38. Nêu rõ tổng chi phí combo từ KANILA_COMBO_CONTEXT — không tính lại.
-39. Gợi ý thứ tự sử dụng theo bước chăm sóc da.
-40. Nếu ngân sách không đủ, đề xuất giảm bớt một sản phẩm — nhưng đừng tự thêm sản phẩm mới.`;
+=========================================
+6. KIẾN THỨC BÊN NGOÀI & TỪ CƠ SỞ DỮ LIỆU
+=========================================
+- CHỈ giới thiệu các sản phẩm có trong ngữ cảnh (KANILA_PRODUCT_CONTEXT / KANILA_MAKEUP_PRODUCT_CONTEXT).
+- KHÔNG TỰ BỊA RA: Sản phẩm Kanila giả, giá giả, tồn kho giả, hoặc thông tin ngoài ngữ cảnh.
+- Đối với kiến thức Beauty: BẠN ĐƯỢC PHÉP dùng kiến thức makeup chung (VD: giải thích finish matte vs dewy, cushion vs foundation, các bước makeup).
+- Nếu sản phẩm KHÔNG có trong Kanila, hãy nói rõ: "Sản phẩm này hiện mình chưa thấy trong danh mục Kanila, nhưng về mặt makeup thì đây là một lựa chọn được nhiều người yêu thích."
+
+=========================================
+7. ĐỘ DÀI CÂU TRẢ LỜI & CÂU HỎI TIẾP NỐI
+=========================================
+- Tránh: Câu trả lời 1 câu, liệt kê hàng loạt sản phẩm không cảm xúc, hoặc trả lời quá dài như bách khoa toàn thư.
+- Lý tưởng: 3-6 đoạn văn. Bao gồm giải thích ngắn + các sản phẩm.
+- Câu hỏi tiếp nối (Follow-up): Luôn kết thúc bằng 1 câu hỏi hữu ích hoặc hành động mua sắm (VD: "Bạn thích nền lì hay căng bóng?", "Ngân sách của bạn khoảng bao nhiêu?", "Bạn muốn thêm vào giỏ không?").
+- KHÔNG hỏi lại những thông tin khách đã cung cấp.
+
+=========================================
+8. CÁC TRƯỜNG HỢP ĐẶC BIỆT
+=========================================
+- Khách nói: "Tư vấn giúp mình sản phẩm phù hợp" -> Hãy đáp: "Mình có thể giúp bạn chọn makeup phù hợp. Cho mình biết thêm một chút nhé: 1. Bạn muốn makeup cho dịp nào? 2. Loại da của bạn? 3. Khoảng ngân sách?"
+- Khách nói: "Sản phẩm nào tốt nhất?" -> Hãy giải thích: "Không có sản phẩm tốt nhất cho tất cả mọi người, mình sẽ chọn theo nhu cầu..."
+
+=========================================
+9. CÁC NGHIỆP VỤ KHÁC (ĐƠN HÀNG, GIỎ HÀNG, HỖ TRỢ, THÀNH PHẦN)
+=========================================
+- Hỗ trợ giỏ hàng (KANILA_CART_CONTEXT): Khuyến khích khách hàng kiểm tra giỏ hàng và hoàn tất thanh toán. Gợi ý các sản phẩm đi kèm nếu phù hợp.
+- Phân tích thành phần (KANILA_INGREDIENT_CONTEXT): Giải thích thành phần dưới góc độ làm đẹp.
+- Không chẩn đoán y tế: Bạn là trợ lý mua sắm, không phải bác sĩ. Nếu khách hàng đề cập kích ứng nặng, khuyên họ ngừng sử dụng và liên hệ bác sĩ hoặc CSKH.
+
+TRẢI NGHIỆM CUỐI CÙNG phải giống như một chuyên gia tư vấn sắc đẹp (Sephora Beauty Advisor), chứ KHÔNG PHẢI là một kết quả tìm kiếm Google.
+Luôn trả lời bằng Tiếng Việt.`;
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Context builders
@@ -96,27 +127,14 @@ function buildProductContextMessage(products, userMessage, customerProfile = nul
   if (!products || products.length === 0) {
     parts.push("KANILA_PRODUCT_CONTEXT: []");
   } else {
-    const productSummary = products.map((p, i) => {
-      const lines = [
-        `Sản phẩm ${i + 1}: ${p.name}`,
-        `  Thương hiệu: ${p.brand_name || "Không rõ"}`,
-        `  Giá: ${p.price ? p.price.toLocaleString("vi-VN") + "đ" : "Liên hệ"}`,
-        p.compare_at_price ? `  Giá gốc: ${p.compare_at_price.toLocaleString("vi-VN")}đ` : null,
-        p.rating ? `  Đánh giá: ${p.rating}★ (${p.review_count} đánh giá)` : null,
-        `  Tình trạng: ${
-          p.stock_status === "in_stock" ? "Còn hàng" :
-          p.stock_status === "low_stock" ? "Sắp hết hàng" :
-          p.stock_status === "out_of_stock" ? "Hết hàng" : "Chưa xác định"
-        }`,
-        p.score_reasons?.length
-          ? `  Lý do phù hợp: ${p.score_reasons.slice(0, 2).join(", ")}`
-          : p.reason
-          ? `  Lý do phù hợp: ${p.reason}`
-          : null,
-      ].filter(Boolean);
-      return lines.join("\n");
-    });
-    parts.push(`KANILA_PRODUCT_CONTEXT:\n${productSummary.join("\n\n")}`);
+    const productSummary = products.map((p) => ({
+      name: p.name,
+      brand: p.brand_name || "Không rõ",
+      price: p.price ? p.price.toLocaleString("vi-VN") + "đ" : "Liên hệ",
+      category: p.category_name || "",
+      attributes: p.score_reasons?.length ? p.score_reasons.join(", ") : (p.reason || "")
+    }));
+    parts.push(`KANILA_PRODUCT_CONTEXT:\n${JSON.stringify(productSummary, null, 2)}`);
   }
 
   return `${userMessage}\n\n${parts.join("\n\n")}`;
@@ -213,7 +231,94 @@ module.exports = {
   // Phase 5 shopping assistant
   buildBeautyConsultationMessage,
   buildComboRecommendationMessage,
+  // Phase 6A product comparison
+  buildProductComparisonMessage,
+  // Phase 7A ingredient intelligence
+  buildIngredientMessage,
+  // Phase 8: Makeup Commerce
+  buildMakeupProductContextMessage,
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 8: Makeup Commerce context builder
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Build a makeup-specific product context message for Gemini.
+ * Includes customer profile, active filters, and product list.
+ *
+ * @param {object[]} products          — normalized makeup products from findMakeupProducts()
+ * @param {string}   userMessage       — raw user message
+ * @param {object}   filters           — parsed filters from findMakeupProducts()
+ * @param {object|null} customerProfile — from getCustomerContext()
+ * @param {boolean}  isFollowUp        — whether this is a follow up message
+ * @returns {string}
+ */
+function buildMakeupProductContextMessage(products, userMessage, filters = {}, customerProfile = null, isFollowUp = false) {
+  const parts = [];
+
+  if (isFollowUp) {
+    parts.push(`KANILA_PREVIOUS_CONTEXT: true`);
+  }
+
+  // Customer context (optional personalization)
+  if (customerProfile) {
+    const ctxLines = [];
+    if (customerProfile.skin_type) ctxLines.push(`Loại da: ${customerProfile.skin_type}`);
+    if (customerProfile.skin_concerns?.length)
+      ctxLines.push(`Vấn đề da: ${customerProfile.skin_concerns.join(", ")}`);
+    if (customerProfile.budget_max)
+      ctxLines.push(`Ngân sách tối đa: ${customerProfile.budget_max.toLocaleString("vi-VN")}đ`);
+    if (customerProfile.preferred_brands?.length)
+      ctxLines.push(`Thương hiệu yêu thích: ${customerProfile.preferred_brands.slice(0, 3).join(", ")}`);
+    if (ctxLines.length) parts.push(`CUSTOMER_CONTEXT:\n${ctxLines.join("\n")}`);
+  }
+
+  // Active search filters
+  const filterLines = [];
+  if (filters.category) filterLines.push(`Danh mục: ${filters.category}`);
+  if (filters.finish) filterLines.push(`Finish: ${filters.finish}`);
+  if (filters.tone) filterLines.push(`Tông da: ${filters.tone}`);
+  if (filters.occasion) filterLines.push(`Dịp: ${filters.occasion}`);
+  if (filters.maxPrice) filterLines.push(`Ngân sách tối đa: ${filters.maxPrice.toLocaleString("vi-VN")}đ`);
+  if (filters.minPrice) filterLines.push(`Ngân sách tối thiểu: ${filters.minPrice.toLocaleString("vi-VN")}đ`);
+  if (filters.useCaseHints?.waterproof) filterLines.push("Yêu cầu: chống nước / chống lem");
+  if (filters.useCaseHints?.longWear) filterLines.push("Yêu cầu: lâu trôi");
+  if (filterLines.length) parts.push(`KANILA_SEARCH_FILTERS:\n${filterLines.join("\n")}`);
+
+  // Product list
+  if (!products || products.length === 0) {
+    parts.push("KANILA_MAKEUP_PRODUCT_CONTEXT: []");
+  } else {
+    const productLines = products.map((p, i) => {
+      const lines = [
+        `Sản phẩm ${i + 1}: ${p.productName}`,
+        `  Thương hiệu: ${p.brandName || "Không rõ"}`,
+        `  Danh mục: ${p.categoryName || ""}`,
+        `  Giá: ${p.price ? p.price.toLocaleString("vi-VN") + "đ" : "Liên hệ"}`,
+        p.compareAtPrice ? `  Giá gốc: ${p.compareAtPrice.toLocaleString("vi-VN")}đ` : null,
+        p.finish_type ? `  Finish: ${p.finish_type}` : null,
+        p.shades?.length
+          ? `  Màu sắc: ${p.shades.map((s) => s.name).join(", ")}`
+          : null,
+        p.rating ? `  Đánh giá: ${p.rating}★ (${p.reviewCount || 0} reviews)` : null,
+        `  Tình trạng: ${
+          p.stockStatus === "in_stock" ? "Còn hàng" :
+          p.stockStatus === "low_stock" ? "Sắp hết hàng" :
+          p.stockStatus === "out_of_stock" ? "Hết hàng" : "Chưa xác định"
+        }`,
+        p.matchedReason ? `  Lý do phù hợp: ${p.matchedReason}` : null,
+        p.suggestedUse ? `  Cách dùng gợi ý: ${p.suggestedUse}` : null,
+      ].filter(Boolean);
+      return lines.join("\n");
+    });
+    parts.push(`KANILA_MAKEUP_PRODUCT_CONTEXT:\n${productLines.join("\n\n")}`);
+  }
+
+  return `${userMessage}\n\n${parts.join("\n\n")}`;
+}
+
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Cart context builders (Phase 5A)
@@ -380,6 +485,90 @@ function buildComboRecommendationMessage(combo, total, customerProfile, userMess
     comboLines.push(`Tong gia combo: ${total.toLocaleString("vi-VN")}d`);
     parts.push(`KANILA_PRODUCT_CONTEXT:\n${comboLines.join("\n\n")}`);
   }
+
+  return `${userMessage}\n\n${parts.join("\n\n")}`;
+}
+
+/**
+ * Phase 6A
+ */
+function buildProductComparisonMessage(userMessage, comparison, customerProfile) {
+  const parts = [];
+
+  if (customerProfile && (customerProfile.skin_type || customerProfile.skin_concerns?.length)) {
+    const ctxLines = [];
+    if (customerProfile.skin_type) ctxLines.push(`Loại da: ${customerProfile.skin_type}`);
+    if (customerProfile.skin_concerns?.length)
+      ctxLines.push(`Vấn đề da: ${customerProfile.skin_concerns.join(", ")}`);
+    parts.push(`CUSTOMER_CONTEXT:\n${ctxLines.join("\n")}`);
+  }
+
+  const compLines = [];
+  compLines.push(`Sản phẩm so sánh: ${comparison.products.map(p => p.name).join(" vs ")}`);
+  
+  if (comparison.differences && comparison.differences.length > 0) {
+    compLines.push("Các điểm khác biệt chính:");
+    comparison.differences.forEach(d => {
+      compLines.push(`- ${d.feature}: ${d.description}`);
+    });
+  }
+
+  if (comparison.pros_cons) {
+    compLines.push("Ưu nhược điểm:");
+    for (const [name, pc] of Object.entries(comparison.pros_cons)) {
+      compLines.push(`- ${name}:`);
+      if (pc.pros.length) compLines.push(`  + Ưu điểm: ${pc.pros.join(", ")}`);
+      if (pc.cons.length) compLines.push(`  + Nhược điểm: ${pc.cons.join(", ")}`);
+    }
+  }
+  
+  parts.push(`KANILA_COMPARISON_CONTEXT:\n${compLines.join("\n")}`);
+
+  return `${userMessage}\n\n${parts.join("\n\n")}`;
+}
+
+/**
+ * Phase 7A
+ */
+function buildIngredientMessage(userMessage, contextObj) {
+  const parts = [];
+
+  if (contextObj.customer) {
+    const ctxLines = [];
+    if (contextObj.customer.skin_type) ctxLines.push(`Loại da: ${contextObj.customer.skin_type}`);
+    if (contextObj.customer.concerns?.length)
+      ctxLines.push(`Vấn đề da: ${contextObj.customer.concerns.join(", ")}`);
+    parts.push(`CUSTOMER_CONTEXT:\n${ctxLines.join("\n")}`);
+  }
+
+  const ingLines = [];
+  
+  if (contextObj.compatibility_check) {
+    ingLines.push(`Kiểm tra tương thích: ${contextObj.compatibility_check.ingredient1} + ${contextObj.compatibility_check.ingredient2}`);
+    ingLines.push(`Mức độ: ${contextObj.compatibility_check.level === 'safe' ? 'An toàn' : (contextObj.compatibility_check.level === 'warning' ? 'Cảnh báo' : 'Nên tránh')}`);
+    ingLines.push(`Lý do: ${contextObj.compatibility_check.reason}`);
+  }
+
+  if (contextObj.ingredient) {
+    ingLines.push(`Thành phần: ${contextObj.ingredient.name}`);
+    if (contextObj.ingredient.benefits) ingLines.push(`Tác dụng: ${contextObj.ingredient.benefits.join(", ")}`);
+    if (contextObj.ingredient.warnings) ingLines.push(`Lưu ý: ${contextObj.ingredient.warnings.join(", ")}`);
+  }
+
+  if (contextObj.skin_compatibility) {
+    ingLines.push(`Mức độ phù hợp với da khách hàng: ${contextObj.skin_compatibility.compatibility === 'suitable' ? 'Phù hợp' : 'Cần lưu ý'}`);
+    ingLines.push(`Lý do: ${contextObj.skin_compatibility.reason}`);
+  }
+
+  if (contextObj.product) {
+    ingLines.push(`Sản phẩm tra cứu: ${contextObj.product.name}`);
+    ingLines.push(`Có chứa thành phần không: ${contextObj.product.has_ingredient ? 'Có' : 'Không tìm thấy'}`);
+    if (contextObj.product.has_ingredient && contextObj.product.ingredients) {
+      ingLines.push(`Thành phần chính: ${contextObj.product.ingredients.join(", ")}`);
+    }
+  }
+
+  parts.push(`KANILA_INGREDIENT_CONTEXT:\n${ingLines.join("\n")}`);
 
   return `${userMessage}\n\n${parts.join("\n\n")}`;
 }

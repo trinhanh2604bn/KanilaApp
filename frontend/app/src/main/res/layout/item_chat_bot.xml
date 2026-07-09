@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:text="AI Assistant"
-            android:textAppearance="@style/Caption"
+            style="@style/Text.Kanila.Caption"
             android:textColor="@color/text_tertiary" />
 
         <TextView
@@ -44,7 +44,7 @@
             android:paddingVertical="10dp"
             android:lineSpacingExtra="2dp"
             android:text="Chào bạn! Mình là Kanila AI Assistant. Mình có thể giúp gì cho bạn hôm nay?"
-            android:textAppearance="@style/Body"
+            style="@style/Text.Kanila.Body"
             android:textColor="@color/text_main" />
 
         <TextView
@@ -56,7 +56,7 @@
             android:paddingHorizontal="10dp"
             android:paddingVertical="4dp"
             android:text="@string/chat_personalized_badge"
-            android:textAppearance="@style/Caption"
+            style="@style/Text.Kanila.Caption"
             android:textColor="@color/accent_dark"
             android:visibility="gone"
             tools:visibility="visible" />
@@ -87,6 +87,35 @@
             tools:listitem="@layout/item_chat_product_card"
             tools:visibility="visible" />
 
+        <LinearLayout
+            android:id="@+id/layoutUpsell"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Có thể bạn quan tâm:"
+                style="@style/Text.Kanila.Caption"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/nunito_bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvUpsellProducts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:clipToPadding="false"
+                android:paddingHorizontal="4dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_chat_product_card" />
+        </LinearLayout>
+
         <FrameLayout
             android:id="@+id/layoutOrderCardContainer"
             android:layout_width="match_parent"
@@ -106,6 +135,15 @@
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/layoutComparisonCardContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible">
+            <include layout="@layout/item_chat_product_comparison" />
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/layoutCartSummaryContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -114,13 +152,22 @@
             <include layout="@layout/item_chat_cart_summary" />
         </FrameLayout>
 
+        <FrameLayout
+            android:id="@+id/layoutIngredientCardContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible">
+            <include layout="@layout/item_chat_ingredient_analysis" />
+        </FrameLayout>
+
         <TextView
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="09:41"
-            android:textAppearance="@style/Micro"
+            style="@style/Text.Kanila.Micro"
             android:textColor="@color/text_tertiary" />
     </LinearLayout>
 </LinearLayout>

@@ -149,6 +149,9 @@ public interface ApiService {
     @GET("api/shipping-methods")
     Call<ApiResponse<List<com.example.frontend.data.model.shipping.ShippingMethodDto>>> getShippingMethods();
 
+    @GET("api/payment-methods")
+    Call<ApiResponse<List<com.example.frontend.data.model.payment.PaymentMethodDto>>> getPaymentMethods();
+
     @POST("api/checkout-sessions/me/buy-now")
     Call<ApiResponse<CheckoutSessionDto>> createBuyNowSession(@Body AddToCartRequest request);
 

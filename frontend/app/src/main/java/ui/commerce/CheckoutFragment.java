@@ -162,6 +162,21 @@ public class CheckoutFragment extends Fragment {
         if (paymentCard != null) {
             ((TextView) paymentCard.findViewById(R.id.tvCheckoutOptionTitle)).setText(R.string.checkout_payment_title);
             ((ImageView) paymentCard.findViewById(R.id.ivCheckoutOptionIcon)).setImageResource(R.drawable.ic_paymeny_card);
+
+            View.OnClickListener paymentClickListener = v -> {
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main, new PaymentMethodFragment())
+                            .addToBackStack(null)
+                            .commit();
+                }
+            };
+
+            View btnEdit = paymentCard.findViewById(R.id.tvCheckoutOptionEdit);
+            if (btnEdit != null) {
+                btnEdit.setOnClickListener(paymentClickListener);
+            }
+            paymentCard.setOnClickListener(paymentClickListener);
         }
 
         View voucherCard = view.findViewById(R.id.layoutCheckoutVoucher);
@@ -386,7 +401,7 @@ public class CheckoutFragment extends Fragment {
         setupShipping(session.getShippingMethod(), session.getShippingAmount(), session.getEstimatedDelivery());
 
         // 3. Payment
-        // ...
+        setupPayment(session.getPaymentMethod());
 
         // 4. Voucher
         setupVoucher(session.getDiscountAmount());
@@ -511,8 +526,20 @@ public class CheckoutFragment extends Fragment {
         TextView tvPrimary = card.findViewById(R.id.tvCheckoutOptionPrimary);
         TextView tvSecondary = card.findViewById(R.id.tvCheckoutOptionSecondary);
         TextView tvValue = card.findViewById(R.id.tvCheckoutOptionRightValue);
+        ImageView ivIcon = card.findViewById(R.id.ivCheckoutOptionIcon);
 
-        tvPrimary.setText(method != null ? method : "Thanh toán khi nhận hàng (COD)");
+        String displayMethod = (method != null && !method.isEmpty()) ? method : "Thanh toán khi nhận hàng (COD)";
+        tvPrimary.setText(displayMethod);
+
+        // Change icon based on selection
+        if (ivIcon != null) {
+            if (displayMethod.contains("COD") || displayMethod.contains("nhận hàng")) {
+                ivIcon.setImageResource(R.drawable.ic_delivery_truck);
+            } else {
+                ivIcon.setImageResource(R.drawable.ic_paymeny_card);
+            }
+        }
+
         if (tvSecondary != null) tvSecondary.setVisibility(View.GONE);
         if (tvValue != null) tvValue.setVisibility(View.GONE);
     }

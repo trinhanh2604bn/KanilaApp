@@ -114,6 +114,15 @@ public class CheckoutViewModel extends AndroidViewModel {
     }
 
     public void updatePaymentMethod(String paymentMethod) {
+        if (USE_MOCK_CHECKOUT) {
+            CheckoutSessionDto session = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
+            if (session != null) {
+                session.setPaymentMethod(paymentMethod);
+                checkoutSession.setValue(NetworkResult.success(session));
+            }
+            return;
+        }
+
         CheckoutSessionDto currentSession = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
         if (currentSession != null && currentSession.getId() != null) {
             boolean isGuest = !com.example.frontend.data.remote.TokenManager.getInstance(getApplication()).isLoggedIn();

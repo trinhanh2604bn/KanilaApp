@@ -339,15 +339,16 @@ public class SuitableIngredientsFragment extends Fragment {
     }
 
     private void showSaveConfirmDialog() {
-        new MaterialAlertDialogBuilder(requireContext())
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Xác nhận lưu")
                 .setMessage("Bạn có chắc chắn muốn lưu thiết lập thành phần này không?")
-                .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
-                .setPositiveButton("Lưu", (dialog, which) -> {
-                    dialog.dismiss();
+                .setNegativeButton("Hủy", (d, which) -> d.dismiss())
+                .setPositiveButton("Lưu", (d, which) -> {
+                    d.dismiss();
                     showSaveSuccessPopup();
                 })
                 .show();
+        ViewUtils.customizeDialogButtons(dialog);
     }
 
     private void showSaveSuccessPopup() {

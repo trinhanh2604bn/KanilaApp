@@ -20,7 +20,7 @@ import com.example.frontend.feature.account.AccountViewModel;
 
 import java.util.Locale;
 
-import ui.common.BottomNavigationHelper;
+import ui.common.FragmentNavigationHelper;
 
 public class AccountFragment extends Fragment {
 
@@ -40,11 +40,10 @@ public class AccountFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
         
         initViews(view);
-        setupBottomNavigation(view);
-        
+
         checkLoginStatus();
     }
 
@@ -53,6 +52,7 @@ public class AccountFragment extends Fragment {
             scrollAccountContent.setVisibility(View.VISIBLE);
             layoutGuestState.setVisibility(View.GONE);
             observeViewModel();
+            // Don't always reload if data is already there, but for this task we want fresh data
             viewModel.loadProfileHub();
         } else {
             scrollAccountContent.setVisibility(View.GONE);
@@ -63,17 +63,11 @@ public class AccountFragment extends Fragment {
 
     private void setupGuestState() {
         layoutGuestState.findViewById(R.id.btnLoginNow).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.auth.LoginFragment())
-                    .addToBackStack(null)
-                    .commit();
+            FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.auth.LoginFragment());
         });
         
         layoutGuestState.findViewById(R.id.tvCreateAccount).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.auth.RegisterFragment())
-                    .addToBackStack(null)
-                    .commit();
+            FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.auth.RegisterFragment());
         });
     }
 
@@ -91,54 +85,67 @@ public class AccountFragment extends Fragment {
         tvSavedCount = view.findViewById(R.id.tvSavedCount);
         
         view.findViewById(R.id.btnEdit).setOnClickListener(v -> {
-            // Navigate to Edit Profile
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, new ProfileOverviewFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
         
-        // Menu item clicks
-        View menuBeautyProfile = view.findViewById(R.id.ivMenu1).getParent() instanceof View ? (View) view.findViewById(R.id.ivMenu1).getParent() : view.findViewById(R.id.ivMenu1);
-        menuBeautyProfile.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new BeautyProfileOverviewFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
-
-        view.findViewById(R.id.btnAccountOrders).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.order.OrderListFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
-
-        view.findViewById(R.id.btnAccountVouchers).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.voucher.VoucherListFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
-
-        view.findViewById(R.id.btnAccountSaved).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new com.example.frontend.feature.wishlist.WishlistFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
-
-        View menuSettings = view.findViewById(R.id.menuSettings);
-        if (menuSettings != null) {
-            menuSettings.setOnClickListener(v -> {
+        // Rank Chip
+        View layoutRank = view.findViewById(R.id.layoutRank);
+        if (layoutRank != null) {
+            layoutRank.setOnClickListener(v -> {
                 getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main, new AccountSettingsFragment())
+                        .replace(R.id.main, new ui.loyalty.LoyaltyFragment())
                         .addToBackStack(null)
                         .commit();
             });
         }
+
+        // Menu item clicks
+        View menuBeautyProfile = view.findViewById(R.id.ivMenu1).getParent() instanceof View ? (View) view.findViewById(R.id.ivMenu1).getParent() : view.findViewById(R.id.ivMenu1);
+        menuBeautyProfile.setOnClickListener(v -> {
+            FragmentNavigationHelper.replaceFragment(requireActivity(), new BeautyProfileOverviewFragment());
+        });
+
+        view.findViewById(R.id.btnAccountOrders).setOnClickListener(v -> {
+            FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.order.OrderListFragment());
+        });
+
+        view.findViewById(R.id.btnAccountVouchers).setOnClickListener(v -> {
+            FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.voucher.VoucherListFragment());
+        });
+
+        view.findViewById(R.id.btnAccountSaved).setOnClickListener(v -> {
+            FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.wishlist.WishlistFragment());
+        });
+
+        View menuPaymentMethod = view.findViewById(R.id.menuPaymentMethod);
+        if (menuPaymentMethod != null) {
+            menuPaymentMethod.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new PaymentMethodAccountFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+
+        View menuSettings = view.findViewById(R.id.menuSettings);
+        if (menuSettings != null) {
+            menuSettings.setOnClickListener(v -> {
+                FragmentNavigationHelper.replaceFragment(requireActivity(), new AccountSettingsFragment());
+            });
+        }
+
+        View menuSupportCenter = view.findViewById(R.id.menuSupportCenter);
+        if (menuSupportCenter != null) {
+            menuSupportCenter.setOnClickListener(v -> {
+                FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.support.HelpCenterFragment());
+            });
+        }
     }
 
-    private void setupBottomNavigation(View view) {
-        BottomNavigationHelper.setupStandardNavigation(this, view);
-        BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_ACCOUNT);
-    }
+
 
     private void observeViewModel() {
         viewModel.getProfileHubResult().observe(getViewLifecycleOwner(), result -> {

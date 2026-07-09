@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_sub">
+
+    <include
+        android:id="@+id/layoutHeader"
+        layout="@layout/view_app_top_bar"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutHeader">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Banner -->
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/banner_loyalty"
+                android:contentDescription="@string/loyalty_perks_title" />
+
+            <!-- Fake Tab Bar -->
+            <LinearLayout
+                android:id="@+id/layoutTierTabs"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@color/background_main"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="4dp">
+
+                <TextView
+                    android:id="@+id/tabBronze"
+                    style="@style/Text.Kanila.BodyMedium"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/loyalty_tier_bronze"
+                    android:textColor="@color/button" />
+
+                <TextView
+                    android:id="@+id/tabSilver"
+                    style="@style/Text.Kanila.Body"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/loyalty_tier_silver" />
+
+                <TextView
+                    android:id="@+id/tabGold"
+                    style="@style/Text.Kanila.Body"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/loyalty_tier_gold" />
+
+                <TextView
+                    android:id="@+id/tabDiamond"
+                    style="@style/Text.Kanila.Body"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/loyalty_tier_diamond" />
+            </LinearLayout>
+
+            <!-- Active Tab Indicator (Underline) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/background_main"
+                android:orientation="horizontal"
+                android:paddingHorizontal="4dp">
+                <View
+                    android:id="@+id/indicatorBronze"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="12dp"
+                    android:background="@color/button" />
+                <View
+                    android:id="@+id/indicatorSilver"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="12dp"
+                    android:background="@android:color/transparent" />
+                <View
+                    android:id="@+id/indicatorGold"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="12dp"
+                    android:background="@android:color/transparent" />
+                <View
+                    android:id="@+id/indicatorDiamond"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="12dp"
+                    android:background="@android:color/transparent" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/border_divider" />
+
+            <!-- Perks Container -->
+            <LinearLayout
+                android:id="@+id/containerPerks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/background_main" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

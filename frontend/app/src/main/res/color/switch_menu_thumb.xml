@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:enterFadeDuration="200"
+    android:exitFadeDuration="200">
+    <!-- Khi ON: màu hồng -->
+    <item android:color="@color/button" android:state_checked="true" />
+    <!-- Khi OFF: màu trắng -->
+    <item android:color="@color/white" />
+</selector>

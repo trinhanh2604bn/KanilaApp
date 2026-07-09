@@ -14,11 +14,12 @@
         android:paddingVertical="14dp">
 
         <TextView
+            android:id="@+id/tvQuestion"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Thời gian giao hàng mất bao lâu?"
-            android:textAppearance="@style/Body"
+            android:textAppearance="@style/Text.Kanila.Body"
             android:textColor="@color/text_main" />
 
         <ImageView

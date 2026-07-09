@@ -188,7 +188,7 @@ public class SearchActivity extends AppCompatActivity {
         // This should eventually come from API as well
         recommendAdapter.setOnProductClickListener(product -> {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                    .replace(R.id.main_fragment_container, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
                     .addToBackStack(null)
                     .commit();
         });
@@ -227,7 +227,7 @@ public class SearchActivity extends AppCompatActivity {
         rvSuggestedProducts.setAdapter(productAdapter);
         productAdapter.setOnProductClickListener(product -> {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                    .replace(R.id.main_fragment_container, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
                     .addToBackStack(null)
                     .commit();
         });

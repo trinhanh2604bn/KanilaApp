@@ -71,20 +71,14 @@ public class LoginFragment extends Fragment {
             viewModel.login(channel, normalizedIdentifier, password);
         });
 
-        binding.tvForgotPassword.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
-                .replace(R.id.main, new ForgotPasswordFragment())
-                .addToBackStack(null)
-                .commit());
+        binding.tvForgotPassword.setOnClickListener(v -> ui.common.FragmentNavigationHelper.replaceFragment(requireActivity(), new ForgotPasswordFragment()));
 
         binding.btnGoogle.setOnClickListener(v -> Toast.makeText(getContext(), "Tiếp tục với Google", Toast.LENGTH_SHORT).show());
 
         binding.btnFacebook.setOnClickListener(v -> Toast.makeText(getContext(), "Tiếp tục với Facebook", Toast.LENGTH_SHORT).show());
         
         if (binding.tvGoToRegister != null) {
-            binding.tvGoToRegister.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, new RegisterFragment())
-                    .addToBackStack(null)
-                    .commit());
+            binding.tvGoToRegister.setOnClickListener(v -> ui.common.FragmentNavigationHelper.replaceFragment(requireActivity(), new RegisterFragment()));
         }
     }
 
@@ -147,10 +141,7 @@ public class LoginFragment extends Fragment {
         OtpVerificationFragment fragment = OtpVerificationFragment.newInstance(
                 channel, identifier, "login"
         );
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.main, fragment)
-                .addToBackStack(null)
-                .commit();
+        ui.common.FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
     }
 
     @Override

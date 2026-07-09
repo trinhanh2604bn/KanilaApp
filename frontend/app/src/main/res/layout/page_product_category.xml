@@ -282,13 +282,5 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- C. Fixed bottom area -->
-    <include
-        android:id="@+id/includeBottomNavigation"
-        layout="@layout/view_bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-         />
 
 </LinearLayout>

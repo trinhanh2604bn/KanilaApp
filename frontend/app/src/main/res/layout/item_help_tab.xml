@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tvTabText"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp"
+    android:layout_marginVertical="4dp"
+    android:background="@drawable/bg_help_tab_default"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp"
+    android:text="Tab"
+    android:textAppearance="@style/Text.Kanila.BodyMedium"
+    android:textColor="@color/text_secondary" />

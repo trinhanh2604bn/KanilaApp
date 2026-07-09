@@ -284,29 +284,29 @@
             </LinearLayout>
 
             <!-- Interests Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Sở thích làm đẹp"
-                android:textAppearance="@style/H3"
-                android:textColor="@color/accent_dark" />
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="24dp"-->
+<!--                android:text="Sở thích làm đẹp"-->
+<!--                android:textAppearance="@style/H3"-->
+<!--                android:textColor="@color/accent_dark" />-->
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/cgInterests"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                app:chipSpacingHorizontal="8dp"
-                app:chipSpacingVertical="8dp">
+<!--            <com.google.android.material.chip.ChipGroup-->
+<!--                android:id="@+id/cgInterests"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="12dp"-->
+<!--                app:chipSpacingHorizontal="8dp"-->
+<!--                app:chipSpacingVertical="8dp">-->
 
-                <!-- Sử dụng component item_interest_chip.xml làm template -->
-                <include layout="@layout/item_interest_chip" />
-                <include layout="@layout/item_interest_chip" />
-                <include layout="@layout/item_interest_chip" />
-                <include layout="@layout/item_interest_chip" />
+<!--                &lt;!&ndash; Sử dụng component item_interest_chip.xml làm template &ndash;&gt;-->
+<!--                <include layout="@layout/item_interest_chip" />-->
+<!--                <include layout="@layout/item_interest_chip" />-->
+<!--                <include layout="@layout/item_interest_chip" />-->
+<!--                <include layout="@layout/item_interest_chip" />-->
 
-            </com.google.android.material.chip.ChipGroup>
+<!--            </com.google.android.material.chip.ChipGroup>-->
 
             <!-- Save Button -->
             <TextView

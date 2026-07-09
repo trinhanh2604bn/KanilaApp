@@ -93,7 +93,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="..."
+                            android:text="User"
                             android:textAppearance="@style/H2"
                             android:textColor="@color/accent_dark" />
 
@@ -280,6 +280,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Ví voucher"
                                 android:textStyle="bold"
+                                android:textSize="11sp"
                                 android:textAppearance="@style/Text.Kanila.Caption"
                                 android:textColor="@color/accent_dark" />
 
@@ -342,6 +343,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Điểm thưởng"
+                                android:textSize="11sp"
                                 android:textStyle="bold"
                                 android:textAppearance="@style/Text.Kanila.Caption"
                                 android:textColor="@color/accent_dark" />
@@ -399,6 +401,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Đã lưu"
                                 android:textStyle="bold"
+                                android:textSize="11sp"
                                 android:textAppearance="@style/Text.Kanila.Caption"
                                 android:textColor="@color/accent_dark" />
 
@@ -549,11 +552,15 @@
 
                 <!-- Phương thức thanh toán -->
                 <LinearLayout
+                    android:id="@+id/menuPaymentMethod"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="16dp">
+                    android:paddingHorizontal="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
 
                     <ImageView
                         android:id="@+id/ivMenu4"
@@ -629,7 +636,7 @@
                     android:layout_marginStart="56dp"
                     android:background="@color/border_divider" />
 
-                <!-- Hỗ trợ -->
+                <!-- Trung tâm hỗ trợ (Giao diện tĩnh, chưa kết nối) -->
                 <LinearLayout
                     android:id="@+id/menuSupportCenter"
                     android:layout_width="match_parent"
@@ -680,5 +687,11 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
+    <!-- Bottom Navigation -->
+    <include
+        android:id="@+id/layoutBottomNavigation"
+        layout="@layout/view_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="64dp" />
 
 </LinearLayout>

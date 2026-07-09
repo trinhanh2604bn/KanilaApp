@@ -40,7 +40,7 @@ public class AccountFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
         
         initViews(view);
 
@@ -52,6 +52,7 @@ public class AccountFragment extends Fragment {
             scrollAccountContent.setVisibility(View.VISIBLE);
             layoutGuestState.setVisibility(View.GONE);
             observeViewModel();
+            // Don't always reload if data is already there, but for this task we want fresh data
             viewModel.loadProfileHub();
         } else {
             scrollAccountContent.setVisibility(View.GONE);
@@ -84,9 +85,23 @@ public class AccountFragment extends Fragment {
         tvSavedCount = view.findViewById(R.id.tvSavedCount);
         
         view.findViewById(R.id.btnEdit).setOnClickListener(v -> {
-            // Navigate to Edit Profile
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, new ProfileOverviewFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
         
+        // Rank Chip
+        View layoutRank = view.findViewById(R.id.layoutRank);
+        if (layoutRank != null) {
+            layoutRank.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.loyalty.LoyaltyFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+
         // Menu item clicks
         View menuBeautyProfile = view.findViewById(R.id.ivMenu1).getParent() instanceof View ? (View) view.findViewById(R.id.ivMenu1).getParent() : view.findViewById(R.id.ivMenu1);
         menuBeautyProfile.setOnClickListener(v -> {
@@ -104,6 +119,16 @@ public class AccountFragment extends Fragment {
         view.findViewById(R.id.btnAccountSaved).setOnClickListener(v -> {
             FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.wishlist.WishlistFragment());
         });
+
+        View menuPaymentMethod = view.findViewById(R.id.menuPaymentMethod);
+        if (menuPaymentMethod != null) {
+            menuPaymentMethod.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new PaymentMethodAccountFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
 
         View menuSettings = view.findViewById(R.id.menuSettings);
         if (menuSettings != null) {

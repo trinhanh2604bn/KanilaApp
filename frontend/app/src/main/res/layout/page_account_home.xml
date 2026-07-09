@@ -688,10 +688,6 @@
         tools:visibility="visible" />
 
     <!-- Bottom Navigation -->
-    <include
-        android:id="@+id/layoutBottomNavigation"
-        layout="@layout/view_bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="64dp" />
+
 
 </LinearLayout>

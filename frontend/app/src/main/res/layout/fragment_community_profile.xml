@@ -53,7 +53,7 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/content_desc_back"
                         android:src="@drawable/ic_back"
-                        app:tint="@color/button" />
+                        app:tint="@color/accent_dark" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -61,19 +61,10 @@
                         android:layout_centerInParent="true"
                         android:fontFamily="@font/nunito_bold"
                         android:text="@string/profile_tab_title"
-                        android:textColor="@color/button"
+                        android:textColor="@color/accent_dark"
                         android:textSize="18sp" />
 
-                    <ImageButton
-                        android:id="@+id/btnSettings"
-                        android:layout_width="@dimen/touch_target_min"
-                        android:layout_height="@dimen/touch_target_min"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_settings"
-                        app:tint="@color/button" />
+
                 </RelativeLayout>
 
                 <!-- Profile Header -->
@@ -95,7 +86,7 @@
                         android:src="@drawable/ic_account"
                         app:shapeAppearanceOverlay="@style/CircleImage"
                         app:strokeColor="@color/white"
-                        app:strokeWidth="4dp" />
+                        app:strokeWidth="3dp" />
 
                     <ImageButton
                         android:id="@+id/btnEditAvatar"
@@ -148,15 +139,6 @@
                             android:src="@drawable/ic_verified"
                             app:tint="@color/button" />
                     </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/tvProfileUsername"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/nunito_regular"
-                        android:textColor="@color/text_tertiary"
-                        android:textSize="14sp"
-                        tools:text="\@thanhthanh_beauty" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnMyRewards"

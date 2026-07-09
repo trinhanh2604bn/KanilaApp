@@ -73,6 +73,15 @@
                     tools:text="2"
                     tools:visibility="visible" />
             </FrameLayout>
+
+            <ImageButton
+                android:id="@+id/btnProfile"
+                android:layout_width="@dimen/touch_target_min"
+                android:layout_height="@dimen/touch_target_min"
+                android:layout_marginStart="@dimen/spacing_s"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_account"
+                app:tint="@color/text_main" />
         </LinearLayout>
     </RelativeLayout>
 

@@ -33,6 +33,7 @@ public class ChallengeDetailFragment extends Fragment {
     private LinearProgressIndicator progressIndicator;
     private MaterialButton btnAction;
     private View layoutProgress;
+    private View layoutDailyTasks;
     private RecyclerView rvTasks, rvProducts;
     private ChallengeTaskAdapter taskAdapter;
     private ProductThumbnailAdapter productsAdapter;
@@ -74,6 +75,7 @@ public class ChallengeDetailFragment extends Fragment {
         progressIndicator = view.findViewById(R.id.progressIndicator);
         btnAction = view.findViewById(R.id.btnAction);
         layoutProgress = view.findViewById(R.id.layoutProgress);
+        layoutDailyTasks = view.findViewById(R.id.layoutDailyTasks);
         rvTasks = view.findViewById(R.id.rvTasks);
         rvProducts = view.findViewById(R.id.rvProducts);
 
@@ -115,12 +117,14 @@ public class ChallengeDetailFragment extends Fragment {
             tvJoinStatus.setVisibility(View.VISIBLE);
             tvJoinStatus.setText("Đã tham gia");
             layoutProgress.setVisibility(View.VISIBLE);
+            layoutDailyTasks.setVisibility(View.VISIBLE);
             tvProgressText.setText(getString(R.string.home_social_challenge_progress_format, String.valueOf(challenge.getCurrentProgress()), String.valueOf(challenge.getDurationDays())));
             progressIndicator.setProgress((int) ((challenge.getCurrentProgress() / (float) challenge.getDurationDays()) * 100));
             btnAction.setText(R.string.challenge_action_post_progress);
         } else {
             tvJoinStatus.setVisibility(View.GONE);
             layoutProgress.setVisibility(View.GONE);
+            layoutDailyTasks.setVisibility(View.GONE);
             btnAction.setText(R.string.challenge_action_join_challenge);
         }
 
@@ -129,6 +133,8 @@ public class ChallengeDetailFragment extends Fragment {
             rvTasks.setAdapter(taskAdapter);
             taskAdapter.setTasks(challenge.getTasks());
             taskAdapter.setOnTaskClickListener((task, position) -> {
+                if (!challenge.isJoined()) return;
+
                 if (!task.isCompleted()) {
                     // Navigate to task action screen
                     ChallengeProgressPostFragment fragment = ChallengeProgressPostFragment.newInstance(challengeId);
@@ -157,16 +163,20 @@ public class ChallengeDetailFragment extends Fragment {
 
         btnAction.setOnClickListener(v -> {
             if (challenge.isJoined()) {
+                // Member action: post progress
                 ChallengeProgressPostFragment fragment = ChallengeProgressPostFragment.newInstance(challengeId);
                 requireActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main, fragment)
                         .addToBackStack(null)
                         .commit();
             } else {
-                challenge.setJoined(true);
-                challenge.setCurrentProgress(1);
-                displayChallenge();
-                Toast.makeText(getContext(), "Đã tham gia thử thách!", Toast.LENGTH_SHORT).show();
+                // Guard: Join challenge
+                if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.JOIN_CHALLENGE)) {
+                    challenge.setJoined(true);
+                    challenge.setCurrentProgress(1);
+                    displayChallenge();
+                    Toast.makeText(getContext(), "Đã tham gia thử thách!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

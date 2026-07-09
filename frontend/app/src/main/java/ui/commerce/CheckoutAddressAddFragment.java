@@ -33,15 +33,16 @@ import java.util.Map;
 public class CheckoutAddressAddFragment extends Fragment {
 
     private EditText edtFullName, edtPhone, edtDetail;
-    private TextView tvProvince, tvWard, tvCounter;
+    private TextView tvProvince, tvDistrict, tvWard, tvCounter;
     private ChipGroup chipGroupTag;
     private SwitchMaterial switchDefault;
     private View btnSave;
 
     private String selectedProvince;
+    private String selectedDistrict;
     private String selectedWard;
     private String addressId;
-    private Map<String, List<String>> provinceWardMap;
+    private Map<String, Map<String, List<String>>> locationMap;
     private CheckoutAddressViewModel viewModel;
     private com.example.frontend.feature.checkout.CheckoutViewModel checkoutViewModel;
     private boolean isGuest = false;
@@ -62,6 +63,14 @@ public class CheckoutAddressAddFragment extends Fragment {
         if (getArguments() != null) {
             addressId = getArguments().getString("address_id");
             isGuest = getArguments().getBoolean("is_guest", false);
+            
+            // Handle guest edit
+            if (isGuest && getArguments().containsKey("guest_address")) {
+                AddressDto guestAddr = (AddressDto) getArguments().getSerializable("guest_address");
+                if (guestAddr != null) {
+                    populateViews(guestAddr);
+                }
+            }
         }
 
         initData();
@@ -87,7 +96,7 @@ public class CheckoutAddressAddFragment extends Fragment {
         NetworkResult<List<AddressDto>> result = viewModel.getAddressResult().getValue();
         if (result != null && result.data != null) {
             for (AddressDto address : result.data) {
-                if (address.getId().equals(addressId)) {
+                if (address.getId() != null && address.getId().equals(addressId)) {
                     populateViews(address);
                     break;
                 }
@@ -101,10 +110,12 @@ public class CheckoutAddressAddFragment extends Fragment {
         if (edtDetail != null) edtDetail.setText(address.getAddressLine1());
         
         selectedProvince = address.getCity();
+        selectedDistrict = address.getDistrict();
         selectedWard = address.getWard();
         
-        if (tvProvince != null) tvProvince.setText(selectedProvince);
-        if (tvWard != null) tvWard.setText(selectedWard);
+        if (tvProvince != null) tvProvince.setText(selectedProvince != null ? selectedProvince : "Chọn tỉnh/thành phố");
+        if (tvDistrict != null) tvDistrict.setText(selectedDistrict != null ? selectedDistrict : "Chọn quận/huyện");
+        if (tvWard != null) tvWard.setText(selectedWard != null ? selectedWard : "Chọn phường/xã");
         
         if (switchDefault != null) switchDefault.setChecked(address.isDefaultShipping());
         
@@ -151,17 +162,22 @@ public class CheckoutAddressAddFragment extends Fragment {
     }
 
     private void initData() {
-        provinceWardMap = new HashMap<>();
-        provinceWardMap.put("TP. Hồ Chí Minh", Arrays.asList("Phường Bến Thành", "Phường Sài Gòn", "Phường Tân Định", "Phường Thủ Đức", "Phường Bình Thạnh"));
-        provinceWardMap.put("Hà Nội", Arrays.asList("Phường Hoàn Kiếm", "Phường Ba Đình", "Phường Cầu Giấy", "Phường Đống Đa", "Phường Tây Hồ"));
-        provinceWardMap.put("Đà Nẵng", Arrays.asList("Phường Hải Châu", "Phường Thanh Khê", "Phường Sơn Trà", "Phường Ngũ Hành Sơn"));
-        provinceWardMap.put("Cần Thơ", Arrays.asList("Phường Ninh Kiều", "Phường Bình Thủy", "Phường Cái Răng", "Phường Thốt Nốt"));
-        provinceWardMap.put("Hải Phòng", Arrays.asList("Phường Hồng Bàng", "Phường Lê Chân", "Phường Ngô Quyền", "Phường Kiến An"));
-        provinceWardMap.put("Gia Lai", Arrays.asList("Phường Pleiku", "Phường Hội Phú", "Xã An Lương", "Xã Phù Mỹ Bắc"));
-        provinceWardMap.put("Bình Dương", Arrays.asList("Phường Thủ Dầu Một", "Phường Thuận An", "Phường Dĩ An"));
-        provinceWardMap.put("Đồng Nai", Arrays.asList("Phường Biên Hòa", "Phường Long Khánh", "Huyện Long Thành"));
-        provinceWardMap.put("Khánh Hòa", Arrays.asList("Phường Nha Trang", "Phường Cam Ranh", "Huyện Diên Khánh"));
-        provinceWardMap.put("Lâm Đồng", Arrays.asList("Phường Đà Lạt", "Phường Bảo Lộc", "Huyện Đức Trọng"));
+        locationMap = new HashMap<>();
+        
+        Map<String, List<String>> hcmDistricts = new HashMap<>();
+        hcmDistricts.put("Quận 1", Arrays.asList("Phường Bến Thành", "Phường Đa Kao", "Phường Tân Định"));
+        hcmDistricts.put("Quận 7", Arrays.asList("Phường Tân Phong", "Phường Tân Kiểng", "Phường Phú Mỹ"));
+        hcmDistricts.put("Thành phố Thủ Đức", Arrays.asList("Phường Linh Trung", "Phường Linh Tây", "Phường Hiệp Phú"));
+        locationMap.put("TP. Hồ Chí Minh", hcmDistricts);
+
+        Map<String, List<String>> hnDistricts = new HashMap<>();
+        hnDistricts.put("Quận Hoàn Kiếm", Arrays.asList("Phường Hàng Đào", "Phường Tràng Tiền", "Phường Lý Thái Tổ"));
+        hnDistricts.put("Quận Cầu Giấy", Arrays.asList("Phường Dịch Vọng", "Phường Yên Hòa", "Phường Quan Hoa"));
+        locationMap.put("Hà Nội", hnDistricts);
+        
+        Map<String, List<String>> dnDistricts = new HashMap<>();
+        dnDistricts.put("Quận Hải Châu", Arrays.asList("Phường Hòa Thuận Đông", "Phường Phước Ninh"));
+        locationMap.put("Đà Nẵng", dnDistricts);
     }
 
     private void initViews(View view) {
@@ -169,6 +185,7 @@ public class CheckoutAddressAddFragment extends Fragment {
         edtPhone = view.findViewById(R.id.edtAddressPhone);
         edtDetail = view.findViewById(R.id.edtAddressDetail);
         tvProvince = view.findViewById(R.id.edtAddressProvince);
+        tvDistrict = view.findViewById(R.id.edtAddressDistrict);
         tvWard = view.findViewById(R.id.edtAddressWard);
         tvCounter = view.findViewById(R.id.tvAddressCounter);
         chipGroupTag = view.findViewById(R.id.chipGroupAddressTag);
@@ -214,15 +231,13 @@ public class CheckoutAddressAddFragment extends Fragment {
         if (edtPhone != null) edtPhone.setHint(R.string.auth_phone_hint);
 
         TextView tvLabelProvince = view.findViewById(R.id.tvLabelProvince);
-        if (tvLabelProvince != null) tvLabelProvince.setText(R.string.filter_skin_type); // Close enough for "Tỉnh/Thành phố" in some context, but actually filter_skin_type is wrong.
-        // Actually, let's keep hardcoded if no exact match, but the prompt says NO NEW STRINGS.
-        // I'll search for "Tỉnh" in strings.xml again.
+        if (tvLabelProvince != null) tvLabelProvince.setText("Tỉnh/Thành phố");
         
-        // Wait, I already have "Tỉnh/Thành phố" in tools:text in XML.
-        // I will use what's in strings.xml if available.
-        
-        if (tvProvince != null) tvProvince.setText("Chọn tỉnh/thành phố");
-        if (tvWard != null) tvWard.setText("Chọn phường/xã");
+        TextView tvLabelDistrict = view.findViewById(R.id.tvLabelDistrict);
+        if (tvLabelDistrict != null) tvLabelDistrict.setText("Quận/Huyện");
+
+        TextView tvLabelWard = view.findViewById(R.id.tvLabelWard);
+        if (tvLabelWard != null) tvLabelWard.setText("Phường/Xã");
 
         TextView tvLabelDetail = view.findViewById(R.id.tvLabelDetail);
         if (tvLabelDetail != null) tvLabelDetail.setText("Địa chỉ chi tiết");
@@ -269,31 +284,57 @@ public class CheckoutAddressAddFragment extends Fragment {
         View layoutProvince = view.findViewById(R.id.layoutAddressProvince);
         if (layoutProvince != null) {
             layoutProvince.setOnClickListener(v -> {
-                List<String> provinces = new ArrayList<>(provinceWardMap.keySet());
+                List<String> provinces = new ArrayList<>(locationMap.keySet());
                 AddressPickerBottomSheet picker = new AddressPickerBottomSheet(getContext(), "Chọn tỉnh/thành phố", provinces, item -> {
                     selectedProvince = item;
+                    selectedDistrict = null;
                     selectedWard = null;
                     if (tvProvince != null) tvProvince.setText(selectedProvince);
+                    if (tvDistrict != null) tvDistrict.setText("Chọn quận/huyện");
                     if (tvWard != null) tvWard.setText("Chọn phường/xã");
                 });
                 picker.show();
             });
         }
 
-        View layoutWard = view.findViewById(R.id.layoutAddressWard);
-        if (layoutWard != null) {
-            layoutWard.setOnClickListener(v -> {
+        View layoutDistrict = view.findViewById(R.id.layoutAddressDistrict);
+        if (layoutDistrict != null) {
+            layoutDistrict.setOnClickListener(v -> {
                 if (selectedProvince == null) {
                     showError("Vui lòng chọn tỉnh/thành phố trước");
                     return;
                 }
-                List<String> wards = provinceWardMap.get(selectedProvince);
-                if (wards != null) {
-                    AddressPickerBottomSheet picker = new AddressPickerBottomSheet(getContext(), "Chọn phường/xã", wards, item -> {
-                        selectedWard = item;
-                        if (tvWard != null) tvWard.setText(selectedWard);
+                Map<String, List<String>> districts = locationMap.get(selectedProvince);
+                if (districts != null) {
+                    List<String> districtNames = new ArrayList<>(districts.keySet());
+                    AddressPickerBottomSheet picker = new AddressPickerBottomSheet(getContext(), "Chọn quận/huyện", districtNames, item -> {
+                        selectedDistrict = item;
+                        selectedWard = null;
+                        if (tvDistrict != null) tvDistrict.setText(selectedDistrict);
+                        if (tvWard != null) tvWard.setText("Chọn phường/xã");
                     });
                     picker.show();
+                }
+            });
+        }
+
+        View layoutWard = view.findViewById(R.id.layoutAddressWard);
+        if (layoutWard != null) {
+            layoutWard.setOnClickListener(v -> {
+                if (selectedProvince == null || selectedDistrict == null) {
+                    showError("Vui lòng chọn quận/huyện trước");
+                    return;
+                }
+                Map<String, List<String>> districts = locationMap.get(selectedProvince);
+                if (districts != null) {
+                    List<String> wards = districts.get(selectedDistrict);
+                    if (wards != null) {
+                        AddressPickerBottomSheet picker = new AddressPickerBottomSheet(getContext(), "Chọn phường/xã", wards, item -> {
+                            selectedWard = item;
+                            if (tvWard != null) tvWard.setText(selectedWard);
+                        });
+                        picker.show();
+                    }
                 }
             });
         }
@@ -323,6 +364,7 @@ public class CheckoutAddressAddFragment extends Fragment {
         address.setRecipientName(edtFullName.getText().toString().trim());
         address.setPhone(edtPhone.getText().toString().trim());
         address.setCity(selectedProvince);
+        address.setDistrict(selectedDistrict);
         address.setWard(selectedWard);
         address.setAddressLine1(edtDetail.getText().toString().trim());
         
@@ -347,6 +389,10 @@ public class CheckoutAddressAddFragment extends Fragment {
             showError("Vui lòng chọn tỉnh/thành phố");
             return false;
         }
+        if (selectedDistrict == null || selectedDistrict.isEmpty()) {
+            showError("Vui lòng chọn quận/huyện");
+            return false;
+        }
         if (selectedWard == null || selectedWard.isEmpty()) {
             showError("Vui lòng chọn phường/xã");
             return false;
@@ -367,6 +413,7 @@ public class CheckoutAddressAddFragment extends Fragment {
         data.put("recipient_name", edtFullName.getText().toString().trim());
         data.put("phone", edtPhone.getText().toString().trim());
         data.put("city", selectedProvince);
+        data.put("district", selectedDistrict);
         data.put("ward", selectedWard);
         data.put("address_line_1", edtDetail.getText().toString().trim());
         data.put("is_default_shipping", switchDefault.isChecked());
@@ -374,11 +421,11 @@ public class CheckoutAddressAddFragment extends Fragment {
         if (chipGroupTag != null) {
             int checkedChipId = chipGroupTag.getCheckedChipId();
             if (checkedChipId == R.id.chipAddressHome) {
-                data.put("address_type", "Home");
+                data.put("address_type", "home");
             } else if (checkedChipId == R.id.chipAddressOffice) {
-                data.put("address_type", "Office");
+                data.put("address_type", "office");
             } else if (checkedChipId == R.id.chipAddressOther) {
-                data.put("address_type", "Other");
+                data.put("address_type", "other");
             }
         }
 

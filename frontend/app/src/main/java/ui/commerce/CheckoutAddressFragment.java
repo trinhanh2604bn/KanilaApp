@@ -58,12 +58,12 @@ public class CheckoutAddressFragment extends Fragment {
         if (header == null) return;
 
         TextView tvTitle = header.findViewById(R.id.tvTopBarTitle);
-        if (tvTitle != null) tvTitle.setText("Địa chỉ nhận hàng");
+        if (tvTitle != null) tvTitle.setText(R.string.checkout_address_title);
 
         View btnBack = header.findViewById(R.id.btnTopBarBack);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
-                if (getActivity() != null) getActivity().getOnBackPressedDispatcher().onBackPressed();
+                if (getActivity() != null) getActivity().getSupportFragmentManager().popBackStack();
             });
         }
         

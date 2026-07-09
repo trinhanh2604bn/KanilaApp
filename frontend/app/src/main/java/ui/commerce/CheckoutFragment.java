@@ -105,6 +105,13 @@ public class CheckoutFragment extends Fragment {
                         targetFragment = new CheckoutAddressAddFragment();
                         Bundle args = new Bundle();
                         args.putBoolean("is_guest", true);
+                        
+                        // Pass current guest address if available
+                        AddressDto current = viewModel.getSelectedAddress().getValue();
+                        if (current != null) {
+                            args.putSerializable("guest_address", current);
+                        }
+
                         targetFragment.setArguments(args);
                     }
                     
@@ -354,9 +361,8 @@ public class CheckoutFragment extends Fragment {
             tvSecondary.setText(address.getAddressLine());
             tvSecondary.setVisibility(View.VISIBLE);
         } else {
-            tvPrimary.setText("Chưa có địa chỉ giao hàng");
-            tvSecondary.setText("Vui lòng chọn hoặc thêm địa chỉ");
-            tvSecondary.setVisibility(View.VISIBLE);
+            tvPrimary.setText("Hãy nhập địa chỉ nhận hàng");
+            tvSecondary.setVisibility(View.GONE);
         }
 
         if (tvValue != null) tvValue.setVisibility(View.GONE);

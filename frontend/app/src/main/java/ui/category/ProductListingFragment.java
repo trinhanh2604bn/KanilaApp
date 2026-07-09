@@ -224,7 +224,7 @@ public class ProductListingFragment extends Fragment {
             if (productId != null && productId.matches("^[a-fA-F0-9]{24}$")) {
                 ProductDetailFragment fragment = ProductDetailFragment.newInstance(productId);
                 getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main, fragment)
+                        .replace(R.id.main_fragment_container, fragment)
                         .addToBackStack(null)
                         .commit();
             } else {

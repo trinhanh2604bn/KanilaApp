@@ -1,1222 +1,478 @@
 package ui.account;
 
-import android.app.Dialog;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
 import com.example.frontend.data.model.beauty.CustomerBeautyProfileDto;
+import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.beauty.BeautyProfileViewModel;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import ui.common.ViewUtils;
 
 public class BeautyProfileOverviewFragment extends Fragment {
 
-    private final List<GoalItem> goalItems = new ArrayList<>();
-
-    private final Map<String, IndicatorItem> indicatorMap =
-            new HashMap<>();
-
-    private final Map<String, GoalItem> goalMap =
-            new HashMap<>();
-
-    private final Set<String> selectedGoalKeys =
-            new LinkedHashSet<>();
-
-    private final Set<String> selectedIndicatorKeys =
-            new LinkedHashSet<>();
-
-    private LinearLayout layoutSelectedGoalsSummary;
+    private LinearLayout layoutSectionsList, layoutEmptyState;
+    private TextView tvSummarySkinType, tvProgressLabel;
+    private ProgressBar progressProfile;
+    private View layoutRecommendations;
+    private RecyclerView rvRecommendedProducts;
+    private com.example.frontend.feature.home.HomeProductAdapter productAdapter;
+    private boolean isRecExpanded = false;
+    private CustomerBeautyProfileDto currentProfile;
     private BeautyProfileViewModel viewModel;
+    private final Map<String, Boolean> expandedSections = new HashMap<>();
+    private final Handler ctaHandler = new Handler(Looper.getMainLooper());
+    private boolean isCtaShown = false;
+
+    private int brandPink, darkText, grayBorder;
+    private final List<SectionData> sections = new ArrayList<>();
 
     public BeautyProfileOverviewFragment() {
         super(R.layout.fragment_beauty_profile_overview);
     }
 
     @Override
-    public void onViewCreated(
-            @NonNull View view,
-            @Nullable Bundle savedInstanceState
-    ) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(BeautyProfileViewModel.class);
 
-        viewModel = new ViewModelProvider(this)
-                .get(BeautyProfileViewModel.class);
-
+        initColors();
+        initSectionData();
         setupViews(view);
         setupEvents(view);
-        renderInitialStates();
         observeViewModel();
 
-        /*
-         * Sau này có thể thay "me" bằng customer ID
-         * lấy từ Auth hoặc SharedPreferences.
-         */
-        viewModel.loadProfile("me");
+        NetworkResult<CustomerBeautyProfileDto> currentResult = viewModel.getProfileResult().getValue();
+        if (currentResult == null) {
+            viewModel.loadProfile("me");
+            // If data is not available immediately, schedule CTA popup to show after a short delay
+            // This ensures the user isn't stuck waiting for a failing network call (like in your logs)
+            startCtaTimer();
+        } else if (currentResult.status == NetworkResult.Status.SUCCESS) {
+            bindProfileData(currentResult.data);
+        } else {
+            showCtaPopup();
+        }
     }
 
-    /**
-     * Kết nối các View trong XML.
-     */
+    private void startCtaTimer() {
+        ctaHandler.postDelayed(() -> {
+            if (isAdded() && !isCtaShown && (currentProfile == null || currentProfile.getSkinType() == null)) {
+                showCtaPopup();
+            }
+        }, 600); // Reduced delay to 0.6 seconds for faster interaction
+    }
+
+    private void initColors() {
+        brandPink = ContextCompat.getColor(requireContext(), R.color.button);
+        darkText = ContextCompat.getColor(requireContext(), R.color.accent_dark);
+        grayBorder = ContextCompat.getColor(requireContext(), R.color.border_divider);
+    }
+
+    private void initSectionData() {
+        sections.clear();
+        sections.add(new SectionData("1. Loại da", new String[]{"Da dầu", "Da khô", "Da hỗn hợp", "Da thường", "Da nhạy cảm", "Chưa xác định"}, new int[]{R.drawable.ic_drops_filled, R.drawable.ic_drops, R.drawable.ic_skin_mixed, R.drawable.ic_skin_normal, R.drawable.ic_skin_sensitive, R.drawable.ic_unsure}, "Loại da quyết định nền tảng các sản phẩm dưỡng da của bạn."));
+        sections.add(new SectionData("2. Tình trạng da", new String[]{"Mụn", "Thâm mụn", "Nám, sạm màu", "Da xỉn màu", "Lỗ chân lông to", "Mụn đầu đen", "Da dễ đỏ", "Da thiếu nước", "Nếp nhăn, lão hóa", "Bề mặt da không mịn", "Hàng rào da yếu", "Da chịu tác động của nắng"}, new int[]{R.drawable.ic_skin_acne, R.drawable.ic_skin_spots, R.drawable.ic_skin_spots, R.drawable.ic_skin_dullness, R.drawable.ic_skin_pores, R.drawable.ic_skin_acne, R.drawable.ic_skin_redness, R.drawable.ic_drops, R.drawable.ic_skin_aging, R.drawable.ic_skin_mixed, R.drawable.ic_goal_recovery, R.drawable.ic_sun}, "Kanila sẽ chọn hoạt chất đặc trị riêng cho từng vấn đề bạn đang gặp phải."));
+        sections.add(new SectionData("3. Mức độ nhạy cảm", new String[]{"Ít nhạy cảm", "Dễ kích ứng nhẹ", "Rất nhạy cảm", "Dễ đỏ hoặc rát khi đổi sản phẩm"}, new int[]{R.drawable.ic_shield_star, R.drawable.ic_skin_sensitive, R.drawable.ic_alert, R.drawable.ic_skin_redness}, "Hồ sơ nhạy cảm giúp chúng mình loại bỏ các thành phần có nguy cơ kích ứng cao."));
+        sections.add(new SectionData("4. Màu da", new String[]{"Da rất sáng", "Da sáng", "Da trung bình", "Da ngăm", "Da sẫm màu"}, new int[]{R.drawable.ic_sun, R.drawable.ic_sun, R.drawable.ic_sun, R.drawable.ic_sun, R.drawable.ic_sun}, "Tone màu da giúp gợi ý kem nền và phấn phủ chuẩn xác hơn."));
+        sections.add(new SectionData("5. Sắc độ da", new String[]{"Sắc lạnh", "Sắc ấm", "Sắc trung tính", "Sắc ô liu", "Chưa xác định"}, new int[]{R.drawable.skin_tone, R.drawable.skin_tone, R.drawable.skin_tone, R.drawable.skin_tone, R.drawable.ic_unsure}, "Undertone là chìa khóa để chọn màu son và màu má phù hợp nhất."));
+        sections.add(new SectionData("6. Hiệu ứng nền", new String[]{"Tự nhiên", "Sáng hơn tông da", "Căng bóng ánh ấm", "Tươi sáng ánh hồng", "Lì, ít bóng"}, new int[]{R.drawable.ic_face, R.drawable.ic_lightbulb, R.drawable.ic_sun, R.drawable.ic_face, R.drawable.ic_face}, "Lớp nền ưng ý sẽ mang lại vẻ ngoài rạng rỡ đúng ý muốn của bạn."));
+        sections.add(new SectionData("7. Màu son", new String[]{"Màu nude", "Màu hồng", "Màu cam san hô", "Màu đỏ", "Màu nâu", "Màu môi tự nhiên", "Màu đậm, nổi bật"}, new int[]{R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick}, "Danh sách màu son yêu thích giúp Kanila thu hẹp phạm vi tìm kiếm."));
+        sections.add(new SectionData("8. Trang điểm", new String[]{"Trang điểm tự nhiên", "Phong cách Hàn Quốc", "Trang điểm sắc sảo", "Trang điểm công sở", "Trang điểm dự tiệc", "Trang điểm hằng ngày"}, new int[]{R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face}, "Phong cách này sẽ định hình các sản phẩm trong bộ trang điểm gợi ý."));
+        sections.add(new SectionData("9. Ngân sách", new String[]{"Dưới 300K", "300K - 500K", "500K +"}, new int[]{R.drawable.ic_wallet, R.drawable.ic_wallet, R.drawable.ic_wallet}, "Chúng mình sẽ cân đối các sản phẩm tốt nhất trong tầm giá bạn mong muốn."));
+        sections.add(new SectionData("10. Cần tránh", new String[]{"Hương liệu", "Cồn khô", "Tinh dầu", "Paraben", "Dầu khoáng", "Silicone", "Sulfate", "Lanolin", "Retinoid", "Acid cao"}, new int[]{R.drawable.ic_drops, R.drawable.ic_beaker, R.drawable.ic_drops, R.drawable.ic_beaker, R.drawable.ic_drops, R.drawable.ic_beaker, R.drawable.ic_beaker, R.drawable.ic_beaker, R.drawable.ic_beaker, R.drawable.ic_beaker}, "Sản phẩm được gợi ý sẽ hoàn toàn không chứa các thành phần này."));
+    }
+
     private void setupViews(@NonNull View view) {
+        layoutSectionsList = view.findViewById(R.id.layoutSectionsList);
+        layoutEmptyState = view.findViewById(R.id.layoutEmptyState);
+        tvSummarySkinType = view.findViewById(R.id.tvSummarySkinType);
+        tvProgressLabel = view.findViewById(R.id.tvProgressLabel);
+        progressProfile = view.findViewById(R.id.progressProfile);
+        
+        layoutRecommendations = view.findViewById(R.id.layoutRecommendations);
+        rvRecommendedProducts = view.findViewById(R.id.rvRecommendedProducts);
+        
+        productAdapter = new com.example.frontend.feature.home.HomeProductAdapter();
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        // Reduce width slightly to show more of the next card and fit better
+        productAdapter.setItemWidth((int) (screenWidth * 0.43));
 
-        goalItems.clear();
-        indicatorMap.clear();
-        goalMap.clear();
+        if (rvRecommendedProducts != null) {
+            rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+            rvRecommendedProducts.setAdapter(productAdapter);
+        }
 
-        layoutSelectedGoalsSummary =
-                view.findViewById(
-                        R.id.layoutSelectedGoalsSummary
-                );
-
-        /*
-         * Chỉ số làn da.
-         */
-        addIndicatorItem(
-                view,
-                R.id.indicatorOily,
-                "oily",
-                R.drawable.ic_drops,
-                "Độ dầu"
-        );
-
-        addIndicatorItem(
-                view,
-                R.id.indicatorDry,
-                "dry",
-                R.drawable.ic_drops_filled,
-                "Độ ẩm"
-        );
-
-        addIndicatorItem(
-                view,
-                R.id.indicatorCombination,
-                "acne",
-                R.drawable.ic_skin_acne,
-                "Tình trạng mụn"
-        );
-
-        addIndicatorItem(
-                view,
-                R.id.indicatorNormal,
-                "barrier",
-                R.drawable.ic_goal_recovery,
-                "Hàng rào da"
-        );
-
-        addIndicatorItem(
-                view,
-                R.id.indicatorSensitive,
-                "sensitive",
-                R.drawable.ic_skin_sensitive,
-                "Độ nhạy cảm"
-        );
-
-        addIndicatorItem(
-                view,
-                R.id.indicatorUnknown,
-                "even_tone",
-                R.drawable.ic_skin_spots,
-                "Độ đều màu"
-        );
-
-        /*
-         * Mục tiêu làm đẹp.
-         */
-        addGoalItem(
-                view,
-                R.id.goalAcne,
-                "acne",
-                "Giảm mụn",
-                R.drawable.ic_goal_target
-        );
-
-        addGoalItem(
-                view,
-                R.id.goalBrightening,
-                "brightening",
-                "Mờ thâm",
-                R.drawable.ic_goal_sparkle
-        );
-
-        addGoalItem(
-                view,
-                R.id.goalHydrating,
-                "hydrating",
-                "Dưỡng ẩm",
-                R.drawable.ic_drops_filled
-        );
-
-        addGoalItem(
-                view,
-                R.id.goalOilControl,
-                "oil_control",
-                "Kiểm soát dầu",
-                R.drawable.ic_skin_pores
-        );
-
-        addGoalItem(
-                view,
-                R.id.goalBarrier,
-                "barrier",
-                "Phục hồi da",
-                R.drawable.ic_goal_recovery
-        );
-
-        addGoalItem(
-                view,
-                R.id.goalAntiAging,
-                "anti_aging",
-                "Chống lão hóa",
-                R.drawable.ic_skin_aging
-        );
-
-        addGoalItem(
-                view,
-                R.id.goalPores,
-                "pores",
-                "Lỗ chân lông",
-                R.drawable.ic_skin_pores
-        );
-
-        addGoalItem(
-                view,
-                R.id.goalSoothing,
-                "soothing",
-                "Làm dịu da",
-                R.drawable.ic_skin_sensitive
-        );
-
-        addGoalItem(
-                view,
-                R.id.goalSun,
-                "sun",
-                "Chống nắng",
-                R.drawable.ic_sun
-        );
-
-        addGoalItem(
-                view,
-                R.id.goalEvenTone,
-                "even_tone",
-                "Đều màu da",
-                R.drawable.ic_skin_spots
-        );
+        // Show empty state by default until data is loaded
+        if (layoutEmptyState != null) {
+            layoutEmptyState.setVisibility(View.VISIBLE);
+        }
     }
 
-    /**
-     * Kết nối một thẻ chỉ số làn da.
-     */
-    private void addIndicatorItem(
-            @NonNull View root,
-            int containerId,
-            @NonNull String key,
-            int iconResource,
-            @NonNull String name
-    ) {
-        View itemRoot = root.findViewById(containerId);
-
-        if (!(itemRoot instanceof MaterialCardView)) {
-            return;
-        }
-
-        MaterialCardView card =
-                (MaterialCardView) itemRoot;
-
-        ImageView icon =
-                itemRoot.findViewById(
-                        R.id.ivIndicatorIcon
-                );
-
-        TextView scoreText =
-                itemRoot.findViewById(
-                        R.id.tvIndicatorScore
-                );
-
-        TextView nameText =
-                itemRoot.findViewById(
-                        R.id.tvIndicatorName
-                );
-
-        TextView statusText =
-                itemRoot.findViewById(
-                        R.id.tvIndicatorStatus
-                );
-
-        ImageView tick =
-                itemRoot.findViewById(
-                        R.id.ivIndicatorTick
-                );
-
-        if (icon == null
-                || scoreText == null
-                || nameText == null
-                || statusText == null
-                || tick == null) {
-            return;
-        }
-
-        icon.setImageResource(iconResource);
-        nameText.setText(name);
-
-        IndicatorItem item = new IndicatorItem(
-                card,
-                icon,
-                scoreText,
-                nameText,
-                statusText,
-                tick,
-                key,
-                name,
-                false
-        );
-
-        indicatorMap.put(key, item);
-    }
-
-    /**
-     * Kết nối một thẻ mục tiêu làm đẹp.
-     */
-    private void addGoalItem(
-            @NonNull View root,
-            int containerId,
-            @NonNull String key,
-            @NonNull String name,
-            int iconResource
-    ) {
-        View itemRoot = root.findViewById(containerId);
-
-        if (!(itemRoot instanceof MaterialCardView)) {
-            return;
-        }
-
-        MaterialCardView card =
-                (MaterialCardView) itemRoot;
-
-        ImageView icon =
-                itemRoot.findViewById(
-                        R.id.ivGoalIcon
-                );
-
-        TextView label =
-                itemRoot.findViewById(
-                        R.id.tvGoalLabel
-                );
-
-        ImageView tick =
-                itemRoot.findViewById(
-                        R.id.ivGoalTick
-                );
-
-        if (icon == null
-                || label == null
-                || tick == null) {
-            return;
-        }
-
-        icon.setImageResource(iconResource);
-        label.setText(name);
-
-        GoalItem item = new GoalItem(
-                card,
-                icon,
-                label,
-                tick,
-                key,
-                name,
-                false
-        );
-
-        goalItems.add(item);
-        goalMap.put(key, item);
-    }
-
-    /**
-     * Trạng thái mặc định trước khi API trả dữ liệu.
-     */
-    private void renderInitialStates() {
-
-        for (IndicatorItem item : indicatorMap.values()) {
-            updateIndicatorView(item, false);
-        }
-
-        for (GoalItem item : goalItems) {
-            updateGoalView(item, false);
-        }
-
-        updateSelectedGoalsSummary();
-    }
-
-    /**
-     * Theo dõi dữ liệu hồ sơ từ ViewModel.
-     */
     private void observeViewModel() {
-
-        viewModel.getProfileResult().observe(
-                getViewLifecycleOwner(),
-                result -> {
-
-                    if (result == null
-                            || result.status == null) {
-                        return;
-                    }
-
-                    switch (result.status) {
-
-                        case SUCCESS:
-                            bindProfileData(result.data);
-                            break;
-
-                        case ERROR:
-                            Toast.makeText(
-                                    requireContext(),
-                                    result.message != null
-                                            ? result.message
-                                            : "Không thể tải hồ sơ",
-                                    Toast.LENGTH_SHORT
-                            ).show();
-                            break;
-
-                        default:
-                            break;
+        viewModel.getProfileResult().observe(getViewLifecycleOwner(), result -> {
+            if (result != null) {
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    bindProfileData(result.data);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    if (layoutEmptyState != null) {
+                        layoutEmptyState.setVisibility(View.VISIBLE);
+                        // Even on error (like ConnectException), show the popup to let user edit manually
+                        showCtaPopup();
                     }
                 }
-        );
+            }
+        });
     }
 
-    /**
-     * Đưa dữ liệu API lên giao diện.
-     */
-    private void bindProfileData(
-            @Nullable CustomerBeautyProfileDto profile
-    ) {
-        if (profile == null) {
-            return;
+    private void bindProfileData(@Nullable CustomerBeautyProfileDto profile) {
+        if (profile == null) return;
+        this.currentProfile = profile;
+        
+        int completion = profile.getProfileCompletion();
+        if (progressProfile != null) progressProfile.setProgress(completion);
+        if (tvProgressLabel != null) tvProgressLabel.setText(getString(R.string.profile_completion_format, completion));
+
+        if (profile.getSkinType() != null) {
+            tvSummarySkinType.setText(profile.getSkinType());
         }
 
-        /*
-         * Reset chỉ số cũ.
-         */
-        selectedIndicatorKeys.clear();
+        if (layoutSectionsList != null) {
+            layoutSectionsList.removeAllViews();
+            renderSummarySection(sections.get(0), profile.getSkinType());
+            renderMultiSummarySection(sections.get(1), profile.getSkinConcerns());
+            renderSummarySection(sections.get(2), profile.getSensitivityLevel());
+            renderSummarySection(sections.get(3), profile.getSkinColor());
+            renderSummarySection(sections.get(4), profile.getSkinUndertone());
+            renderSummarySection(sections.get(5), profile.getFoundationFinish());
+            renderMultiSummarySection(sections.get(6), profile.getLipstickColors());
+            renderMultiSummarySection(sections.get(7), profile.getMakeupStyles());
+            renderSummarySection(sections.get(8), profile.getBudget());
+            renderMultiSummarySection(sections.get(9), profile.getAvoidIngredients());
 
-        for (IndicatorItem item : indicatorMap.values()) {
-            item.selected = false;
-            item.score.setText("0/100");
-            item.status.setText("Chưa có dữ liệu");
-
-            updateIndicatorView(item, false);
-        }
-
-        /*
-         * Cập nhật chỉ số từ API.
-         */
-        if (profile.getSkinIndicators() != null) {
-
-            for (CustomerBeautyProfileDto.SkinIndicatorDto indicator
-                    : profile.getSkinIndicators()) {
-
-                if (indicator == null
-                        || indicator.getCode() == null) {
-                    continue;
+            if (layoutEmptyState != null) {
+                boolean isEmpty = layoutSectionsList.getChildCount() == 0;
+                layoutEmptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+                
+                if (isEmpty) {
+                    showCtaPopup();
                 }
 
-                IndicatorItem uiItem =
-                        indicatorMap.get(
-                                indicator.getCode()
-                        );
-
-                if (uiItem == null) {
-                    continue;
+                // Hide recommendations if no profile data yet
+                if (layoutRecommendations != null) {
+                    layoutRecommendations.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
                 }
-
-                uiItem.score.setText(
-                        indicator.getScore() + "/100"
-                );
-
-                String status = indicator.getStatus();
-
-                uiItem.status.setText(
-                        status != null && !status.trim().isEmpty()
-                                ? status
-                                : "Chưa đánh giá"
-                );
-
-                uiItem.selected = true;
-                selectedIndicatorKeys.add(uiItem.key);
-
-                updateIndicatorView(uiItem, false);
             }
         }
 
-        /*
-         * Reset mục tiêu cũ.
-         */
-        selectedGoalKeys.clear();
-
-        for (GoalItem item : goalItems) {
-            item.selected = false;
-            updateGoalView(item, false);
+        if (layoutSectionsList != null && layoutSectionsList.getChildCount() > 0) {
+            showRecommendations(profile);
         }
-
-        /*
-         * Cập nhật mục tiêu từ API.
-         */
-        if (profile.getBeautyGoals() != null) {
-
-            for (String goalCode
-                    : profile.getBeautyGoals()) {
-
-                if (goalCode == null) {
-                    continue;
-                }
-
-                GoalItem uiItem =
-                        goalMap.get(goalCode);
-
-                if (uiItem == null) {
-                    continue;
-                }
-
-                uiItem.selected = true;
-                selectedGoalKeys.add(goalCode);
-
-                updateGoalView(uiItem, false);
-            }
-        }
-
-        updateSelectedGoalsSummary();
     }
 
-    /**
-     * Gán sự kiện cho các nút.
-     */
+    private void showRecommendations(CustomerBeautyProfileDto profile) {
+        if (layoutRecommendations != null) {
+            layoutRecommendations.setVisibility(View.VISIBLE);
+            
+            List<com.example.frontend.model.Product> mockProducts = new ArrayList<>();
+            String skinType = profile.getSkinType() != null ? profile.getSkinType() : "Da dầu";
+            
+            if (skinType.contains("dầu")) {
+                mockProducts.add(new com.example.frontend.model.Product("1", "Cosrx", "Sữa rửa mặt BHA", "250000", "4.5", "120", R.drawable.cl_product, "Hot", "Face"));
+                mockProducts.add(new com.example.frontend.model.Product("2", "The Ordinary", "Serum Niacinamide", "220000", "4.8", "450", R.drawable.cl_product, "Best Seller", "Serum"));
+                mockProducts.add(new com.example.frontend.model.Product("3", "La Roche-Posay", "Kem dưỡng kiềm dầu", "480000", "4.7", "310", R.drawable.cl_product, "New", "Moisturizer"));
+                if (isRecExpanded) {
+                    mockProducts.add(new com.example.frontend.model.Product("6", "Paula's Choice", "BHA Liquid Exfoliant", "910000", "4.9", "1200", R.drawable.cl_product, "Premium", "Toner"));
+                    mockProducts.add(new com.example.frontend.model.Product("7", "Innisfree", "Jeju Volcanic Clay Mask", "340000", "4.6", "800", R.drawable.cl_product, "Popular", "Mask"));
+                }
+            } else {
+                mockProducts.add(new com.example.frontend.model.Product("4", "Neutrogena", "Kem dưỡng ẩm HA", "350000", "4.6", "215", R.drawable.cl_product, "Hot", "Moisturizer"));
+                mockProducts.add(new com.example.frontend.model.Product("5", "Bioderma", "Tẩy trang dịu nhẹ", "390000", "4.9", "890", R.drawable.cl_product, "Recommended", "Cleansing"));
+                if (isRecExpanded) {
+                    mockProducts.add(new com.example.frontend.model.Product("8", "Laneige", "Water Bank Cream", "850000", "4.8", "600", R.drawable.cl_product, "Best Seller", "Moisturizer"));
+                }
+            }
+            
+            productAdapter.setProducts(mockProducts);
+        }
+    }
+
+    private void renderSummarySection(SectionData section, String selectedValue) {
+        if (selectedValue == null) return;
+        List<String> list = new ArrayList<>();
+        list.add(selectedValue);
+        renderFlexItems(section, list);
+    }
+
+    private void renderMultiSummarySection(SectionData section, List<String> selectedValues) {
+        if (selectedValues != null && !selectedValues.isEmpty()) {
+            renderFlexItems(section, selectedValues);
+        }
+    }
+
+    private void renderFlexItems(SectionData section, List<String> selectedLabels) {
+        if (selectedLabels == null || selectedLabels.isEmpty()) return;
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        boolean isExpanded = Boolean.TRUE.equals(expandedSections.get(section.title));
+        
+        // 1. Title
+        TextView tvTitle = new TextView(requireContext());
+        tvTitle.setText(section.title);
+        tvTitle.setTextColor(darkText);
+        tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        tvTitle.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(-2, -2);
+        titleParams.topMargin = dpToPx(24);
+        titleParams.bottomMargin = dpToPx(12);
+        tvTitle.setLayoutParams(titleParams);
+        layoutSectionsList.addView(tvTitle);
+
+        // 2. Section Box (Vertical Container)
+        LinearLayout sectionBox = new LinearLayout(requireContext());
+        sectionBox.setOrientation(LinearLayout.VERTICAL);
+        sectionBox.setBackgroundResource(R.drawable.bg_beauty_profile_section);
+        sectionBox.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
+        LinearLayout.LayoutParams boxParams = new LinearLayout.LayoutParams(-1, -2);
+        sectionBox.setLayoutParams(boxParams);
+
+        // 3. Chips Container (ChipGroup for auto-wrapping)
+        com.google.android.material.chip.ChipGroup chipGroup = new com.google.android.material.chip.ChipGroup(requireContext());
+        chipGroup.setChipSpacingHorizontal(dpToPx(4));
+        chipGroup.setChipSpacingVertical(dpToPx(4));
+        
+        List<View> allChips = new ArrayList<>();
+        for (int i = 0; i < section.labels.length; i++) {
+            final String labelText = section.labels[i];
+            boolean isSelected = false;
+            for (String sel : selectedLabels) {
+                if (sel.equalsIgnoreCase(labelText)) {
+                    isSelected = true;
+                    break;
+                }
+            }
+
+            if (isSelected) {
+                View chipItem = inflater.inflate(R.layout.item_overview_chip, chipGroup, false);
+                ImageView icon = chipItem.findViewById(R.id.ivIcon);
+                TextView label = chipItem.findViewById(R.id.tvLabel);
+                
+                icon.setImageResource(section.icons[i]);
+                label.setText(labelText);
+                
+                chipGroup.addView(chipItem);
+                allChips.add(chipItem);
+                
+                // Show only 3 chips if not expanded
+                if (!isExpanded && allChips.size() > 3) {
+                    chipItem.setVisibility(View.GONE);
+                }
+            }
+        }
+        sectionBox.addView(chipGroup);
+
+        // 4. "Xem thêm" Button inline with chips
+        if (allChips.size() > 3) {
+            TextView tvToggle = new TextView(requireContext());
+            tvToggle.setText(isExpanded ? "Thu gọn" : "Xem thêm (" + (allChips.size() - 3) + ")");
+            tvToggle.setTextColor(brandPink);
+            tvToggle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+            tvToggle.setPadding(dpToPx(4), dpToPx(8), dpToPx(4), dpToPx(8));
+            tvToggle.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            
+            tvToggle.setOnClickListener(v -> {
+                expandedSections.put(section.title, !isExpanded);
+                bindProfileData(currentProfile);
+            });
+            chipGroup.addView(tvToggle);
+        }
+
+        // 5. Insight/Tip (Below chips)
+        TextView tvInsight = new TextView(requireContext());
+        tvInsight.setText(section.insight);
+        tvInsight.setTextColor(Color.parseColor("#9B8F8F"));
+        tvInsight.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+        tvInsight.setLineSpacing(0, 1.2f);
+        LinearLayout.LayoutParams insightParams = new LinearLayout.LayoutParams(-1, -2);
+        insightParams.topMargin = dpToPx(12);
+        tvInsight.setLayoutParams(insightParams);
+        sectionBox.addView(tvInsight);
+
+        layoutSectionsList.addView(sectionBox);
+    }
+
     private void setupEvents(@NonNull View view) {
-
-        /*
-         * Nút quay lại.
-         */
-        View btnBack =
-                view.findViewById(R.id.btnBack);
-
-        if (btnBack != null) {
-            ViewUtils.applyClickAnimation(btnBack);
-
-            btnBack.setOnClickListener(v ->
-                    handleBackNavigation()
-            );
-        }
-
-        /*
-         * Nút chỉnh sửa hồ sơ.
-         */
-        View btnEdit =
-                view.findViewById(R.id.btnEdit);
-
-        if (btnEdit != null) {
-            ViewUtils.applyClickAnimation(btnEdit);
-
-            btnEdit.setOnClickListener(v -> {
-                getParentFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(
-                                android.R.anim.fade_in,
-                                android.R.anim.fade_out,
-                                android.R.anim.fade_in,
-                                android.R.anim.fade_out
-                        )
-                        .replace(
-                                R.id.main,
-                                new EditSkinProfileFragment()
-                        )
-                        .addToBackStack(
-                                "beauty_profile_to_edit"
-                        )
+        View btnBack = view.findViewById(R.id.btnBack);
+        if (btnBack != null) btnBack.setOnClickListener(v -> handleBackNavigation());
+        
+        View btnEdit = view.findViewById(R.id.btnEdit);
+        if (btnEdit != null) btnEdit.setOnClickListener(v -> navigateToEditProfile());
+        
+        View btnSavedRoutines = view.findViewById(R.id.btnSavedRoutines);
+        if (btnSavedRoutines != null) {
+            btnSavedRoutines.setOnClickListener(v -> {
+                int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                        ? R.id.main_fragment_container : R.id.main;
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(containerId, new SavedBeautyRoutinesFragment())
+                        .addToBackStack("beauty_profile_to_saved")
                         .commit();
             });
         }
 
-        /*
-         * Nút cập nhật hồ sơ.
-         */
-        MaterialButton btnUpdateProfile =
-                view.findViewById(
-                        R.id.btnUpdateProfile
-                );
-
-        if (btnUpdateProfile != null) {
-            ViewUtils.applyClickAnimation(
-                    btnUpdateProfile
-            );
-
-            btnUpdateProfile.setOnClickListener(v ->
-                    showUpdateConfirmDialog()
-            );
-        }
-
-        /*
-         * Nút xem màn phân tích.
-         */
-        MaterialButton btnViewRoutine =
-                view.findViewById(
-                        R.id.btnViewRoutine
-                );
-
-        if (btnViewRoutine != null) {
-            ViewUtils.applyClickAnimation(
-                    btnViewRoutine
-            );
-
-            btnViewRoutine.setOnClickListener(v -> {
-                getParentFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(
-                                android.R.anim.fade_in,
-                                android.R.anim.fade_out,
-                                android.R.anim.fade_in,
-                                android.R.anim.fade_out
-                        )
-                        .replace(
-                                R.id.main,
-                                new SkinAnalysisFragment()
-                        )
-                        .addToBackStack(
-                                "beauty_profile_to_analysis"
-                        )
+        View btnAnalyzeSkin = view.findViewById(R.id.btnAnalyzeSkin);
+        if (btnAnalyzeSkin != null) {
+            btnAnalyzeSkin.setOnClickListener(v -> {
+                int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                        ? R.id.main_fragment_container : R.id.main;
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(containerId, new SkinAnalysisFragment())
+                        .addToBackStack("beauty_profile_to_analysis")
                         .commit();
             });
         }
 
-        setupGoalClickEvents();
-        setupIndicatorClickEvents();
-    }
-
-    /**
-     * Chọn hoặc bỏ chọn mục tiêu.
-     */
-    private void setupGoalClickEvents() {
-
-        for (GoalItem item : goalItems) {
-
-            ViewUtils.applyClickAnimation(item.card);
-
-            item.card.setOnClickListener(v -> {
-
-                item.selected = !item.selected;
-
-                if (item.selected) {
-                    selectedGoalKeys.add(item.key);
-                } else {
-                    selectedGoalKeys.remove(item.key);
-                }
-
-                updateGoalView(item, true);
-                updateSelectedGoalsSummary();
-            });
+        View btnViewAllRec = view.findViewById(R.id.btnViewAllRec);
+        if (btnViewAllRec != null) {
+            btnViewAllRec.setOnClickListener(v -> toggleRecommendations());
         }
     }
 
-    /**
-     * Chọn hoặc bỏ chọn chỉ số.
-     */
-    private void setupIndicatorClickEvents() {
-
-        for (IndicatorItem item
-                : indicatorMap.values()) {
-
-            ViewUtils.applyClickAnimation(item.card);
-
-            item.card.setOnClickListener(v -> {
-
-                item.selected = !item.selected;
-
-                if (item.selected) {
-                    selectedIndicatorKeys.add(item.key);
-                } else {
-                    selectedIndicatorKeys.remove(item.key);
-                }
-
-                updateIndicatorView(item, true);
-            });
-        }
+    private void navigateToEditProfile() {
+        int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                ? R.id.main_fragment_container : R.id.main;
+        getParentFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(containerId, new EditSkinProfileFragment())
+                .addToBackStack("beauty_profile_to_edit")
+                .commit();
     }
 
-    /**
-     * Giao diện mục tiêu được chọn.
-     */
-    private void updateGoalView(
-            @NonNull GoalItem item,
-            boolean animate
-    ) {
-        int pinkColor = ContextCompat.getColor(
-                requireContext(),
-                R.color.button
-        );
-
-        int selectedBackground =
-                ContextCompat.getColor(
-                        requireContext(),
-                        R.color.icon_bg_pink
-                );
-
-        int normalBackground =
-                ContextCompat.getColor(
-                        requireContext(),
-                        R.color.background_main
-                );
-
-        int normalTextColor =
-                ContextCompat.getColor(
-                        requireContext(),
-                        R.color.accent_dark
-                );
-
-        int normalStrokeColor =
-                ContextCompat.getColor(
-                        requireContext(),
-                        R.color.border_divider
-                );
-
-        item.card.setCardBackgroundColor(
-                item.selected
-                        ? selectedBackground
-                        : normalBackground
-        );
-
-        item.card.setStrokeColor(
-                item.selected
-                        ? pinkColor
-                        : normalStrokeColor
-        );
-
-        item.card.setStrokeWidth(dpToPx(1));
-
-        item.label.setTextColor(
-                item.selected
-                        ? pinkColor
-                        : normalTextColor
-        );
-
-        item.icon.setImageTintList(
-                ColorStateList.valueOf(
-                        item.selected
-                                ? pinkColor
-                                : normalTextColor
-                )
-        );
-
-        animateCardScale(
-                item.card,
-                item.selected,
-                animate
-        );
-
-        updateTickState(
-                item.tick,
-                item.selected,
-                animate
-        );
-
-        item.card.setContentDescription(
-                item.name
-                        + (
-                        item.selected
-                                ? " đã được chọn"
-                                : " chưa được chọn"
-                )
-        );
-    }
-
-    /**
-     * Giao diện chỉ số được chọn.
-     */
-    private void updateIndicatorView(
-            @NonNull IndicatorItem item,
-            boolean animate
-    ) {
-        int pinkColor =
-                ContextCompat.getColor(
-                        requireContext(),
-                        R.color.button
-                );
-
-        int selectedBackground =
-                ContextCompat.getColor(
-                        requireContext(),
-                        R.color.icon_bg_pink
-                );
-
-        int normalBackground =
-                ContextCompat.getColor(
-                        requireContext(),
-                        R.color.background_main
-                );
-
-        int darkTextColor =
-                ContextCompat.getColor(
-                        requireContext(),
-                        R.color.accent_dark
-                );
-
-        int mainTextColor =
-                ContextCompat.getColor(
-                        requireContext(),
-                        R.color.text_main
-                );
-
-        int normalStrokeColor =
-                ContextCompat.getColor(
-                        requireContext(),
-                        R.color.border_divider
-                );
-
-        item.card.setCardBackgroundColor(
-                item.selected
-                        ? selectedBackground
-                        : normalBackground
-        );
-
-        item.card.setStrokeColor(
-                item.selected
-                        ? pinkColor
-                        : normalStrokeColor
-        );
-
-        item.card.setStrokeWidth(dpToPx(1));
-
-        item.score.setTextColor(pinkColor);
-
-        item.name.setTextColor(
-                item.selected
-                        ? pinkColor
-                        : darkTextColor
-        );
-
-        item.status.setTextColor(
-                item.selected
-                        ? pinkColor
-                        : mainTextColor
-        );
-
-        item.icon.setImageTintList(
-                ColorStateList.valueOf(pinkColor)
-        );
-
-        animateCardScale(
-                item.card,
-                item.selected,
-                animate
-        );
-
-        updateTickState(
-                item.tick,
-                item.selected,
-                animate
-        );
-
-        item.card.setContentDescription(
-                item.displayName
-                        + (
-                        item.selected
-                                ? " đã được chọn"
-                                : " chưa được chọn"
-                )
-        );
-    }
-
-    /**
-     * Phóng nhẹ thẻ khi được chọn.
-     */
-    private void animateCardScale(
-            @NonNull MaterialCardView card,
-            boolean selected,
-            boolean animate
-    ) {
-        float scale = selected ? 1.03f : 1f;
-        float elevation = selected ? dpToPx(3) : 0f;
-
-        if (!animate) {
-            card.setScaleX(scale);
-            card.setScaleY(scale);
-            card.setTranslationZ(elevation);
-            return;
-        }
-
-        card.animate()
-                .scaleX(scale)
-                .scaleY(scale)
-                .translationZ(elevation)
-                .setDuration(220)
-                .setInterpolator(
-                        new androidx.interpolator.view.animation
-                                .FastOutSlowInInterpolator()
-                )
-                .start();
-    }
-
-    /**
-     * Hiện hoặc ẩn dấu tích.
-     */
-    private void updateTickState(
-            @NonNull ImageView tick,
-            boolean selected,
-            boolean animate
-    ) {
-        tick.animate().cancel();
-
-        if (selected) {
-
-            tick.setVisibility(View.VISIBLE);
-
-            if (!animate) {
-                tick.setAlpha(1f);
-                tick.setScaleX(1f);
-                tick.setScaleY(1f);
-                return;
+    private void toggleRecommendations() {
+        if (currentProfile == null) return;
+        
+        isRecExpanded = !isRecExpanded;
+        
+        if (isRecExpanded) {
+            rvRecommendedProducts.setLayoutManager(new androidx.recyclerview.widget.GridLayoutManager(requireContext(), 2));
+            rvRecommendedProducts.setNestedScrollingEnabled(false);
+            productAdapter.setItemWidth(-1);
+            
+            View btnViewAll = getView().findViewById(R.id.btnViewAllRec);
+            if (btnViewAll instanceof TextView) {
+                ((TextView) btnViewAll).setText("Thu gọn");
             }
-
-            tick.setAlpha(0f);
-            tick.setScaleX(0.7f);
-            tick.setScaleY(0.7f);
-
-            tick.animate()
-                    .alpha(1f)
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .setDuration(250)
-                    .start();
-
         } else {
-
-            if (!animate) {
-                tick.setVisibility(View.GONE);
-                tick.setAlpha(1f);
-                tick.setScaleX(1f);
-                tick.setScaleY(1f);
-                return;
+            rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+            rvRecommendedProducts.setNestedScrollingEnabled(true);
+            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+            productAdapter.setItemWidth((int) (screenWidth * 0.46));
+            
+            View btnViewAll = getView().findViewById(R.id.btnViewAllRec);
+            if (btnViewAll instanceof TextView) {
+                ((TextView) btnViewAll).setText(R.string.action_see_all);
             }
-
-            tick.animate()
-                    .alpha(0f)
-                    .scaleX(0.7f)
-                    .scaleY(0.7f)
-                    .setDuration(180)
-                    .withEndAction(() -> {
-                        tick.setVisibility(View.GONE);
-                        tick.setAlpha(1f);
-                        tick.setScaleX(1f);
-                        tick.setScaleY(1f);
-                    })
-                    .start();
         }
+        
+        showRecommendations(currentProfile);
     }
 
-    /**
-     * Cập nhật các chip trong phần Mục tiêu của bạn.
-     */
-    private void updateSelectedGoalsSummary() {
-
-        if (layoutSelectedGoalsSummary == null) {
-            return;
-        }
-
-        layoutSelectedGoalsSummary.removeAllViews();
-
-        boolean hasSelectedGoal = false;
-
-        for (GoalItem item : goalItems) {
-
-            if (!item.selected) {
-                continue;
-            }
-
-            hasSelectedGoal = true;
-            addGoalChip(item.name);
-        }
-
-        if (!hasSelectedGoal) {
-            addGoalChip("Chưa chọn mục tiêu");
-        }
-    }
-
-    /**
-     * Tạo chip mục tiêu.
-     */
-    private void addGoalChip(
-            @NonNull String text
-    ) {
-        TextView chip =
-                new TextView(requireContext());
-
-        chip.setText(text);
-
-        chip.setTextSize(
-                TypedValue.COMPLEX_UNIT_SP,
-                13
-        );
-
-        chip.setTypeface(
-                ResourcesCompat.getFont(
-                        requireContext(),
-                        R.font.nunito_semibold
-                )
-        );
-
-        chip.setTextColor(
-                ContextCompat.getColor(
-                        requireContext(),
-                        R.color.button
-                )
-        );
-
-        chip.setBackgroundResource(
-                R.drawable.bg_chip_pink
-        );
-
-        chip.setPadding(
-                dpToPx(14),
-                dpToPx(7),
-                dpToPx(14),
-                dpToPx(7)
-        );
-
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-
-        params.setMarginEnd(dpToPx(8));
-        chip.setLayoutParams(params);
-
-        layoutSelectedGoalsSummary.addView(chip);
-    }
-
-    /**
-     * Quay lại màn hình trước.
-     */
     private void handleBackNavigation() {
-
-        if (getParentFragmentManager()
-                .getBackStackEntryCount() > 0) {
-
-            getParentFragmentManager()
-                    .popBackStack();
-
+        if (getParentFragmentManager().getBackStackEntryCount() > 0) {
+            getParentFragmentManager().popBackStack();
         } else {
-
-            requireActivity()
-                    .getOnBackPressedDispatcher()
-                    .onBackPressed();
+            requireActivity().getOnBackPressedDispatcher().onBackPressed();
         }
     }
 
-    /**
-     * Xác nhận cập nhật hồ sơ.
-     */
-    private void showUpdateConfirmDialog() {
-
-        new MaterialAlertDialogBuilder(
-                requireContext()
-        )
-                .setTitle("Xác nhận cập nhật")
-                .setMessage(
-                        "Bạn có chắc chắn muốn cập nhật hồ sơ không?"
-                )
-                .setNegativeButton(
-                        "Hủy",
-                        (dialog, which) ->
-                                dialog.dismiss()
-                )
-                .setPositiveButton(
-                        "Cập nhật",
-                        (dialog, which) -> {
-                            dialog.dismiss();
-                            showSuccessPopup();
-                        }
-                )
-                .show();
-    }
-
-    /**
-     * Popup cập nhật thành công.
-     */
-    private void showSuccessPopup() {
-
-        Dialog dialog =
-                new Dialog(requireContext());
-
-        dialog.requestWindowFeature(
-                Window.FEATURE_NO_TITLE
-        );
-
-        dialog.setContentView(
-                R.layout.overview_popup
-        );
-
+    private void showCtaPopup() {
+        if (!isAdded() || getContext() == null || isCtaShown) return;
+        isCtaShown = true;
+        ctaHandler.removeCallbacksAndMessages(null);
+        
+        android.app.Dialog dialog = new android.app.Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_beauty_profile_cta);
         dialog.setCancelable(true);
-        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCanceledOnTouchOutside(true);
 
-        MaterialButton btnPopupOk =
-                dialog.findViewById(
-                        R.id.btnPopupOk
-                );
+        View btnEdit = dialog.findViewById(R.id.btnGoToEdit);
+        if (btnEdit != null) {
+            btnEdit.setOnClickListener(v -> {
+                dialog.dismiss();
+                navigateToEditProfile();
+            });
+        }
 
-        if (btnPopupOk != null) {
-            btnPopupOk.setOnClickListener(v ->
-                    dialog.dismiss()
-            );
+        View btnLater = dialog.findViewById(R.id.btnMaybeLater);
+        if (btnLater != null) {
+            btnLater.setOnClickListener(v -> dialog.dismiss());
         }
 
         dialog.show();
 
         Window window = dialog.getWindow();
-
         if (window != null) {
-
-            window.setBackgroundDrawable(
-                    new ColorDrawable(
-                            Color.TRANSPARENT
-                    )
-            );
-
-            window.addFlags(
-                    WindowManager.LayoutParams
-                            .FLAG_DIM_BEHIND
-            );
-
-            WindowManager.LayoutParams params =
-                    window.getAttributes();
-
-            params.dimAmount = 0.5f;
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.dimAmount = 0.6f;
             window.setAttributes(params);
-
-            window.setLayout(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT
-            );
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
         }
-    }
-
-    private int dpToPx(int dp) {
-
-        float density =
-                getResources()
-                        .getDisplayMetrics()
-                        .density;
-
-        return Math.round(dp * density);
     }
 
     @Override
     public void onDestroyView() {
-
-        goalItems.clear();
-        indicatorMap.clear();
-        goalMap.clear();
-
-        layoutSelectedGoalsSummary = null;
-
+        ctaHandler.removeCallbacksAndMessages(null);
         super.onDestroyView();
     }
 
-    /**
-     * Dữ liệu của một thẻ mục tiêu.
-     */
-    private static class GoalItem {
-
-        private final MaterialCardView card;
-        private final ImageView icon;
-        private final TextView label;
-        private final ImageView tick;
-
-        private final String key;
-        private final String name;
-
-        private boolean selected;
-
-        private GoalItem(
-                MaterialCardView card,
-                ImageView icon,
-                TextView label,
-                ImageView tick,
-                String key,
-                String name,
-                boolean selected
-        ) {
-            this.card = card;
-            this.icon = icon;
-            this.label = label;
-            this.tick = tick;
-            this.key = key;
-            this.name = name;
-            this.selected = selected;
-        }
+    private int dpToPx(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 
-    /**
-     * Dữ liệu của một thẻ chỉ số.
-     */
-    private static class IndicatorItem {
-
-        private final MaterialCardView card;
-        private final ImageView icon;
-        private final TextView score;
-        private final TextView name;
-        private final TextView status;
-        private final ImageView tick;
-
-        private final String key;
-        private final String displayName;
-
-        private boolean selected;
-
-        private IndicatorItem(
-                MaterialCardView card,
-                ImageView icon,
-                TextView score,
-                TextView name,
-                TextView status,
-                ImageView tick,
-                String key,
-                String displayName,
-                boolean selected
-        ) {
-            this.card = card;
-            this.icon = icon;
-            this.score = score;
-            this.name = name;
-            this.status = status;
-            this.tick = tick;
-            this.key = key;
-            this.displayName = displayName;
-            this.selected = selected;
+    private static class SectionData {
+        String title;
+        String[] labels;
+        int[] icons;
+        String insight;
+        SectionData(String title, String[] labels, int[] icons, String insight) {
+            this.title = title;
+            this.labels = labels;
+            this.icons = icons;
+            this.insight = insight;
         }
     }
 }

@@ -56,13 +56,13 @@ public class AuthResultHandler {
                 break;
             case START_CHECKOUT:
                 activity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ui.commerce.CheckoutFragment())
+                        .replace(R.id.main_fragment_container, new ui.commerce.CheckoutFragment())
                         .addToBackStack(null)
                         .commit();
                 break;
             case OPEN_ACCOUNT:
                 activity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ui.account.AccountFragment())
+                        .replace(R.id.main_fragment_container, new ui.account.AccountFragment())
                         .addToBackStack(null)
                         .commit();
                 break;

@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical">
+
+    <!-- Header Toolbar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="@color/background_main"
+        android:elevation="4dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:contentDescription="@string/content_desc_back"
+            android:padding="8dp"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/accent_dark" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="64dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/nunito_bold"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="@string/help_center_title"
+            android:textColor="@color/accent_dark"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/btnSupportIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/support_history_title"
+            android:padding="8dp"
+            android:src="@drawable/ic_clock"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/accent_dark" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Search Bar -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                app:cardBackgroundColor="@color/background_sub"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/help_search_hint"
+                    android:textColor="@color/text_main"
+                    android:alpha="0.4"
+                    android:textSize="14sp"
+                    android:drawablePadding="12dp"
+                    app:drawableStartCompat="@drawable/ic_search"
+                    app:drawableTint="@color/text_main" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Categories Grid -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:columnCount="3">
+
+                <!-- Đơn hàng -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/catOrders"
+                    style="@style/GridItemCard"
+                    android:layout_height="110dp">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon" android:src="@drawable/ic_shopping_bag" app:tint="@color/button" android:contentDescription="@string/category_orders" />
+                        <TextView style="@style/GridItemLabel" android:text="@string/category_orders" android:textSize="12sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Đổi trả -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/catReturns"
+                    style="@style/GridItemCard"
+                    android:layout_height="110dp">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon" android:src="@drawable/ic_refresh" app:tint="@color/button" android:contentDescription="@string/category_returns" />
+                        <TextView style="@style/GridItemLabel" android:text="@string/category_returns" android:textSize="12sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Thanh toán -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/catPayment"
+                    style="@style/GridItemCard"
+                    android:layout_height="110dp">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon" android:src="@drawable/ic_paymeny_card" app:tint="@color/button" android:contentDescription="@string/category_payment" />
+                        <TextView style="@style/GridItemLabel" android:text="@string/category_payment" android:textSize="12sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Tài khoản -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/catAccount"
+                    style="@style/GridItemCard"
+                    android:layout_height="110dp"
+                    android:layout_marginTop="8dp">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon" android:src="@drawable/ic_account" app:tint="@color/button" android:contentDescription="@string/category_account" />
+                        <TextView style="@style/GridItemLabel" android:text="@string/category_account" android:textSize="12sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Sản phẩm -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/catProduct"
+                    style="@style/GridItemCard"
+                    android:layout_height="110dp"
+                    android:layout_marginTop="8dp">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon" android:src="@drawable/ic_skincare" app:tint="@color/button" android:contentDescription="@string/category_product" />
+                        <TextView style="@style/GridItemLabel" android:text="@string/category_product" android:textSize="12sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Khuyến mãi -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/catPromotion"
+                    style="@style/GridItemCard"
+                    android:layout_height="110dp"
+                    android:layout_marginTop="8dp">
+                    <LinearLayout style="@style/GridItemContent">
+                        <ImageView style="@style/GridItemIcon" android:src="@drawable/ic_coupon" app:tint="@color/button" android:contentDescription="@string/category_promotion" />
+                        <TextView style="@style/GridItemLabel" android:text="@string/category_promotion" android:textSize="12sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </GridLayout>
+
+            <!-- FAQs Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="@string/faq_section_title"
+                style="@style/Text.Kanila.H3"
+                android:textColor="@color/accent_dark" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="@color/background_main"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#F5F5F5"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- FAQ 1 -->
+                    <include layout="@layout/item_faq_row" android:id="@+id/faq1" />
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" android:alpha="0.3" />
+
+                    <!-- FAQ 2 -->
+                    <LinearLayout style="@style/GridItemFrame" android:layout_height="wrap_content" android:padding="16dp" android:gravity="center_vertical">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/faq_2" style="@style/Text.Kanila.Body" />
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_arrow_right" app:tint="@color/border_divider" android:contentDescription="@string/faq_2" />
+                    </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" android:alpha="0.3" />
+
+                    <!-- FAQ 3 -->
+                    <LinearLayout style="@style/GridItemFrame" android:layout_height="wrap_content" android:padding="16dp" android:gravity="center_vertical">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/faq_3" style="@style/Text.Kanila.Body" />
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_arrow_right" app:tint="@color/border_divider" android:contentDescription="@string/faq_3" />
+                    </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" android:alpha="0.3" />
+
+                    <!-- FAQ 4 -->
+                    <LinearLayout style="@style/GridItemFrame" android:layout_height="wrap_content" android:padding="16dp" android:gravity="center_vertical">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/faq_4" style="@style/Text.Kanila.Body" />
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_arrow_right" app:tint="@color/border_divider" android:contentDescription="@string/faq_4" />
+                    </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" android:alpha="0.3" />
+
+                    <!-- FAQ 5 -->
+                    <LinearLayout style="@style/GridItemFrame" android:layout_height="wrap_content" android:padding="16dp" android:gravity="center_vertical">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/faq_5" style="@style/Text.Kanila.Body" />
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_arrow_right" app:tint="@color/border_divider" android:contentDescription="@string/faq_5" />
+                    </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" android:alpha="0.3" />
+
+                    <TextView
+                        android:id="@+id/btnViewAllFaqs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:text="@string/view_all"
+                        android:textColor="@color/button"
+                        android:fontFamily="@font/nunito_semibold"
+                        android:textSize="13sp"
+                        android:gravity="start|center_vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
+                        app:drawableEndCompat="@drawable/ic_arrow_right"
+                        app:drawableTint="@color/button"
+                        android:drawablePadding="8dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- More Info Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="@string/help_more_info_title"
+                style="@style/Text.Kanila.H3"
+                android:textColor="@color/accent_dark" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="@color/background_main"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#F5F5F5"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Chăm sóc khách hàng ưu tiên -->
+                    <LinearLayout
+                        android:id="@+id/itemPrioritySupport"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/priority_customer_service"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_arrow_right"
+                            app:tint="@color/border_divider"
+                            android:contentDescription="@string/priority_customer_service" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border_divider" android:alpha="0.3" />
+
+                    <!-- Gọi cho tổng đài -->
+                    <LinearLayout
+                        android:id="@+id/itemCallSupport"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/call_center"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_arrow_right"
+                            app:tint="@color/border_divider"
+                            android:contentDescription="@string/call_center" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Chat Now Footer -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/chatNowFooter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/icon_bg_pink"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/secondary"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_chatbot"
+                        app:tint="@color/button"
+                        android:contentDescription="@string/chat_now" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/no_answer_found"
+                            style="@style/Text.Kanila.Body"
+                            android:alpha="0.8" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/chat_now"
+                            style="@style/Text.Kanila.BodyMedium"
+                            android:textColor="@color/button"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_arrow_right"
+                        app:tint="@color/button"
+                        android:contentDescription="@string/chat_now" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

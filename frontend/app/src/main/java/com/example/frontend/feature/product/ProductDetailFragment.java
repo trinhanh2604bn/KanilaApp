@@ -172,7 +172,7 @@ public class ProductDetailFragment extends Fragment {
                             state.skinMatch.getProfileChips()
                     );
                     getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main, fragment)
+                            .replace(R.id.main_fragment_container, fragment)
                             .addToBackStack(null)
                             .commit();
                 }
@@ -185,7 +185,7 @@ public class ProductDetailFragment extends Fragment {
                 btnViewAllReviews.setOnClickListener(v -> {
                     ReviewHubFragment fragment = ReviewHubFragment.newInstance(productId);
                     getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main, fragment)
+                            .replace(R.id.main_fragment_container, fragment)
                             .addToBackStack(null)
                             .commit();
                 });
@@ -206,7 +206,7 @@ public class ProductDetailFragment extends Fragment {
                             ProductInfoDetailFragment.InfoMode.DESCRIPTION
                     );
                     getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main, fragment)
+                            .replace(R.id.main_fragment_container, fragment)
                             .addToBackStack(null)
                             .commit();
                 }
@@ -227,7 +227,7 @@ public class ProductDetailFragment extends Fragment {
                         ProductInfoDetailFragment.InfoMode.INGREDIENTS
                 );
                 getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main, fragment)
+                        .replace(R.id.main_fragment_container, fragment)
                         .addToBackStack(null)
                         .commit();
             });
@@ -247,7 +247,7 @@ public class ProductDetailFragment extends Fragment {
                         ProductInfoDetailFragment.InfoMode.USAGE
                 );
                 getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main, fragment)
+                        .replace(R.id.main_fragment_container, fragment)
                         .addToBackStack(null)
                         .commit();
             });
@@ -262,7 +262,7 @@ public class ProductDetailFragment extends Fragment {
         if (btnCart != null) {
             btnCart.setOnClickListener(v -> {
                 getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ui.commerce.CartFragment())
+                        .replace(R.id.main_fragment_container, new ui.commerce.CartFragment())
                         .addToBackStack(null)
                         .commit();
             });
@@ -297,7 +297,7 @@ public class ProductDetailFragment extends Fragment {
         recentlyViewedAdapter.setListener(product -> {
             ProductDetailFragment fragment = ProductDetailFragment.newInstance(product.getId());
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, fragment)
+                    .replace(R.id.main_fragment_container, fragment)
                     .addToBackStack(null)
                     .commit();
         });
@@ -310,7 +310,7 @@ public class ProductDetailFragment extends Fragment {
         relatedAdapter.setOnProductClickListener(product -> {
             ProductDetailFragment fragment = ProductDetailFragment.newInstance(product.getId());
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, fragment)
+                    .replace(R.id.main_fragment_container, fragment)
                     .addToBackStack(null)
                     .commit();
         });
@@ -361,7 +361,7 @@ public class ProductDetailFragment extends Fragment {
                     Toast.makeText(getContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
                     // Navigate to Cart
                     getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main, new ui.commerce.CartFragment())
+                            .replace(R.id.main_fragment_container, new ui.commerce.CartFragment())
                             .addToBackStack(null)
                             .commit();
                     break;
@@ -377,7 +377,7 @@ public class ProductDetailFragment extends Fragment {
                 case SUCCESS:
                     // Navigate to Checkout
                     getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main, new ui.commerce.CheckoutFragment())
+                            .replace(R.id.main_fragment_container, new ui.commerce.CheckoutFragment())
                             .addToBackStack(null)
                             .commit();
                     break;

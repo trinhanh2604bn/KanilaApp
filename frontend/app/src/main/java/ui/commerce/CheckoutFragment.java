@@ -250,7 +250,7 @@ public class CheckoutFragment extends Fragment {
             btnEdit.setOnClickListener(v -> {
                 if (getActivity() != null) {
                     getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main, new CheckoutShippingFragment())
+                            .replace(R.id.main_fragment_container, new CheckoutShippingFragment())
                             .addToBackStack(null)
                             .commit();
                 }

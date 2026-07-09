@@ -22,7 +22,6 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.frontend.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import ui.common.BottomNavigationHelper;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
@@ -48,7 +47,6 @@ public class CommunityHomeFragment extends Fragment {
         setupTabs();
         setupSearch();
         setupNotifications();
-        setupBottomNavigation(view);
         return view;
     }
 
@@ -178,11 +176,6 @@ public class CommunityHomeFragment extends Fragment {
         if (imm != null) {
             imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
         }
-    }
-
-    private void setupBottomNavigation(View view) {
-        BottomNavigationHelper.setupStandardNavigation(this, view);
-        BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_COMMUNITY);
     }
 
     private static class CommunityPagerAdapter extends FragmentStateAdapter {

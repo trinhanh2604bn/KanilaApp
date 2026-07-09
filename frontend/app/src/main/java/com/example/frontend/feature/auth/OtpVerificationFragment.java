@@ -187,7 +187,7 @@ public class OtpVerificationFragment extends Fragment {
                         if (result.data != null && result.data.getResetToken() != null) {
                             ResetPasswordFragment fragment = ResetPasswordFragment.newInstance(result.data.getResetToken());
                             getParentFragmentManager().beginTransaction()
-                                    .replace(R.id.main, fragment)
+                                    .replace(R.id.main_fragment_container, fragment)
                                     .addToBackStack(null)
                                     .commit();
                         }

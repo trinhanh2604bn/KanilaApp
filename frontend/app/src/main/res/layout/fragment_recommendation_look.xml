@@ -101,6 +101,7 @@
                         android:fontFamily="@font/nunito_bold"
                         android:letterSpacing="0.1"/>
                     <TextView
+                        android:id="@+id/tvRoutineHeroName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -111,56 +112,12 @@
                 </LinearLayout>
             </FrameLayout>
 
-            <!-- SECTION 1: SKINCARE ROUTINE -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingTop="24dp"
-                android:paddingBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="20dp"
-                    android:gravity="center_vertical">
-                    <View android:layout_width="3dp" android:layout_height="18dp" android:background="@color/button"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        style="@style/Text.Kanila.H3"
-                        android:text="1. QUY TRÌNH DƯỠNG DA (AM/PM)"
-                        android:textColor="@color/accent_dark"
-                        android:letterSpacing="0.05"/>
-                </LinearLayout>
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:clipToPadding="false"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="8dp"
-                    android:scrollbars="none">
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <include layout="@layout/item_routine_step" />
-                        <include layout="@layout/item_routine_step" />
-                        <include layout="@layout/item_routine_step" />
-                        <include layout="@layout/item_routine_step" />
-                    </LinearLayout>
-                </HorizontalScrollView>
-            </LinearLayout>
-
             <!-- SECTION 2: MAKEUP LOOK -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="8dp"
+                android:paddingTop="24dp"
                 android:paddingBottom="32dp">
 
                 <LinearLayout
@@ -174,7 +131,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         style="@style/Text.Kanila.H3"
-                        android:text="2. CÁC BƯỚC TRANG ĐIỂM"
+                        android:text="CÁC QUY TRÌNH GỢI Ý"
                         android:textColor="@color/accent_dark"
                         android:letterSpacing="0.05"/>
                 </LinearLayout>
@@ -190,11 +147,27 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
-                        <include layout="@layout/item_makeup_step" />
-                        <include layout="@layout/item_makeup_step" />
-                        <include layout="@layout/item_makeup_step" />
-                        <include layout="@layout/item_makeup_step" />
+                        <include android:id="@+id/stepMakeup1" layout="@layout/item_makeup_step" />
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="@color/border_divider" />
+                        <include android:id="@+id/stepMakeup2" layout="@layout/item_makeup_step" />
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="@color/border_divider" />
+                        <include android:id="@+id/stepMakeup3" layout="@layout/item_makeup_step" />
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="@color/border_divider" />
+                        <include android:id="@+id/stepMakeup4" layout="@layout/item_makeup_step" />
                     </LinearLayout>
                 </HorizontalScrollView>
             </LinearLayout>
@@ -232,7 +205,7 @@
                 android:id="@+id/btnBuyAllRec"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:layout_weight="1.5"
+                android:layout_weight="1"
                 android:backgroundTint="@color/button"
                 android:fontFamily="@font/nunito_bold"
                 android:text="Mua trọn bộ"

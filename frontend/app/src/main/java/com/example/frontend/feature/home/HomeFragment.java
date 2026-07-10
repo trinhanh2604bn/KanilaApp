@@ -189,7 +189,15 @@ public class HomeFragment extends Fragment {
     private void setupHomeShortcuts() {
         shortcutAdapter = new HomeShortcutAdapter();
         shortcutAdapter.setOnShortcutClickListener(item -> {
-            if ("kanila_beauty".equals(item.getId())) navigateToFragment(new BeautyProfileOverviewFragment());
+            if ("kanila_beauty".equals(item.getId())) {
+                if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                    navigateToFragment(new BeautyProfileOverviewFragment());
+                } else {
+                    // Logic yêu cầu: Click icon ngoài trang chủ thì hiện Popup CTA trước
+                    // Trong Popup CTA, nếu chưa đăng nhập mới hiện GuestPrompt từ dưới lên
+                    navigateToFragment(new BeautyProfileOverviewFragment());
+                }
+            }
             else if ("orders".equals(item.getId())) navigateToFragment(new com.example.frontend.feature.order.OrderListFragment());
             else if ("support".equals(item.getId())) navigateToFragment(new HelpCenterFragment());
             else Toast.makeText(requireContext(), item.getTitle(), Toast.LENGTH_SHORT).show();

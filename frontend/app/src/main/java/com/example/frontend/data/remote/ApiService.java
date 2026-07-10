@@ -169,6 +169,12 @@ public interface ApiService {
     @POST("api/checkout-sessions/guest/{id}/place-order")
     Call<ApiResponse<OrderDto>> placeGuestOrder(@Path("id") String sessionId, @Body Object request);
 
+    @POST("api/orders/mock-checkout")
+    Call<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>> createMockOrder(@Body java.util.Map<String, Object> request);
+
+    @GET("api/orders/code/{orderCode}")
+    Call<ApiResponse<com.example.frontend.data.model.order.OrderDetailDto>> getOrderByCode(@Path("orderCode") String orderCode);
+
     @GET("api/beauty-references")
     Call<ApiResponse<List<BeautyReferenceDto>>> getBeautyReferences();
 

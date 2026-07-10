@@ -190,4 +190,28 @@ public class CheckoutRepository {
             }
         });
     }
+
+    public void createMockOrder(java.util.Map<String, Object> request, MutableLiveData<NetworkResult<com.example.frontend.data.model.order.MockOrderResponse>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.createMockOrder(request).enqueue(new Callback<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>> call, Response<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<com.example.frontend.data.model.order.MockOrderResponse> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to create mock order"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
 }

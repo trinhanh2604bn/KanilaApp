@@ -19,6 +19,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
     private List<Product> products = new ArrayList<>();
     private OnProductClickListener listener;
     private OnWishlistToggleListener wishlistToggleListener;
+    private OnAddToCartListener addToCartListener;
     private int itemWidth = -1;
 
     public interface OnProductClickListener {
@@ -29,12 +30,20 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         void onWishlistToggle(Product product, boolean isWishlisted);
     }
 
+    public interface OnAddToCartListener {
+        void onAddToCart(Product product);
+    }
+
     public void setOnProductClickListener(OnProductClickListener listener) {
         this.listener = listener;
     }
 
     public void setOnWishlistToggleListener(OnWishlistToggleListener listener) {
         this.wishlistToggleListener = listener;
+    }
+
+    public void setOnAddToCartListener(OnAddToCartListener listener) {
+        this.addToCartListener = listener;
     }
 
     public void setProducts(List<Product> products) {
@@ -97,6 +106,14 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
             });
         }
 
+        if (holder.btnAddToCart != null) {
+            holder.btnAddToCart.setOnClickListener(v -> {
+                if (addToCartListener != null) {
+                    addToCartListener.onAddToCart(product);
+                }
+            });
+        }
+
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
             Glide.with(holder.ivImage.getContext())
                     .load(product.getImageUrl())
@@ -129,7 +146,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         TextView tvName, tvBrand, tvPrice, tvReviewCount, tvBadge;
         RatingBar rbRating;
         View layoutBadge;
-        ImageButton btnWishlist;
+        ImageButton btnWishlist, btnAddToCart;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -142,6 +159,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
             tvBadge = itemView.findViewById(R.id.tvProductBadge);
             layoutBadge = itemView.findViewById(R.id.layoutProductStatusBadge);
             btnWishlist = itemView.findViewById(R.id.btnWishlist);
+            btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
         }
     }
 }

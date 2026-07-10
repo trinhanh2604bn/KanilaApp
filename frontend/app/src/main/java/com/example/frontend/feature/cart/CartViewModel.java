@@ -106,6 +106,19 @@ public class CartViewModel extends AndroidViewModel {
         cartRepository.removeItem(itemId, cartResult);
     }
 
+    public void addToCart(String productId, String variantId, int quantity) {
+        if (USE_MOCK_CART) {
+            // Logic for mock add to cart (simplified)
+            if (mockCart == null) {
+                mockCart = createMockCartData();
+            }
+            // For demo, just post success
+            cartResult.postValue(NetworkResult.success(mockCart));
+            return;
+        }
+        cartRepository.addToCart(productId, variantId, quantity, cartResult);
+    }
+
     public void selectAllItems(boolean selected) {
         if (USE_MOCK_CART && mockCart != null) {
             List<CartItemDto> newList = new ArrayList<>();

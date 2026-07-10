@@ -511,28 +511,38 @@ public class MainActivity extends AppCompatActivity {
     private void setupHomeShortcuts() {
         shortcutAdapter = new HomeShortcutAdapter();
         shortcutAdapter.setOnShortcutClickListener(item -> {
-            if ("orders".equals(item.getId())) {
+            String id = item.getId();
+            if ("orders".equals(id)) {
                 loadFragment(new com.example.frontend.feature.order.OrderListFragment());
-            } else if ("kanila_beauty".equals(item.getId())) {
+            } else if ("kanila_beauty".equals(id)) {
                 loadFragment(new ui.account.BeautyProfileOverviewFragment());
-            } else if ("support".equals(item.getId())) {
+            } else if ("support".equals(id)) {
                 loadFragment(new ui.support.HelpCenterFragment());
+            } else if ("policy".equals(id)) {
+                loadFragment(new ui.support.PolicyFragment());
+            } else if ("royalty".equals(id)) {
+                loadFragment(new ui.loyalty.LoyaltyFragment());
+            } else if ("voucher".equals(id)) {
+                loadFragment(new com.example.frontend.feature.voucher.VoucherListFragment());
             } else {
-                Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Tính năng " + item.getTitle() + " đang phát triển", Toast.LENGTH_SHORT).show();
             }
         });
 
-        if (rvHomeShortcuts != null) rvHomeShortcuts.setAdapter(shortcutAdapter);
+        if (rvHomeShortcuts != null) {
+            rvHomeShortcuts.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false));
+            rvHomeShortcuts.setAdapter(shortcutAdapter);
+        }
 
         List<HomeShortcutItem> shortcuts = new ArrayList<>();
-        shortcuts.add(new HomeShortcutItem("orders", "Don hang", R.drawable.ic_shortcut_order, "orders", "", false, false));
+        shortcuts.add(new HomeShortcutItem("orders", "Đơn hàng", R.drawable.ic_shortcut_order, "orders", "", false, false));
         shortcuts.add(new HomeShortcutItem("voucher", "Voucher", R.drawable.ic_shortcut_voucher, "voucher", "", false, false));
         shortcuts.add(new HomeShortcutItem("ar", "AR", R.drawable.ic_shortcut_ar, "ar_try_on", "", false, false));
         shortcuts.add(new HomeShortcutItem("kanila_beauty", "Kanila Beauty", R.drawable.ic_shortcut_kanila_beauty, "beauty", "", false, false));
         shortcuts.add(new HomeShortcutItem("creator", "Creator", R.drawable.ic_shortcut_creator, "creator", "", false, false));
         shortcuts.add(new HomeShortcutItem("royalty", "Royalty", R.drawable.ic_shortcut_royalty, "loyalty", "", false, false));
-        shortcuts.add(new HomeShortcutItem("support", "Tro giup", R.drawable.ic_shortcut_help, "support", "", false, false));
-        shortcuts.add(new HomeShortcutItem("policy", "Chinh sach", R.drawable.ic_shortcut_policy, "policy", "", false, false));
+        shortcuts.add(new HomeShortcutItem("support", "Trợ giúp", R.drawable.ic_shortcut_help, "support", "", false, false));
+        shortcuts.add(new HomeShortcutItem("policy", "Chính sách & Điều khoản", R.drawable.ic_shortcut_policy, "policy", "", false, false));
 
         shortcutAdapter.setItems(shortcuts);
     }

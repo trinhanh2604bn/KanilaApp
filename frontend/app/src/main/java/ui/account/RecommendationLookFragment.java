@@ -56,28 +56,122 @@ public class RecommendationLookFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new androidx.lifecycle.ViewModelProvider(requireActivity()).get(com.example.frontend.feature.beauty.BeautyProfileViewModel.class);
 
-        if (routineData != null) {
-            TextView tvTitle = view.findViewById(R.id.tvTitle);
-            TextView tvHeroName = view.findViewById(R.id.tvRoutineHeroName);
-            ImageView ivHero = view.findViewById(R.id.ivHeroImage);
-            
-            if (tvTitle != null) tvTitle.setText(routineData.getName());
-            if (tvHeroName != null) tvHeroName.setText(routineData.getName());
-            if (ivHero != null && routineData.getImageRes() != 0) {
-                ivHero.setImageResource(routineData.getImageRes());
-            }
-        }
-
-        setupSteps(view);
+        observeProfile(view);
         setupEvents(view);
     }
 
-    private void setupSteps(View view) {
-        // Makeup steps (Now renamed to "Các quy trình gợi ý")
-        setupMakeupStepClick(view, R.id.stepMakeup1, "1", "Kem lót", "Làm mờ lỗ chân lông", R.drawable.img_foudation);
-        setupMakeupStepClick(view, R.id.stepMakeup2, "2", "Kem nền", "Che phủ tự nhiên", R.drawable.cl_product);
-        setupMakeupStepClick(view, R.id.stepMakeup3, "3", "Phấn phủ", "Kiềm dầu bền màu", R.drawable.img_eyeshadow);
-        setupMakeupStepClick(view, R.id.stepMakeup4, "4", "Son môi", "Màu sắc rạng rỡ", R.drawable.img_lipstick);
+    private void observeProfile(View view) {
+        viewModel.getProfileResult().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && result.data != null) {
+                updateUiWithProfile(view, result.data);
+            } else if (routineData != null) {
+                // Fallback to passed routine data if no profile (rare)
+                TextView tvTitle = view.findViewById(R.id.tvTitle);
+                TextView tvHeroName = view.findViewById(R.id.tvRoutineHeroName);
+                if (tvTitle != null) tvTitle.setText(routineData.getName());
+                if (tvHeroName != null) tvHeroName.setText(routineData.getName());
+                setupSteps(view, null);
+            }
+        });
+    }
+
+    private void updateUiWithProfile(View view, com.example.frontend.data.model.beauty.CustomerBeautyProfileDto profile) {
+        TextView tvTitle = view.findViewById(R.id.tvTitle);
+        TextView tvHeroName = view.findViewById(R.id.tvRoutineHeroName);
+        ImageView ivHero = view.findViewById(R.id.ivHeroImage);
+
+        String lookName = "Clean Girl Look"; // Default
+        int heroImage = R.drawable.hinh_nen;
+        
+        String skinType = profile.getSkinType() != null ? profile.getSkinType().toLowerCase() : "";
+        String style = (profile.getMakeupStyles() != null && !profile.getMakeupStyles().isEmpty()) 
+                ? profile.getMakeupStyles().get(0).toLowerCase() : "";
+
+        // Dynamic Look Name & Image based on profile combinations
+        if (style.contains("hàn quốc")) {
+            if (skinType.contains("dầu")) {
+                lookName = "Soft Matte Glass Skin";
+                heroImage = R.drawable.bg_slide_1;
+            } else {
+                lookName = "Dewy Glass Skin Korean";
+                heroImage = R.drawable.bg_slide_1;
+            }
+        } else if (style.contains("glam") || style.contains("sắc sảo")) {
+            lookName = "Luxury Midnight Glam";
+            heroImage = R.drawable.bg_slide_2;
+        } else if (style.contains("công sở")) {
+            lookName = "Modern Office Chic";
+            heroImage = R.drawable.bg_slide_3;
+        } else if (style.contains("tự nhiên")) {
+            lookName = "Bare Face Confidence";
+            heroImage = R.drawable.bg_slide_4;
+        } else if (skinType.contains("dầu")) {
+            lookName = "Oil-Control Master Plan";
+            heroImage = R.drawable.bg_slide_5;
+        } else if (skinType.contains("khô")) {
+            lookName = "Deep Hydration Journey";
+        }
+
+        if (tvTitle != null) tvTitle.setText(lookName);
+        if (tvHeroName != null) tvHeroName.setText(lookName);
+        if (ivHero != null) ivHero.setImageResource(heroImage);
+
+        // Update steps based on profile
+        setupSteps(view, profile);
+
+        // Update routineData for saving later
+        if (routineData == null) {
+            routineData = new SavedRoutineDto(
+                    String.valueOf(System.currentTimeMillis()),
+                    lookName,
+                    System.currentTimeMillis(),
+                    heroImage
+            );
+        } else {
+            routineData.setName(lookName);
+            routineData.setImageRes(heroImage);
+        }
+    }
+
+    private void setupSteps(View view, @Nullable com.example.frontend.data.model.beauty.CustomerBeautyProfileDto profile) {
+        String skinType = (profile != null && profile.getSkinType() != null) ? profile.getSkinType() : "";
+        String style = (profile != null && profile.getMakeupStyles() != null && !profile.getMakeupStyles().isEmpty()) 
+                ? profile.getMakeupStyles().get(0) : "";
+
+        // Step 1: Prep
+        String step1Title = "Kem lót";
+        String step1Desc = "Làm mờ lỗ chân lông";
+        if (skinType.contains("dầu")) step1Desc = "Kiềm dầu & mịn da";
+        else if (skinType.contains("khô")) step1Desc = "Cấp ẩm căng mọng";
+        setupMakeupStepClick(view, R.id.stepMakeup1, "1", step1Title, step1Desc, R.drawable.img_foudation);
+
+        // Step 2: Base
+        String step2Title = "Kem nền";
+        String step2Desc = "Che phủ tự nhiên";
+        if (style.contains("Hàn Quốc")) {
+            step2Title = "Cushion";
+            step2Desc = "Lớp nền mỏng nhẹ";
+        } else if (style.contains("sắc sảo")) {
+            step2Desc = "Che phủ hoàn hảo";
+        }
+        setupMakeupStepClick(view, R.id.stepMakeup2, "2", step2Title, step2Desc, R.drawable.cl_product);
+
+        // Step 3: Finish
+        String step3Title = "Phấn phủ";
+        String step3Desc = "Kiềm dầu bền màu";
+        if (skinType.contains("khô")) {
+            step3Title = "Xịt khoá nền";
+            step3Desc = "Giữ lớp nền bền đẹp";
+        }
+        setupMakeupStepClick(view, R.id.stepMakeup3, "3", step3Title, step3Desc, R.drawable.img_eyeshadow);
+
+        // Step 4: Accent
+        String step4Title = "Son môi";
+        String step4Desc = "Màu sắc rạng rỡ";
+        if (profile != null && profile.getLipstickColors() != null && !profile.getLipstickColors().isEmpty()) {
+            step4Desc = "Tông " + profile.getLipstickColors().get(0);
+        }
+        setupMakeupStepClick(view, R.id.stepMakeup4, "4", step4Title, step4Desc, R.drawable.img_lipstick);
     }
 
     private void setupStepClick(View root, int id, String num, String name, String time) {
@@ -129,14 +223,6 @@ public class RecommendationLookFragment extends Fragment {
         }
 
         /*
-         * Nút Mua trọn bộ.
-         */
-        MaterialButton btnBuyAllRec = view.findViewById(R.id.btnBuyAllRec);
-        if (btnBuyAllRec != null) {
-            ViewUtils.applyClickAnimation(btnBuyAllRec);
-        }
-
-        /*
          * Nút Lưu look.
          */
         MaterialButton btnSaveLookRec = view.findViewById(R.id.btnSaveLookRec);
@@ -173,12 +259,7 @@ public class RecommendationLookFragment extends Fragment {
             );
         } else {
             // Update timestamp to now when user explicitly saves
-            routineData = new SavedRoutineDto(
-                    routineData.getId(),
-                    routineData.getName(),
-                    System.currentTimeMillis(),
-                    routineData.getImageRes()
-            );
+            routineData.setSavedTimestamp(System.currentTimeMillis());
         }
         viewModel.saveRoutine(routineData);
         showSaveSuccessPopup();
@@ -207,7 +288,17 @@ public class RecommendationLookFragment extends Fragment {
 
         MaterialButton btnPopupOk = dialog.findViewById(R.id.btnPopupOk);
         if (btnPopupOk != null) {
-            btnPopupOk.setOnClickListener(v -> dialog.dismiss());
+            btnPopupOk.setOnClickListener(v -> {
+                dialog.dismiss();
+                // Navigate to Saved page
+                int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                        ? R.id.main_fragment_container : R.id.main;
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(containerId, new SavedBeautyRoutinesFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
         }
 
         dialog.show();

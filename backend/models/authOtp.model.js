@@ -8,7 +8,9 @@ const authOtpSchema = new mongoose.Schema(
     purpose: {
       type: String,
       required: true,
-      enum: ["register", "login", "reset_password", "change_email", "change_phone"],
+      // "login" is intentionally removed — login now uses password authentication.
+      // Only register and reset_password flows use OTP.
+      enum: ["register", "reset_password", "change_email", "change_phone"],
       index: true
     },
     otp_hash: { type: String, required: true },

@@ -158,9 +158,8 @@ public class AccountSettingsFragment extends Fragment {
         // 2. Reset AuthViewModel state to avoid "Success" message from previous session
         com.example.frontend.feature.auth.AuthViewModel authViewModel = 
                 new androidx.lifecycle.ViewModelProvider(requireActivity()).get(com.example.frontend.feature.auth.AuthViewModel.class);
-        // Assuming your AuthViewModel has a clear method or we can set it to a neutral state
-        // If it doesn't have a reset method, we can trigger a clear result
-        // For now, let's use the FragmentManager to handle the UI state correctly
+        authViewModel.resetStates();
+        com.example.frontend.core.auth.AuthRequiredManager.getInstance().clearPendingAction();
         
         // 3. Clear all Fragment BackStack to prevent going back to restricted screens
         getParentFragmentManager().popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);

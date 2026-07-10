@@ -33,51 +33,54 @@ public class HomeViewModel extends AndroidViewModel {
         uiState.setValue(current);
 
         // Load recommended products
-        MutableLiveData<NetworkResult<List<Product>>> recommendedResult = new MutableLiveData<>();
-        recommendedResult.observeForever(result -> {
-            HomeUiState state = uiState.getValue();
-            if (state == null) state = new HomeUiState();
-            
-            if (result.status == NetworkResult.Status.SUCCESS) {
-                state.recommendedProducts = result.data;
-                state.recommendedError = null;
-                checkLoadingState(state);
-            } else if (result.status == NetworkResult.Status.EMPTY) {
-                state.recommendedProducts = new java.util.ArrayList<>();
-                state.recommendedError = null;
-                checkLoadingState(state);
-            } else if (result.status == NetworkResult.Status.ERROR) {
-                state.recommendedError = result.message;
-                // If it's a personalized recommendation failure, we don't necessarily want to fail the whole page
-                // But we still need to stop loading state if this was the last thing
-                checkLoadingState(state);
+        MutableLiveData<NetworkResult<List<Product>>> recommendedResult = new MutableLiveData<>() {
+            @Override
+            public void setValue(NetworkResult<List<Product>> result) {
+                if (result == null) return;
+                HomeUiState state = uiState.getValue();
+                if (state == null) state = new HomeUiState();
+                
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    state.recommendedProducts = result.data;
+                    state.recommendedError = null;
+                    checkLoadingState(state);
+                } else if (result.status == NetworkResult.Status.EMPTY) {
+                    state.recommendedProducts = new java.util.ArrayList<>();
+                    state.recommendedError = null;
+                    checkLoadingState(state);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    state.recommendedError = result.message;
+                    checkLoadingState(state);
+                }
             }
-        });
+        };
 
         // Load all products
-        MutableLiveData<NetworkResult<List<Product>>> allProductsResult = new MutableLiveData<>();
-        allProductsResult.observeForever(result -> {
-            HomeUiState state = uiState.getValue();
-            if (state == null) state = new HomeUiState();
-            
-            if (result.status == NetworkResult.Status.SUCCESS) {
-                state.allProducts = result.data;
-                state.allProductsError = null;
-                checkLoadingState(state);
-            } else if (result.status == NetworkResult.Status.EMPTY) {
-                state.allProducts = new java.util.ArrayList<>();
-                state.allProductsError = null;
-                checkLoadingState(state);
-            } else if (result.status == NetworkResult.Status.ERROR) {
-                state.allProductsError = result.message;
-                checkLoadingState(state);
+        MutableLiveData<NetworkResult<List<Product>>> allProductsResult = new MutableLiveData<>() {
+            @Override
+            public void setValue(NetworkResult<List<Product>> result) {
+                if (result == null) return;
+                HomeUiState state = uiState.getValue();
+                if (state == null) state = new HomeUiState();
+                
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    state.allProducts = result.data;
+                    state.allProductsError = null;
+                    checkLoadingState(state);
+                } else if (result.status == NetworkResult.Status.EMPTY) {
+                    state.allProducts = new java.util.ArrayList<>();
+                    state.allProductsError = null;
+                    checkLoadingState(state);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    state.allProductsError = result.message;
+                    checkLoadingState(state);
+                }
             }
-        });
+        };
 
         if (tokenManager.isLoggedIn()) {
             homeRepository.getHomepageRecommendations(recommendedResult);
         } else {
-            // If not logged in, we can fallback to popular products for recommendations
             homeRepository.getProducts("popular", recommendedResult);
         }
         
@@ -90,7 +93,6 @@ public class HomeViewModel extends AndroidViewModel {
         
         if (recommendedDone && allProductsDone) {
             state.loading = false;
-            // General error is only set if everything fails or if we want to show a page-level error
             if (state.allProductsError != null && state.recommendedError != null) {
                 state.error = "Không thể tải dữ liệu trang chủ. Vui lòng thử lại.";
             } else {

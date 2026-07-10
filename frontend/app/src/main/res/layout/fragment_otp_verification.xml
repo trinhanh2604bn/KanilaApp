@@ -62,13 +62,12 @@
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/tvSubtitle">
 
-        <!-- Using a simple approach with 6 EditTexts for the OTP boxes -->
-        <include layout="@layout/view_otp_box" />
-        <include layout="@layout/view_otp_box" />
-        <include layout="@layout/view_otp_box" />
-        <include layout="@layout/view_otp_box" />
-        <include layout="@layout/view_otp_box" />
-        <include layout="@layout/view_otp_box" />
+        <include android:id="@+id/otpBox1" layout="@layout/view_otp_box" />
+        <include android:id="@+id/otpBox2" layout="@layout/view_otp_box" />
+        <include android:id="@+id/otpBox3" layout="@layout/view_otp_box" />
+        <include android:id="@+id/otpBox4" layout="@layout/view_otp_box" />
+        <include android:id="@+id/otpBox5" layout="@layout/view_otp_box" />
+        <include android:id="@+id/otpBox6" layout="@layout/view_otp_box" />
 
     </LinearLayout>
 

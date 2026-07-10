@@ -9,8 +9,16 @@ public class UpdateCartItemRequest {
     @SerializedName("selected")
     private Boolean selected;
 
+    @SerializedName("variantId")
+    private String variantId;
+
     public UpdateCartItemRequest(Integer quantity, Boolean selected) {
         this.quantity = quantity;
         this.selected = selected;
+    }
+
+    public UpdateCartItemRequest(Integer quantity, String variantId) {
+        this.quantity = quantity;
+        this.variantId = variantId;
     }
 }

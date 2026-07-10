@@ -155,11 +155,19 @@ public class OrderDetailFragment extends Fragment {
         recommendationAdapter = new HomeProductAdapter();
         int screenWidth = getResources().getDisplayMetrics().widthPixels;
         recommendationAdapter.setItemWidth((int) (screenWidth * 0.46));
-        recommendationAdapter.setOnProductClickListener(product -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
-                    .addToBackStack(null)
-                    .commit();
+        recommendationAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(com.example.frontend.model.Product product) {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_fragment_container, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+            @Override
+            public void onAddToCartClick(com.example.frontend.model.Product product) {
+                // Not implemented
+            }
         });
         rv.setAdapter(recommendationAdapter);
     }

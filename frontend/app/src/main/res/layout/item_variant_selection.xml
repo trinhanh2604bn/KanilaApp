@@ -2,14 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutVariantItem"
+    android:id="@+id/item_variant_selection"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingHorizontal="16dp"
-    android:paddingVertical="6dp">
+    android:orientation="horizontal">
 
     <!-- Variant Chip Component from the Image -->
     <LinearLayout
@@ -29,13 +27,13 @@
             android:fontFamily="@font/nunito_semibold"
             android:includeFontPadding="false"
             android:textColor="@color/accent_dark"
-            android:textSize="14sp"
+            android:textSize="10sp"
             tools:text="#001 Rose" />
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="6dp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="4dp"
             android:src="@drawable/ic_chevron_down"
             app:tint="@color/accent_dark"
             android:contentDescription="Dropdown" />

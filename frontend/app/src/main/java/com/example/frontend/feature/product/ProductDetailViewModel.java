@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.frontend.data.model.product.ProductDetailResponse;
+import com.example.frontend.data.model.cart.AddToCartRequest;
 import com.example.frontend.data.model.cart.CartDto;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.data.repository.ProductRepository;
@@ -123,7 +124,8 @@ public class ProductDetailViewModel extends AndroidViewModel {
     }
 
     public void addToCart(String productId, String variantId, int quantity) {
-        cartRepository.addToCart(productId, variantId, quantity, addToCartResult);
+        AddToCartRequest request = new AddToCartRequest(productId, variantId, quantity);
+        cartRepository.addToCart(request, addToCartResult);
     }
 
     public void buyNow(String productId, String variantId, int quantity) {

@@ -110,7 +110,7 @@ public class ChatConversationFragment extends Fragment {
 
         btnBack.setOnClickListener(v -> {
             if (getActivity() != null) {
-                getActivity().getSupportFragmentManager().popBackStack();
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
 
@@ -245,10 +245,7 @@ public class ChatConversationFragment extends Fragment {
 
         try {
             if (getActivity() != null) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, ProductDetailFragment.newInstance(product.getProductId()))
-                        .addToBackStack(null)
-                        .commit();
+                ui.common.FragmentNavigationHelper.loadFragment(getActivity(), ProductDetailFragment.newInstance(product.getProductId()));
             }
         } catch (Exception e) {
             Toast.makeText(getContext(), R.string.chat_product_detail_next_phase, Toast.LENGTH_SHORT).show();
@@ -294,10 +291,7 @@ public class ChatConversationFragment extends Fragment {
                 .setNegativeButton(R.string.chat_new_chat_confirm_btn_cancel, null)
                 .setPositiveButton(R.string.chat_cart_login_now, (dialog, which) -> {
                     if (getActivity() != null) {
-                        getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.main, new com.example.frontend.feature.auth.LoginFragment())
-                                .addToBackStack(null)
-                                .commit();
+                        ui.common.FragmentNavigationHelper.loadFragment(getActivity(), new com.example.frontend.feature.auth.LoginFragment());
                     }
                 })
                 .show();

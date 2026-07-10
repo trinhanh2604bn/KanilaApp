@@ -49,8 +49,8 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.ViewHold
         
         holder.tvDiscountLimit.setText(String.format("GIẢM TỐI ĐA\n%s", formatPrice(voucher.getMaxDiscountAmount())));
         holder.tvVoucherCode.setText(voucher.getCouponCode());
-        holder.tvCondition.setText(String.format("Đơn tối thiểu %s", formatPrice(voucher.getMinSpendAmount())));
-        holder.tvExpiredDate.setText(String.format("HSD: %s", voucher.getEndDate()));
+        holder.tvCondition.setText(String.format("Đơn tối thiểu %s", formatPrice(voucher.getMinOrderAmount())));
+        holder.tvExpiredDate.setText(String.format("HSD: %s", voucher.getValidTo()));
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onVoucherClick(voucher);

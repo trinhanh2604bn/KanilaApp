@@ -29,6 +29,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     public interface OnProductClickListener {
         void onProductClick(Product product);
+        void onAddToCartClick(Product product);
     }
 
     public interface OnWishlistClickListener {
@@ -158,6 +159,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 listener.onProductClick(product);
             }
         });
+
+        if (holder.btnAddToCart != null) {
+            holder.btnAddToCart.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onAddToCartClick(product);
+                }
+            });
+        }
 
         if (holder.btnWishlist != null) {
             holder.btnWishlist.setOnClickListener(v -> {

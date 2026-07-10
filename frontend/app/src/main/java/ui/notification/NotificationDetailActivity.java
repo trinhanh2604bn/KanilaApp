@@ -12,9 +12,13 @@ import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
+import com.example.frontend.data.model.cart.AddToCartRequest;
+import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.feature.cart.CartViewModel;
 import com.example.frontend.feature.search.SearchSuggestedProductAdapter;
 import com.example.frontend.model.Product;
 
@@ -32,10 +36,14 @@ public class NotificationDetailActivity extends AppCompatActivity {
     public static final String EXTRA_NOTIF_CONTENT = "extra_notif_content";
     public static final String EXTRA_NOTIF_REF_ID = "extra_notif_ref_id";
 
+    private CartViewModel cartViewModel;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.page_notification_detail);
+
+        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
 
         View btnBack = findViewById(R.id.btnBack);
         if (btnBack != null) {
@@ -116,8 +124,38 @@ public class NotificationDetailActivity extends AppCompatActivity {
         suggested.add(new Product("s4", "The Ordinary", "Niacinamide 10% + Zinc 1%", "255000", "4.6", "2.1k", R.drawable.ic_product, "", ""));
         adapter.setItems(suggested);
 
-        adapter.setOnProductClickListener(product ->
-                Toast.makeText(this, product.getName(), Toast.LENGTH_SHORT).show());
+        adapter.setOnProductClickListener(new SearchSuggestedProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                Toast.makeText(NotificationDetailActivity.this, product.getName(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
+            }
+        });
+    }
+
+    private void handleAddToCart(Product product) {
+        if (product.getId() == null) return;
+
+        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
+        cartViewModel.addToCart(request);
+
+        cartViewModel.getCartResult().observe(this, new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
+            @Override
+            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
+                if (result == null) return;
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    Toast.makeText(NotificationDetailActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    Toast.makeText(NotificationDetailActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                }
+            }
+        });
     }
 
     @LayoutRes

@@ -210,7 +210,7 @@ public class AccountFragment extends Fragment {
         if (data.getProfile() != null) {
             tvName.setText(data.getProfile().getFullName());
             Glide.with(this)
-                    .load(data.getProfile().getAvatarUrl())
+                    .load(data.getProfile().getAvatarUrl() != null ? data.getProfile().getAvatarUrl() : "")
                     .placeholder(R.drawable.ic_account)
                     .error(R.drawable.ic_account)
                     .into(ivAvatar);

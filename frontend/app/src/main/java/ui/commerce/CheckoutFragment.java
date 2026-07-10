@@ -383,6 +383,10 @@ public class CheckoutFragment extends Fragment {
 
                 session.setShippingAddress(checkoutAddress);
                 setupAddress(checkoutAddress);
+                
+                // Cập nhật lại session vào ViewModel để các phần khác (như Shipping) 
+                // khi load lại dữ liệu từ Server không bị ghi đè mất địa chỉ
+                viewModel.updateCheckoutSession(session);
             }
         });
 
@@ -438,8 +442,26 @@ public class CheckoutFragment extends Fragment {
         if (session == null) return;
         android.util.Log.d("CheckoutFragment", "Binding checkout data. Shipping: " + session.getShippingMethod() + ", Fee: " + session.getShippingAmount());
 
-        // 1. Address
-        setupAddress(session.getShippingAddress());
+        // 1. Address - Ưu tiên hiển thị địa chỉ đã chọn nếu session từ server trả về null
+        CheckoutSessionDto.CheckoutAddressDto displayAddress = session.getShippingAddress();
+        if (displayAddress == null && viewModel.getSelectedAddress().getValue() != null) {
+            AddressDto selected = viewModel.getSelectedAddress().getValue();
+            displayAddress = new CheckoutSessionDto.CheckoutAddressDto();
+            displayAddress.setFullName(selected.getRecipientName());
+            displayAddress.setPhone(selected.getPhone());
+            
+            StringBuilder sb = new StringBuilder();
+            appendIfNotEmpty(sb, selected.getAddressLine1());
+            appendIfNotEmpty(sb, selected.getAddressLine2());
+            appendIfNotEmpty(sb, selected.getWard());
+            appendIfNotEmpty(sb, selected.getDistrict());
+            appendIfNotEmpty(sb, selected.getCity());
+            displayAddress.setAddressLine(sb.toString());
+            
+            // Cập nhật ngược lại vào session để đồng bộ
+            session.setShippingAddress(displayAddress);
+        }
+        setupAddress(displayAddress);
 
         // 2. Shipping
         setupShipping(session.getShippingMethod(), safeDouble(session.getShippingAmount()), session.getEstimatedDelivery());
@@ -456,7 +478,13 @@ public class CheckoutFragment extends Fragment {
         // 6. Summary
         TextView tvSubtotalLabel = getView().findViewById(R.id.tvCheckoutPriceSubtotalLabel);
         if (tvSubtotalLabel != null && session.getItems() != null) {
-            tvSubtotalLabel.setText("Tạm tính (" + session.getItems().size() + " sản phẩm)");
+            int selectedCount = 0;
+            for (CheckoutSessionDto.CheckoutItemDto item : session.getItems()) {
+                if (item.isSelected()) {
+                    selectedCount++;
+                }
+            }
+            tvSubtotalLabel.setText("Tạm tính (" + selectedCount + " sản phẩm)");
         }
 
         tvSubtotal.setText(formatPrice(safeDouble(session.getSubtotalAmount())));

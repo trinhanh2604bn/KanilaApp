@@ -182,61 +182,9 @@ public class CheckoutViewModel extends AndroidViewModel {
     }
 
     private void mergeSession(CheckoutSessionDto newSession) {
-        if (newSession == null) return;
-        
-        CheckoutSessionDto current = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
-        if (current == null) {
+        if (newSession != null) {
             checkoutSession.postValue(NetworkResult.success(newSession));
-            return;
         }
-
-        // Logs BEFORE merge
-        android.util.Log.d("CheckoutViewModel", "[MERGE] BEFORE - Items: " + (current.getItems() != null ? current.getItems().size() : 0) 
-            + ", Voucher: " + current.getCouponCode() 
-            + ", Payment: " + current.getPaymentMethod() 
-            + ", Shipping: " + current.getShippingMethod());
-
-        // Merge logic: Keep existing if new is missing/null
-        if (newSession.getItems() == null || newSession.getItems().isEmpty()) {
-            newSession.setItems(current.getItems());
-        }
-        
-        if (newSession.getCouponCode() == null || newSession.getCouponCode().isEmpty()) {
-            newSession.setCouponCode(current.getCouponCode());
-        }
-        
-        if (newSession.getPaymentMethod() == null || newSession.getPaymentMethod().isEmpty()) {
-            newSession.setPaymentMethod(current.getPaymentMethod());
-        }
-        
-        if (newSession.getShippingAddress() == null) {
-            newSession.setShippingAddress(current.getShippingAddress());
-        }
-        
-        // Merge amounts
-        if (newSession.getSubtotalAmount() == null) {
-            newSession.setSubtotalAmount(current.getSubtotalAmount());
-        }
-        if (newSession.getShippingAmount() == null) {
-            newSession.setShippingAmount(current.getShippingAmount());
-        }
-        if (newSession.getDiscountAmount() == null) {
-            newSession.setDiscountAmount(current.getDiscountAmount());
-        }
-        if (newSession.getPointsAmount() == null) {
-            newSession.setPointsAmount(current.getPointsAmount());
-        }
-        if (newSession.getTotalAmount() == null) {
-            newSession.setTotalAmount(current.getTotalAmount());
-        }
-
-        // Logs AFTER merge
-        android.util.Log.d("CheckoutViewModel", "[MERGE] AFTER - Items: " + (newSession.getItems() != null ? newSession.getItems().size() : 0) 
-            + ", Voucher: " + newSession.getCouponCode() 
-            + ", Payment: " + newSession.getPaymentMethod() 
-            + ", Shipping: " + newSession.getShippingMethod());
-
-        checkoutSession.postValue(NetworkResult.success(newSession));
     }
 
     public void prepareCheckout() {

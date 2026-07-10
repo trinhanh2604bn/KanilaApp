@@ -133,6 +133,7 @@
             android:paddingHorizontal="@dimen/spacing_m"
             android:textSize="14sp"
             android:autofillHints="none"
+            android:imeOptions="actionSend"
             android:inputType="text" />
 
         <ImageButton

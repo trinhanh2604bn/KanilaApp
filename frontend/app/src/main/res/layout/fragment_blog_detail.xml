@@ -346,6 +346,40 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- Reply Status Bar (Hidden by default) -->
+    <LinearLayout
+        android:id="@+id/layoutReplyStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="72dp"
+        android:background="@color/background_sub"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/spacing_l"
+        android:paddingVertical="8dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvReplyingTo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/nunito_regular"
+            android:textColor="@color/text_main"
+            android:textSize="12sp"
+            tools:text="Đang trả lời Mai Anh" />
+
+        <ImageButton
+            android:id="@+id/btnCancelReply"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_close"
+            android:src="@drawable/ic_close"
+            app:tint="@color/text_main" />
+    </LinearLayout>
+
     <!-- Bottom comment input bar -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -396,6 +430,7 @@
             android:paddingHorizontal="@dimen/spacing_m"
             android:textSize="14sp"
             android:autofillHints="none"
+            android:imeOptions="actionSend"
             android:inputType="text" />
 
         <ImageButton

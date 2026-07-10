@@ -6,6 +6,7 @@ public class ChallengeTask {
     private String subtitle;
     private int iconResId;
     private boolean isCompleted;
+    private boolean isLocked;
 
     public ChallengeTask(String id, String title, boolean isCompleted) {
         this.id = id;
@@ -29,4 +30,6 @@ public class ChallengeTask {
     public void setIconResId(int iconResId) { this.iconResId = iconResId; }
     public boolean isCompleted() { return isCompleted; }
     public void setCompleted(boolean completed) { isCompleted = completed; }
+    public boolean isLocked() { return isLocked; }
+    public void setLocked(boolean locked) { isLocked = locked; }
 }

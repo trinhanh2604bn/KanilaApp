@@ -91,7 +91,14 @@ public class ChallengeListFragment extends Fragment implements ChallengeAdapter.
 
     @Override
     public void onChallengeClick(Challenge challenge) {
-        ChallengeDetailFragment fragment = ChallengeDetailFragment.newInstance(challenge.getId());
+        Fragment fragment;
+        if (type == TYPE_JOINED) {
+            // In Joined tab, clicking goes to the Active view to continue progress
+            fragment = ChallengeActiveFragment.newInstance(challenge.getId());
+        } else {
+            // In Ongoing tab, always show detail view (discovery/rules) even if already joined
+            fragment = ChallengeDetailFragment.newInstance(challenge.getId());
+        }
         requireActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main, fragment)
                 .addToBackStack(null)
@@ -100,15 +107,7 @@ public class ChallengeListFragment extends Fragment implements ChallengeAdapter.
 
     @Override
     public void onActionClick(Challenge challenge) {
-        if (challenge.isJoined()) {
-            ChallengeProgressPostFragment fragment = ChallengeProgressPostFragment.newInstance(challenge.getId());
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        } else {
-            // Join logic - usually via detail but can be quick join
-            onChallengeClick(challenge);
-        }
+        // Primary action follows the same logic as clicking the item
+        onChallengeClick(challenge);
     }
 }

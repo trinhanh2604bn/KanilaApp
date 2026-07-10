@@ -14,7 +14,8 @@ import com.example.frontend.R;
 
 public class ProfilePostsFragment extends Fragment {
 
-    private CommunityProfileViewModel viewModel;
+    private CommunityViewModel communityViewModel;
+    private com.example.frontend.feature.account.AccountViewModel accountViewModel;
     private PostAdapter adapter;
 
     @Nullable
@@ -54,10 +55,15 @@ public class ProfilePostsFragment extends Fragment {
                 popup.getMenu().add("Xóa");
                 popup.setOnMenuItemClickListener(item -> {
                     if (item.getTitle().equals("Xóa")) {
-                        // viewModel.deletePost(post.getId());
+                        communityViewModel.deletePost(post.getId());
                         Toast.makeText(getContext(), "Đã xóa bài viết", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(getContext(), "Chỉnh sửa bài viết", Toast.LENGTH_SHORT).show();
+                        // Edit post
+                        CreatePostFragment fragment = CreatePostFragment.newEditInstance(post.getId());
+                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.main, fragment)
+                                .addToBackStack(null)
+                                .commit();
                     }
                     return true;
                 });
@@ -91,7 +97,29 @@ public class ProfilePostsFragment extends Fragment {
     }
 
     private void setupViewModel() {
-        viewModel = new ViewModelProvider(requireActivity()).get(CommunityProfileViewModel.class);
-        viewModel.getMyPosts().observe(getViewLifecycleOwner(), posts -> adapter.setPosts(posts));
+        communityViewModel = new ViewModelProvider(requireActivity()).get(CommunityViewModel.class);
+        accountViewModel = new ViewModelProvider(requireActivity()).get(com.example.frontend.feature.account.AccountViewModel.class);
+
+        communityViewModel.getFeedPosts().observe(getViewLifecycleOwner(), allPosts -> {
+            if (allPosts == null) return;
+
+            // Get current user's name
+            String currentUserName = "";
+            com.example.frontend.data.remote.NetworkResult<com.example.frontend.data.model.account.ProfileHubDto> userResult = accountViewModel.getProfileHubResult().getValue();
+            if (userResult != null && userResult.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && userResult.data != null) {
+                if (userResult.data.getProfile() != null) {
+                    currentUserName = userResult.data.getProfile().getFullName();
+                }
+            }
+
+            // Filter posts by user name
+            java.util.List<Post> myPosts = new java.util.ArrayList<>();
+            for (Post p : allPosts) {
+                if (p.getUserName().equals(currentUserName)) {
+                    myPosts.add(p);
+                }
+            }
+            adapter.setPosts(myPosts);
+        });
     }
 }

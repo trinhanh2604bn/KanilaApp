@@ -203,7 +203,7 @@ public class HomeFragment extends Fragment {
                     navigateToFragment(new BeautyProfileOverviewFragment());
                 }
             }
-            else if ("orders".equals(item.getId())) navigateToFragment(new com.example.frontend.feature.order.OrderListFragment());
+            else if ("orders".equals(item.getId())) navigateToFragment(new ui.order.OrderListFragment());
             else if ("support".equals(item.getId())) navigateToFragment(new HelpCenterFragment());
             else Toast.makeText(requireContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
         });

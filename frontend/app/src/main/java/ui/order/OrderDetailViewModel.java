@@ -20,6 +20,9 @@ public class OrderDetailViewModel extends AndroidViewModel {
     private final MutableLiveData<NetworkResult<OrderDetailDto>> orderResult = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<OrderSummaryDto>> cancelResult = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<List<Product>>> recResult = new MutableLiveData<>();
+    
+    // Admin simulation results
+    private final MutableLiveData<NetworkResult<Void>> adminActionResult = new MutableLiveData<>();
 
     private OrderDetailDto currentOrder;
     private List<Product> currentRecs;
@@ -65,6 +68,16 @@ public class OrderDetailViewModel extends AndroidViewModel {
                     break;
             }
         });
+
+        adminActionResult.observeForever(result -> {
+            if (result == null) return;
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                // Refresh order after successful admin action
+                if (currentOrder != null) loadOrderDetail(currentOrder.getId());
+            } else if (result.status == NetworkResult.Status.ERROR) {
+                uiState.setValue(OrderDetailUiState.error("Admin action failed: " + result.message));
+            }
+        });
     }
 
     private void updateUiState() {
@@ -78,14 +91,44 @@ public class OrderDetailViewModel extends AndroidViewModel {
     }
 
     public void loadOrderDetail(String orderId) {
-        // repository.getOrderDetail(orderId, orderResult);
+        repository.getOrderDetail(orderId, orderResult);
         
-        // Temporarily using Mock Data for development
+        // Commented out Mock Data
+        /*
         loadMockOrderDetail(orderId);
+        */
         
         productRepository.getProducts("popular", null, null).observeForever(result -> {
             recResult.setValue(result);
         });
+    }
+
+    // Admin Simulation Actions
+    public void adminConfirmOrder() {
+        if (currentOrder != null) repository.adminConfirmOrder(currentOrder.getId(), adminActionResult);
+    }
+
+    public void adminMarkProcessing() {
+        if (currentOrder != null) repository.adminMarkProcessing(currentOrder.getId(), adminActionResult);
+    }
+
+    public void adminDeliver() {
+        if (currentOrder == null) return;
+        
+        if (currentOrder.getShipment() != null) {
+            repository.adminDeliverShipment(currentOrder.getShipment().getTrackingNumber(), adminActionResult);
+        } else {
+            // If no shipment, create one first then deliver
+            MutableLiveData<NetworkResult<OrderDetailDto.ShipmentDto>> shipCreateResult = new MutableLiveData<>();
+            shipCreateResult.observeForever(result -> {
+                if (result != null && result.status == NetworkResult.Status.SUCCESS) {
+                    repository.adminDeliverShipment(result.data.getTrackingNumber(), adminActionResult);
+                } else if (result != null && result.status == NetworkResult.Status.ERROR) {
+                    uiState.setValue(OrderDetailUiState.error("Failed to create shipment: " + result.message));
+                }
+            });
+            repository.adminCreateShipment(currentOrder.getId(), shipCreateResult);
+        }
     }
 
     private void loadMockOrderDetail(String orderId) {

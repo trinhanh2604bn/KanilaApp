@@ -131,4 +131,81 @@ public class OrderRepository {
             }
         });
     }
+
+    public void adminConfirmOrder(String orderId, MutableLiveData<NetworkResult<Void>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.adminConfirmOrder(orderId).enqueue(new Callback<ApiResponse<Void>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Void>> call, Response<ApiResponse<Void>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    result.setValue(NetworkResult.success(null));
+                } else {
+                    result.setValue(NetworkResult.error("Failed to confirm order"));
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void adminMarkProcessing(String orderId, MutableLiveData<NetworkResult<Void>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.adminMarkProcessing(orderId).enqueue(new Callback<ApiResponse<Void>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Void>> call, Response<ApiResponse<Void>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    result.setValue(NetworkResult.success(null));
+                } else {
+                    result.setValue(NetworkResult.error("Failed to mark processing"));
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void adminDeliverShipment(String shipmentId, MutableLiveData<NetworkResult<Void>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.adminDeliverShipment(shipmentId).enqueue(new Callback<ApiResponse<Void>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Void>> call, Response<ApiResponse<Void>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    result.setValue(NetworkResult.success(null));
+                } else {
+                    result.setValue(NetworkResult.error("Failed to deliver shipment"));
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void adminCreateShipment(String orderId, MutableLiveData<NetworkResult<com.example.frontend.data.model.order.OrderDetailDto.ShipmentDto>> result) {
+        result.setValue(NetworkResult.loading());
+        Map<String, Object> body = new HashMap<>();
+        // In a real scenario, you'd provide carrier info, etc.
+        body.put("carrierCode", "kanila_express");
+        body.put("trackingNumber", "KNL" + System.currentTimeMillis());
+
+        apiService.adminCreateShipment(orderId, body).enqueue(new Callback<ApiResponse<com.example.frontend.data.model.order.OrderDetailDto.ShipmentDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.example.frontend.data.model.order.OrderDetailDto.ShipmentDto>> call, Response<ApiResponse<com.example.frontend.data.model.order.OrderDetailDto.ShipmentDto>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    result.setValue(NetworkResult.success(response.body().getData()));
+                } else {
+                    result.setValue(NetworkResult.error("Failed to create shipment"));
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<com.example.frontend.data.model.order.OrderDetailDto.ShipmentDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
 }

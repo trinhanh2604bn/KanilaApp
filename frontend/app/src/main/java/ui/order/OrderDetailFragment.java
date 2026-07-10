@@ -45,6 +45,10 @@ public class OrderDetailFragment extends Fragment {
     private com.google.android.material.button.MaterialButton btnActionPrimary, btnActionSecondary;
     private View btnCopyOrderNumber;
 
+    // Admin simulation views
+    private View layoutAdminSimulation;
+    private com.google.android.material.button.MaterialButton btnAdminConfirm, btnAdminProcessing, btnAdminDeliver;
+
     public static OrderDetailFragment newInstance(String orderId) {
         OrderDetailFragment fragment = new OrderDetailFragment();
         Bundle args = new Bundle();
@@ -113,7 +117,17 @@ public class OrderDetailFragment extends Fragment {
         btnActionPrimary = view.findViewById(R.id.btnActionPrimary);
         btnActionSecondary = view.findViewById(R.id.btnActionSecondary);
         btnCopyOrderNumber = view.findViewById(R.id.btnCopyOrderNumber);
-        
+
+        // Admin simulation
+        layoutAdminSimulation = view.findViewById(R.id.layoutAdminSimulation);
+        btnAdminConfirm = view.findViewById(R.id.btnAdminConfirm);
+        btnAdminProcessing = view.findViewById(R.id.btnAdminProcessing);
+        btnAdminDeliver = view.findViewById(R.id.btnAdminDeliver);
+
+        if (btnAdminConfirm != null) btnAdminConfirm.setOnClickListener(v -> viewModel.adminConfirmOrder());
+        if (btnAdminProcessing != null) btnAdminProcessing.setOnClickListener(v -> viewModel.adminMarkProcessing());
+        if (btnAdminDeliver != null) btnAdminDeliver.setOnClickListener(v -> viewModel.adminDeliver());
+
         if (btnCopyOrderNumber != null) {
             btnCopyOrderNumber.setOnClickListener(v -> {
                 ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
@@ -182,6 +196,7 @@ public class OrderDetailFragment extends Fragment {
             if (state.order != null) {
                 bindOrderData(state.order);
                 setupActions(state.order.getOrderStatus());
+                updateAdminPanel(state.order.getOrderStatus());
             }
 
             if (state.recommendations != null && recommendationAdapter != null) {
@@ -193,6 +208,26 @@ public class OrderDetailFragment extends Fragment {
                 getParentFragmentManager().popBackStack();
             }
         });
+    }
+
+    private void updateAdminPanel(String status) {
+        if (layoutAdminSimulation == null) return;
+        layoutAdminSimulation.setVisibility(View.VISIBLE);
+
+        btnAdminConfirm.setVisibility(View.GONE);
+        btnAdminProcessing.setVisibility(View.GONE);
+        btnAdminDeliver.setVisibility(View.GONE);
+
+        if ("pending".equals(status)) {
+            btnAdminConfirm.setVisibility(View.VISIBLE);
+        } else if ("confirmed".equals(status)) {
+            btnAdminProcessing.setVisibility(View.VISIBLE);
+        } else if ("processing".equals(status)) {
+            btnAdminDeliver.setVisibility(View.VISIBLE);
+        } else {
+            // No more admin actions for completed/cancelled
+            layoutAdminSimulation.setVisibility(View.GONE);
+        }
     }
 
     private void bindOrderData(OrderDetailDto order) {

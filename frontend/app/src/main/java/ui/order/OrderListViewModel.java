@@ -43,10 +43,12 @@ public class OrderListViewModel extends AndroidViewModel {
     }
 
     public void loadOrders(String status) {
-        // repository.getMyOrders(status, 1, orderResult);
+        repository.getMyOrders(status, 1, orderResult);
         
-        // Temporarily using Mock Data for development as requested
+        // Commented out Mock Data as requested
+        /*
         loadMockOrders(status);
+        */
     }
 
     private void loadMockOrders(String status) {

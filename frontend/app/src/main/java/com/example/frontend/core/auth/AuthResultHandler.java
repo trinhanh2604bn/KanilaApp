@@ -68,7 +68,7 @@ public class AuthResultHandler {
                 ui.common.FragmentNavigationHelper.replaceFragment(activity, new ui.account.AccountFragment());
                 break;
             case OPEN_ORDER_LIST:
-                ui.common.FragmentNavigationHelper.replaceFragment(activity, new com.example.frontend.feature.order.OrderListFragment());
+                ui.common.FragmentNavigationHelper.replaceFragment(activity, new ui.order.OrderListFragment());
                 break;
             case OPEN_VOUCHER_WALLET:
                 ui.common.FragmentNavigationHelper.replaceFragment(activity, new com.example.frontend.feature.voucher.VoucherListFragment());

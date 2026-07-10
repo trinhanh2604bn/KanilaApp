@@ -214,6 +214,19 @@ public interface ApiService {
     @PATCH("api/orders/{id}/cancel")
     Call<ApiResponse<com.example.frontend.data.model.order.OrderSummaryDto>> cancelMyOrder(@Path("id") String id, @Body java.util.Map<String, String> body);
 
+    // Admin Simulation Endpoints
+    @PATCH("api/admin/orders/{id}/confirm")
+    Call<ApiResponse<Void>> adminConfirmOrder(@Path("id") String id);
+
+    @PATCH("api/admin/orders/{id}/processing")
+    Call<ApiResponse<Void>> adminMarkProcessing(@Path("id") String id);
+
+    @PATCH("api/admin/shipments/{id}/deliver")
+    Call<ApiResponse<Void>> adminDeliverShipment(@Path("id") String id);
+
+    @POST("api/admin/orders/{id}/shipments")
+    Call<ApiResponse<com.example.frontend.data.model.order.OrderDetailDto.ShipmentDto>> adminCreateShipment(@Path("id") String id, @Body java.util.Map<String, Object> body);
+
     @GET("api/coupons/me")
     Call<ApiResponse<List<CouponDto>>> getMyCoupons();
 

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CheckoutViewModel extends AndroidViewModel {
-    private static final boolean USE_MOCK_CHECKOUT = false;
+    private static final boolean USE_MOCK_CHECKOUT = true;
 
     private final CheckoutRepository checkoutRepository;
     private final MutableLiveData<NetworkResult<CheckoutSessionDto>> checkoutSession = new MutableLiveData<>();
@@ -188,6 +188,9 @@ public class CheckoutViewModel extends AndroidViewModel {
     }
 
     public void prepareCheckout() {
+        // Quan trọng: Reset trạng thái đặt hàng để tránh lỗi "sticky state" khi thanh toán đơn hàng tiếp theo
+        placeOrderResult.setValue(null);
+
         if (USE_MOCK_CHECKOUT) {
             // If already set by setMockDataFromCart (has items), don't overwrite
             CheckoutSessionDto current = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;

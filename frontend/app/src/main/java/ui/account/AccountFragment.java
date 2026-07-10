@@ -219,11 +219,23 @@ public class AccountFragment extends Fragment {
         if (data.getProfile() != null) {
             String name = data.getProfile().getFullName();
             tvName.setText(name == null || name.trim().isEmpty() ? "Khách hàng Kanila" : name);
-            Glide.with(this)
-                    .load(data.getProfile().getAvatarUrl())
-                    .placeholder(R.drawable.ic_account)
-                    .error(R.drawable.ic_account)
-                    .into(ivAvatar);
+            
+            // Ưu tiên hiển thị ảnh vừa chụp/chọn nếu có trong ViewModel (Shared State)
+            android.net.Uri localUri = viewModel.getTempAvatarUri().getValue();
+            if (localUri != null) {
+                Glide.with(this)
+                        .load(localUri)
+                        .placeholder(R.drawable.ic_account)
+                        .circleCrop()
+                        .into(ivAvatar);
+            } else {
+                Glide.with(this)
+                        .load(data.getProfile().getAvatarUrl())
+                        .placeholder(R.drawable.ic_account)
+                        .error(R.drawable.ic_account)
+                        .circleCrop()
+                        .into(ivAvatar);
+            }
         }
 
         if (data.getLoyalty() != null) {

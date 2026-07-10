@@ -66,16 +66,16 @@
                     android:layout_height="120dp"
                     android:layout_gravity="center">
 
-                    <ImageView
+                    <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/ivAvatarLarge"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/bg_avatar_circle"
-                        android:contentDescription="Ảnh đại diện"
-                        android:padding="3dp"
+                        android:padding="2dp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/ic_account"
-                        app:tint="@color/accent_dark" />
+                        app:shapeAppearanceOverlay="@style/CircleImage"
+                        app:strokeColor="@color/white"
+                        app:strokeWidth="3dp" />
 
                     <ImageView
                         android:id="@+id/btnChangeAvatar"
@@ -84,11 +84,12 @@
                         android:layout_gravity="bottom|end"
                         android:layout_marginEnd="4dp"
                         android:layout_marginBottom="4dp"
-                        android:background="@drawable/bg_icon_circle_pink"
+                        android:background="@drawable/bg_circle_pink"
+                        android:backgroundTint="@color/button"
                         android:contentDescription="Đổi ảnh đại diện"
                         android:padding="8dp"
                         android:src="@drawable/ic_camera"
-                        app:tint="@color/accent_dark" />
+                        app:tint="@color/white" />
                 </FrameLayout>
             </FrameLayout>
 

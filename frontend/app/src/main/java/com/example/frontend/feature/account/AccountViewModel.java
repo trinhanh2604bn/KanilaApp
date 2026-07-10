@@ -16,6 +16,7 @@ public class AccountViewModel extends AndroidViewModel {
     private final MutableLiveData<NetworkResult<ProfileHubDto>> profileHubResult = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<List<AddressDto>>> addressesResult = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<ProfileHubDto.AccountInfo>> updateProfileResult = new MutableLiveData<>();
+    private final MutableLiveData<android.net.Uri> tempAvatarUri = new MutableLiveData<>();
 
     public AccountViewModel(@NonNull Application application) {
         super(application);
@@ -32,6 +33,14 @@ public class AccountViewModel extends AndroidViewModel {
 
     public LiveData<NetworkResult<ProfileHubDto.AccountInfo>> getUpdateProfileResult() {
         return updateProfileResult;
+    }
+
+    public LiveData<android.net.Uri> getTempAvatarUri() {
+        return tempAvatarUri;
+    }
+
+    public void setTempAvatarUri(android.net.Uri uri) {
+        tempAvatarUri.setValue(uri);
     }
 
     public void loadProfileHub() {

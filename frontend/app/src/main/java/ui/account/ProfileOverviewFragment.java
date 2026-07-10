@@ -45,6 +45,7 @@ public class ProfileOverviewFragment extends Fragment {
     private String currentBirthday;
     private String currentGender;
 
+    private Uri localSelectedUri; // Lưu vết ảnh vừa chọn để không bị Sync đè mất
     private Uri pendingCameraUri;
     private ActivityResultLauncher<Uri> takePictureLauncher;
     private ActivityResultLauncher<String> getContentLauncher;
@@ -88,11 +89,13 @@ public class ProfileOverviewFragment extends Fragment {
     }
 
     private void updateLocalAvatar(Uri uri) {
-        Glide.with(this)
-                .load(uri)
-                .circleCrop()
-                .into(ivAvatarLarge);
-        // TODO: Upload to server and get URL if needed
+        if (ivAvatarLarge != null) {
+            this.localSelectedUri = uri; // Đánh dấu đã có ảnh local
+            Glide.with(this)
+                    .load(uri)
+                    .placeholder(R.drawable.ic_account)
+                    .into(ivAvatarLarge);
+        }
     }
 
     @Nullable
@@ -271,16 +274,25 @@ public class ProfileOverviewFragment extends Fragment {
         currentBirthday = profile.getBirthday();
         currentGender = profile.getGender();
         
-        Glide.with(this)
-                .load(profile.getAvatarUrl())
-                .placeholder(R.drawable.ic_account)
-                .into(ivAvatarLarge);
+        // CHỈ nạp ảnh từ Server nếu người dùng CHƯA chọn ảnh mới ở local trong phiên này
+        if (localSelectedUri == null) {
+            Glide.with(this)
+                    .load(profile.getAvatarUrl())
+                    .placeholder(R.drawable.ic_account)
+                    .error(R.drawable.ic_account)
+                    .into(ivAvatarLarge);
+        }
     }
 
     private void saveProfile() {
         if (currentFullName == null || currentFullName.trim().isEmpty()) {
             Toast.makeText(getContext(), "Vui lòng nhập họ tên", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        // Lưu ảnh tạm thời vào ViewModel để đồng bộ sang Account Home ngay lập tức
+        if (localSelectedUri != null) {
+            viewModel.setTempAvatarUri(localSelectedUri);
         }
 
         Map<String, Object> data = new HashMap<>();

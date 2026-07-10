@@ -72,7 +72,7 @@ public class ForgotPasswordFragment extends Fragment {
     }
 
     private void observeViewModel() {
-        viewModel.getAuthResult().observe(getViewLifecycleOwner(), result -> {
+        viewModel.getForgotPasswordResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             switch (result.status) {
                 case LOADING:

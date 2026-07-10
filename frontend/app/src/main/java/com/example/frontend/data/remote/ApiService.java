@@ -139,6 +139,9 @@ public interface ApiService {
     @GET("api/accounts/profile-hub")
     Call<ApiResponse<ProfileHubDto>> getProfileHub();
 
+    @PATCH("api/accounts/profile")
+    Call<ApiResponse<ProfileHubDto.AccountInfo>> patchMyProfile(@Body java.util.Map<String, Object> profileData);
+
     @GET("api/accounts/addresses")
     Call<ApiResponse<List<AddressDto>>> getMyAddresses();
 
@@ -152,10 +155,19 @@ public interface ApiService {
     Call<ApiResponse<Object>> deleteAddress(@Path("id") String id);
 
     @GET("api/orders/me")
+    Call<ApiResponse<List<com.example.frontend.data.model.order.OrderSummaryDto>>> getMyOrders(@Query("status") String status, @Query("page") Integer page);
+
+    @GET("api/orders/me")
     Call<ApiResponse<List<OrderDto>>> getMyOrders();
 
     @GET("api/orders/me/{id}")
     Call<ApiResponse<OrderDto>> getMyOrderById(@Path("id") String id);
+
+    @GET("api/orders/me/{id}")
+    Call<ApiResponse<com.example.frontend.data.model.order.OrderDetailDto>> getMyOrderDetail(@Path("id") String id);
+
+    @PATCH("api/orders/{id}/cancel")
+    Call<ApiResponse<com.example.frontend.data.model.order.OrderSummaryDto>> cancelMyOrder(@Path("id") String id, @Body java.util.Map<String, String> body);
 
     @GET("api/coupons/me")
     Call<ApiResponse<List<CouponDto>>> getMyCoupons();
@@ -184,8 +196,11 @@ public interface ApiService {
     @GET("api/orders/me/summary")
     Call<ApiResponse<Object>> getMyOrderSummary();
 
-    @GET("api/loyalty-accounts/me")
+    @GET("api/loyalty/me")
     Call<ApiResponse<Object>> getMyLoyaltyAccount();
+
+    @POST("api/coupons/save/{couponId}")
+    Call<ApiResponse<Object>> saveCoupon(@Path("couponId") String couponId);
 
     @GET("api/accounts")
     Call<ApiResponse<List<Object>>> getAccounts();

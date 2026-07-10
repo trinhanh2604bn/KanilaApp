@@ -18,8 +18,14 @@ public class ChatProductResponse {
     @SerializedName("brand_name")
     private String brandName;
 
+    @SerializedName("category_name")
+    private String categoryName;
+
     @SerializedName("price")
     private Long price;
+
+    @SerializedName("final_price")
+    private Long finalPrice;
 
     @SerializedName("compare_at_price")
     private Long compareAtPrice;
@@ -38,6 +44,15 @@ public class ChatProductResponse {
 
     @SerializedName("reason")
     private String reason;
+
+    @SerializedName("matched_reason")
+    private String matchedReason;
+
+    @SerializedName("suggested_use")
+    private String suggestedUse;
+
+    @SerializedName("action")
+    private String action;
 
     public String getProductId() {
         return productId;
@@ -59,8 +74,16 @@ public class ChatProductResponse {
         return brandName;
     }
 
+    public String getCategoryName() {
+        return categoryName;
+    }
+
     public Long getPrice() {
         return price;
+    }
+
+    public Long getFinalPrice() {
+        return finalPrice;
     }
 
     public Long getCompareAtPrice() {
@@ -84,6 +107,14 @@ public class ChatProductResponse {
     }
 
     public String getReason() {
-        return reason;
+        return reason != null ? reason : matchedReason;
+    }
+
+    public String getSuggestedUse() {
+        return suggestedUse;
+    }
+
+    public String getAction() {
+        return action;
     }
 }

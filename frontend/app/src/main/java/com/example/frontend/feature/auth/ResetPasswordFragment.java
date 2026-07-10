@@ -53,10 +53,10 @@ public class ResetPasswordFragment extends Fragment {
 
     private void setupInputs() {
         binding.inputNewPassword.setLabelText(getString(R.string.auth_reset_password_new_label));
-        binding.inputNewPassword.setLeadingIcon(R.drawable.ic_mail); // Should be lock icon
+        binding.inputNewPassword.setLeadingIcon(R.drawable.ic_lock);
         
         binding.inputConfirmPassword.setLabelText(getString(R.string.auth_reset_password_confirm_label));
-        binding.inputConfirmPassword.setLeadingIcon(R.drawable.ic_mail); // Should be lock icon
+        binding.inputConfirmPassword.setLeadingIcon(R.drawable.ic_lock);
     }
 
     private void setupActions() {

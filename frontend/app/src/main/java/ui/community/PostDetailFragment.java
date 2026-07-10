@@ -118,7 +118,19 @@ public class PostDetailFragment extends Fragment {
             return false;
         });
 
-        btnSendComment.setOnClickListener(v -> submitComment());
+        btnSendComment.setOnClickListener(v -> {
+            if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+                submitComment();
+            }
+        });
+
+        edtComment.setOnTouchListener((v, event) -> {
+            if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+                v.performClick();
+                return !ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION);
+            }
+            return false;
+        });
         
         btnCancelReply.setOnClickListener(v -> cancelReplyMode());
     }
@@ -210,20 +222,23 @@ public class PostDetailFragment extends Fragment {
     private void setupPostContent(View view) {
         // Handle actions
         layoutLike.setOnClickListener(v -> {
-            if (currentPost != null) {
-                boolean newLikedState = !currentPost.isLiked();
-                currentPost.setLiked(newLikedState);
-                int currentCount = currentPost.getLikeCount();
-                if (newLikedState) {
-                    currentPost.setLikeCount(currentCount + 1);
-                } else {
-                    currentPost.setLikeCount(Math.max(0, currentCount - 1));
+            if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+                if (currentPost != null) {
+                    boolean newLikedState = !currentPost.isLiked();
+                    currentPost.setLiked(newLikedState);
+                    int currentCount = currentPost.getLikeCount();
+                    if (newLikedState) {
+                        currentPost.setLikeCount(currentCount + 1);
+                    } else {
+                        currentPost.setLikeCount(Math.max(0, currentCount - 1));
+                    }
+                    updateLikeUI();
                 }
-                updateLikeUI();
             }
         });
 
         layoutShare.setOnClickListener(v -> {
+            // Share is allowed for guest
             if (currentPost != null) {
                 CommunityShareBottomSheet shareSheet = CommunityShareBottomSheet.newInstance(currentPost);
                 shareSheet.setOnShareListener(p -> {
@@ -237,10 +252,12 @@ public class PostDetailFragment extends Fragment {
         });
 
         btnSave.setOnClickListener(v -> {
-            if (currentPost != null) {
-                currentPost.setSaved(!currentPost.isSaved());
-                updateSaveUI();
-                Toast.makeText(getContext(), currentPost.isSaved() ? "Đã lưu bài viết" : "Đã bỏ lưu", Toast.LENGTH_SHORT).show();
+            if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+                if (currentPost != null) {
+                    currentPost.setSaved(!currentPost.isSaved());
+                    updateSaveUI();
+                    Toast.makeText(getContext(), currentPost.isSaved() ? "Đã lưu bài viết" : "Đã bỏ lưu", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -332,7 +349,9 @@ public class PostDetailFragment extends Fragment {
         commentAdapter.setOnCommentActionListener(new CommentAdapter.OnCommentActionListener() {
             @Override
             public void onReplyClick(Comment comment) {
-                enterReplyMode(comment);
+                if (ui.community.util.CommunityAuthGuard.checkMember(PostDetailFragment.this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+                    enterReplyMode(comment);
+                }
             }
         });
 

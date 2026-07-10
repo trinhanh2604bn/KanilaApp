@@ -40,11 +40,39 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
             holder.ivAvatar.setImageResource(R.drawable.ic_account);
         }
 
+        // Reset rank text style
+        holder.tvRank.setBackground(null);
+        holder.tvRank.setTextColor(holder.itemView.getContext().getColor(R.color.text_main));
+        holder.tvRank.setPadding(0, 0, 0, 0);
+
         // Highlight top 3
-        if (user.getRank() == 1) holder.tvRank.setTextColor(0xFFFFD700); // Gold
-        else if (user.getRank() == 2) holder.tvRank.setTextColor(0xFFC0C0C0); // Silver
-        else if (user.getRank() == 3) holder.tvRank.setTextColor(0xFFCD7F32); // Bronze
-        else holder.tvRank.setTextColor(holder.itemView.getContext().getColor(R.color.text_main));
+        if (user.getRank() == 1) {
+            holder.tvRank.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_crown, 0, 0, 0);
+            holder.tvRank.setText("");
+            holder.tvPoints.setTextColor(holder.itemView.getContext().getColor(R.color.icon_pink));
+        } else if (user.getRank() == 2) {
+            holder.tvRank.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            holder.tvRank.setText("2");
+            holder.tvRank.setBackgroundResource(R.drawable.bg_circle_dark);
+            holder.tvRank.setTextColor(holder.itemView.getContext().getColor(R.color.white));
+            holder.tvPoints.setTextColor(holder.itemView.getContext().getColor(R.color.icon_pink));
+        } else if (user.getRank() == 3) {
+            holder.tvRank.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            holder.tvRank.setText("3");
+            holder.tvRank.setBackgroundResource(R.drawable.bg_circle_pink);
+            holder.tvRank.setTextColor(holder.itemView.getContext().getColor(R.color.white));
+            holder.tvPoints.setTextColor(holder.itemView.getContext().getColor(R.color.icon_pink));
+        } else {
+            holder.tvRank.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            holder.tvRank.setText(String.valueOf(user.getRank()));
+            holder.tvPoints.setTextColor(holder.itemView.getContext().getColor(R.color.text_secondary));
+        }
+
+        if (user.isCurrentUser()) {
+            holder.itemView.setBackgroundResource(R.drawable.bg_selection_selected);
+        } else {
+            holder.itemView.setBackground(null);
+        }
     }
 
     @Override

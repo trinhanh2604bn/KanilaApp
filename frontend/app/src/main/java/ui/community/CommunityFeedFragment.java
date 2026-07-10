@@ -68,11 +68,13 @@ public class CommunityFeedFragment extends Fragment {
         adapter = new PostAdapter();
         headerAdapter = new CreatePostHeaderAdapter(v -> {
             if (isNavigating) return;
-            isNavigating = true;
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, new CreatePostFragment())
-                    .addToBackStack("community_create_post")
-                    .commit();
+            if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.CREATE_COMMUNITY_POST)) {
+                isNavigating = true;
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main, new CreatePostFragment())
+                        .addToBackStack("community_create_post")
+                        .commit();
+            }
         });
 
         ConcatAdapter concatAdapter = new ConcatAdapter(headerAdapter, adapter);
@@ -92,31 +94,35 @@ public class CommunityFeedFragment extends Fragment {
 
             @Override
             public void onSaveClick(Post post) {
-                post.setSaved(!post.isSaved());
-                int index = adapter.getPosts().indexOf(post);
-                if (index != -1) {
-                    adapter.notifyItemChanged(index);
+                if (ui.community.util.CommunityAuthGuard.checkMember(CommunityFeedFragment.this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+                    post.setSaved(!post.isSaved());
+                    int index = adapter.getPosts().indexOf(post);
+                    if (index != -1) {
+                        adapter.notifyItemChanged(index);
+                    }
+                    Toast.makeText(getContext(), post.isSaved() ? "Đã lưu bài viết" : "Đã bỏ lưu", Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(getContext(), post.isSaved() ? "Đã lưu bài viết" : "Đã bỏ lưu", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onMoreClick(Post post, View view) {
-                android.widget.PopupMenu popup = new android.widget.PopupMenu(getContext(), view);
-                popup.getMenu().add(getString(R.string.action_report_post));
-                popup.getMenu().add(getString(R.string.action_hide_post));
-                popup.setOnMenuItemClickListener(item -> {
-                    CharSequence title = item.getTitle();
-                    if (title == null) return false;
+                if (ui.community.util.CommunityAuthGuard.checkMember(CommunityFeedFragment.this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+                    android.widget.PopupMenu popup = new android.widget.PopupMenu(getContext(), view);
+                    popup.getMenu().add(getString(R.string.action_report_post));
+                    popup.getMenu().add(getString(R.string.action_hide_post));
+                    popup.setOnMenuItemClickListener(item -> {
+                        CharSequence title = item.getTitle();
+                        if (title == null) return false;
 
-                    if (title.equals(getString(R.string.action_hide_post))) {
-                        hidePost(post);
-                    } else if (title.equals(getString(R.string.action_report_post))) {
-                        showReportPostBottomSheet(post);
-                    }
-                    return true;
-                });
-                popup.show();
+                        if (title.equals(getString(R.string.action_hide_post))) {
+                            hidePost(post);
+                        } else if (title.equals(getString(R.string.action_report_post))) {
+                            showReportPostBottomSheet(post);
+                        }
+                        return true;
+                    });
+                    popup.show();
+                }
             }
 
             private void hidePost(Post post) {
@@ -139,7 +145,22 @@ public class CommunityFeedFragment extends Fragment {
 
             @Override
             public void onLikeClick(Post post) {
-                // Locally already updated in adapter, could sync with ViewModel here if needed
+                if (ui.community.util.CommunityAuthGuard.checkMember(CommunityFeedFragment.this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+                    boolean newLikedState = !post.isLiked();
+                    post.setLiked(newLikedState);
+
+                    int currentCount = post.getLikeCount();
+                    if (newLikedState) {
+                        post.setLikeCount(currentCount + 1);
+                    } else {
+                        post.setLikeCount(Math.max(0, currentCount - 1));
+                    }
+                    
+                    int index = adapter.getPosts().indexOf(post);
+                    if (index != -1) {
+                        adapter.notifyItemChanged(index);
+                    }
+                }
             }
 
             @Override

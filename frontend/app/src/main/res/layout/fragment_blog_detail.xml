@@ -10,12 +10,12 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_main">
+        app:elevation="0dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:paddingHorizontal="@dimen/spacing_l">
+            android:paddingHorizontal="@dimen/spacing_m">
 
             <ImageButton
                 android:id="@+id/btnBack"
@@ -32,95 +32,104 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:fontFamily="@font/nunito_bold"
-                android:text="@string/blog_detail_title"
+                android:text="Chi tiết bài viết"
                 android:textColor="@color/text_main"
                 android:textSize="18sp" />
 
-            <ImageButton
-                android:id="@+id/btnShare"
-                android:layout_width="@dimen/touch_target_min"
-                android:layout_height="@dimen/touch_target_min"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/action_share"
-                android:src="@drawable/ic_share"
-                app:tint="@color/text_main" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+
+            </LinearLayout>
+
         </RelativeLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="80dp">
+            android:paddingBottom="100dp">
 
-            <ImageView
-                android:id="@+id/ivBlogThumbnail"
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/bg_slide_2"
-                android:contentDescription="@null" />
+                android:layout_height="220dp"
+                android:layout_marginHorizontal="@dimen/spacing_l"
+                android:layout_marginTop="@dimen/spacing_s"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <ImageView
+                    android:id="@+id/ivBlogThumbnail"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/bg_slide_2"
+                    android:contentDescription="@null" />
+            </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="@dimen/spacing_l">
+                android:paddingHorizontal="@dimen/spacing_l"
+                android:paddingTop="@dimen/spacing_l">
 
-                <TextView
-                    android:id="@+id/tvBlogCategory"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_bold"
-                    android:textColor="@color/button"
-                    android:textSize="12sp"
-                    tools:text="SKINCARE ROUTINE" />
-
-                <TextView
-                    android:id="@+id/tvBlogTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_s"
-                    android:fontFamily="@font/nunito_bold"
-                    android:textColor="@color/text_main"
-                    android:textSize="22sp"
-                    tools:text="5 bước skincare buổi sáng cho người bận rộn" />
-
+                <!-- Author Section -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_m"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <com.google.android.material.imageview.ShapeableImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:id="@+id/ivAuthorAvatar"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:src="@drawable/logo_community"
                         app:shapeAppearanceOverlay="@style/CircleImage" />
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/spacing_s"
+                        android:layout_marginStart="@dimen/spacing_m"
                         android:layout_weight="1"
                         android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/tvBlogAuthor"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/nunito_semibold"
-                            android:textColor="@color/text_main"
-                            android:textSize="14sp"
-                            tools:text="Kanila Official" />
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvBlogAuthor"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/nunito_bold"
+                                android:textColor="@color/text_main"
+                                android:textSize="15sp"
+                                tools:text="Kanila Official" />
+
+                            <ImageView
+                                android:id="@+id/ivVerified"
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_marginStart="4dp"
+                                android:src="@drawable/ic_verified"
+                                app:tint="@color/button" />
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/tvBlogTime"
@@ -129,65 +138,200 @@
                             android:fontFamily="@font/nunito_regular"
                             android:textColor="@color/text_tertiary"
                             android:textSize="12sp"
-                            tools:text="1 ngày trước" />
+                            tools:text="2 ngày trước • Makeup Tips" />
                     </LinearLayout>
 
-                    <ImageView
-                        android:id="@+id/btnSaveDetail"
-                        android:layout_width="@dimen/touch_target_min"
-                        android:layout_height="@dimen/touch_target_min"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_bookmark_outline"
-                        app:tint="@color/text_main"
-                        android:contentDescription="@null" />
+
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvBlogTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_l"
+                    android:fontFamily="@font/nunito_bold"
+                    android:textColor="@color/text_main"
+                    android:textSize="20sp"
+                    tools:text="Cách trang điểm phù hợp với mùa hè" />
 
                 <TextView
                     android:id="@+id/tvBlogContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_xl"
+                    android:layout_marginTop="@dimen/spacing_m"
                     android:fontFamily="@font/nunito_regular"
                     android:lineSpacingExtra="6dp"
-                    android:textColor="@color/text_main"
+                    android:textColor="@color/text_secondary"
                     android:textSize="15sp"
-                    tools:text="Nội dung bài viết blog dài ở đây..." />
+                    tools:text="Mùa hè với thời tiết nắng nóng và oi bức có thể khiến lớp makeup dễ bị trôi, bí da và xuống tone nhanh chóng. Dưới đây là những bí quyết giúp bạn luôn tươi tắn, tự tin suốt cả ngày dài." />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Steps (Hardcoded for visual mockup if needed, but usually bound from content) -->
+                <!-- For now, keeping tvBlogContent as the main holder, but adding a tip box mockup -->
+
+                <LinearLayout
+                    android:id="@+id/layoutTip"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_xxl"
-                    android:fontFamily="@font/nunito_bold"
-                    android:text="@string/blog_suggested_products"
-                    android:textColor="@color/text_main"
-                    android:textSize="16sp" />
+                    android:layout_marginTop="@dimen/spacing_l"
+                    android:background="@drawable/bg_info_box"
+                    android:backgroundTint="@color/pink_bg"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_m">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_lightbulb"
+                        app:tint="@color/button" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_s"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/nunito_regular"
+                        android:textColor="@color/text_main"
+                        android:textSize="13sp"
+                        android:text="Mẹo nhỏ: Luôn mang theo giấy thấm dầu và xịt khoáng để giữ da khô thoáng, cấp ẩm và tươi tắn suốt cả ngày." />
+                </LinearLayout>
+
+                <!-- Suggested Products Section -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xl">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_bold"
+                        android:text="Sản phẩm gợi ý"
+                        android:textColor="@color/text_main"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/btnViewAllProducts"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:fontFamily="@font/nunito_semibold"
+                        android:text="Xem tất cả >"
+                        android:textColor="@color/button"
+                        android:textSize="12sp" />
+                </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvSuggestedProducts"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_m"
+                    android:nestedScrollingEnabled="false"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_product_card" />
 
-                <View
+                <!-- Engagement Row -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/spacing_xxl"
-                    android:background="@color/border_divider" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xl"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <!-- Reuse Comments section pattern -->
+                    <LinearLayout
+                        android:id="@+id/layoutLikeDetail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:paddingVertical="4dp">
+                        <ImageView
+                            android:id="@+id/ivLikeIcon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_heart_outline"
+                            app:tint="@color/button" />
+                        <TextView
+                            android:id="@+id/tvLikeCountDetail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            tools:text="1.2K" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_l"
+                        android:gravity="center_vertical"
+                        android:paddingVertical="4dp">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_comment"
+                            app:tint="@color/text_tertiary" />
+                        <TextView
+                            android:id="@+id/tvCommentCountDetail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            tools:text="137" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btnShareDetailRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_l"
+                        android:gravity="center_vertical"
+                        android:paddingVertical="4dp">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_share"
+                            app:tint="@color/text_tertiary" />
+                        <TextView
+                            android:id="@+id/tvShareCountDetail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            tools:text="46" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <ImageButton
+                        android:id="@+id/btnSaveDetail"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_wishlist_circle"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_bookmark_outline"
+                        app:tint="@color/button"
+                        android:contentDescription="@null" />
+                </LinearLayout>
+
+                <!-- Comments section -->
                 <TextView
                     android:id="@+id/tvCommentsTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_l"
+                    android:layout_marginTop="@dimen/spacing_xl"
                     android:fontFamily="@font/nunito_bold"
                     android:textColor="@color/text_main"
                     android:textSize="16sp"
-                    tools:text="Bình luận (28)" />
+                    tools:text="Tất cả bình luận" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvBlogComments"
@@ -202,7 +346,7 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Floating Like/Comment Input bar -->
+    <!-- Bottom comment input bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -215,15 +359,15 @@
         android:paddingVertical="@dimen/spacing_m">
 
         <LinearLayout
-            android:id="@+id/layoutLikeDetail"
+            android:id="@+id/btnLikeBottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
             android:paddingHorizontal="@dimen/spacing_s">
 
             <ImageView
-                android:id="@+id/ivLikeIcon"
+                android:id="@+id/ivLikeIconBottom"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_heart_outline"
@@ -231,13 +375,12 @@
                 android:contentDescription="@null" />
 
             <TextView
-                android:id="@+id/tvLikeCountDetail"
+                android:id="@+id/tvLikeCountBottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
                 android:fontFamily="@font/nunito_semibold"
                 android:textColor="@color/text_main"
-                android:textSize="14sp"
+                android:textSize="10sp"
                 tools:text="450" />
         </LinearLayout>
 
@@ -249,7 +392,7 @@
             android:layout_weight="1"
             android:background="@drawable/bg_search_bar"
             android:fontFamily="@font/nunito_regular"
-            android:hint="@string/comment_hint"
+            android:hint="Viết bình luận..."
             android:paddingHorizontal="@dimen/spacing_m"
             android:textSize="14sp"
             android:autofillHints="none"
@@ -257,13 +400,21 @@
 
         <ImageButton
             android:id="@+id/btnSendComment"
-            android:layout_width="@dimen/touch_target_min"
-            android:layout_height="@dimen/touch_target_min"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginStart="@dimen/spacing_s"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_send"
+            android:padding="8dp"
             app:tint="@color/button"
-            android:contentDescription="@string/post_action" />
+            android:contentDescription="@null" />
     </LinearLayout>
+
+    <!-- Category is hidden but ID kept for safety as requested -->
+    <TextView
+        android:id="@+id/tvBlogCategory"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

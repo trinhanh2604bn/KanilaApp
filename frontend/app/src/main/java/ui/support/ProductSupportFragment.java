@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.frontend.R;
+import com.example.frontend.feature.chatbot.ChatConversationFragment;
 import ui.common.FragmentNavigationHelper;
 
 public class ProductSupportFragment extends Fragment {
@@ -36,7 +37,7 @@ public class ProductSupportFragment extends Fragment {
         });
 
         view.findViewById(R.id.cardConsultation).setOnClickListener(v -> {
-            replaceFragment(new ChatConversationFragment());
+            replaceFragment(ChatConversationFragment.newInstance(""));
         });
 
         view.findViewById(R.id.btnScanQR).setOnClickListener(v -> {

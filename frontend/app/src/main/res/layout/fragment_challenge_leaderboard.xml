@@ -1,111 +1,367 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background_sub">
+    android:background="#FFFFFF"
+    android:fillViewport="true">
 
-    <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/toggleGroupLeaderboard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginVertical="@dimen/spacing_l"
-        app:checkedButton="@id/btnWeekly"
-        app:singleSelection="true">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnWeekly"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/leaderboard_weekly"
-            app:strokeColor="@color/button" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnMonthly"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/leaderboard_monthly"
-            app:strokeColor="@color/button" />
-    </com.google.android.material.button.MaterialButtonToggleGroup>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvLeaderboard"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingHorizontal="@dimen/spacing_l"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_leaderboard" />
-
-    <!-- Current User Rank Sticky Card -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/layoutMyRank"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/spacing_l"
-        app:cardCornerRadius="@dimen/radius_l"
-        app:cardElevation="4dp"
-        app:strokeWidth="0dp">
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_l">
 
-        <LinearLayout
+        <!-- Leaderboard Summary Card -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="@dimen/spacing_m"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_bold"
-                android:text="25"
-                android:textColor="@color/text_main"
-                android:textSize="16sp" />
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="@dimen/spacing_m"
-                app:shapeAppearanceOverlay="@style/CircleImage"
-                android:src="@drawable/ic_account" />
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="@dimen/radius_l"
+            app:cardElevation="2dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/border_divider">
 
             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_m">
+
+                <!-- Tab Toggle -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/toggleGroupLeaderboard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:checkedButton="@id/btnWeekly"
+                        app:singleSelection="true"
+                        app:selectionRequired="true">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnWeekly"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/leaderboard_weekly"
+                            android:textAllCaps="false"
+                            android:textColor="@color/selector_leaderboard_tab"
+                            app:icon="@drawable/ic_crown"
+                            app:iconGravity="textStart"
+                            app:iconTint="@color/selector_leaderboard_tab"
+                            app:rippleColor="@color/secondary" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnMonthly"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/leaderboard_monthly"
+                            android:textAllCaps="false"
+                            android:textColor="@color/selector_leaderboard_tab"
+                            app:icon="@drawable/ic_calendar"
+                            app:iconGravity="textStart"
+                            app:iconTint="@color/selector_leaderboard_tab"
+                            app:rippleColor="@color/secondary" />
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:orientation="horizontal">
+                        <View
+                            android:id="@+id/viewWeeklyUnderline"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@color/button" />
+                        <View
+                            android:id="@+id/viewMonthlyUnderline"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@color/button"
+                            android:visibility="invisible" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/border_divider"
+                    android:layout_marginBottom="@dimen/spacing_m"/>
+
+                <!-- Top 3 Users -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvLeaderboard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_leaderboard" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSeeAllLeaderboard"
+                    style="@style/Widget.Kanila.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_m"
+                    android:text="@string/action_view_all" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Reward Section -->
+        <TextView
+            android:textSize="16sp"
+            android:fontFamily="@font/nunito_bold"
+            android:textColor="@color/accent_dark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_s"
+            android:text="Phần quà dành cho bạn ✨" />
+
+        <LinearLayout
+            android:id="@+id/layoutRewardSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Reward Top 1 -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="@dimen/spacing_m"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
+                android:layout_marginEnd="@dimen/spacing_s"
+                app:cardCornerRadius="@dimen/radius_m"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/border_divider">
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_semibold"
-                    android:text="Bạn (Thanh Thanh)"
-                    android:textColor="@color/text_main"
-                    android:textSize="14sp" />
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_s">
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/icon_trophy" />
+                    <TextView
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:text="Top 1"
+                        android:textColor="@color/button"
+                        android:textStyle="bold" />
+                    <TextView
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="500 điểm" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_regular"
-                    android:text="Cần 150 điểm để lên hạng 24"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Reward Top 10 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_bold"
-                android:text="1.200đ"
-                android:textColor="@color/icon_pink"
-                android:textSize="16sp" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                android:layout_weight="1"
+                android:layout_marginHorizontal="@dimen/spacing_xs"
+                app:cardCornerRadius="@dimen/radius_s"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/border_divider">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_s">
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/icon_voucher" />
+                    <TextView
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:text="Top 10"
+                        android:textColor="@color/button"
+                        android:textStyle="bold" />
+                    <TextView
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Voucher 10%" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-</LinearLayout>
+            <!-- Reward Top 50 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/spacing_s"
+                app:cardCornerRadius="@dimen/radius_m"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/border_divider">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_s">
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/icon_gift" />
+                    <TextView
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:text="Top 50"
+                        android:textColor="@color/button"
+                        android:textStyle="bold" />
+                    <TextView
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quà mini size" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <!-- Current User Rank Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/layoutMyRank"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xl"
+            android:layout_marginBottom="@dimen/spacing_l"
+            app:cardCornerRadius="@dimen/radius_l"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/secondary"
+            app:cardBackgroundColor="@color/background_sub">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_m">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivMyAvatar"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@drawable/ic_account"
+                        app:shapeAppearanceOverlay="@style/CircleImage"
+                        android:layout_centerVertical="true"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/ivMyAvatar"
+                        android:layout_marginStart="@dimen/spacing_m"
+                        android:layout_centerVertical="true"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/Text.Kanila.Caption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bạn hiện tại"
+                            android:textColor="@color/button" />
+
+                        <TextView
+                            android:id="@+id/tvMyRank"
+
+                            android:textSize="20sp"
+                            android:fontFamily="@font/nunito_bold"
+                            android:textColor="@color/accent_dark"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hạng #18" />
+
+                        <TextView
+                            android:id="@+id/tvMyPoints"
+                            style="@style/Text.Kanila.BodyMedium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1,120 điểm"
+                            android:textColor="@color/icon_pink" />
+                    </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        app:cardCornerRadius="@dimen/radius_m"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/border_divider">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:padding="@dimen/spacing_s"
+                            android:orientation="horizontal">
+                            <TextView
+                                android:id="@+id/tvNeedPoints"
+                                style="@style/Text.Kanila.Micro"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Cần thêm 380 điểm để vào Top 10" />
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_gift"
+                                app:tint="@color/button" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </RelativeLayout>
+
+                <ProgressBar
+                    android:id="@+id/progressMyRank"
+                    style="@android:style/Widget.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="@dimen/spacing_m"
+                    android:progress="75"
+                    android:progressDrawable="@drawable/custom_progress_bar" />
+
+                <TextView
+                    android:id="@+id/tvProgressText"
+                    style="@style/Text.Kanila.Micro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:gravity="center"
+                    android:text="1,120 / 1,500 điểm" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
+

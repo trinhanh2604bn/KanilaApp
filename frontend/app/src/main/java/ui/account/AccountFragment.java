@@ -26,7 +26,7 @@ public class AccountFragment extends Fragment {
 
     private AccountViewModel viewModel;
     
-    private View scrollAccountContent, layoutGuestState;
+    private View scrollAccountContent, layoutGuestState, layoutLoading;
     private ImageView ivAvatar;
     private TextView tvName, tvRankName, tvPointsHeader, tvPointsVal, tvOrderCount, tvVoucherCount, tvSavedCount;
 
@@ -40,21 +40,26 @@ public class AccountFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
         
         initViews(view);
+        observeViewModel();
+        // checkLoginStatus() will be called in onResume()
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         checkLoginStatus();
     }
 
     private void checkLoginStatus() {
         if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
-            scrollAccountContent.setVisibility(View.VISIBLE);
             layoutGuestState.setVisibility(View.GONE);
-            observeViewModel();
             viewModel.loadProfileHub();
         } else {
             scrollAccountContent.setVisibility(View.GONE);
+            layoutLoading.setVisibility(View.GONE);
             layoutGuestState.setVisibility(View.VISIBLE);
             setupGuestState();
         }
@@ -62,17 +67,18 @@ public class AccountFragment extends Fragment {
 
     private void setupGuestState() {
         layoutGuestState.findViewById(R.id.btnLoginNow).setOnClickListener(v -> {
-            FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.auth.LoginFragment());
+            com.example.frontend.core.auth.AuthNavigationHelper.navigateToLogin(requireActivity());
         });
         
         layoutGuestState.findViewById(R.id.tvCreateAccount).setOnClickListener(v -> {
-            FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.auth.RegisterFragment());
+            com.example.frontend.core.auth.AuthNavigationHelper.navigateToRegister(requireActivity());
         });
     }
 
     private void initViews(View view) {
         scrollAccountContent = view.findViewById(R.id.scrollAccountContent);
         layoutGuestState = view.findViewById(R.id.layoutGuestState);
+        layoutLoading = view.findViewById(R.id.layoutLoading);
         ivAvatar = view.findViewById(R.id.ivAvatar);
         tvName = view.findViewById(R.id.tvName);
         tvRankName = view.findViewById(R.id.tvRankName);
@@ -84,26 +90,47 @@ public class AccountFragment extends Fragment {
         tvSavedCount = view.findViewById(R.id.tvSavedCount);
         
         view.findViewById(R.id.btnEdit).setOnClickListener(v -> {
-            // Navigate to Edit Profile
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, new ProfileOverviewFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
         
+        // Rank Chip
+        View layoutRank = view.findViewById(R.id.layoutRank);
+        if (layoutRank != null) {
+            layoutRank.setOnClickListener(v -> {
+                requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_LOYALTY);
+            });
+        }
+
         // Menu item clicks
         View menuBeautyProfile = view.findViewById(R.id.ivMenu1).getParent() instanceof View ? (View) view.findViewById(R.id.ivMenu1).getParent() : view.findViewById(R.id.ivMenu1);
         menuBeautyProfile.setOnClickListener(v -> {
-            FragmentNavigationHelper.replaceFragment(requireActivity(), new BeautyProfileOverviewFragment());
+            requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.SAVE_BEAUTY_PROFILE);
         });
 
         view.findViewById(R.id.btnAccountOrders).setOnClickListener(v -> {
-            FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.order.OrderListFragment());
+            requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ORDER_LIST);
         });
 
         view.findViewById(R.id.btnAccountVouchers).setOnClickListener(v -> {
-            FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.voucher.VoucherListFragment());
+            requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_VOUCHER_WALLET);
         });
 
         view.findViewById(R.id.btnAccountSaved).setOnClickListener(v -> {
-            FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.wishlist.WishlistFragment());
+            requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_WISHLIST);
         });
+
+        View menuPaymentMethod = view.findViewById(R.id.menuPaymentMethod);
+        if (menuPaymentMethod != null) {
+            menuPaymentMethod.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new PaymentMethodAccountFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
 
         View menuSettings = view.findViewById(R.id.menuSettings);
         if (menuSettings != null) {
@@ -120,16 +147,57 @@ public class AccountFragment extends Fragment {
         }
     }
 
+    private void requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType actionType) {
+        if (!com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+            com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                    actionType, "AccountFragment", 0, null
+            );
+            com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
+        } else {
+            performAction(actionType);
+        }
+    }
+
+    private void performAction(com.example.frontend.core.auth.PendingAuthAction.ActionType actionType) {
+        switch (actionType) {
+            case OPEN_ORDER_LIST:
+                FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.order.OrderListFragment());
+                break;
+            case OPEN_VOUCHER_WALLET:
+                FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.voucher.VoucherListFragment());
+                break;
+            case OPEN_WISHLIST:
+                FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.wishlist.WishlistFragment());
+                break;
+            case SAVE_BEAUTY_PROFILE:
+                FragmentNavigationHelper.replaceFragment(requireActivity(), new BeautyProfileOverviewFragment());
+                break;
+            case OPEN_LOYALTY:
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new ui.loyalty.LoyaltyFragment())
+                        .addToBackStack(null)
+                        .commit();
+                break;
+        }
+    }
+
 
 
     private void observeViewModel() {
         viewModel.getProfileHubResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             switch (result.status) {
+                case LOADING:
+                    layoutLoading.setVisibility(View.VISIBLE);
+                    scrollAccountContent.setVisibility(View.GONE);
+                    break;
                 case SUCCESS:
+                    layoutLoading.setVisibility(View.GONE);
+                    scrollAccountContent.setVisibility(View.VISIBLE);
                     bindData(result.data);
                     break;
                 case ERROR:
+                    layoutLoading.setVisibility(View.GONE);
                     Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
                     break;
             }

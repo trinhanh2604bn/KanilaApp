@@ -18,6 +18,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import com.example.frontend.feature.chatbot.ChatConversationFragment;
 import ui.common.FragmentNavigationHelper;
 
 public class HelpCenterFragment extends Fragment {
@@ -108,7 +109,7 @@ public class HelpCenterFragment extends Fragment {
         });
 
         view.findViewById(R.id.chatNowFooter).setOnClickListener(v -> {
-            replaceFragment(new ChatConversationFragment());
+            replaceFragment(ChatConversationFragment.newInstance(""));
         });
 
         // "Xem tất cả" FAQ button
@@ -166,7 +167,7 @@ public class HelpCenterFragment extends Fragment {
 
         // More Info Section
         view.findViewById(R.id.itemPrioritySupport).setOnClickListener(v -> {
-            replaceFragment(new ChatConversationFragment());
+            replaceFragment(ChatConversationFragment.newInstance(""));
         });
 
         view.findViewById(R.id.itemCallSupport).setOnClickListener(v -> {
@@ -194,7 +195,7 @@ public class HelpCenterFragment extends Fragment {
         View tvFaqTitle = view.findViewById(R.id.tvFaqTitle);
         View layoutMoreInfo = view.findViewById(R.id.layoutMoreInfo);
         View btnViewAll = view.findViewById(R.id.btnViewAllFaqs);
-        
+
         // FAQ rows and their dividers
         View[] faqs = {
             view.findViewById(R.id.faq1), view.findViewById(R.id.faq2),
@@ -220,7 +221,7 @@ public class HelpCenterFragment extends Fragment {
                 if (layoutCategories != null) layoutCategories.setVisibility(isSearching ? View.GONE : View.VISIBLE);
                 if (layoutMoreInfo != null) layoutMoreInfo.setVisibility(isSearching ? View.GONE : View.VISIBLE);
                 if (btnViewAll != null) btnViewAll.setVisibility(isSearching ? View.GONE : View.VISIBLE);
-                
+
                 // Thay đổi tiêu đề khi tìm kiếm
                 if (tvFaqTitle instanceof TextView) {
                     ((TextView) tvFaqTitle).setText(isSearching ? "Kết quả tìm kiếm" : "Câu hỏi thường gặp");
@@ -228,7 +229,7 @@ public class HelpCenterFragment extends Fragment {
 
                 for (int i = 0; i < faqs.length; i++) {
                     filterFaq(faqs[i], query, normalizedQuery);
-                    
+
                     if (i < dividers.length && dividers[i] != null) {
                         dividers[i].setVisibility(isSearching ? View.GONE : (faqs[i].getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE));
                     }
@@ -242,7 +243,7 @@ public class HelpCenterFragment extends Fragment {
 
     private boolean filterFaq(View faqView, String query, String normalizedQuery) {
         if (faqView == null) return false;
-        
+
         TextView tvQuestion = null;
         if (faqView.getId() == R.id.faq1) {
             tvQuestion = faqView.findViewById(R.id.tvFaqQuestion);
@@ -256,9 +257,9 @@ public class HelpCenterFragment extends Fragment {
         if (tvQuestion != null) {
             String text = tvQuestion.getText().toString().toLowerCase();
             String normalizedText = removeAccents(text);
-            
+
             boolean matches = text.contains(query) || normalizedText.contains(normalizedQuery);
-            
+
             // Bổ sung keyword thông minh: Nếu tìm "giao" mà câu hỏi có "hàng" hoặc "đơn hàng"
             if (!matches && query.equals("giao")) {
                 if (text.contains("hàng") || text.contains("vận chuyển")) matches = true;

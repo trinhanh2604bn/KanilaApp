@@ -67,4 +67,28 @@ public class AccountRepository {
             }
         });
     }
+
+    public void updateProfile(java.util.Map<String, Object> data, MutableLiveData<NetworkResult<ProfileHubDto.AccountInfo>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.patchMyProfile(data).enqueue(new Callback<ApiResponse<ProfileHubDto.AccountInfo>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<ProfileHubDto.AccountInfo>> call, Response<ApiResponse<ProfileHubDto.AccountInfo>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<ProfileHubDto.AccountInfo> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to update profile"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<ProfileHubDto.AccountInfo>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
 }

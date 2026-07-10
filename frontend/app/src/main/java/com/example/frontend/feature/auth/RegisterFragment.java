@@ -72,6 +72,11 @@ public class RegisterFragment extends Fragment {
     }
 
     private void setupInputs() {
+        // Full Name Input
+        binding.inputUsername.setLabelText(getString(R.string.auth_full_name_label));
+        binding.inputUsername.getEditText().setHint(R.string.auth_full_name_hint);
+        binding.inputUsername.setLeadingIcon(R.drawable.ic_account);
+
         // Password Input
         binding.inputPassword.setLabelText(getString(R.string.auth_password_label));
         binding.inputPassword.getEditText().setHint("********");
@@ -109,9 +114,16 @@ public class RegisterFragment extends Fragment {
         binding.btnBack.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
 
         binding.btnRegister.setOnClickListener(v -> {
+            String fullName = binding.inputUsername.getText().trim();
             String identifier = binding.inputAuth.getText().trim();
             String password = binding.inputPassword.getText().trim();
             String confirmPassword = binding.inputConfirmPassword.getText().trim();
+
+            if (fullName.isEmpty()) {
+                binding.inputUsername.setErrorState(getString(R.string.error_required_field));
+                return;
+            }
+            binding.inputUsername.clearMessage();
 
             if (identifier.isEmpty()) {
                 binding.inputAuth.setErrorState(getString(R.string.error_required_field));
@@ -155,7 +167,7 @@ public class RegisterFragment extends Fragment {
             String email = selectedChannel.equals("email") ? identifier.toLowerCase() : null;
             String phone = selectedChannel.equals("phone") ? normalizePhone(identifier) : null;
 
-            viewModel.register(selectedChannel, "User", email, phone, password, true, binding.cbMarketing.isChecked());
+            viewModel.register(selectedChannel, fullName, email, phone, password, true, binding.cbMarketing.isChecked());
         });
     }
 
@@ -171,7 +183,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private void observeViewModel() {
-        viewModel.getAuthResult().observe(getViewLifecycleOwner(), result -> {
+        viewModel.getRegisterResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
 
             switch (result.status) {

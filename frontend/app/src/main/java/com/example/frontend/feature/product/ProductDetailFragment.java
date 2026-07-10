@@ -184,10 +184,7 @@ public class ProductDetailFragment extends Fragment {
             if (btnViewAllReviews != null) {
                 btnViewAllReviews.setOnClickListener(v -> {
                     ReviewHubFragment fragment = ReviewHubFragment.newInstance(productId);
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_fragment_container, fragment)
-                            .addToBackStack(null)
-                            .commit();
+                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), fragment);
                 });
             }
         }
@@ -205,10 +202,7 @@ public class ProductDetailFragment extends Fragment {
                             state.product.getLongDescription(),
                             ProductInfoDetailFragment.InfoMode.DESCRIPTION
                     );
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_fragment_container, fragment)
-                            .addToBackStack(null)
-                            .commit();
+                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), fragment);
                 }
             });
         }
@@ -226,10 +220,7 @@ public class ProductDetailFragment extends Fragment {
                         ingredients,
                         ProductInfoDetailFragment.InfoMode.INGREDIENTS
                 );
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_fragment_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
+                ui.common.FragmentNavigationHelper.loadFragment(getActivity(), fragment);
             });
         }
 
@@ -246,10 +237,7 @@ public class ProductDetailFragment extends Fragment {
                         usage,
                         ProductInfoDetailFragment.InfoMode.USAGE
                 );
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_fragment_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
+                ui.common.FragmentNavigationHelper.loadFragment(getActivity(), fragment);
             });
         }
 
@@ -261,10 +249,7 @@ public class ProductDetailFragment extends Fragment {
         View btnCart = view.findViewById(R.id.btnCart);
         if (btnCart != null) {
             btnCart.setOnClickListener(v -> {
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_fragment_container, new ui.commerce.CartFragment())
-                        .addToBackStack(null)
-                        .commit();
+                ui.common.FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CartFragment());
             });
         }
     }
@@ -307,12 +292,20 @@ public class ProductDetailFragment extends Fragment {
         }
 
         relatedAdapter = new HomeProductAdapter();
-        relatedAdapter.setOnProductClickListener(product -> {
-            ProductDetailFragment fragment = ProductDetailFragment.newInstance(product.getId());
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
+        relatedAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                ProductDetailFragment fragment = ProductDetailFragment.newInstance(product.getId());
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
+            }
         });
         if (rvRelatedProducts != null) {
             rvRelatedProducts.setLayoutManager(new GridLayoutManager(getContext(), 2));
@@ -359,11 +352,6 @@ public class ProductDetailFragment extends Fragment {
             switch (result.status) {
                 case SUCCESS:
                     Toast.makeText(getContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                    // Navigate to Cart
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_fragment_container, new ui.commerce.CartFragment())
-                            .addToBackStack(null)
-                            .commit();
                     break;
                 case ERROR:
                     Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
@@ -376,10 +364,7 @@ public class ProductDetailFragment extends Fragment {
             switch (result.status) {
                 case SUCCESS:
                     // Navigate to Checkout
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_fragment_container, new ui.commerce.CheckoutFragment())
-                            .addToBackStack(null)
-                            .commit();
+                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CheckoutFragment());
                     break;
                 case ERROR:
                     Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
@@ -476,6 +461,11 @@ public class ProductDetailFragment extends Fragment {
         
         View btnWishlist = getView() != null ? getView().findViewById(R.id.btnWishlist) : null;
         if (btnWishlist != null) btnWishlist.setSelected(state.isWishlisted);
+    }
+
+    private void handleAddToCart(Product product) {
+        if (product == null || product.getId() == null) return;
+        viewModel.addToCart(product.getId(), null, 1);
     }
 
     private void handleStickyCtaClick(VariantSelectorBottomSheet.ActionMode mode) {

@@ -79,11 +79,8 @@ public class BottomNavigationHelper {
                     FragmentNavigationHelper.replaceFragment(fragment.requireActivity(), new ReelsFeedFragment());
                 }
             } else if (tabIndex == TAB_COMMUNITY) {
-                FragmentNavigationHelper.replaceFragment(fragment.requireActivity(), new ui.support.HelpCenterFragment());
                 if (!(fragment instanceof ui.community.CommunityHomeFragment)) {
-                    fragment.getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main, new ui.community.CommunityHomeFragment())
-                            .commit();
+                    FragmentNavigationHelper.replaceFragment(fragment.requireActivity(), new ui.community.CommunityHomeFragment());
                 }
             }
         });
@@ -104,10 +101,7 @@ public class BottomNavigationHelper {
             } else if (tabIndex == TAB_REELS) {
                 FragmentNavigationHelper.replaceFragment(activity, new ReelsFeedFragment());
             } else if (tabIndex == TAB_COMMUNITY) {
-                FragmentNavigationHelper.replaceFragment(activity, new ui.support.HelpCenterFragment());
-                activity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new ui.community.CommunityHomeFragment())
-                        .commit();
+                FragmentNavigationHelper.replaceFragment(activity, new ui.community.CommunityHomeFragment());
             }
         });
     }

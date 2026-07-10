@@ -29,7 +29,8 @@ public class VariantSelectorBottomSheet extends BottomSheetDialogFragment {
 
     public enum ActionMode {
         ADD_TO_CART,
-        BUY_NOW
+        BUY_NOW,
+        CONFIRM
     }
 
     private Product product;
@@ -126,6 +127,8 @@ public class VariantSelectorBottomSheet extends BottomSheetDialogFragment {
 
         if (mode == ActionMode.BUY_NOW) {
             btnApply.setText("MUA NGAY");
+        } else if (mode == ActionMode.CONFIRM) {
+            btnApply.setText("Xác nhận");
         } else {
             btnApply.setText("Thêm vào giỏ hàng");
         }

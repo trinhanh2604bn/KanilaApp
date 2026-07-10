@@ -23,6 +23,9 @@ import com.example.frontend.feature.chatbot.data.response.ChatPreferenceQuestion
 import com.example.frontend.feature.chatbot.data.response.ChatTicketResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatbotDataResponse;
 import com.example.frontend.feature.chatbot.data.response.ChatbotMessageResponse;
+
+
+import com.example.frontend.data.model.cart.AddToCartRequest;
 import com.example.frontend.feature.chatbot.data.response.ChatbotSessionHistoryResponse;
 import com.example.frontend.feature.chatbot.model.ChatCartActionUiModel;
 import com.example.frontend.feature.chatbot.model.ChatCartSummaryUiModel;
@@ -70,7 +73,8 @@ public class ChatbotViewModel extends AndroidViewModel {
     }
 
     public void addToCart(String productId, String variantId) {
-        cartRepository.addToCart(productId, variantId, 1, addToCartResult);
+        AddToCartRequest request = new AddToCartRequest(productId, variantId, 1);
+        cartRepository.addToCart(request, addToCartResult);
     }
 
     private void loadHistory() {

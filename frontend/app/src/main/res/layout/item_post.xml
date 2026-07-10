@@ -141,6 +141,64 @@
         android:textSize="12sp"
         tools:text="Sau 3 tuần sử dụng The Ordinary Niacinamide 10% + Zinc 1% da mình sáng và cũng không nhờn rít." />
 
+    <!-- Badges Row: Post Type and Skin Type -->
+    <LinearLayout
+        android:id="@+id/layoutBadges"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+        <!-- Post Type Badge -->
+        <TextView
+            android:id="@+id/tvPostType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_post_type_badge"
+            android:fontFamily="@font/nunito_bold"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            tools:backgroundTint="@color/post_type_review_bg"
+            tools:text="REVIEW"
+            tools:textColor="@color/post_type_review_text" />
+
+        <!-- Skin Type Badge -->
+        <TextView
+            android:id="@+id/tvPostSkinType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/bg_skin_type_badge"
+            android:fontFamily="@font/nunito_semibold"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:textColor="@color/skin_type_badge_text"
+            android:textSize="10sp"
+            tools:text="Da dầu mụn" />
+    </LinearLayout>
+
+    <!-- Products Used Tag Section -->
+    <HorizontalScrollView
+        android:id="@+id/hsvPostProducts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:id="@+id/layoutPostProducts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <!-- Dynamically add item_post_product_tag.xml -->
+            <include layout="@layout/item_post_product_tag" />
+            <include layout="@layout/item_post_product_tag" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
     <!-- Gallery Section -->
     <HorizontalScrollView
         android:id="@+id/hsvPostImages"

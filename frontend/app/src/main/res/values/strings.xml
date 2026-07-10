@@ -795,12 +795,14 @@
     <string name="community_title">Community</string>
 
     <!-- Create Post Strings -->
+    <string name="create_post_search_product_title">Tìm kiếm sản phẩm</string>
+    <string name="create_post_suggested_products">Sản phẩm gợi ý</string>
     <string name="create_post_title">Tạo bài viết</string>
     <string name="create_post_draft">Nháp</string>
     <string name="create_post_purchased_badge">Đã mua hàng</string>
     <string name="create_post_select_type">Chọn loại bài viết</string>
     <string name="create_post_media_title">Ảnh / Video đính kèm (tối đa 10)</string>
-    <string name="create_post_products_used">Sản phẩm đã dùng (tối đa 3)</string>
+    <string name="create_post_products_used">Sản phẩm</string>
     <string name="create_post_add_product">Thêm sản phẩm</string>
     <string name="create_post_skin_type_title">Loại da của bạn</string>
     <string name="create_post_reward_note_1">Bài viết có ảnh/video sẽ nhận thêm 20 điểm ✨</string>

@@ -36,6 +36,7 @@ import java.util.Locale;
 public class CommunityProfileFragment extends Fragment {
 
     private CommunityProfileViewModel viewModel;
+    private com.example.frontend.feature.account.AccountViewModel accountViewModel;
     private ImageView ivAvatar;
     private TextView tvName, tvFollowers, tvFollowing, tvLikes;
     private ViewPager2 viewPager;
@@ -137,12 +138,35 @@ public class CommunityProfileFragment extends Fragment {
     }
 
     private void setupViewModel() {
+        accountViewModel = new ViewModelProvider(requireActivity()).get(com.example.frontend.feature.account.AccountViewModel.class);
         viewModel = new ViewModelProvider(this).get(CommunityProfileViewModel.class);
+
+        // Sync with real user data from Account system
+        accountViewModel.getProfileHubResult().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && result.data != null) {
+                if (result.data.getProfile() != null) {
+                    tvName.setText(result.data.getProfile().getFullName());
+                    if (result.data.getProfile().getAvatarUrl() != null) {
+                        Glide.with(this)
+                                .load(result.data.getProfile().getAvatarUrl())
+                                .placeholder(R.drawable.ic_account)
+                                .error(R.drawable.ic_account)
+                                .circleCrop()
+                                .into(ivAvatar);
+                    }
+                }
+            }
+        });
+
         viewModel.getMyProfile().observe(getViewLifecycleOwner(), this::updateHeader);
     }
 
     private void updateHeader(CommunityProfile profile) {
-        tvName.setText(profile.getName());
+        // Only set mock name if real name from accountViewModel is not available yet
+        if (tvName.getText().toString().equals("Thanh Thanh") || tvName.getText().toString().isEmpty()) {
+            tvName.setText(profile.getName());
+        }
+
         tvFollowers.setText(String.valueOf(profile.getFollowerCount()));
         tvFollowing.setText(String.valueOf(profile.getFollowingCount()));
         tvLikes.setText(String.valueOf(profile.getTotalLikes()));

@@ -14,6 +14,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
+import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.data.model.cart.AddToCartRequest;
 import com.example.frontend.data.model.wishlist.WishlistItemResponse;
 import com.example.frontend.model.Product;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -26,6 +28,7 @@ import ui.common.BottomNavigationHelper;
 
 public class WishlistFragment extends Fragment implements ProductAdapter.OnSelectionChangeListener {
     private WishlistViewModel viewModel;
+    private CartViewModel cartViewModel;
     private ProductAdapter adapter;
     private RecyclerView rvWishlist;
     private View layoutLoading, layoutEmpty, layoutControls, layoutBulkAction;
@@ -43,6 +46,7 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
         
         initViews(view);
         observeViewModel();
@@ -72,12 +76,20 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
 
         adapter = new ProductAdapter();
         adapter.setShowSimilarAction(true);
-        adapter.setOnProductClickListener(product -> {
-            if (getActivity() != null) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_fragment_container, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
-                        .addToBackStack(null)
-                        .commit();
+        adapter.setOnProductClickListener(new ProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main_fragment_container, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
             }
         });
 
@@ -239,5 +251,26 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
     @Override
     public void onSelectionChanged(int count) {
         tvSelectedCount.setText("Đã chọn " + count);
+    }
+
+    private void handleAddToCart(Product product) {
+        if (product.getId() == null) return;
+
+        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
+        cartViewModel.addToCart(request);
+
+        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<com.example.frontend.data.remote.NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
+            @Override
+            public void onChanged(com.example.frontend.data.remote.NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
+                if (result == null) return;
+                if (result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS) {
+                    Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                } else if (result.status == com.example.frontend.data.remote.NetworkResult.Status.ERROR) {
+                    Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                }
+            }
+        });
     }
 }

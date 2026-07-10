@@ -8,15 +8,16 @@ public class CheckoutSessionDto {
     private String id;
     
     public void setId(String id) { this.id = id; }
-    public void setSubtotalAmount(double subtotalAmount) { this.subtotalAmount = subtotalAmount; }
-    public void setShippingAmount(double shippingAmount) { this.shippingAmount = shippingAmount; }
-    public void setDiscountAmount(double discountAmount) { this.discountAmount = discountAmount; }
-    public void setPointsAmount(double pointsAmount) { this.pointsAmount = pointsAmount; }
-    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
+    public void setSubtotalAmount(Double subtotalAmount) { this.subtotalAmount = subtotalAmount; }
+    public void setShippingAmount(Double shippingAmount) { this.shippingAmount = shippingAmount; }
+    public void setDiscountAmount(Double discountAmount) { this.discountAmount = discountAmount; }
+    public void setPointsAmount(Double pointsAmount) { this.pointsAmount = pointsAmount; }
+    public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
     public void setShippingAddress(CheckoutAddressDto shippingAddress) { this.shippingAddress = shippingAddress; }
     public void setShippingMethod(String shippingMethod) { this.shippingMethod = shippingMethod; }
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
     public void setItems(List<CheckoutItemDto> items) { this.items = items; }
+    public void setCouponCode(String couponCode) { this.couponCode = couponCode; }
 
     @SerializedName("customer_id")
     private String customerId;
@@ -27,26 +28,32 @@ public class CheckoutSessionDto {
     @SerializedName("session_status")
     private String sessionStatus;
 
+    @SerializedName("coupon_code")
+    private String couponCode;
+
     @SerializedName("subtotal_amount")
-    private double subtotalAmount;
+    private Double subtotalAmount;
 
     @SerializedName("shipping_amount")
-    private double shippingAmount;
+    private Double shippingAmount;
 
     @SerializedName("discount_amount")
-    private double discountAmount;
+    private Double discountAmount;
 
     @SerializedName("points_amount")
-    private double pointsAmount;
+    private Double pointsAmount;
 
     @SerializedName("total_amount")
-    private double totalAmount;
+    private Double totalAmount;
 
     @SerializedName("shipping_address")
     private CheckoutAddressDto shippingAddress;
 
     @SerializedName("shipping_method")
     private String shippingMethod;
+
+    @SerializedName("estimated_delivery")
+    private String estimatedDelivery;
 
     @SerializedName("payment_method")
     private String paymentMethod;
@@ -55,39 +62,69 @@ public class CheckoutSessionDto {
     private List<CheckoutItemDto> items;
 
     public String getId() { return id; }
-    public double getSubtotalAmount() { return subtotalAmount; }
-    public double getShippingAmount() { return shippingAmount; }
-    public double getDiscountAmount() { return discountAmount; }
-    public double getPointsAmount() { return pointsAmount; }
-    public double getTotalAmount() { return totalAmount; }
+    public Double getSubtotalAmount() { return subtotalAmount; }
+    public Double getShippingAmount() { return shippingAmount; }
+    public Double getDiscountAmount() { return discountAmount; }
+    public Double getPointsAmount() { return pointsAmount; }
+    public Double getTotalAmount() { return totalAmount; }
+
+    public double getSubtotalAmountValue() { return subtotalAmount != null ? subtotalAmount : 0.0; }
+    public double getShippingAmountValue() { return shippingAmount != null ? shippingAmount : 0.0; }
+    public double getDiscountAmountValue() { return discountAmount != null ? discountAmount : 0.0; }
+    public double getPointsAmountValue() { return pointsAmount != null ? pointsAmount : 0.0; }
+    public double getTotalAmountValue() { return totalAmount != null ? totalAmount : 0.0; }
     public CheckoutAddressDto getShippingAddress() { return shippingAddress; }
     public String getShippingMethod() { return shippingMethod; }
+    public String getEstimatedDelivery() { return estimatedDelivery; }
     public String getPaymentMethod() { return paymentMethod; }
     public List<CheckoutItemDto> getItems() { return items; }
+    public String getCouponCode() { return couponCode; }
+
+    public void setEstimatedDelivery(String estimatedDelivery) { this.estimatedDelivery = estimatedDelivery; }
 
     public static class CheckoutItemDto {
+        @SerializedName("id")
+        private String id;
+        @SerializedName("product_id")
+        private String productId;
+        @SerializedName("variant_id")
+        private String variantId;
         @SerializedName("product_name")
         private String productName;
         @SerializedName("variant_name")
         private String variantName;
+        @SerializedName("brand_name")
+        private String brandName;
         @SerializedName("quantity")
         private int quantity;
         @SerializedName("price")
         private double price;
         @SerializedName("image_url")
         private String imageUrl;
+        @SerializedName("stock_status")
+        private String stockStatus;
 
+        public String getId() { return id; }
+        public String getProductId() { return productId; }
+        public String getVariantId() { return variantId; }
         public String getProductName() { return productName; }
         public String getVariantName() { return variantName; }
+        public String getBrandName() { return brandName; }
         public int getQuantity() { return quantity; }
         public double getPrice() { return price; }
         public String getImageUrl() { return imageUrl; }
+        public String getStockStatus() { return stockStatus; }
 
+        public void setId(String id) { this.id = id; }
+        public void setProductId(String productId) { this.productId = productId; }
+        public void setVariantId(String variantId) { this.variantId = variantId; }
         public void setProductName(String productName) { this.productName = productName; }
         public void setVariantName(String variantName) { this.variantName = variantName; }
+        public void setBrandName(String brandName) { this.brandName = brandName; }
         public void setQuantity(int quantity) { this.quantity = quantity; }
         public void setPrice(double price) { this.price = price; }
         public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+        public void setStockStatus(String stockStatus) { this.stockStatus = stockStatus; }
     }
 
     public static class CheckoutAddressDto {

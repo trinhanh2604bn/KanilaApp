@@ -94,13 +94,21 @@ public class ChallengeActiveFragment extends Fragment {
             }
         };
         rvProducts.setAdapter(productsAdapter);
-        productsAdapter.setOnProductClickListener(product -> {
-            com.example.frontend.feature.product.ProductDetailFragment fragment =
-                    com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId());
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, fragment)
-                    .addToBackStack(null)
-                    .commit();
+        productsAdapter.setOnProductClickListener(new ProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                com.example.frontend.feature.product.ProductDetailFragment fragment =
+                        com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId());
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                // Handled if necessary
+            }
         });
     }
 

@@ -293,10 +293,18 @@ public class BlogDetailFragment extends Fragment {
             int width = (int) (160 * getResources().getDisplayMetrics().density);
             suggestedProductsAdapter.setItemWidth(width);
 
-            suggestedProductsAdapter.setOnProductClickListener(product -> {
-                if (getActivity() instanceof com.example.frontend.MainActivity) {
-                    ((com.example.frontend.MainActivity) getActivity())
-                            .loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()));
+            suggestedProductsAdapter.setOnProductClickListener(new com.example.frontend.feature.home.HomeProductAdapter.OnProductClickListener() {
+                @Override
+                public void onProductClick(com.example.frontend.model.Product product) {
+                    if (getActivity() instanceof com.example.frontend.MainActivity) {
+                        ((com.example.frontend.MainActivity) getActivity())
+                                .loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()));
+                    }
+                }
+
+                @Override
+                public void onAddToCartClick(com.example.frontend.model.Product product) {
+                    // Handled if necessary
                 }
             });
             

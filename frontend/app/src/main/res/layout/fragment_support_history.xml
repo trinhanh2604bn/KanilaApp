@@ -29,7 +29,6 @@
             app:tint="@color/accent_dark" />
 
         <TextView
-            android:id="@+id/tvTitleMain"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="64dp"
@@ -80,6 +79,7 @@
     </com.google.android.material.tabs.TabLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -88,17 +88,88 @@
         android:background="@color/background_sub">
 
         <LinearLayout
+            android:id="@+id/layoutTicketsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Item 1 -->
-            <include
+            <!-- Item 1: Đang mở -->
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/itemTicket1"
-                layout="@layout/item_support_ticket" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#F5F5F5"
+                app:strokeWidth="1dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivIcon1"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@color/icon_bg_pink"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_comment"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:shapeAppearanceOverlay="@style/CircleImage"
+                        app:tint="@color/button" />
+                    <TextView
+                        android:id="@+id/tvTitle1"
+                        style="@style/Text.Kanila.BodyMedium"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Đổi trả sản phẩm bị lỗi"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/tvStatus1"
+                        app:layout_constraintStart_toEndOf="@id/ivIcon1"
+                        app:layout_constraintTop_toTopOf="@id/ivIcon1" />
+                    <TextView
+                        android:id="@+id/tvDetails1"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:alpha="0.6"
+                        android:text="#SR24060031 - Đơn #KB24052568"
+                        app:layout_constraintEnd_toEndOf="@id/tvTitle1"
+                        app:layout_constraintStart_toStartOf="@id/tvTitle1"
+                        app:layout_constraintTop_toBottomOf="@id/tvTitle1" />
+                    <TextView
+                        android:id="@+id/tvTime1"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:alpha="0.8"
+                        android:text="Cập nhật: 1 giờ trước"
+                        app:layout_constraintEnd_toEndOf="@id/tvDetails1"
+                        app:layout_constraintStart_toStartOf="@id/tvDetails1"
+                        app:layout_constraintTop_toBottomOf="@id/tvDetails1" />
+                    <TextView
+                        android:id="@+id/tvStatus1"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_chip_pill"
+                        android:backgroundTint="@color/status_pending_bg"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="2dp"
+                        android:text="Đang xử lý"
+                        android:textColor="@color/status_pending_text"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvTitle1" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Item 2 -->
+            <!-- Item 2: Đang mở -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/itemTicket2"
                 android:layout_width="match_parent"
@@ -130,7 +201,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
                         android:layout_marginEnd="8dp"
-                        android:text="@string/ticket_sample_title_2"
+                        android:text="Hỏi về đơn hàng"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toStartOf="@+id/tvStatus2"
                         app:layout_constraintStart_toEndOf="@id/ivIcon2"
@@ -162,30 +233,24 @@
                         style="@style/Text.Kanila.Micro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_chip_pink"
-                        android:backgroundTint="@color/status_exchange_bg"
+                        android:background="@drawable/bg_chip_pill"
+                        android:backgroundTint="@color/status_preparing_bg"
                         android:paddingHorizontal="8dp"
                         android:paddingVertical="2dp"
-                        android:text="@string/status_waiting_reply"
-                        android:textColor="@color/status_exchange_text"
+                        android:text="Chờ phản hồi"
+                        android:textColor="@color/status_preparing_text"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/tvTitle2" />
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_arrow_right"
-                        android:contentDescription="@string/view_all"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:tint="@color/border_divider" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Item 3 -->
+            <!-- Item 3: Đã hoàn tất -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/itemTicket3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
+                android:visibility="gone"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:strokeColor="#F5F5F5"
@@ -212,7 +277,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
                         android:layout_marginEnd="8dp"
-                        android:text="@string/ticket_sample_title_3"
+                        android:text="Tư vấn sản phẩm"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toStartOf="@+id/tvStatus3"
                         app:layout_constraintStart_toEndOf="@id/ivIcon3"
@@ -244,30 +309,24 @@
                         style="@style/Text.Kanila.Micro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_chip_pink"
+                        android:background="@drawable/bg_chip_pill"
                         android:backgroundTint="@color/status_success_bg"
                         android:paddingHorizontal="8dp"
                         android:paddingVertical="2dp"
-                        android:text="@string/status_finished"
+                        android:text="Đã hoàn tất"
                         android:textColor="@color/status_success_text"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/tvTitle3" />
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_arrow_right"
-                        android:contentDescription="@string/view_all"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:tint="@color/border_divider" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Item 4 -->
+            <!-- Item 4: Đã hoàn tất -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/itemTicket4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
+                android:visibility="gone"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:strokeColor="#F5F5F5"
@@ -294,7 +353,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
                         android:layout_marginEnd="8dp"
-                        android:text="@string/ticket_sample_title_4"
+                        android:text="Vấn đề thanh toán"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toStartOf="@+id/tvStatus4"
                         app:layout_constraintStart_toEndOf="@id/ivIcon4"
@@ -306,7 +365,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:alpha="0.6"
-                        android:text="@string/ticket_sample_id_4"
+                        android:text="#SR24059876"
                         app:layout_constraintEnd_toEndOf="@id/tvTitle4"
                         app:layout_constraintStart_toStartOf="@id/tvTitle4"
                         app:layout_constraintTop_toBottomOf="@id/tvTitle4" />
@@ -317,7 +376,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:alpha="0.8"
-                        android:text="@string/ticket_sample_time_4"
+                        android:text="2 ngày trước"
                         app:layout_constraintEnd_toEndOf="@id/tvDetails4"
                         app:layout_constraintStart_toStartOf="@id/tvDetails4"
                         app:layout_constraintTop_toBottomOf="@id/tvDetails4" />
@@ -326,161 +385,15 @@
                         style="@style/Text.Kanila.Micro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_chip_pink"
+                        android:background="@drawable/bg_chip_pill"
                         android:backgroundTint="@color/status_success_bg"
                         android:paddingHorizontal="8dp"
                         android:paddingVertical="2dp"
-                        android:text="@string/status_finished"
+                        android:text="Đã hoàn tất"
                         android:textColor="@color/status_success_text"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/tvTitle4" />
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_arrow_right"
-                        android:contentDescription="@string/view_all"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:tint="@color/border_divider" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Rating Section -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                app:cardBackgroundColor="@color/background_main"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/rate_support_title"
-                        style="@style/Text.Kanila.H3"
-                        android:textColor="@color/accent_dark" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="@string/rate_support_subtitle"
-                        style="@style/Text.Kanila.Caption"
-                        android:alpha="0.6" />
-
-                    <!-- Star Bar -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:orientation="horizontal">
-                        <ImageView android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_star" app:tint="@color/button" android:layout_marginHorizontal="4dp" android:contentDescription="1 Star" />
-                        <ImageView android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_star" app:tint="@color/button" android:layout_marginHorizontal="4dp" android:contentDescription="2 Stars" />
-                        <ImageView android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_star" app:tint="@color/button" android:layout_marginHorizontal="4dp" android:contentDescription="3 Stars" />
-                        <ImageView android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_star" app:tint="@color/button" android:layout_marginHorizontal="4dp" android:contentDescription="4 Stars" />
-                        <ImageView android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_star" app:tint="@color/button" android:layout_marginHorizontal="4dp" android:contentDescription="5 Stars" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/rate_excellent"
-                        style="@style/Text.Kanila.Micro"
-                        android:textColor="@color/button"
-                        android:textStyle="bold" />
-
-                    <!-- Quick Chips -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="4dp"
-                            android:background="@drawable/bg_chip_pink"
-                            android:paddingHorizontal="12dp"
-                            android:paddingVertical="6dp"
-                            android:text="@string/chip_fast_response"
-                            style="@style/Text.Kanila.Micro"
-                            android:textColor="@color/button"
-                            app:drawableEndCompat="@drawable/ic_tick"
-                            app:drawableTint="@color/button"
-                            android:drawablePadding="4dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="4dp"
-                            android:background="@drawable/bg_chip_pink"
-                            android:paddingHorizontal="12dp"
-                            android:paddingVertical="6dp"
-                            android:text="@string/chip_friendly"
-                            style="@style/Text.Kanila.Micro"
-                            android:textColor="@color/button"
-                            app:drawableEndCompat="@drawable/ic_tick"
-                            app:drawableTint="@color/button"
-                            android:drawablePadding="4dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="4dp"
-                            android:background="@drawable/bg_chip_pink"
-                            android:paddingHorizontal="12dp"
-                            android:paddingVertical="6dp"
-                            android:text="@string/chip_good_resolution"
-                            style="@style/Text.Kanila.Micro"
-                            android:textColor="@color/button"
-                            app:drawableEndCompat="@drawable/ic_tick"
-                            app:drawableTint="@color/button"
-                            android:drawablePadding="4dp" />
-                    </LinearLayout>
-
-                    <!-- Comment Input -->
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="@string/share_more_label"
-                        style="@style/Text.Kanila.Micro"
-                        android:alpha="0.6" />
-
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_kanila_input_default"
-                        android:gravity="top"
-                        android:minLines="3"
-                        android:padding="12dp"
-                        android:text="@string/sample_rating_comment"
-                        style="@style/Text.Kanila.Caption"
-                        android:textColor="@color/text_main"
-                        android:importantForAutofill="no"
-                        android:inputType="textMultiLine" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:layout_marginTop="20dp"
-                        style="@style/Widget.Kanila.Button.Primary"
-                        android:text="@string/btn_submit_rating"
-                        android:backgroundTint="@color/accent_dark" />
-
-                </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>

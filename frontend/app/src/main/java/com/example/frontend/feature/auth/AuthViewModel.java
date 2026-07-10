@@ -11,7 +11,9 @@ import com.example.frontend.data.repository.AuthRepository;
 
 public class AuthViewModel extends AndroidViewModel {
     private final AuthRepository repository;
-    private final MutableLiveData<NetworkResult<AuthResponse>> authResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<AuthResponse>> loginResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<AuthResponse>> registerResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<AuthResponse>> forgotPasswordResult = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<AuthResponse>> verifyResult = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<Void>> resetPasswordResult = new MutableLiveData<>();
 
@@ -20,8 +22,16 @@ public class AuthViewModel extends AndroidViewModel {
         this.repository = new AuthRepository(application);
     }
 
-    public LiveData<NetworkResult<AuthResponse>> getAuthResult() {
-        return authResult;
+    public LiveData<NetworkResult<AuthResponse>> getLoginResult() {
+        return loginResult;
+    }
+
+    public LiveData<NetworkResult<AuthResponse>> getRegisterResult() {
+        return registerResult;
+    }
+
+    public LiveData<NetworkResult<AuthResponse>> getForgotPasswordResult() {
+        return forgotPasswordResult;
     }
 
     public LiveData<NetworkResult<AuthResponse>> getVerifyResult() {
@@ -32,20 +42,28 @@ public class AuthViewModel extends AndroidViewModel {
         return resetPasswordResult;
     }
 
+    public void resetStates() {
+        loginResult.setValue(null);
+        registerResult.setValue(null);
+        forgotPasswordResult.setValue(null);
+        verifyResult.setValue(null);
+        resetPasswordResult.setValue(null);
+    }
+
     public void login(String channel, String identifier, String password) {
-        repository.login(channel, identifier, password, authResult);
+        repository.login(channel, identifier, password, loginResult);
     }
 
     public void login(String channel, String identifier) {
-        repository.login(channel, identifier, authResult);
+        repository.login(channel, identifier, loginResult);
     }
 
     public void forgotPassword(String channel, String identifier) {
-        repository.forgotPassword(channel, identifier, authResult);
+        repository.forgotPassword(channel, identifier, forgotPasswordResult);
     }
 
     public void register(String channel, String fullName, String email, String phone, String password, boolean terms, boolean marketing) {
-        repository.register(channel, fullName, email, phone, password, terms, marketing, authResult);
+        repository.register(channel, fullName, email, phone, password, terms, marketing, registerResult);
     }
 
     public void verifyOtp(String type, String value, String otp, String purpose) {

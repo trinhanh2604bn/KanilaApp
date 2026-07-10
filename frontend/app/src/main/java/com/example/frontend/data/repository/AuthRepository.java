@@ -90,7 +90,7 @@ public class AuthRepository {
                         AuthResponse data = apiResponse.getData();
                         // Only save tokens if they exist (login/register success)
                         // If purpose is reset_password, it returns reset_token instead of access_token
-                        if (data.getAccessToken() != null) {
+                        if (data.getAccessToken() != null && data.getRefreshToken() != null) {
                             tokenManager.saveTokens(data.getAccessToken(), data.getRefreshToken());
                         }
                         result.setValue(NetworkResult.success(data));
@@ -140,7 +140,7 @@ public class AuthRepository {
             if (apiResponse.isSuccess()) {
                 AuthResponse data = apiResponse.getData();
                 if (data != null) {
-                    if (data.getAccessToken() != null) {
+                    if (data.getAccessToken() != null && data.getRefreshToken() != null) {
                         tokenManager.saveTokens(data.getAccessToken(), data.getRefreshToken());
                     }
                     result.setValue(NetworkResult.success(data));

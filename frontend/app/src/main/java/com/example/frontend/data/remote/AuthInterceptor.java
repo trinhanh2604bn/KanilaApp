@@ -26,6 +26,7 @@ public class AuthInterceptor implements Interceptor {
             builder.header("Authorization", "Bearer " + token);
         }
 
+        // Always send guest session if available, it's used for merging carts after login
         String guestSessionId = tokenManager.getGuestSession();
         if (guestSessionId != null && !guestSessionId.trim().isEmpty()) {
             builder.header("X-Guest-Session-Id", guestSessionId);

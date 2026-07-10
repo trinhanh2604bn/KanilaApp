@@ -261,6 +261,8 @@
     <string name="address_book_title">Địa chỉ giao hàng</string>
     <string name="address_book_list_header">Danh sách địa chỉ</string>
     <string name="address_book_add_new">Thêm địa chỉ mới</string>
+    <string name="address_default_label">Mặc định</string>
+    <string name="edit">Chỉnh sửa</string>
 
     <string name="payment_method_title">Phương thức thanh toán</string>
     <string name="payment_method_choose">Chọn phương thức thanh toán</string>
@@ -435,17 +437,27 @@
     <string name="see_all_requests">Xem tất cả yêu cầu</string>
     <string name="status_processing">Đang xử lý</string>
     <string name="last_updated_format">Cập nhật lần cuối: %s</string>
-    <string name="chat_assistant_title">Kanila AI Assistant</string>
+
+    <!-- Chat Conversation -->
+    <string name="chat_assistant_title">Kanila Makeup Assistant</string>
     <string name="chat_welcome_title">Xin chào bạn! 👋</string>
-    <string name="chat_welcome_desc">Mình là Kanila AI Assistant. Mình có thể giúp bạn tư vấn sản phẩm, thành phần, đơn hàng và chính sách của Kanila Beauty.</string>
+    <string name="chat_welcome_desc">Mình là Kanila Makeup Assistant. Mình có thể giúp bạn tư vấn makeup, chọn màu, tìm sản phẩm và ưu đãi.</string>
     <string name="chat_suggestion_header">Bạn muốn hỏi điều gì?</string>
-    <string name="chat_suggest_oily">Da dầu nên dùng gì?</string>
-    <string name="chat_suggest_order">Đơn hàng của tôi tới đâu?</string>
-    <string name="chat_suggest_sensitive">Sản phẩm có hợp da nhạy cảm?</string>
-    <string name="chat_suggest_return">Hướng dẫn đổi trả</string>
+    <string name="chat_suggest_oily">Tư vấn son dưới 200k</string>
+    <string name="chat_suggest_order">Tìm cushion cho da dầu</string>
+    <string name="chat_suggest_sensitive">Set makeup đi tiệc</string>
+    <string name="chat_suggest_return">Makeup đi học dưới 500k</string>
     <string name="chat_ai_status">AI hoạt động\n24/7</string>
-    <string name="chat_input_hint">Nhập câu hỏi của bạn...</string>
+    <string name="chat_input_hint">Hỏi Kanila về son, cushion, makeup look...</string>
     <string name="chat_disclaimer">AI có thể mắc lỗi. Vui lòng kiểm tra lại thông tin quan trọng.</string>
+    <string name="chat_suggest_mascara">Mascara chống lem</string>
+    <string name="chat_suggest_voucher">Có voucher makeup không?</string>
+    <string name="chat_no_product_found">Mình chưa tìm thấy sản phẩm khớp hoàn toàn. Bạn muốn mình nới ngân sách hoặc đổi nhóm sản phẩm không?</string>
+    <string name="chat_suggest_expand_budget">Nới ngân sách</string>
+    <string name="chat_suggest_similar_products">Đổi sang sản phẩm tương tự</string>
+    <string name="chat_suggest_best_selling">Xem sản phẩm makeup bán chạy</string>
+
+    <!-- Chatbot Quick Menu -->
     <string name="quick_menu_title">Tác vụ nhanh</string>
     <string name="track_order_subtitle">Xem tình trạng đơn hàng của bạn</string>
     <string name="ingredients_check">Kiểm tra thành phần</string>
@@ -475,8 +487,8 @@
     <string name="menu_get_support">Gặp nhân viên hỗ trợ</string>
     <string name="menu_get_support_subtitle">Tạo yêu cầu hỗ trợ khi cần tư vấn thêm</string>
 
-    <string name="chat_assistant_subtitle">Tư vấn mỹ phẩm &amp; hỗ trợ đơn hàng</string>
-    <string name="chat_welcome_full">Xin chào, mình là Kanila AI. Mình có thể tư vấn sản phẩm, tạo routine, kiểm tra thành phần và hỗ trợ đơn hàng.</string>
+    <string name="chat_assistant_subtitle">Tư vấn makeup, chọn màu, tìm sản phẩm và ưu đãi</string>
+    <string name="chat_welcome_full">Chào bạn, mình là Kanila Makeup Assistant. Bạn muốn tìm son, cushion, kem nền, mascara hay một set makeup theo ngân sách hôm nay?</string>
     <string name="chat_typing_indicator">Kanila AI đang trả lời...</string>
     <string name="content_desc_send">Gửi</string>
     <string name="chatbot_next_phase_msg">Màn hình chat sẽ được triển khai ở bước tiếp theo.</string>
@@ -595,9 +607,9 @@
     <string name="category_promotion">Khuyến mãi</string>
     <string name="faq_section_title">Câu hỏi thường gặp</string>
     <string name="faq_1">Làm thế nào để theo dõi đơn hàng?</string>
-    <string name="faq_2">Bao lâu thì tôi nhận được hàng?</string>
+    <string name="faq_2">Thời gian giao hàng là bao lâu?</string>
     <string name="faq_3">Chính sách đổi trả của Kanila Beauty</string>
-    <string name="faq_4">Sản phẩm bị hư hỏng khi nhận hàng thì sao?</string>
+    <string name="faq_4">Sản phẩm bị hư hỏng khi giao hàng thì xử lý như thế nào?</string>
     <string name="faq_5">Phương thức thanh toán nào được chấp nhận?</string>
     <string name="view_all">Xem tất cả</string>
     <string name="featured_articles">Bài viết nổi bật</string>
@@ -748,6 +760,34 @@
     <string name="chat_product_review_count">(%s)</string>
     <string name="chat_view_product_detail">Xem chi tiết</string>
     <string name="chat_product_detail_next_phase">Tính năng xem chi tiết sản phẩm sẽ được kết nối ở bước tiếp theo.</string>
+    <string name="chat_personalized_badge">✨ Đề xuất dành riêng cho bạn</string>
+    <string name="chat_personalized_skin_profile">✨ Phân tích dựa trên hồ sơ da của bạn</string>
+    <string name="chat_personalized_reason">Phù hợp với hồ sơ của bạn</string>
+    <string name="chat_new_chat">Chat mới</string>
+    <string name="chat_new_chat_confirm_title">Bắt đầu chat mới</string>
+    <string name="chat_new_chat_confirm_message">Bạn muốn bắt đầu cuộc trò chuyện mới?</string>
+    <string name="chat_new_chat_confirm_btn_cancel">Hủy</string>
+    <string name="chat_new_chat_confirm_btn_confirm">Tạo chat mới</string>
+
+    <string name="chat_cart_items_count">%d sản phẩm</string>
+    <string name="chat_cart_subtotal">Tạm tính</string>
+    <string name="chat_cart_discount">Giảm giá</string>
+    <string name="chat_cart_total">Tổng tiền</string>
+    <string name="chat_cart_add_combo">Thêm combo vào giỏ</string>
+    <string name="chat_cart_add_success">Đã thêm combo vào giỏ hàng thành công</string>
+    <string name="chat_cart_count_format">Giỏ hàng hiện có %d sản phẩm</string>
+    <string name="chat_cart_view">Xem giỏ hàng</string>
+    <string name="chat_cart_confirm_title">Xác nhận thêm combo</string>
+    <string name="chat_cart_confirm_msg">Bạn muốn thêm combo này vào giỏ hàng?</string>
+    <string name="chat_cart_confirm_info">%1$d sản phẩm • %2$s</string>
+    <string name="chat_cart_confirm_btn_add">Thêm vào giỏ</string>
+    <string name="chat_cart_require_login">Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.</string>
+    <string name="chat_cart_login_now">Đăng nhập ngay</string>
+    <string name="chat_comparison_title">So sánh sản phẩm</string>
+    <string name="chat_comparison_differences">Điểm khác biệt</string>
+    <string name="chat_comparison_recommendation">✨ Gợi ý dành cho bạn</string>
+    <string name="chat_add_to_cart">Thêm giỏ</string>
+    <string name="chat_view_product">Xem sản phẩm</string>
     <string name="search_hint_community">Tìm kiếm trong Community...</string>
     <string name="tab_feed">Feed</string>
     <string name="tab_challenge">Challenge</string>

@@ -9,16 +9,18 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.example.frontend.data.remote.TokenManager;
-import com.example.frontend.feature.wishlist.WishlistViewModel;
-import com.example.frontend.core.auth.AuthNavigationHelper;
-import com.example.frontend.core.auth.PendingAuthAction;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
+import com.example.frontend.core.auth.AuthNavigationHelper;
+import com.example.frontend.core.auth.PendingAuthAction;
+import com.example.frontend.data.model.cart.AddToCartRequest;
 import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.data.remote.TokenManager;
+import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.feature.wishlist.WishlistViewModel;
 import com.example.frontend.model.Product;
 
 import java.util.ArrayList;
@@ -49,6 +51,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private SearchViewModel viewModel;
     private WishlistViewModel wishlistViewModel;
+    private CartViewModel cartViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +60,8 @@ public class SearchActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(SearchViewModel.class);
         wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
-        
+        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+
         initViews();
         setupSearchHeader();
         setupHistory();
@@ -185,28 +189,21 @@ public class SearchActivity extends AppCompatActivity {
     private void setupRecommendProducts() {
         recommendAdapter = new SearchRecommendProductAdapter();
         rvRecommendProducts.setAdapter(recommendAdapter);
-        // This should eventually come from API as well
-        recommendAdapter.setOnProductClickListener(product -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_fragment_container, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
-                    .addToBackStack(null)
-                    .commit();
-        });
-        recommendAdapter.setOnWishlistClickListener((product, position) -> {
-            if (TokenManager.getInstance(this).isLoggedIn()) {
-                wishlistViewModel.toggleWishlist(product.getId(), product.isFavorite());
-                product.setFavorite(!product.isFavorite());
-                recommendAdapter.notifyItemChanged(position);
-                String msg = product.isFavorite() ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích";
-                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-            } else {
-                Bundle extras = new Bundle();
-                extras.putString("productId", product.getId());
-                extras.putBoolean("wasWishlisted", product.isFavorite());
-                PendingAuthAction action = new PendingAuthAction(PendingAuthAction.ActionType.ADD_TO_WISHLIST, "SearchActivity", R.id.main, extras);
-                AuthNavigationHelper.showAuthPrompt(this, action);
+        
+        recommendAdapter.setOnProductClickListener(new SearchRecommendProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                // Navigate to Product Detail (Toast for now as SearchActivity is an Activity)
+                Toast.makeText(SearchActivity.this, "Sản phẩm: " + product.getName(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
             }
         });
+        
+        recommendAdapter.setOnWishlistClickListener(this::onWishlistClick);
     }
 
     private void setupQuickDiscovery() {
@@ -214,7 +211,6 @@ public class SearchActivity extends AppCompatActivity {
         rvQuickDiscovery.setAdapter(discoveryAdapter);
 
         List<SearchQuickDiscovery> discoveryItems = new ArrayList<>();
-        // These can stay as they are likely static entry points
         discoveryItems.add(new SearchQuickDiscovery("Da dầu mụn", "Gợi ý cho bạn", R.drawable.kpn_1));
         discoveryItems.add(new SearchQuickDiscovery("Trang điểm", "Phong cách tự nhiên", R.drawable.kpn_2));
 
@@ -225,27 +221,19 @@ public class SearchActivity extends AppCompatActivity {
     private void setupSuggestedProducts() {
         productAdapter = new SearchSuggestedProductAdapter();
         rvSuggestedProducts.setAdapter(productAdapter);
-        productAdapter.setOnProductClickListener(product -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_fragment_container, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
-                    .addToBackStack(null)
-                    .commit();
-        });
-        productAdapter.setOnWishlistClickListener((product, position) -> {
-            if (TokenManager.getInstance(this).isLoggedIn()) {
-                wishlistViewModel.toggleWishlist(product.getId(), product.isFavorite());
-                product.setFavorite(!product.isFavorite());
-                productAdapter.notifyItemChanged(position);
-                String msg = product.isFavorite() ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích";
-                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-            } else {
-                Bundle extras = new Bundle();
-                extras.putString("productId", product.getId());
-                extras.putBoolean("wasWishlisted", product.isFavorite());
-                PendingAuthAction action = new PendingAuthAction(PendingAuthAction.ActionType.ADD_TO_WISHLIST, "SearchActivity", R.id.main, extras);
-                AuthNavigationHelper.showAuthPrompt(this, action);
+        
+        productAdapter.setOnProductClickListener(new SearchSuggestedProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                Toast.makeText(SearchActivity.this, "Sản phẩm: " + product.getName(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
             }
         });
+        productAdapter.setOnWishlistClickListener(this::onWishlistClick);
     }
 
     private void focusSearchInput() {
@@ -288,6 +276,47 @@ public class SearchActivity extends AppCompatActivity {
             sectionSuggestedProducts.setVisibility(View.VISIBLE);
             layoutSearchNoResult.setVisibility(View.GONE);
             productAdapter.setItems(results);
+        }
+    }
+
+    private void handleAddToCart(Product product) {
+        if (product == null || product.getId() == null) return;
+
+        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
+        cartViewModel.addToCart(request);
+
+        cartViewModel.getCartResult().observe(this, new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
+            @Override
+            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
+                if (result == null) return;
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    Toast.makeText(SearchActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    Toast.makeText(SearchActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                }
+            }
+        });
+    }
+
+    private void onWishlistClick(Product product, int position) {
+        if (TokenManager.getInstance(this).isLoggedIn()) {
+            wishlistViewModel.toggleWishlist(product.getId(), product.isFavorite());
+            product.setFavorite(!product.isFavorite());
+            
+            if (recommendAdapter != null) recommendAdapter.notifyDataSetChanged();
+            if (productAdapter != null) productAdapter.notifyDataSetChanged();
+            
+            String msg = product.isFavorite() ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích";
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        } else {
+            Bundle extras = new Bundle();
+            extras.putString("productId", product.getId());
+            extras.putBoolean("wasWishlisted", product.isFavorite());
+            // returnDestinationId = 0 since activity_search lacks R.id.main
+            PendingAuthAction action = new PendingAuthAction(PendingAuthAction.ActionType.ADD_TO_WISHLIST, "SearchActivity", 0, extras);
+            AuthNavigationHelper.showAuthPrompt(this, action);
         }
     }
 }

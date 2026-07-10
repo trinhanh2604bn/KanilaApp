@@ -1,49 +1,43 @@
 package com.example.frontend.data.model.coupon;
 
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 
-public class CouponDto {
+public class CouponDto implements Serializable {
     @SerializedName("_id")
     private String id;
 
-    @SerializedName("coupon_code")
+    @SerializedName("couponCode")
     private String couponCode;
 
-    @SerializedName("display_name")
-    private String displayName;
+    @SerializedName("promotionName")
+    private String promotionName;
 
-    @SerializedName("description")
-    private String description;
-
-    @SerializedName("discount_type")
+    @SerializedName("discountType")
     private String discountType; // "percentage", "fixed"
 
-    @SerializedName("discount_value")
+    @SerializedName("discountValue")
     private double discountValue;
 
-    @SerializedName("min_spend_amount")
-    private double minSpendAmount;
+    @SerializedName("minOrderAmount")
+    private double minOrderAmount;
 
-    @SerializedName("max_discount_amount")
+    @SerializedName("maxDiscountAmount")
     private double maxDiscountAmount;
 
-    @SerializedName("start_date")
-    private String startDate;
+    @SerializedName("validTo")
+    private String validTo;
 
-    @SerializedName("end_date")
-    private String endDate;
-
-    @SerializedName("is_active")
-    private boolean isActive;
+    @SerializedName("isSaved")
+    private boolean isSaved;
 
     public String getId() { return id; }
     public String getCouponCode() { return couponCode; }
-    public String getDisplayName() { return displayName; }
-    public String getDescription() { return description; }
+    public String getPromotionName() { return promotionName; }
     public String getDiscountType() { return discountType; }
     public double getDiscountValue() { return discountValue; }
-    public double getMinSpendAmount() { return minSpendAmount; }
+    public double getMinOrderAmount() { return minOrderAmount; }
     public double getMaxDiscountAmount() { return maxDiscountAmount; }
-    public String getEndDate() { return endDate; }
-    public boolean isActive() { return isActive; }
+    public String getValidTo() { return validTo; }
+    public boolean isSaved() { return isSaved; }
 }

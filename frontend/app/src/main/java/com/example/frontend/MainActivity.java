@@ -32,11 +32,14 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
-import com.example.frontend.feature.chatbot.ChatbotQuickMenuBottomSheet;
+import com.example.frontend.feature.chatbot.ChatConversationFragment;
 import com.example.frontend.feature.home.HomeBannerAdapter;
 import com.example.frontend.feature.home.HomeProductAdapter;
 import com.example.frontend.feature.home.HomeShortcutAdapter;
 import com.example.frontend.feature.home.HomeViewModel;
+import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.data.model.cart.AddToCartRequest;
+import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.search.SearchActivity;
 import com.example.frontend.model.HomeBannerItem;
 import com.example.frontend.model.HomeShortcutItem;
@@ -80,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private HomeProductAdapter allProductAdapter;
     private HomeViewModel viewModel;
     private com.example.frontend.feature.wishlist.WishlistViewModel wishlistViewModel;
+    private CartViewModel cartViewModel;
 
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
@@ -91,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         wishlistViewModel = new ViewModelProvider(this).get(com.example.frontend.feature.wishlist.WishlistViewModel.class);
+        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -107,9 +112,9 @@ public class MainActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
-                if (currentFragment != null) {
-                    getSupportFragmentManager().popBackStack();
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getSupportFragmentManager().popBackStackImmediate();
+                    updateHomeVisibility();
                 } else {
                     setEnabled(false);
                     getOnBackPressedDispatcher().onBackPressed();
@@ -118,8 +123,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        getSupportFragmentManager().addOnBackStackChangedListener(this::updateHomeVisibility);
+
         observeViewModel();
-        
+
         // Delay home data loading slightly to ensure UI is ready and prevent ANR
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             viewModel.loadHomeData();
@@ -153,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadFragment(Fragment fragment) {
         if (fragment == null) return;
-        
+
         if (layoutHomeScroll != null) layoutHomeScroll.setVisibility(View.GONE);
         if (mainFragmentContainer != null) mainFragmentContainer.setVisibility(View.VISIBLE);
 
@@ -161,6 +168,16 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.main_fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private void updateHomeVisibility() {
+        boolean hasFragments = getSupportFragmentManager().getBackStackEntryCount() > 0;
+        if (layoutHomeScroll != null) {
+            layoutHomeScroll.setVisibility(hasFragments ? View.GONE : View.VISIBLE);
+        }
+        if (mainFragmentContainer != null) {
+            mainFragmentContainer.setVisibility(hasFragments ? View.VISIBLE : View.GONE);
+        }
     }
 
     public void navigateToCart() {
@@ -238,8 +255,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (ivChatbot != null) {
             ivChatbot.setOnClickListener(v -> {
-                ChatbotQuickMenuBottomSheet.newInstance()
-                        .show(getSupportFragmentManager(), "ChatbotQuickMenu");
+                loadFragment(ChatConversationFragment.newInstance(null));
             });
         }
 
@@ -302,8 +318,16 @@ public class MainActivity extends AppCompatActivity {
     private void setupProductLists() {
         recommendedProductAdapter = new HomeProductAdapter();
 
-        recommendedProductAdapter.setOnProductClickListener(product -> {
-            loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()));
+        recommendedProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(com.example.frontend.model.Product product) {
+                loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()));
+            }
+
+            @Override
+            public void onAddToCartClick(com.example.frontend.model.Product product) {
+                handleAddToCart(product);
+            }
         });
 
         recommendedProductAdapter.setOnWishlistToggleListener((product, wasWishlisted) -> {
@@ -335,8 +359,16 @@ public class MainActivity extends AppCompatActivity {
 
         // All Products (Vertical Grid)
         allProductAdapter = new HomeProductAdapter();
-        allProductAdapter.setOnProductClickListener(product -> {
-            loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()));
+        allProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(com.example.frontend.model.Product product) {
+                loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()));
+            }
+
+            @Override
+            public void onAddToCartClick(com.example.frontend.model.Product product) {
+                handleAddToCart(product);
+            }
         });
 
         allProductAdapter.setOnWishlistToggleListener((product, wasWishlisted) -> {
@@ -598,6 +630,28 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void handleAddToCart(com.example.frontend.model.Product product) {
+        if (product.getId() == null) return;
+
+        // Use empty string instead of null for variant_id as some backends require it
+        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
+        cartViewModel.addToCart(request);
+
+        cartViewModel.getCartResult().observe(this, new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
+            @Override
+            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
+                if (result == null) return;
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    Toast.makeText(MainActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                }
+            }
+        });
     }
 
     private void smoothScrollTo(int position, long duration) {

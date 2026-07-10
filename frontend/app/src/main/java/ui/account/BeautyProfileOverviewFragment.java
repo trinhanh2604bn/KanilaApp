@@ -101,16 +101,16 @@ public class BeautyProfileOverviewFragment extends Fragment {
 
     private void initSectionData() {
         sections.clear();
-        sections.add(new SectionData("1. Loại da", new String[]{"Da dầu", "Da khô", "Da hỗn hợp", "Da thường", "Da nhạy cảm", "Chưa xác định"}, new int[]{R.drawable.ic_drops_filled, R.drawable.ic_drops, R.drawable.ic_skin_mixed, R.drawable.ic_skin_normal, R.drawable.ic_skin_sensitive, R.drawable.ic_unsure}, "Loại da quyết định nền tảng các sản phẩm dưỡng da của bạn."));
-        sections.add(new SectionData("2. Tình trạng da", new String[]{"Mụn", "Thâm mụn", "Nám, sạm màu", "Da xỉn màu", "Lỗ chân lông to", "Mụn đầu đen", "Da dễ đỏ", "Da thiếu nước", "Nếp nhăn, lão hóa", "Bề mặt da không mịn", "Hàng rào da yếu", "Da chịu tác động của nắng"}, new int[]{R.drawable.ic_skin_acne, R.drawable.ic_skin_spots, R.drawable.ic_skin_spots, R.drawable.ic_skin_dullness, R.drawable.ic_skin_pores, R.drawable.ic_skin_acne, R.drawable.ic_skin_redness, R.drawable.ic_drops, R.drawable.ic_skin_aging, R.drawable.ic_skin_mixed, R.drawable.ic_goal_recovery, R.drawable.ic_sun}, "Kanila sẽ chọn hoạt chất đặc trị riêng cho từng vấn đề bạn đang gặp phải."));
-        sections.add(new SectionData("3. Mức độ nhạy cảm", new String[]{"Ít nhạy cảm", "Dễ kích ứng nhẹ", "Rất nhạy cảm", "Dễ đỏ hoặc rát khi đổi sản phẩm"}, new int[]{R.drawable.ic_shield_star, R.drawable.ic_skin_sensitive, R.drawable.ic_alert, R.drawable.ic_skin_redness}, "Hồ sơ nhạy cảm giúp chúng mình loại bỏ các thành phần có nguy cơ kích ứng cao."));
-        sections.add(new SectionData("4. Màu da", new String[]{"Da rất sáng", "Da sáng", "Da trung bình", "Da ngăm", "Da sẫm màu"}, new int[]{R.drawable.ic_sun, R.drawable.ic_sun, R.drawable.ic_sun, R.drawable.ic_sun, R.drawable.ic_sun}, "Tone màu da giúp gợi ý kem nền và phấn phủ chuẩn xác hơn."));
-        sections.add(new SectionData("5. Sắc độ da", new String[]{"Sắc lạnh", "Sắc ấm", "Sắc trung tính", "Sắc ô liu", "Chưa xác định"}, new int[]{R.drawable.skin_tone, R.drawable.skin_tone, R.drawable.skin_tone, R.drawable.skin_tone, R.drawable.ic_unsure}, "Undertone là chìa khóa để chọn màu son và màu má phù hợp nhất."));
-        sections.add(new SectionData("6. Hiệu ứng nền", new String[]{"Tự nhiên", "Sáng hơn tông da", "Căng bóng ánh ấm", "Tươi sáng ánh hồng", "Lì, ít bóng"}, new int[]{R.drawable.ic_face, R.drawable.ic_lightbulb, R.drawable.ic_sun, R.drawable.ic_face, R.drawable.ic_face}, "Lớp nền ưng ý sẽ mang lại vẻ ngoài rạng rỡ đúng ý muốn của bạn."));
-        sections.add(new SectionData("7. Màu son", new String[]{"Màu nude", "Màu hồng", "Màu cam san hô", "Màu đỏ", "Màu nâu", "Màu môi tự nhiên", "Màu đậm, nổi bật"}, new int[]{R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick}, "Danh sách màu son yêu thích giúp Kanila thu hẹp phạm vi tìm kiếm."));
-        sections.add(new SectionData("8. Trang điểm", new String[]{"Trang điểm tự nhiên", "Phong cách Hàn Quốc", "Trang điểm sắc sảo", "Trang điểm công sở", "Trang điểm dự tiệc", "Trang điểm hằng ngày"}, new int[]{R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face}, "Phong cách này sẽ định hình các sản phẩm trong bộ trang điểm gợi ý."));
-        sections.add(new SectionData("9. Ngân sách", new String[]{"Dưới 300K", "300K - 500K", "500K +"}, new int[]{R.drawable.ic_wallet, R.drawable.ic_wallet, R.drawable.ic_wallet}, "Chúng mình sẽ cân đối các sản phẩm tốt nhất trong tầm giá bạn mong muốn."));
-        sections.add(new SectionData("10. Cần tránh", new String[]{"Hương liệu", "Cồn khô", "Tinh dầu", "Paraben", "Dầu khoáng", "Silicone", "Sulfate", "Lanolin", "Retinoid", "Acid cao"}, new int[]{R.drawable.ic_drops, R.drawable.ic_beaker, R.drawable.ic_drops, R.drawable.ic_beaker, R.drawable.ic_drops, R.drawable.ic_beaker, R.drawable.ic_beaker, R.drawable.ic_beaker, R.drawable.ic_beaker, R.drawable.ic_beaker}, "Sản phẩm được gợi ý sẽ hoàn toàn không chứa các thành phần này."));
+        sections.add(new SectionData("Loại da", new String[]{"Da dầu", "Da khô", "Da hỗn hợp", "Da thường", "Da nhạy cảm", "Chưa xác định"}, new int[]{R.drawable.ic_drops_filled, R.drawable.ic_drops, R.drawable.ic_skin_mixed, R.drawable.ic_skin_normal, R.drawable.ic_skin_sensitive, R.drawable.ic_unsure}, "Loại da quyết định nền tảng các sản phẩm dưỡng da của bạn."));
+        sections.add(new SectionData("Tình trạng da", new String[]{"Mụn", "Thâm mụn", "Nám, sạm màu", "Da xỉn màu", "Lỗ chân lông to", "Mụn đầu đen", "Da dễ đỏ", "Da thiếu nước", "Nếp nhăn, lão hóa", "Bề mặt da không mịn", "Hàng rào da yếu", "Da chịu tác động của nắng"}, new int[]{R.drawable.ic_skin_acne, R.drawable.ic_skin_spots, R.drawable.ic_skin_spots, R.drawable.ic_skin_dullness, R.drawable.ic_skin_pores, R.drawable.ic_skin_acne, R.drawable.ic_skin_redness, R.drawable.ic_drops, R.drawable.ic_skin_aging, R.drawable.ic_skin_mixed, R.drawable.ic_goal_recovery, R.drawable.ic_sun}, "Kanila sẽ chọn hoạt chất đặc trị riêng cho từng vấn đề bạn đang gặp phải."));
+        sections.add(new SectionData("Mức độ nhạy cảm", new String[]{"Ít nhạy cảm", "Dễ kích ứng nhẹ", "Rất nhạy cảm", "Dễ đỏ hoặc rát khi đổi sản phẩm"}, new int[]{R.drawable.ic_shield_star, R.drawable.ic_skin_sensitive, R.drawable.ic_alert, R.drawable.ic_skin_redness}, "Hồ sơ nhạy cảm giúp chúng mình loại bỏ các thành phần có nguy cơ kích ứng cao."));
+        sections.add(new SectionData("Màu da", new String[]{"Da rất sáng", "Da sáng", "Da trung bình", "Da ngăm", "Da sẫm màu"}, new int[]{R.drawable.ic_sun, R.drawable.ic_sun, R.drawable.ic_sun, R.drawable.ic_sun, R.drawable.ic_sun}, "Tone màu da giúp gợi ý kem nền và phấn phủ chuẩn xác hơn."));
+        sections.add(new SectionData("Sắc độ da", new String[]{"Sắc lạnh", "Sắc ấm", "Sắc trung tính", "Sắc ô liu", "Chưa xác định"}, new int[]{R.drawable.skin_tone, R.drawable.skin_tone, R.drawable.skin_tone, R.drawable.skin_tone, R.drawable.ic_unsure}, "Undertone là chìa khóa để chọn màu son và màu má phù hợp nhất."));
+        sections.add(new SectionData("Hiệu ứng nền", new String[]{"Tự nhiên", "Sáng hơn tông da", "Căng bóng ánh ấm", "Tươi sáng ánh hồng", "Lì, ít bóng"}, new int[]{R.drawable.ic_face, R.drawable.ic_lightbulb, R.drawable.ic_sun, R.drawable.ic_face, R.drawable.ic_face}, "Lớp nền ưng ý sẽ mang lại vẻ ngoài rạng rỡ đúng ý muốn của bạn."));
+        sections.add(new SectionData("Màu son", new String[]{"Màu nude", "Màu hồng", "Màu cam san hô", "Màu đỏ", "Màu nâu", "Màu môi tự nhiên", "Màu đậm, nổi bật"}, new int[]{R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick}, "Danh sách màu son yêu thích giúp Kanila thu hẹp phạm vi tìm kiếm."));
+        sections.add(new SectionData("Trang điểm", new String[]{"Trang điểm tự nhiên", "Phong cách Hàn Quốc", "Trang điểm sắc sảo", "Trang điểm công sở", "Trang điểm dự tiệc", "Trang điểm hằng ngày"}, new int[]{R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face}, "Phong cách này sẽ định hình các sản phẩm trong bộ trang điểm gợi ý."));
+        sections.add(new SectionData("Ngân sách", new String[]{"Dưới 300K", "300K - 500K", "500K +"}, new int[]{R.drawable.ic_wallet, R.drawable.ic_wallet, R.drawable.ic_wallet}, "Chúng mình sẽ cân đối các sản phẩm tốt nhất trong tầm giá bạn mong muốn."));
+        sections.add(new SectionData("Cần tránh", new String[]{"Hương liệu", "Cồn khô", "Tinh dầu", "Paraben", "Dầu khoáng", "Silicone", "Sulfate", "Lanolin", "Retinoid", "Acid cao"}, new int[]{R.drawable.ic_drops, R.drawable.ic_beaker, R.drawable.ic_drops, R.drawable.ic_beaker, R.drawable.ic_drops, R.drawable.ic_beaker, R.drawable.ic_beaker, R.drawable.ic_beaker, R.drawable.ic_beaker, R.drawable.ic_beaker}, "Sản phẩm được gợi ý sẽ hoàn toàn không chứa các thành phần này."));
     }
 
     private void setupViews(@NonNull View view) {
@@ -206,20 +206,59 @@ public class BeautyProfileOverviewFragment extends Fragment {
             
             List<com.example.frontend.model.Product> mockProducts = new ArrayList<>();
             String skinType = profile.getSkinType() != null ? profile.getSkinType() : "Da dầu";
-            
-            if (skinType.contains("dầu")) {
-                mockProducts.add(new com.example.frontend.model.Product("1", "Cosrx", "Sữa rửa mặt BHA", "250000", "4.5", "120", R.drawable.cl_product, "Hot", "Face"));
-                mockProducts.add(new com.example.frontend.model.Product("2", "The Ordinary", "Serum Niacinamide", "220000", "4.8", "450", R.drawable.cl_product, "Best Seller", "Serum"));
-                mockProducts.add(new com.example.frontend.model.Product("3", "La Roche-Posay", "Kem dưỡng kiềm dầu", "480000", "4.7", "310", R.drawable.cl_product, "New", "Moisturizer"));
-                if (isRecExpanded) {
-                    mockProducts.add(new com.example.frontend.model.Product("6", "Paula's Choice", "BHA Liquid Exfoliant", "910000", "4.9", "1200", R.drawable.cl_product, "Premium", "Toner"));
-                    mockProducts.add(new com.example.frontend.model.Product("7", "Innisfree", "Jeju Volcanic Clay Mask", "340000", "4.6", "800", R.drawable.cl_product, "Popular", "Mask"));
+            String budget = profile.getBudget() != null ? profile.getBudget() : "500K +";
+
+            // Danh sách tất cả sản phẩm giả lập có thể gợi ý
+            List<com.example.frontend.model.Product> pool = new ArrayList<>();
+            pool.add(new com.example.frontend.model.Product("1", "Cosrx", "Sữa rửa mặt BHA", "250000", "4.5", "120", R.drawable.cl_product, "Hot", "Face"));
+            pool.add(new com.example.frontend.model.Product("2", "The Ordinary", "Serum Niacinamide", "220000", "4.8", "450", R.drawable.cl_product, "Best Seller", "Serum"));
+            pool.add(new com.example.frontend.model.Product("3", "La Roche-Posay", "Kem dưỡng kiềm dầu", "480000", "4.7", "310", R.drawable.cl_product, "New", "Moisturizer"));
+            pool.add(new com.example.frontend.model.Product("4", "Neutrogena", "Kem dưỡng ẩm HA", "350000", "4.6", "215", R.drawable.cl_product, "Hot", "Moisturizer"));
+            pool.add(new com.example.frontend.model.Product("5", "Bioderma", "Tẩy trang dịu nhẹ", "390000", "4.9", "890", R.drawable.cl_product, "Recommended", "Cleansing"));
+            pool.add(new com.example.frontend.model.Product("6", "Paula's Choice", "BHA Liquid Exfoliant", "910000", "4.9", "1200", R.drawable.cl_product, "Premium", "Toner"));
+            pool.add(new com.example.frontend.model.Product("7", "Innisfree", "Jeju Volcanic Clay Mask", "340000", "4.6", "800", R.drawable.cl_product, "Popular", "Mask"));
+            pool.add(new com.example.frontend.model.Product("8", "Laneige", "Water Bank Cream", "850000", "4.8", "600", R.drawable.cl_product, "Best Seller", "Moisturizer"));
+
+            for (com.example.frontend.model.Product p : pool) {
+                double price = p.getPriceValue();
+                boolean budgetMatch = false;
+                
+                // Lọc theo ngân sách chính xác như khách hàng đã chọn
+                if ("Dưới 300K".equalsIgnoreCase(budget)) {
+                    budgetMatch = price < 300000;
+                } else if ("300K - 500K".equalsIgnoreCase(budget)) {
+                    budgetMatch = price >= 300000 && price <= 500000;
+                } else if ("500K +".equalsIgnoreCase(budget)) {
+                    budgetMatch = price > 500000;
+                } else {
+                    budgetMatch = true; // Nếu không chọn thì hiện tất cả
                 }
-            } else {
-                mockProducts.add(new com.example.frontend.model.Product("4", "Neutrogena", "Kem dưỡng ẩm HA", "350000", "4.6", "215", R.drawable.cl_product, "Hot", "Moisturizer"));
-                mockProducts.add(new com.example.frontend.model.Product("5", "Bioderma", "Tẩy trang dịu nhẹ", "390000", "4.9", "890", R.drawable.cl_product, "Recommended", "Cleansing"));
-                if (isRecExpanded) {
-                    mockProducts.add(new com.example.frontend.model.Product("8", "Laneige", "Water Bank Cream", "850000", "4.8", "600", R.drawable.cl_product, "Best Seller", "Moisturizer"));
+
+                if (budgetMatch) {
+                    // Lọc thêm theo loại da (logic đơn giản cho demo)
+                    if (skinType.contains("dầu")) {
+                        if (p.getName().toLowerCase().contains("bha") || p.getName().toLowerCase().contains("dầu") || p.getName().toLowerCase().contains("niacinamide") || p.getName().toLowerCase().contains("mask")) {
+                            mockProducts.add(p);
+                        }
+                    } else {
+                        if (p.getName().toLowerCase().contains("ha") || p.getName().toLowerCase().contains("dịu nhẹ") || p.getName().toLowerCase().contains("cream")) {
+                            mockProducts.add(p);
+                        }
+                    }
+                }
+            }
+            
+            // Nếu lọc quá kỹ không còn sản phẩm, lấy ít nhất 2 cái theo đúng ngân sách
+            if (mockProducts.size() < 2) {
+                for (com.example.frontend.model.Product p : pool) {
+                    if (mockProducts.contains(p)) continue;
+                    double price = p.getPriceValue();
+                    if (("Dưới 300K".equalsIgnoreCase(budget) && price < 300000) ||
+                        ("300K - 500K".equalsIgnoreCase(budget) && price >= 300000 && price <= 500000) ||
+                        ("500K +".equalsIgnoreCase(budget) && price > 500000)) {
+                        mockProducts.add(p);
+                    }
+                    if (mockProducts.size() >= 3) break;
                 }
             }
             
@@ -431,7 +470,14 @@ public class BeautyProfileOverviewFragment extends Fragment {
         if (btnEdit != null) {
             btnEdit.setOnClickListener(v -> {
                 dialog.dismiss();
-                navigateToEditProfile();
+                if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                    navigateToEditProfile();
+                } else {
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(),
+                        new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT, 
+                            "BeautyProfileCTA", 0, null));
+                }
             });
         }
 

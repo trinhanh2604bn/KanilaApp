@@ -22,8 +22,10 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
     private OnAddToCartListener addToCartListener;
     private int itemWidth = -1;
 
+    @FunctionalInterface
     public interface OnProductClickListener {
         void onProductClick(Product product);
+        default void onAddToCartClick(Product product) {}
     }
 
     public interface OnWishlistToggleListener {
@@ -110,6 +112,8 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
             holder.btnAddToCart.setOnClickListener(v -> {
                 if (addToCartListener != null) {
                     addToCartListener.onAddToCart(product);
+                } else if (listener != null) {
+                    listener.onAddToCartClick(product);
                 }
             });
         }

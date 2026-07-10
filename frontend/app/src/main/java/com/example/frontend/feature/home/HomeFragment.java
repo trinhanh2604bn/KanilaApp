@@ -30,6 +30,9 @@ import com.example.frontend.R;
 import com.example.frontend.feature.community.reels.ReelsFeedFragment;
 import com.example.frontend.feature.search.SearchActivity;
 import com.example.frontend.feature.wishlist.WishlistViewModel;
+import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.data.model.cart.AddToCartRequest;
+import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.model.HomeBannerItem;
 import com.example.frontend.model.HomeShortcutItem;
 import com.example.frontend.model.Product;
@@ -65,6 +68,7 @@ public class HomeFragment extends Fragment {
     private HomeProductAdapter allProductAdapter;
     private HomeViewModel viewModel;
     private WishlistViewModel wishlistViewModel;
+    private CartViewModel cartViewModel;
 
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
@@ -81,6 +85,7 @@ public class HomeFragment extends Fragment {
         
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
         wishlistViewModel = new ViewModelProvider(requireActivity()).get(WishlistViewModel.class);
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
 
         initViews(view);
         setupSearchBar(view);
@@ -246,10 +251,34 @@ public class HomeFragment extends Fragment {
 
     private void setupProductLists() {
         recommendedProductAdapter = new HomeProductAdapter();
+        recommendedProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                // Navigate to Product Detail if needed
+                Toast.makeText(requireContext(), "Sản phẩm: " + product.getName(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
+            }
+        });
         rvRecommendedProducts.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         rvRecommendedProducts.setAdapter(recommendedProductAdapter);
+        rvRecommendedProducts.setNestedScrollingEnabled(false);
 
         allProductAdapter = new HomeProductAdapter();
+        allProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                Toast.makeText(requireContext(), "Sản phẩm: " + product.getName(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
+            }
+        });
         rvAllProducts.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         rvAllProducts.setAdapter(allProductAdapter);
         rvAllProducts.setNestedScrollingEnabled(false);
@@ -288,6 +317,27 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    private void handleAddToCart(Product product) {
+        if (product.getId() == null) return;
+
+        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
+        cartViewModel.addToCart(request);
+        
+        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
+            @Override
+            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
+                if (result == null) return;
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                }
+            }
+        });
+    }
+
     private void observeViewModel() {
         viewModel.getUiState().observe(getViewLifecycleOwner(), state -> {
             if (state == null) return;
@@ -302,18 +352,27 @@ public class HomeFragment extends Fragment {
     }
 
     private void showLoading() {
-        layoutHomeStateContainer.setVisibility(View.VISIBLE);
-        viewHomeLoading.setVisibility(View.VISIBLE);
+        if (layoutHomeStateContainer != null) {
+            layoutHomeStateContainer.setVisibility(View.VISIBLE);
+            if (viewHomeLoading != null) viewHomeLoading.setVisibility(View.VISIBLE);
+            if (viewHomeError != null) viewHomeError.setVisibility(View.GONE);
+        }
     }
 
     private void showContent() {
-        layoutHomeStateContainer.setVisibility(View.GONE);
+        if (layoutHomeStateContainer != null) layoutHomeStateContainer.setVisibility(View.GONE);
     }
 
     private void showError(String message) {
-        layoutHomeStateContainer.setVisibility(View.VISIBLE);
-        viewHomeError.setVisibility(View.VISIBLE);
-        ((TextView)viewHomeError.findViewById(R.id.tvErrorTitle)).setText(message);
+        if (layoutHomeStateContainer != null) {
+            layoutHomeStateContainer.setVisibility(View.VISIBLE);
+            if (viewHomeLoading != null) viewHomeLoading.setVisibility(View.GONE);
+            if (viewHomeError != null) {
+                viewHomeError.setVisibility(View.VISIBLE);
+                TextView tvError = viewHomeError.findViewById(R.id.tvErrorTitle);
+                if (tvError != null) tvError.setText(message);
+            }
+        }
     }
 
     @Override

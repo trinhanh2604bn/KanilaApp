@@ -261,6 +261,8 @@
     <string name="address_book_title">Địa chỉ giao hàng</string>
     <string name="address_book_list_header">Danh sách địa chỉ</string>
     <string name="address_book_add_new">Thêm địa chỉ mới</string>
+    <string name="address_default_label">Mặc định</string>
+    <string name="edit">Chỉnh sửa</string>
 
     <string name="payment_method_title">Phương thức thanh toán</string>
     <string name="payment_method_choose">Chọn phương thức thanh toán</string>

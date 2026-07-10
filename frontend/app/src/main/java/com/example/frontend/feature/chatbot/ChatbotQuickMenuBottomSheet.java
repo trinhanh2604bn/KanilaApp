@@ -41,10 +41,7 @@ public class ChatbotQuickMenuBottomSheet extends BottomSheetDialogFragment {
 
     private void handleMenuClick(String starterMessage) {
         if (getActivity() != null) {
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, ChatConversationFragment.newInstance(starterMessage))
-                    .addToBackStack(null)
-                    .commit();
+            ui.common.FragmentNavigationHelper.loadFragment(getActivity(), ChatConversationFragment.newInstance(starterMessage));
         }
         dismiss();
     }

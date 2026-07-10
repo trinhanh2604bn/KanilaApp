@@ -75,7 +75,7 @@
                 style="@style/Text.Kanila.H3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1. Loại da"
+                android:text="Loại da"
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
@@ -122,7 +122,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="2. Tình trạng da"
+                android:text="Tình trạng da"
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
@@ -185,7 +185,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="3. Mức độ nhạy cảm"
+                android:text="Mức độ nhạy cảm"
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
@@ -231,7 +231,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="4. Màu da"
+                android:text="Màu da"
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
@@ -278,7 +278,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="5. Sắc độ da"
+                android:text="Sắc độ da"
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
@@ -325,7 +325,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="6. Hiệu ứng nền mong muốn"
+                android:text="Hiệu ứng nền mong muốn"
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
@@ -372,7 +372,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="7. Màu son yêu thích"
+                android:text="Màu son yêu thích"
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
@@ -427,7 +427,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="8. Phong cách trang điểm"
+                android:text="Phong cách trang điểm"
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
@@ -474,7 +474,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="9. Ngân sách ưu tiên"
+                android:text="Ngân sách ưu tiên"
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
@@ -494,7 +494,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="10. Thành phần cần tránh"
+                android:text="Thành phần cần tránh"
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 

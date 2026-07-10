@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.frontend.R;
+import com.example.frontend.feature.chatbot.ChatConversationFragment;
 import com.google.android.material.tabs.TabLayout;
 import ui.common.FragmentNavigationHelper;
 

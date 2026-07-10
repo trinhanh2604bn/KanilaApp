@@ -107,23 +107,70 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             tvOrderDate.setText(order.getPlacedAt());
             
             // Product info
-            tvProductName.setText(order.getFirstItemName());
-            tvVariant.setText(order.getFirstItemVariant());
+            String productName = order.getFirstItemName();
+            tvProductName.setText(productName);
+            
+            // Clean up variant name: (Product Name - Variant) -> Variant
+            String variantDisplay = order.getFirstItemVariant();
+            if (variantDisplay != null && productName != null) {
+                if (variantDisplay.contains(productName + " - ")) {
+                    variantDisplay = variantDisplay.replace(productName + " - ", "");
+                } else if (variantDisplay.startsWith(productName)) {
+                    String potential = variantDisplay.substring(productName.length()).trim();
+                    if (!potential.isEmpty()) {
+                        if (potential.startsWith("-") || potential.startsWith(":") || potential.startsWith("•")) {
+                            variantDisplay = potential.substring(1).trim();
+                        } else {
+                            variantDisplay = potential;
+                        }
+                    }
+                }
+            }
+            
+            // Try to get cleaner variant from ItemPreview if available
+            if (order.getItemPreviews() != null && !order.getItemPreviews().isEmpty()) {
+                String previewVariant = order.getItemPreviews().get(0).getVariantName();
+                if (previewVariant != null && !previewVariant.isEmpty()) {
+                    if (productName != null && previewVariant.contains(productName + " - ")) {
+                        previewVariant = previewVariant.replace(productName + " - ", "");
+                    }
+                    variantDisplay = previewVariant;
+                }
+            }
+
+            if (variantDisplay == null || variantDisplay.isEmpty() || variantDisplay.equalsIgnoreCase(productName)) {
+                variantDisplay = "Mặc định";
+            }
+            tvVariant.setText(variantDisplay);
             
             String qtyLabel = "Số lượng: x" + order.getTotalQuantity();
             tvQuantity.setText(qtyLabel);
             tvPrice.setText(formatPrice(order.getGrandTotalAmount()));
             
             // Load image using Glide
-            String imageUrl = null;
-            if (order.getItemPreviews() != null && !order.getItemPreviews().isEmpty()) {
-                imageUrl = order.getItemPreviews().get(0).getImageUrl();
+            String imageUrl = order.getFirstItemImageUrl();
+            
+            // If image is missing at root level, try to find it in itemPreviews matching the first item name
+            if ((imageUrl == null || imageUrl.isEmpty()) && order.getItemPreviews() != null && !order.getItemPreviews().isEmpty()) {
+                if (productName != null) {
+                    for (OrderSummaryDto.ItemPreview preview : order.getItemPreviews()) {
+                        if (productName.equals(preview.getProductName())) {
+                            imageUrl = preview.getImageUrl();
+                            break;
+                        }
+                    }
+                }
+                // Fallback to first preview if still null
+                if (imageUrl == null || imageUrl.isEmpty()) {
+                    imageUrl = order.getItemPreviews().get(0).getImageUrl();
+                }
             }
             
             com.bumptech.glide.Glide.with(context)
-                .load(imageUrl != null ? imageUrl : "")
+                .load(imageUrl != null && !imageUrl.isEmpty() ? imageUrl : "")
                 .placeholder(R.drawable.ic_product)
                 .error(R.drawable.ic_product)
+                .centerCrop()
                 .into(ivProduct);
 
             // Summary

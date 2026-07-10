@@ -164,10 +164,10 @@ public interface ApiService {
     Call<ApiResponse<CheckoutSessionDto>> createBuyNowSession(@Body AddToCartRequest request);
 
     @POST("api/checkout-sessions/me/{id}/place-order")
-    Call<ApiResponse<Object>> placeOrder(@Path("id") String sessionId, @Body Object request);
+    Call<ApiResponse<OrderDto>> placeOrder(@Path("id") String sessionId, @Body Object request);
 
     @POST("api/checkout-sessions/guest/{id}/place-order")
-    Call<ApiResponse<Object>> placeGuestOrder(@Path("id") String sessionId, @Body Object request);
+    Call<ApiResponse<OrderDto>> placeGuestOrder(@Path("id") String sessionId, @Body Object request);
 
     @GET("api/beauty-references")
     Call<ApiResponse<List<BeautyReferenceDto>>> getBeautyReferences();

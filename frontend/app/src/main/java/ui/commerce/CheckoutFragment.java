@@ -379,9 +379,29 @@ public class CheckoutFragment extends Fragment {
                     // Show loading
                     break;
                 case SUCCESS:
-                    Toast.makeText(getContext(), "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
                     if (getActivity() != null) {
-                        getActivity().getSupportFragmentManager().popBackStack();
+                        CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ?
+                                viewModel.getCheckoutSession().getValue().data : null;
+                        com.example.frontend.data.model.order.OrderDto order = result.data;
+
+                        String paymentMethod = session != null ? session.getPaymentMethod() : "Thanh toán khi nhận hàng (COD)";
+                        String deliveryTime = (session != null && session.getEstimatedDelivery() != null) ? session.getEstimatedDelivery() : "Dự kiến 2-3 ngày";
+                        double total = order != null ? order.getTotalAmount() : (session != null ? session.getTotalAmount() : 0);
+                        int points = (int) (total / 5000);
+
+                        OrderSuccessFragment successFragment = OrderSuccessFragment.newInstance(
+                                order != null ? order.getOrderNumber() : "KNL" + System.currentTimeMillis() / 1000,
+                                paymentMethod,
+                                deliveryTime,
+                                total,
+                                points
+                        );
+
+                        // Use FragmentManager to clear backstack of checkout flow if possible, or just replace
+                        // To keep it simple and consistent with requirement "Integrate with existing navigation"
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.main_fragment_container, successFragment)
+                                .commit();
                     }
                     break;
                 case ERROR:

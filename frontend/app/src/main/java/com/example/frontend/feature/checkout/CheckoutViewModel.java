@@ -20,7 +20,7 @@ public class CheckoutViewModel extends AndroidViewModel {
     private final CheckoutRepository checkoutRepository;
     private final MutableLiveData<NetworkResult<CheckoutSessionDto>> checkoutSession = new MutableLiveData<>();
     private final MutableLiveData<com.example.frontend.data.model.address.AddressDto> selectedAddress = new MutableLiveData<>();
-    private final MutableLiveData<NetworkResult<Object>> placeOrderResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<com.example.frontend.data.model.order.OrderDto>> placeOrderResult = new MutableLiveData<>();
 
     public CheckoutViewModel(@NonNull Application application) {
         super(application);
@@ -35,13 +35,26 @@ public class CheckoutViewModel extends AndroidViewModel {
         return selectedAddress;
     }
 
-    public LiveData<NetworkResult<Object>> getPlaceOrderResult() {
+    public LiveData<NetworkResult<com.example.frontend.data.model.order.OrderDto>> getPlaceOrderResult() {
         return placeOrderResult;
     }
 
     public void placeOrder() {
         if (USE_MOCK_CHECKOUT) {
-            placeOrderResult.postValue(NetworkResult.success(new Object()));
+            CheckoutSessionDto session = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
+            if (session != null) {
+                com.example.frontend.data.model.order.OrderDto mockOrder = new com.example.frontend.data.model.order.OrderDto();
+                // We use reflection or just assume we can set fields if they were public, but they are private.
+                // However, I can't modify OrderDto to add a constructor or setters easily without reading it first.
+                // Wait, I already read OrderDto.java and it only has getters.
+                
+                // Since it's a mock, I'll just use a workaround or use GSON to create it from JSON.
+                String mockJson = "{\"_id\":\"mock_order_id\",\"order_number\":\"KNL" + System.currentTimeMillis() / 1000 + "\",\"total_amount\":" + session.getTotalAmount() + "}";
+                com.example.frontend.data.model.order.OrderDto order = new com.google.gson.Gson().fromJson(mockJson, com.example.frontend.data.model.order.OrderDto.class);
+                placeOrderResult.postValue(NetworkResult.success(order));
+            } else {
+                placeOrderResult.postValue(NetworkResult.error("Session không hợp lệ"));
+            }
             return;
         }
 

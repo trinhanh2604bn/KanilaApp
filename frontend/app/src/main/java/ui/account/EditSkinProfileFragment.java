@@ -319,8 +319,13 @@ public class EditSkinProfileFragment extends Fragment {
     }
 
     private void performSave() {
-        CustomerBeautyProfileDto profile = viewModel.getProfileResult().getValue() != null && viewModel.getProfileResult().getValue().data != null 
-            ? viewModel.getProfileResult().getValue().data : new CustomerBeautyProfileDto();
+        CustomerBeautyProfileDto profile;
+        NetworkResult<CustomerBeautyProfileDto> currentResult = viewModel.getProfileResult().getValue();
+        if (currentResult != null && currentResult.data != null) {
+            profile = currentResult.data;
+        } else {
+            profile = new CustomerBeautyProfileDto();
+        }
 
         profile.setSkinType(getSelectedName(skinTypeGroup));
         profile.setSkinConcerns(getSelectedNames(skinConditionGroup));
@@ -333,21 +338,30 @@ public class EditSkinProfileFragment extends Fragment {
         profile.setBudget(getSelectedName(budgetGroup));
         profile.setAvoidIngredients(getSelectedNames(avoidIngredientsGroup));
         
-        int itemsSet = 0;
-        if (profile.getSkinType() != null) itemsSet++;
-        if (!profile.getSkinConcerns().isEmpty()) itemsSet++;
-        if (profile.getSensitivityLevel() != null) itemsSet++;
-        if (profile.getSkinColor() != null) itemsSet++;
-        if (profile.getSkinUndertone() != null) itemsSet++;
-        if (profile.getFoundationFinish() != null) itemsSet++;
-        if (!profile.getLipstickColors().isEmpty()) itemsSet++;
-        if (!profile.getMakeupStyles().isEmpty()) itemsSet++;
-        if (profile.getBudget() != null) itemsSet++;
-        if (!profile.getAvoidIngredients().isEmpty()) itemsSet++;
-        profile.setProfileCompletion((itemsSet * 100) / 10);
+        int sectionsFilled = 0;
+        if (profile.getSkinType() != null && !profile.getSkinType().equalsIgnoreCase("Chưa xác định")) sectionsFilled++;
+        if (profile.getSkinConcerns() != null && !profile.getSkinConcerns().isEmpty()) sectionsFilled++;
+        if (profile.getSensitivityLevel() != null) sectionsFilled++;
+        if (profile.getSkinColor() != null) sectionsFilled++;
+        if (profile.getSkinUndertone() != null && !profile.getSkinUndertone().equalsIgnoreCase("Chưa xác định")) sectionsFilled++;
+        if (profile.getFoundationFinish() != null) sectionsFilled++;
+        if (profile.getLipstickColors() != null && !profile.getLipstickColors().isEmpty()) sectionsFilled++;
+        if (profile.getMakeupStyles() != null && !profile.getMakeupStyles().isEmpty()) sectionsFilled++;
+        if (profile.getBudget() != null) sectionsFilled++;
+        if (profile.getAvoidIngredients() != null && !profile.getAvoidIngredients().isEmpty()) sectionsFilled++;
+        
+        profile.setProfileCompletion(sectionsFilled * 10);
 
-        viewModel.updateProfileLocally(profile);
-        showSaveSuccessPopup();
+        // Show a loading indicator
+        if (getContext() != null) {
+            android.widget.Toast.makeText(getContext(), "Đang lưu " + (sectionsFilled * 10) + "% hồ sơ...", android.widget.Toast.LENGTH_SHORT).show();
+        }
+
+        // Save to backend
+        viewModel.updateProfile("me", profile);
+        
+        // Use a small delay before showing success to ensure UI updates
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(this::showSaveSuccessPopup, 600);
     }
 
     private String getSelectedName(List<SelectableItem> group) {
@@ -362,6 +376,7 @@ public class EditSkinProfileFragment extends Fragment {
     }
 
     private void showSaveSuccessPopup() {
+        if (!isAdded() || getContext() == null) return;
         Dialog dialog = new Dialog(requireContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.overview_popup);

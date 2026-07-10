@@ -145,6 +145,13 @@ public class AccountFragment extends Fragment {
                 FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.support.HelpCenterFragment());
             });
         }
+
+        View menuPolicies = view.findViewById(R.id.menuPolicies);
+        if (menuPolicies != null) {
+            menuPolicies.setOnClickListener(v -> {
+                FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.support.PolicyFragment());
+            });
+        }
     }
 
     private void requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType actionType) {

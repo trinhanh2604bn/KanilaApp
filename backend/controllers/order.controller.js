@@ -181,7 +181,7 @@ const getOrderById = async (req, res) => {
     const [items, addresses, totals, status_history] = await Promise.all([
       OrderItem.find({ order_id: id })
         .populate("variant_id", "sku variantName")
-        .populate("product_id", "productName productCode")
+        .populate("product_id", "productName productCode imageUrl")
         .sort({ created_at: -1 }),
       OrderAddress.find({ order_id: id }).sort({ created_at: -1 }),
       OrderTotal.find({ order_id: id }),
@@ -191,7 +191,13 @@ const getOrderById = async (req, res) => {
     ]);
 
     const payload = order.toObject();
-    payload.items = items;
+    payload.items = items.map(it => {
+      const itemObj = it.toObject();
+      if (!itemObj.image_url_snapshot && it.product_id) {
+        itemObj.image_url_snapshot = it.product_id.imageUrl;
+      }
+      return itemObj;
+    });
     payload.order_addresses = addresses;
     payload.order_totals = totals;
     payload.order_total = totals[0] || null;
@@ -244,7 +250,7 @@ const getMyOrderById = async (req, res) => {
     const [items, addresses, totals, status_history] = await Promise.all([
       OrderItem.find({ order_id: id })
         .populate("variant_id", "sku variantName")
-        .populate("product_id", "productName productCode")
+        .populate("product_id", "productName productCode imageUrl")
         .sort({ created_at: -1 }),
       OrderAddress.find({ order_id: id }).sort({ created_at: -1 }),
       OrderTotal.find({ order_id: id }),
@@ -254,7 +260,13 @@ const getMyOrderById = async (req, res) => {
     ]);
 
     const payload = order.toObject();
-    payload.items = items;
+    payload.items = items.map(it => {
+      const itemObj = it.toObject();
+      if (!itemObj.image_url_snapshot && it.product_id) {
+        itemObj.image_url_snapshot = it.product_id.imageUrl;
+      }
+      return itemObj;
+    });
     payload.order_addresses = addresses;
     payload.order_totals = totals;
     payload.order_total = totals[0] || null;
@@ -1325,22 +1337,30 @@ const getOrderByCode = async (req, res) => {
     }
 
     const [items, addresses, totals, status_history] = await Promise.all([
-      OrderItem.find({ order_id: order._id }).lean(),
+      OrderItem.find({ order_id: order._id })
+        .populate("product_id", "imageUrl productName productCode")
+        .sort({ created_at: -1 }),
       OrderAddress.find({ order_id: order._id }).lean(),
       OrderTotal.findOne({ order_id: order._id }).lean(),
       OrderStatusHistory.find({ order_id: order._id }).sort({ changed_at: -1 }).lean(),
     ]);
 
+    const payload = order.toObject();
+    payload.items = items.map(it => {
+      const itemObj = it.toObject();
+      if (!itemObj.image_url_snapshot && it.product_id) {
+        itemObj.image_url_snapshot = it.product_id.imageUrl;
+      }
+      return itemObj;
+    });
+    payload.order_addresses = addresses;
+    payload.order_total = totals;
+    payload.status_history = status_history;
+
     return res.status(200).json({
       success: true,
       message: "Order found",
-      data: {
-        ...order.toObject(),
-        items,
-        order_addresses: addresses,
-        order_total: totals,
-        status_history,
-      },
+      data: payload,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

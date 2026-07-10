@@ -95,16 +95,21 @@ public class OrderSummaryDto {
         @SerializedName("quantity")
         private int quantity;
 
+        @SerializedName("image_url")
+        private String imageUrl;
+
         public ItemPreview() {}
 
-        public ItemPreview(String productName, String variantName, int quantity) {
+        public ItemPreview(String productName, String variantName, int quantity, String imageUrl) {
             this.productName = productName;
             this.variantName = variantName;
             this.quantity = quantity;
+            this.imageUrl = imageUrl;
         }
 
         public String getProductName() { return productName; }
         public String getVariantName() { return variantName; }
         public int getQuantity() { return quantity; }
+        public String getImageUrl() { return imageUrl; }
     }
 }

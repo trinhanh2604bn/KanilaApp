@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
+import ui.common.FragmentNavigationHelper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,11 +123,8 @@ public class OrderListFragment extends Fragment {
     private void setupRecyclerView() {
         adapter = new OrderAdapter();
         adapter.setOnOrderClickListener(order -> {
-            OrderDetailFragment fragment = OrderDetailFragment.newInstance(order.getId());
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, fragment)
-                    .addToBackStack(null)
-                    .commit();
+            OrderDetailFragment fragment = OrderDetailFragment.newInstance(order.getId(), order.getOrderNumber());
+            FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
         });
         rvOrders.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvOrders.setAdapter(adapter);

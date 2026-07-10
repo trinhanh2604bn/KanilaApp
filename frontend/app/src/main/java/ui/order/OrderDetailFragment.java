@@ -29,8 +29,9 @@ import java.util.Locale;
 public class OrderDetailFragment extends Fragment {
 
     private static final String ARG_ORDER_ID = "order_id";
+    private static final String ARG_ORDER_CODE = "order_code";
 
-    private String orderId;
+    private String orderId, orderCode;
     private OrderDetailViewModel viewModel;
     private WishlistViewModel wishlistViewModel;
     private HomeProductAdapter recommendationAdapter;
@@ -46,9 +47,14 @@ public class OrderDetailFragment extends Fragment {
     private View btnCopyOrderNumber;
 
     public static OrderDetailFragment newInstance(String orderId) {
+        return newInstance(orderId, null);
+    }
+
+    public static OrderDetailFragment newInstance(String orderId, String orderCode) {
         OrderDetailFragment fragment = new OrderDetailFragment();
         Bundle args = new Bundle();
         args.putString(ARG_ORDER_ID, orderId);
+        args.putString(ARG_ORDER_CODE, orderCode);
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,6 +64,7 @@ public class OrderDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             orderId = getArguments().getString(ARG_ORDER_ID);
+            orderCode = getArguments().getString(ARG_ORDER_CODE);
         }
     }
 

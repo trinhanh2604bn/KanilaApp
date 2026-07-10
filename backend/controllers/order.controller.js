@@ -885,6 +885,468 @@ const deleteOrder = async (req, res) => {
   }
 };
 
+const generateMockOrderNumber = async () => {
+  const now = new Date();
+  const dateStr = now.toISOString().slice(0, 10).replace(/-/g, ""); // yyyyMMdd
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+  for (let i = 0; i < 100; i += 1) {
+    let randomPart = "";
+    for (let j = 0; j < 6; j += 1) {
+      randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    const orderNumber = `KNL${dateStr}${randomPart}`;
+    // eslint-disable-next-line no-await-in-loop
+    const exists = await Order.findOne({ order_number: orderNumber }).select("_id").lean();
+    if (!exists) return orderNumber;
+  }
+  return `KNL${dateStr}${Date.now().toString().slice(-6)}`;
+};
+
+const createMockCheckoutOrder = async (req, res) => {
+  console.log("CREATE MOCK CHECKOUT ORDER CALLED");
+  try {
+    const {
+      guest_info,
+      currency_code = "VND",
+      items = [],
+      shipping_address,
+      subtotal_amount = 0,
+      shipping_fee_amount = 0,
+      discount_amount = 0,
+      coupon_discount_amount = 0,
+      tax_amount = 0,
+      total_amount = 0,
+    } = req.body;
+
+
+    // ==============================
+    // Resolve customer
+    // ==============================
+    let customer_id = req.body.customer_id;
+
+    if (customer_id && !validateObjectId(customer_id)) {
+      customer_id = null;
+    }
+
+    if (!customer_id && req.user) {
+      const customer = await resolveAuthCustomer(req);
+      if (customer) {
+        customer_id = customer._id;
+      }
+    }
+
+
+    // ==============================
+    // Validate items
+    // ==============================
+    if (!items.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Items cannot be empty"
+      });
+    }
+
+
+    // ==============================
+    // Validate address
+    // ==============================
+    const recipientName =
+      shipping_address?.recipient_name ||
+      shipping_address?.full_name ||
+      shipping_address?.fullName;
+
+
+    const phone = shipping_address?.phone;
+
+
+    if (!shipping_address || !recipientName || !phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Shipping address is incomplete"
+      });
+    }
+
+
+
+    // ==============================
+    // Generate order number
+    // ==============================
+    const orderNumber = await generateMockOrderNumber();
+
+
+
+    // ==============================
+    // Sanitize checkout_session_id
+    // ==============================
+    let sanitizedSessionId = null;
+
+    const requestCheckoutSessionId =
+      req.body.checkout_session_id;
+
+
+    if (
+      requestCheckoutSessionId &&
+      requestCheckoutSessionId !== "mock_checkout_session" &&
+      validateObjectId(requestCheckoutSessionId)
+    ) {
+      sanitizedSessionId = requestCheckoutSessionId;
+    }
+
+
+
+    console.log(
+      "CHECKOUT SESSION BEFORE CREATE ORDER:",
+      sanitizedSessionId
+    );
+
+
+
+    // ==============================
+    // Create Order
+    // ==============================
+    const orderPayload = {
+      owner_type: customer_id ? "customer" : "guest",
+
+      guest_session_id:
+        req.body.guest_session_id || null,
+
+      guest_email:
+        guest_info?.email ||
+        shipping_address?.email ||
+        "",
+
+      guest_phone:
+        guest_info?.phone ||
+        phone ||
+        "",
+
+      guest_full_name:
+        guest_info?.full_name ||
+        recipientName ||
+        "",
+
+
+      order_number: orderNumber,
+
+      customer_id:
+        customer_id || null,
+
+
+      currency_code,
+
+
+      order_status: "pending",
+
+      payment_status: "unpaid",
+
+      fulfillment_status: "unfulfilled",
+
+      placed_at: new Date(),
+    };
+
+
+
+    // Chỉ thêm checkout_session_id nếu là ObjectId thật
+    if (sanitizedSessionId) {
+      orderPayload.checkout_session_id = sanitizedSessionId;
+    }
+
+
+
+    const order = await Order.create(orderPayload);
+    console.log("ORDER CREATED:", order._id);
+
+
+
+    // ==============================
+    // Create Order Items
+    // ==============================
+    const orderItemDocs = items.map((item) => {
+
+      const unitPrice =
+        item.unit_price ||
+        item.price ||
+        item.unit_final_price_amount ||
+        0;
+
+
+      const quantity =
+        Math.max(1, item.quantity || 1);
+
+
+
+      return {
+
+        order_id: order._id,
+
+
+        product_id:
+          item.product_id ||
+          item.productId,
+
+
+        variant_id:
+          item.variant_id ||
+          item.variantId,
+
+
+        sku_snapshot:
+          item.sku ||
+          item.sku_snapshot ||
+          "N/A",
+
+
+        product_name_snapshot:
+          item.product_name ||
+          item.productName ||
+          "Unknown Product",
+
+
+        variant_name_snapshot:
+          item.variant_name ||
+          item.variantName ||
+          "Default",
+
+
+        quantity,
+
+
+        unit_list_price_amount:
+          unitPrice,
+
+
+        unit_sale_price_amount:
+          item.unit_sale_price_amount || 0,
+
+
+        unit_final_price_amount:
+          unitPrice,
+
+
+        line_subtotal_amount:
+          unitPrice * quantity,
+
+
+        line_discount_amount:
+          item.line_discount_amount || 0,
+
+
+        line_total_amount:
+          item.line_total ||
+          item.line_total_amount ||
+          unitPrice * quantity,
+
+
+        currency_code,
+      };
+    });
+
+
+
+    await OrderItem.insertMany(orderItemDocs);
+    console.log("ORDER ITEMS CREATED");
+
+
+
+    // ==============================
+    // Create Order Address
+    // ==============================
+    await OrderAddress.create({
+
+      order_id: order._id,
+
+      address_type: "shipping",
+
+      recipient_name: recipientName,
+
+      phone,
+
+
+      address_line_1:
+        shipping_address.address_line_1 ||
+        shipping_address.address_line ||
+        shipping_address.addressLine ||
+        "",
+
+
+      address_line_2:
+        shipping_address.address_line_2 || "",
+
+
+      ward:
+        shipping_address.ward || "",
+
+
+      district:
+        shipping_address.district || "",
+
+
+      city:
+        shipping_address.city ||
+        shipping_address.province ||
+        "Hà Nội",
+
+
+      country_code:
+        shipping_address.country_code ||
+        "VN",
+
+    });
+    console.log("ORDER ADDRESS CREATED");
+
+
+
+    // ==============================
+    // Create Order Total
+    // ==============================
+    await OrderTotal.create({
+
+      order_id: order._id,
+
+      subtotal_amount,
+
+      item_discount_amount:
+        discount_amount,
+
+
+      order_discount_amount:
+        coupon_discount_amount,
+
+
+      shipping_fee_amount,
+
+      tax_amount,
+
+
+      grand_total_amount:
+        total_amount,
+
+
+      currency_code,
+
+    });
+    console.log("ORDER TOTAL CREATED");
+
+
+
+    // ==============================
+    // Create Status History
+    // ==============================
+    await OrderStatusHistory.create({
+
+      order_id: order._id,
+
+      new_order_status:
+        "pending",
+
+
+      new_payment_status:
+        "unpaid",
+
+
+      new_fulfillment_status:
+        "unfulfilled",
+
+
+      change_reason:
+        "Created from mock checkout",
+
+
+      changed_at:
+        new Date(),
+
+    });
+    console.log("ORDER STATUS HISTORY CREATED");
+
+
+
+    return res.status(201).json({
+
+      success: true,
+
+      message:
+        "Order created successfully",
+
+
+      data: {
+
+        order_id:
+          order._id,
+
+
+        order_code:
+          order.order_number,
+
+
+        order_status:
+          order.order_status,
+
+
+        payment_status:
+          order.payment_status,
+
+
+        total_amount,
+
+      },
+
+    });
+
+
+
+  } catch (error) {
+
+    console.error(
+      "CREATE MOCK ORDER ERROR:",
+      error
+    );
+
+
+    return res.status(500).json({
+
+      success: false,
+
+      message:
+        error.message,
+
+    });
+
+  }
+};
+
+const getOrderByCode = async (req, res) => {
+  try {
+    const { orderCode } = req.params;
+    const order = await Order.findOne({ order_number: orderCode.toUpperCase() });
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const [items, addresses, totals, status_history] = await Promise.all([
+      OrderItem.find({ order_id: order._id }).lean(),
+      OrderAddress.find({ order_id: order._id }).lean(),
+      OrderTotal.findOne({ order_id: order._id }).lean(),
+      OrderStatusHistory.find({ order_id: order._id }).sort({ changed_at: -1 }).lean(),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Order found",
+      data: {
+        ...order.toObject(),
+        items,
+        order_addresses: addresses,
+        order_total: totals,
+        status_history,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // PATCH /api/orders/:id
 const patchOrder = async (req, res) => {
   try {
@@ -960,4 +1422,6 @@ module.exports = {
   updateOrder,
   patchOrder,
   deleteOrder,
+  createMockCheckoutOrder,
+  getOrderByCode,
 };

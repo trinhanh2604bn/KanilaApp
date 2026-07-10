@@ -1448,6 +1448,15 @@ const placeGuestCheckoutSessionOrder = async (req, res) => {
     await session.save();
     await CartItem.deleteMany({ cart_id: session.cart_id, selected: true });
 
+    const remain = await CartItem.find({ cart_id: session.cart_id });
+    const newSummary = computeCartSummary(remain);
+    await Cart.findByIdAndUpdate(session.cart_id, {
+      item_count: newSummary.itemCount,
+      subtotal_amount: newSummary.subtotal,
+      discount_amount: newSummary.discountTotal,
+      total_amount: newSummary.grandTotal,
+    });
+
     return res.status(201).json({
       success: true,
       message: "Guest order placed successfully",

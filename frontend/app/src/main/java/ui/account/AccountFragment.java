@@ -217,9 +217,15 @@ public class AccountFragment extends Fragment {
         if (data == null) return;
 
         if (data.getProfile() != null) {
+            tvName.setText(data.getProfile().getFullName());
+            Glide.with(this)
+                    .load(data.getProfile().getAvatarUrl() != null ? data.getProfile().getAvatarUrl() : "")
+                    .placeholder(R.drawable.ic_account)
+                    .error(R.drawable.ic_account)
+                    .into(ivAvatar);
             String name = data.getProfile().getFullName();
             tvName.setText(name == null || name.trim().isEmpty() ? "Khách hàng Kanila" : name);
-            
+
             // Ưu tiên hiển thị ảnh vừa chụp/chọn nếu có trong ViewModel (Shared State)
             android.net.Uri localUri = viewModel.getTempAvatarUri().getValue();
             if (localUri != null) {

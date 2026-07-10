@@ -178,6 +178,61 @@
                     app:tint="@color/text_tertiary" />
             </LinearLayout>
 
+            <!-- District Selector -->
+            <LinearLayout
+                android:id="@+id/layoutAddressDistrict"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_kanila_input_default"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:paddingVertical="@dimen/spacing_s">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_location"
+                    app:tint="@color/accent_dark" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_m"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelDistrict"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_bold"
+                        android:textColor="@color/accent_dark"
+                        android:textSize="12sp"
+                        tools:text="Quận/Huyện" />
+
+                    <TextView
+                        android:id="@+id/edtAddressDistrict"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_regular"
+                        android:paddingVertical="@dimen/spacing_xs"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        tools:text="Chọn quận/huyện" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_chevron_down"
+                    app:tint="@color/text_tertiary" />
+            </LinearLayout>
+
             <!-- Ward Selector -->
             <LinearLayout
                 android:id="@+id/layoutAddressWard"
@@ -376,6 +431,7 @@
 
             <!-- Set as Default -->
             <RelativeLayout
+                android:id="@+id/layoutAddressDefault"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp">

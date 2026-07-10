@@ -34,22 +34,35 @@ const toNormalizedItem = (item) => {
   const discountPercent = compareAt > unit ? Math.round(((compareAt - unit) / compareAt) * 100) : 0;
 
   return {
+    _id: String(item._id),
     cartItemId: String(item._id),
     lineKey: item.line_key || `${productId || "p"}::${variantId || "v"}`,
     productId: productId ? String(productId) : "",
+    product_id: productId ? String(productId) : "",
     variantId: variantId ? String(variantId) : null,
+    variant_id: variantId ? String(variantId) : null,
     productName: item.product_name_snapshot || "",
+    product_name_snapshot: item.product_name_snapshot || "",
     brandName: item.brand_name_snapshot || "",
+    brand_name_snapshot: item.brand_name_snapshot || "",
     variantLabel: item.variant_name_snapshot || "",
+    variant_name_snapshot: item.variant_name_snapshot || "",
     imageUrl: item.image_url_snapshot || "",
+    image_url_snapshot: item.image_url_snapshot || "",
     unitPrice: Number(item.unit_price_amount || 0),
+    unit_price_amount: Number(item.unit_price_amount || 0),
+    finalUnitPrice: unit,
+    final_unit_price_amount: unit,
     compareAtPrice: compareAt || null,
+    compare_at_price_amount: compareAt || 0,
     discountPercent,
     quantity: Number(item.quantity || 1),
     selected: item.selected !== false,
     stockStatus: item.stock_status || "in_stock",
+    stock_status: item.stock_status || "in_stock",
     lineSubtotal: Number(item.unit_price_amount || 0) * Number(item.quantity || 1),
-    lineTotal: Number(item.final_unit_price_amount || 0) * Number(item.quantity || 1),
+    lineTotal: unit * Number(item.quantity || 1),
+    line_total_amount: unit * Number(item.quantity || 1),
   };
 };
 
@@ -197,11 +210,17 @@ const loadNormalizedCart = async (cart, customerId) => {
   });
 
   return {
+    _id: String(cart._id),
     cartId: String(cart._id),
     source: "database",
     customerId: String(customerId),
+    customer_id: String(customerId),
     items: items.map(toNormalizedItem),
     summary,
+    item_count: summary.itemCount,
+    subtotal_amount: summary.subtotal,
+    discount_amount: summary.discountTotal,
+    total_amount: summary.grandTotal,
     updatedAt: new Date().toISOString(),
   };
 };
@@ -630,45 +649,70 @@ const updateMyCartItemQuantity = async (req, res) => {
     }
 
     const { itemId } = req.params;
-    const quantity = Math.max(1, Number(req.body?.quantity || 1));
+    const { variantId, quantity: reqQty } = req.body || {};
+
     if (!validateObjectId(itemId)) {
       return res.status(400).json({ success: false, message: "Invalid cart item id" });
     }
 
     const cart = await ensureActiveCartForCustomer(customer._id);
-    const item = await CartItem.findOne({ _id: itemId, cart_id: cart._id }).populate("product_id").populate("variant_id");
+    const item = await CartItem.findOne({ _id: itemId, cart_id: cart._id });
     if (!item) {
       return res.status(404).json({ success: false, message: "Cart item not found" });
     }
 
-    const product = item.product_id
-      ? await Product.findById(item.product_id).populate("brandId", "brandName")
-      : await Product.findById(item.product_id);
-    const variant = item.variant_id ? await ProductVariant.findById(item.variant_id) : null;
-    if (!variant || variant.variantStatus === "inactive") {
-      return res.status(409).json({ success: false, code: CART_ERROR.VARIANT_UNAVAILABLE, message: "Variant is unavailable" });
-    }
-
+    const productId = item.product_id;
+    const product = await Product.findById(productId).populate("brandId", "brandName");
     if (!product || product.isActive === false || product.productStatus === "inactive") {
       return res.status(409).json({ success: false, code: CART_ERROR.PRODUCT_UNAVAILABLE, message: "Product is unavailable" });
     }
 
+    if (variantId && validateObjectId(variantId) && String(variantId) !== String(item.variant_id)) {
+      const newVariant = await ProductVariant.findOne({ _id: variantId, productId });
+      if (!newVariant || newVariant.variantStatus === "inactive") {
+        return res.status(409).json({ success: false, code: CART_ERROR.VARIANT_UNAVAILABLE, message: "New variant is unavailable" });
+      }
+
+      item.variant_id = newVariant._id;
+      item.variant_name_snapshot = newVariant.variantName || "Default";
+      item.sku_snapshot = newVariant.sku || product.productCode || String(productId);
+      item.line_key = buildLineKey(productId, newVariant._id);
+
+      const otherItem = await CartItem.findOne({
+        _id: { $ne: item._id },
+        cart_id: cart._id,
+        line_key: item.line_key,
+      });
+
+      if (otherItem) {
+        otherItem.quantity += (reqQty !== undefined ? Number(reqQty) : item.quantity);
+        applySnapshotPricingFromProduct(otherItem, product);
+        await otherItem.save();
+        await item.deleteOne();
+        const normalized = await loadNormalizedCart(cart, customer._id);
+        return res.status(200).json({ success: true, message: "Cart item merged", data: normalized });
+      }
+    }
+
+    if (reqQty !== undefined) {
+      item.quantity = Math.max(1, Number(reqQty));
+    }
+
     const availableStock = getAvailableStockForProduct(product);
-    if (quantity > availableStock) {
+    if (item.quantity > availableStock) {
       return res.status(409).json({
         success: false,
         code: CART_ERROR.INSUFFICIENT_STOCK,
         message: "Insufficient stock for requested quantity",
-        data: { availableStock, requestedQuantity: quantity },
+        data: { availableStock, requestedQuantity: item.quantity },
       });
     }
 
-    item.quantity = quantity;
     applySnapshotPricingFromProduct(item, product);
     await item.save();
 
     const normalized = await loadNormalizedCart(cart, customer._id);
-    return res.status(200).json({ success: true, message: "Cart item quantity updated", data: normalized });
+    return res.status(200).json({ success: true, message: "Cart item updated", data: normalized });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -679,27 +723,60 @@ const updateGuestCartItemQuantity = async (req, res) => {
   try {
     const guestSessionId = resolveGuestSessionId(req);
     const { itemId } = req.params;
-    const quantity = Math.max(1, Number(req.body?.quantity || 1));
+    const { variantId, quantity: reqQty } = req.body || {};
+
     if (!guestSessionId) return res.status(400).json({ success: false, message: "guestSessionId is required" });
     if (!validateObjectId(itemId)) return res.status(400).json({ success: false, message: "Invalid cart item id" });
+
     const cart = await ensureActiveCartForGuest(guestSessionId);
-    const item = await CartItem.findOne({ _id: itemId, cart_id: cart._id }).populate("product_id").populate("variant_id");
+    const item = await CartItem.findOne({ _id: itemId, cart_id: cart._id });
     if (!item) return res.status(404).json({ success: false, message: "Cart item not found" });
-    const product = await Product.findById(item.product_id).populate("brandId", "brandName");
-    const variant = await ProductVariant.findById(item.variant_id);
+
+    const productId = item.product_id;
+    const product = await Product.findById(productId).populate("brandId", "brandName");
     if (!product || product.isActive === false || product.productStatus === "inactive") {
       return res.status(409).json({ success: false, code: CART_ERROR.PRODUCT_UNAVAILABLE, message: "Product is unavailable" });
     }
-    if (!variant || variant.variantStatus === "inactive") {
-      return res.status(409).json({ success: false, code: CART_ERROR.VARIANT_UNAVAILABLE, message: "Variant is unavailable" });
+
+    if (variantId && validateObjectId(variantId) && String(variantId) !== String(item.variant_id)) {
+      const newVariant = await ProductVariant.findOne({ _id: variantId, productId });
+      if (!newVariant || newVariant.variantStatus === "inactive") {
+        return res.status(409).json({ success: false, code: CART_ERROR.VARIANT_UNAVAILABLE, message: "New variant is unavailable" });
+      }
+
+      item.variant_id = newVariant._id;
+      item.variant_name_snapshot = newVariant.variantName || "Default";
+      item.sku_snapshot = newVariant.sku || product.productCode || String(productId);
+      item.line_key = buildLineKey(productId, newVariant._id);
+
+      const otherItem = await CartItem.findOne({
+        _id: { $ne: item._id },
+        cart_id: cart._id,
+        line_key: item.line_key,
+      });
+
+      if (otherItem) {
+        otherItem.quantity += (reqQty !== undefined ? Number(reqQty) : item.quantity);
+        applySnapshotPricingFromProduct(otherItem, product);
+        await otherItem.save();
+        await item.deleteOne();
+        const normalized = await loadNormalizedCart(cart, null);
+        return res.status(200).json({ success: true, message: "Guest cart item merged", data: { ...normalized, source: "guest", customerId: null, guestSessionId } });
+      }
     }
+
+    if (reqQty !== undefined) {
+      item.quantity = Math.max(1, Number(reqQty));
+    }
+
     const availableStock = getAvailableStockForProduct(product);
-    if (quantity > availableStock) {
+    if (item.quantity > availableStock) {
       return res.status(409).json({ success: false, code: CART_ERROR.INSUFFICIENT_STOCK, message: "Insufficient stock", data: { availableStock } });
     }
-    item.quantity = quantity;
+
     applySnapshotPricingFromProduct(item, product);
     await item.save();
+
     const normalized = await loadNormalizedCart(cart, null);
     return res.status(200).json({ success: true, message: "Guest cart item updated", data: { ...normalized, source: "guest", customerId: null, guestSessionId } });
   } catch (error) {

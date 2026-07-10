@@ -44,34 +44,6 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <!-- 2. Use Coins Row -->
-        <LinearLayout
-            android:id="@+id/layoutCartUseCoins"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_xs"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingVertical="@dimen/spacing_xs">
-
-            <TextView
-                android:id="@+id/tvCartUseCoins"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="@font/nunito_regular"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp"
-                tools:text="Sử dụng 100đ xu" />
-
-            <ImageView
-                android:id="@+id/ivCartUseCoinsCheck"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@null"
-                android:src="@drawable/selector_coin_check" />
-        </LinearLayout>
-
         <!-- 3. Discount Row -->
         <RelativeLayout
             android:id="@+id/layoutCartDiscount"

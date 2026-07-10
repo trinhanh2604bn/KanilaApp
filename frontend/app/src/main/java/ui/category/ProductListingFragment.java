@@ -22,6 +22,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
 import com.example.frontend.data.repository.ProductRepository;
 import com.example.frontend.feature.product.ProductDetailFragment;
+import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.data.model.cart.AddToCartRequest;
+import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.search.SearchActivity;
 import com.example.frontend.model.Product;
 import android.util.Log;
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import androidx.lifecycle.ViewModelProvider;
 import ui.common.BottomNavigationHelper;
 
 public class ProductListingFragment extends Fragment {
@@ -48,6 +52,7 @@ public class ProductListingFragment extends Fragment {
 
     private RecyclerView rvCategoryProducts;
     private ProductAdapter adapter;
+    private CartViewModel cartViewModel;
     private List<Product> baseProducts = new ArrayList<>();
     private View containerSearchNoResult;
     private LinearLayout layoutCategoryFilterChips;
@@ -94,6 +99,8 @@ public class ProductListingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
+
         initViews(view);
         setupHeader();
         setupProductList();
@@ -109,8 +116,6 @@ public class ProductListingFragment extends Fragment {
         containerSearchNoResult = root.findViewById(R.id.containerSearchNoResult);
         layoutCategoryFilterChips = root.findViewById(R.id.layoutCategoryFilterChips);
         hsvCategoryFilterChips = root.findViewById(R.id.hsvCategoryFilterChips);
-        layoutLoading = root.findViewById(R.id.layoutLoading);
-        productRepository = new ProductRepository(requireContext());
 
         ImageButton btnBack = root.findViewById(R.id.btnCategoryBack);
         if (btnBack != null) {
@@ -218,36 +223,72 @@ public class ProductListingFragment extends Fragment {
 
     private void setupProductList() {
         adapter = new ProductAdapter();
-        adapter.setOnProductClickListener(product -> {
-            String productId = product.getId();
-            Log.d(TAG, "Clicked product id = " + productId);
-            if (productId != null && productId.matches("^[a-fA-F0-9]{24}$")) {
-                ProductDetailFragment fragment = ProductDetailFragment.newInstance(productId);
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_fragment_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
-            } else {
-                Toast.makeText(getContext(), "Product ID không hợp lệ, không thể mở chi tiết sản phẩm", Toast.LENGTH_SHORT).show();
+        adapter.setOnProductClickListener(new ProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                String productId = product.getId();
+                Log.d(TAG, "Clicked product id = " + productId);
+                if (productId != null && productId.matches("^[a-fA-F0-9]{24}$")) {
+                    ProductDetailFragment fragment = ProductDetailFragment.newInstance(productId);
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main_fragment_container, fragment)
+                            .addToBackStack(null)
+                            .commit();
+                } else {
+                    Toast.makeText(getContext(), "Product ID không hợp lệ, không thể mở chi tiết sản phẩm", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
             }
         });
+
         rvCategoryProducts.setLayoutManager(new GridLayoutManager(getContext(), 2));
         rvCategoryProducts.setAdapter(adapter);
 
         loadRealData();
     }
 
+    private void handleAddToCart(Product product) {
+        if (product.getId() == null) return;
+
+        // Use empty string instead of null for variant_id as some backends require it
+        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
+        cartViewModel.addToCart(request);
+
+        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
+            @Override
+            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
+                if (result == null) return;
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                }
+            }
+        });
+    }
+
     private void loadRealData() {
+        String category = TYPE_CATEGORY.equals(listingType) ? categoryName.toLowerCase() : null;
+        String brand = TYPE_BRAND.equals(listingType) ? brandName : null;
+
         if (layoutLoading != null) layoutLoading.setVisibility(View.VISIBLE);
-        
-        productRepository.getProducts(null, null, null).observe(getViewLifecycleOwner(), result -> {
+
+        productRepository.getProducts(brand, category, null).observe(getViewLifecycleOwner(), result -> {
             if (layoutLoading != null) layoutLoading.setVisibility(View.GONE);
             if (result == null) return;
 
             switch (result.status) {
                 case SUCCESS:
-                    baseProducts = result.data;
-                    filterAndShowProducts();
+                    if (result.data != null) {
+                        baseProducts = result.data;
+                        filterAndShowProducts();
+                    }
                     break;
                 case ERROR:
                     Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();

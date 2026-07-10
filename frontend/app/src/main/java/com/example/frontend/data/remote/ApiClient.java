@@ -12,6 +12,8 @@ public class ApiClient {
     // Emulator: http://10.0.2.2:5000/
     // Physical Device: http://192.168.171.141:5000/ (e.g., http://192.168.1.5:5000/) (GIA NGAN HELUS) http://10.160.98.85:5000/ (ANH: http://10.160.98.213:5000/) (BAO : http://192.168.171.115:5000/ )
     private static final String BASE_URL = "http://192.168.171.115:5000/"; // Important: must end with / for Retrofit
+    // Physical Device: http://10.160.98.213:5000/ (e.g., http://192.168.1.5:5000/) (GIA NGAN HELUS) http://10.160.98.85:5000/ (ANH: http://10.160.98.213:5000/)
+
 
     private static Retrofit retrofit;
 

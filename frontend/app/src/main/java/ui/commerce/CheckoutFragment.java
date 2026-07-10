@@ -282,7 +282,7 @@ public class CheckoutFragment extends Fragment {
 
                 // Find default address
                 for (AddressDto address : result.data) {
-                    if (address.isDefaultShipping()) {
+                    if (address != null && address.isDefaultShipping()) {
                         android.util.Log.d("CheckoutFragment", "Setting default shipping address: " + address.getRecipientName());
                         viewModel.setSelectedAddress(address);
                         break;
@@ -291,8 +291,17 @@ public class CheckoutFragment extends Fragment {
 
                 // If no default, pick first
                 if (viewModel.getSelectedAddress().getValue() == null && !result.data.isEmpty()) {
-                    android.util.Log.d("CheckoutFragment", "No default address found, picking first: " + result.data.get(0).getRecipientName());
-                    viewModel.setSelectedAddress(result.data.get(0));
+                    AddressDto first = null;
+                    for (AddressDto a : result.data) {
+                        if (a != null) {
+                            first = a;
+                            break;
+                        }
+                    }
+                    if (first != null) {
+                        android.util.Log.d("CheckoutFragment", "No default address found, picking first: " + first.getRecipientName());
+                        viewModel.setSelectedAddress(first);
+                    }
                 }
             }
         });
@@ -306,14 +315,14 @@ public class CheckoutFragment extends Fragment {
             String currentMethod = session != null ? session.getShippingMethod() : null;
             android.util.Log.d("CheckoutFragment", "Shipping methods received. Current method in session: '" + currentMethod + "'");
 
-            if (session != null && (currentMethod == null || currentMethod.trim().isEmpty())) {
+            if (session != null && (currentMethod == null || currentMethod.trim().isEmpty() || currentMethod.equalsIgnoreCase("null"))) {
                 android.util.Log.d("CheckoutFragment", "Shipping method is empty, finding default...");
                 // Find default shipping method from Database
                 ShippingMethodDto defaultMethod = null;
                 
                 // Priority 1: Check is_default flag
                 for (ShippingMethodDto method : result.data) {
-                    if (method.isDefault()) {
+                    if (method != null && method.isDefault()) {
                         defaultMethod = method;
                         break;
                     }
@@ -322,7 +331,7 @@ public class CheckoutFragment extends Fragment {
                 // Priority 2: Check for "Tiêu chuẩn" name if no default flag
                 if (defaultMethod == null) {
                     for (ShippingMethodDto method : result.data) {
-                        if (method.getName() != null && method.getName().toLowerCase().contains("tiêu chuẩn")) {
+                        if (method != null && method.getName() != null && method.getName().toLowerCase().contains("tiêu chuẩn")) {
                             defaultMethod = method;
                             break;
                         }
@@ -331,7 +340,12 @@ public class CheckoutFragment extends Fragment {
                 
                 // Priority 3: Just pick the first one
                 if (defaultMethod == null && !result.data.isEmpty()) {
-                    defaultMethod = result.data.get(0);
+                    for (ShippingMethodDto m : result.data) {
+                        if (m != null) {
+                            defaultMethod = m;
+                            break;
+                        }
+                    }
                 }
 
                 if (defaultMethod != null) {

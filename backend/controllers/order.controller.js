@@ -312,11 +312,13 @@ const getMyOrders = async (req, res) => {
             totalQuantity: { $sum: "$quantity" },
             firstItemName: { $first: "$product_name_snapshot" },
             firstItemVariant: { $first: "$variant_name_snapshot" },
+            firstItemImageUrl: { $first: "$image_url_snapshot" },
           },
         },
       ]),
       OrderItem.find({ order_id: { $in: orderIds } })
-        .select("order_id product_name_snapshot variant_name_snapshot quantity")
+        .populate("product_id", "imageUrl")
+        .select("order_id product_name_snapshot variant_name_snapshot quantity image_url_snapshot product_id")
         .sort({ created_at: -1 })
         .lean(),
     ]);
@@ -330,10 +332,13 @@ const getMyOrders = async (req, res) => {
       if (!previewMap.has(key)) previewMap.set(key, []);
       const bucket = previewMap.get(key);
       if (bucket.length < 3) {
+        // Fallback to product imageUrl if snapshot is missing
+        const img = it.image_url_snapshot || (it.product_id ? it.product_id.imageUrl : "");
         bucket.push({
           product_name: it.product_name_snapshot || "",
           variant_name: it.variant_name_snapshot || "",
           quantity: Number(it.quantity || 0),
+          image_url: img || "",
         });
       }
     }
@@ -342,6 +347,11 @@ const getMyOrders = async (req, res) => {
       const t = totalMap.get(String(o._id));
       const s = shipmentMap.get(String(o._id));
       const i = itemMap.get(String(o._id));
+      const previews = previewMap.get(String(o._id)) || [];
+
+      // Get first item image from previews or aggregate
+      const firstImg = i?.firstItemImageUrl || (previews.length > 0 ? previews[0].image_url : "");
+
       return {
         _id: String(o._id),
         order_number: o.order_number,
@@ -356,7 +366,8 @@ const getMyOrders = async (req, res) => {
         total_quantity: Number(i?.totalQuantity || 0),
         first_item_name: i?.firstItemName || "",
         first_item_variant: i?.firstItemVariant || "",
-        item_previews: previewMap.get(String(o._id)) || [],
+        first_item_image_url: firstImg || "",
+        item_previews: previews,
         shipment_status: s?.shipmentStatus || null,
         tracking_number: s?.trackingNumber || null,
       };

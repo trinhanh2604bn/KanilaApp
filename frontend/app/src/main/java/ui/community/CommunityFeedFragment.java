@@ -70,10 +70,9 @@ public class CommunityFeedFragment extends Fragment {
             if (isNavigating) return;
             if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.CREATE_COMMUNITY_POST)) {
                 isNavigating = true;
-                requireActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, new CreatePostFragment())
-                        .addToBackStack("community_create_post")
-                        .commit();
+                if (getActivity() instanceof com.example.frontend.MainActivity) {
+                    ((com.example.frontend.MainActivity) getActivity()).loadFragment(new CreatePostFragment());
+                }
             }
         });
 
@@ -86,20 +85,15 @@ public class CommunityFeedFragment extends Fragment {
             public void onPostClick(Post post) {
                 if (isNavigating) return;
                 isNavigating = true;
-                requireActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, PostDetailFragment.newInstance(post.getId()))
-                        .addToBackStack("community_post_detail")
-                        .commit();
+                if (getActivity() instanceof com.example.frontend.MainActivity) {
+                    ((com.example.frontend.MainActivity) getActivity()).loadFragment(PostDetailFragment.newInstance(post.getId()));
+                }
             }
 
             @Override
             public void onSaveClick(Post post) {
                 if (ui.community.util.CommunityAuthGuard.checkMember(CommunityFeedFragment.this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
-                    post.setSaved(!post.isSaved());
-                    int index = adapter.getPosts().indexOf(post);
-                    if (index != -1) {
-                        adapter.notifyItemChanged(index);
-                    }
+                    viewModel.toggleSave(post.getId(), !post.isSaved());
                     Toast.makeText(getContext(), post.isSaved() ? "Đã lưu bài viết" : "Đã bỏ lưu", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -167,10 +161,9 @@ public class CommunityFeedFragment extends Fragment {
             public void onCommentClick(Post post) {
                 if (isNavigating) return;
                 isNavigating = true;
-                requireActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, PostDetailFragment.newInstance(post.getId()))
-                        .addToBackStack("community_post_detail")
-                        .commit();
+                if (getActivity() instanceof com.example.frontend.MainActivity) {
+                    ((com.example.frontend.MainActivity) getActivity()).loadFragment(PostDetailFragment.newInstance(post.getId()));
+                }
             }
 
             @Override

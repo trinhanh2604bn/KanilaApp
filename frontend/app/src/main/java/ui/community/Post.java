@@ -1,5 +1,6 @@
 package ui.community;
 
+import com.example.frontend.model.Product;
 import java.util.List;
 
 public class Post {
@@ -19,6 +20,9 @@ public class Post {
     private boolean isShared;
     private boolean isVerified;
     private boolean isPurchased;
+    private String postType;
+    private String skinType;
+    private List<Product> products;
 
     public Post(String id, String userName, String userAvatar, String time, String title, String content, List<String> images, int likeCount, int commentCount, int shareCount, boolean isVerified, boolean isPurchased) {
         this.id = id;
@@ -42,6 +46,7 @@ public class Post {
     public String getTitle() { return title; }
     public String getContent() { return content; }
     public List<String> getImages() { return images; }
+    public void setImages(List<String> images) { this.images = images; }
     public int getLikeCount() { return likeCount; }
     public void setLikeCount(int likeCount) { this.likeCount = likeCount; }
     public int getCommentCount() { return commentCount; }
@@ -56,4 +61,12 @@ public class Post {
     public void setShared(boolean shared) { isShared = shared; }
     public boolean isVerified() { return isVerified; }
     public boolean isPurchased() { return isPurchased; }
+
+    public String getPostType() { return postType; }
+    public void setPostType(String postType) { this.postType = postType; }
+
+    public String getSkinType() { return skinType; }
+    public void setSkinType(String skinType) { this.skinType = skinType; }
+    public List<Product> getProducts() { return products; }
+    public void setProducts(List<Product> products) { this.products = products; }
 }

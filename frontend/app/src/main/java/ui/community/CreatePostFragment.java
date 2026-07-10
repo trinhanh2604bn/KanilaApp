@@ -24,8 +24,10 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
+import ui.community.Post;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -36,13 +38,41 @@ import java.util.Locale;
 
 public class CreatePostFragment extends Fragment {
 
+    private static final String ARG_EDIT_POST_ID = "edit_post_id";
+    private String editPostId;
+
+    public static CreatePostFragment newInstance() {
+        return new CreatePostFragment();
+    }
+
+    public static CreatePostFragment newEditInstance(String postId) {
+        CreatePostFragment fragment = new CreatePostFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_EDIT_POST_ID, postId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            editPostId = getArguments().getString(ARG_EDIT_POST_ID);
+        }
+    }
+
+    private CommunityViewModel communityViewModel;
+    private com.example.frontend.feature.account.AccountViewModel accountViewModel;
     private EditText edtCaption;
     private TextView tvCharCounter;
     private Button btnPost;
     private RecyclerView rvSelectedMedia;
     private SelectedMediaAdapter mediaAdapter;
     private final List<Uri> selectedMediaUris = new ArrayList<>();
-    
+
+    private SelectedProductAdapter productAdapter;
+    private ViewGroup layoutProductsUsed;
+
     private Uri pendingCameraUri;
     private boolean isVideoPending = false;
 
@@ -119,17 +149,95 @@ public class CreatePostFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_create_post, container, false);
         initViews(view);
         setupMediaList();
-            setupPostTypes(view);
-            setupSkinTypes(view);
-            setupListeners(view);
-            return view;
+        setupProductList();
+        setupPostTypes(view);
+        setupSkinTypes(view);
+        setupListeners(view);
+        return view;
+    }
+
+    private void setupProductList() {
+        productAdapter = new SelectedProductAdapter(new SelectedProductAdapter.OnProductActionListener() {
+            @Override
+            public void onProductClick(com.example.frontend.model.Product product) {
+                // Navigate to ProductDetailFragment
+                com.example.frontend.feature.product.ProductDetailFragment fragment =
+                        com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId());
+                
+                if (getActivity() instanceof com.example.frontend.MainActivity) {
+                    ((com.example.frontend.MainActivity) getActivity()).loadFragment(fragment);
+                } else {
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main_fragment_container, fragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
+
+            @Override
+            public void onProductRemove(com.example.frontend.model.Product product) {
+                productAdapter.removeProduct(product);
+                updateLayoutProductsUsed();
+            }
+        });
+        updateLayoutProductsUsed();
+    }
+
+    private void updateLayoutProductsUsed() {
+        if (layoutProductsUsed == null) return;
+        layoutProductsUsed.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+
+        List<com.example.frontend.model.Product> selectedProducts = productAdapter.getSelectedProducts();
+        for (com.example.frontend.model.Product product : selectedProducts) {
+            View productView = inflater.inflate(R.layout.item_create_post_product_used, layoutProductsUsed, false);
+            SelectedProductAdapter.ViewHolder holder = productAdapter.new ViewHolder(
+                    com.example.frontend.databinding.ItemCreatePostProductUsedBinding.bind(productView));
+            holder.bind(product);
+            layoutProductsUsed.addView(productView);
         }
+
+        // Add "Add Product" placeholder
+        View placeholder = inflater.inflate(R.layout.item_add_product_placeholder, layoutProductsUsed, false);
+        placeholder.setOnClickListener(v -> showProductSearchBottomSheet());
+        layoutProductsUsed.addView(placeholder);
+    }
+
+    private void showProductSearchBottomSheet() {
+        ProductSearchBottomSheet bottomSheet = ProductSearchBottomSheet.newInstance(product -> {
+            productAdapter.addProduct(product);
+            updateLayoutProductsUsed();
+        });
+        bottomSheet.show(getChildFragmentManager(), "ProductSearchBottomSheet");
+    }
     
         private void initViews(View view) {
-            edtCaption = view.findViewById(R.id.edtCaption);
-            tvCharCounter = view.findViewById(R.id.tvCharCounter);
-            btnPost = view.findViewById(R.id.btnPost);
-            rvSelectedMedia = view.findViewById(R.id.rvSelectedMedia);
+        communityViewModel = new ViewModelProvider(requireActivity()).get(CommunityViewModel.class);
+        accountViewModel = new ViewModelProvider(requireActivity()).get(com.example.frontend.feature.account.AccountViewModel.class);
+
+        edtCaption = view.findViewById(R.id.edtCaption);
+        tvCharCounter = view.findViewById(R.id.tvCharCounter);
+        btnPost = view.findViewById(R.id.btnPost);
+        rvSelectedMedia = view.findViewById(R.id.rvSelectedMedia);
+        layoutProductsUsed = view.findViewById(R.id.layoutProductsUsed);
+
+        TextView tvHeaderTitle = view.findViewById(R.id.tvHeaderTitle);
+
+        if (editPostId != null) {
+            Post post = communityViewModel.getPostById(editPostId);
+            if (post != null) {
+                edtCaption.setText(post.getContent());
+                selectedPostType = post.getTitle(); // Title is used as type in this mock
+                if (tvHeaderTitle != null) tvHeaderTitle.setText("Chỉnh sửa bài viết");
+                btnPost.setText("Lưu");
+
+                if (post.getImages() != null) {
+                    for (String s : post.getImages()) {
+                        selectedMediaUris.add(Uri.parse(s));
+                    }
+                }
+            }
+        }
     
             view.findViewById(R.id.btnClose).setOnClickListener(v -> getParentFragmentManager().popBackStack());
             
@@ -282,7 +390,70 @@ public class CreatePostFragment extends Fragment {
 
 
         btnPost.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Posting...", Toast.LENGTH_SHORT).show();
+            String caption = edtCaption.getText().toString().trim();
+            
+            if (editPostId != null) {
+                Post existing = communityViewModel.getPostById(editPostId);
+                if (existing != null) {
+                    List<String> images = new ArrayList<>();
+                    for (Uri uri : selectedMediaUris) images.add(uri.toString());
+                    
+                    Post updated = new Post(
+                            existing.getId(),
+                            existing.getUserName(),
+                            existing.getUserAvatar(),
+                            existing.getTime(),
+                            selectedPostType,
+                            caption,
+                            images,
+                            existing.getLikeCount(),
+                            existing.getCommentCount(),
+                            existing.getShareCount(),
+                            existing.isVerified(),
+                            existing.isPurchased()
+                    );
+                    updated.setSaved(existing.isSaved());
+                    updated.setLiked(existing.isLiked());
+                    
+                    communityViewModel.updatePost(updated);
+                    Toast.makeText(getContext(), "Đã cập nhật bài viết!", Toast.LENGTH_SHORT).show();
+                    getParentFragmentManager().popBackStack();
+                    return;
+                }
+            }
+
+            String userName = "Người dùng Kanila";
+            String userAvatar = null;
+
+            // Get real user info
+            com.example.frontend.data.remote.NetworkResult<com.example.frontend.data.model.account.ProfileHubDto> userResult = accountViewModel.getProfileHubResult().getValue();
+            if (userResult != null && userResult.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && userResult.data != null) {
+                if (userResult.data.getProfile() != null) {
+                    userName = userResult.data.getProfile().getFullName();
+                    userAvatar = userResult.data.getProfile().getAvatarUrl();
+                }
+            }
+
+            List<String> images = new ArrayList<>();
+            for (Uri uri : selectedMediaUris) {
+                images.add(uri.toString());
+            }
+
+            Post newPost = new Post(
+                    String.valueOf(System.currentTimeMillis()),
+                    userName,
+                    userAvatar,
+                    "Vừa xong",
+                    selectedPostType,
+                    caption,
+                    images,
+                    0, 0, 0, false, false
+            );
+            newPost.setSkinType(selectedSkinType);
+            newPost.setProducts(new ArrayList<>(productAdapter.getSelectedProducts()));
+
+            communityViewModel.addPost(newPost);
+            Toast.makeText(getContext(), "Đã đăng bài viết!", Toast.LENGTH_SHORT).show();
             getParentFragmentManager().popBackStack();
         });
     }

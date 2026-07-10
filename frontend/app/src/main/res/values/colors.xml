@@ -60,7 +60,17 @@
     <color name="info_bg">@color/status_preparing_bg</color>
     <color name="info">@color/status_preparing_text</color>
 
-    <!-- Phú bổ sung -->
+    <!-- Community Post Type Colors -->
+    <color name="post_type_review_bg">#E3F2FD</color>
+    <color name="post_type_review_text">#1976D2</color>
+    <color name="post_type_routine_bg">#E8F5E9</color>
+    <color name="post_type_routine_text">#388E3C</color>
+    <color name="post_type_qa_bg">#FFF3E0</color>
+    <color name="post_type_qa_text">#F57C00</color>
+    <color name="post_type_before_after_bg">#F3E5F5</color>
+    <color name="post_type_before_after_text">#7B1FA2</color>
+    <color name="skin_type_badge_bg">#FFF1F4</color>
+    <color name="skin_type_badge_text">#E83E72</color>
     <color name="icon_bg_pink">#FFF1F4</color>
     <color name="icon_pink">#E83E72</color>
     <color name="icon_bg_grey">#F2F2F2</color>

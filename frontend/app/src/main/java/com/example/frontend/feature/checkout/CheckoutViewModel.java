@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CheckoutViewModel extends AndroidViewModel {
-    private static final boolean USE_MOCK_CHECKOUT = true;
+    private static final boolean USE_MOCK_CHECKOUT = false;
 
     private final CheckoutRepository checkoutRepository;
     private final MutableLiveData<NetworkResult<CheckoutSessionDto>> checkoutSession = new MutableLiveData<>();
@@ -47,7 +47,7 @@ public class CheckoutViewModel extends AndroidViewModel {
                 // We use reflection or just assume we can set fields if they were public, but they are private.
                 // However, I can't modify OrderDto to add a constructor or setters easily without reading it first.
                 // Wait, I already read OrderDto.java and it only has getters.
-                
+
                 // Since it's a mock, I'll just use a workaround or use GSON to create it from JSON.
                 String mockJson = "{\"_id\":\"mock_order_id\",\"order_number\":\"KNL" + System.currentTimeMillis() / 1000 + "\",\"total_amount\":" + session.getTotalAmount() + "}";
                 com.example.frontend.data.model.order.OrderDto order = new com.google.gson.Gson().fromJson(mockJson, com.example.frontend.data.model.order.OrderDto.class);
@@ -85,11 +85,11 @@ public class CheckoutViewModel extends AndroidViewModel {
                 double subtotal = session.getSubtotalAmount() != null ? session.getSubtotalAmount() : 0.0;
                 double discount = session.getDiscountAmount() != null ? session.getDiscountAmount() : 0.0;
                 double points = session.getPointsAmount() != null ? session.getPointsAmount() : 0.0;
-                
+
                 double total = subtotal + method.getShippingFee() - discount - points;
                 session.setTotalAmount(Math.max(0, total));
                 android.util.Log.d("CheckoutViewModel", "Mock session updated. New total: " + session.getTotalAmount());
-                
+
                 // Use setValue for immediate update if on main thread
                 checkoutSession.setValue(NetworkResult.success(session));
             } else {

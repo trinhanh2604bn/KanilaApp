@@ -428,13 +428,13 @@ public class CheckoutFragment extends Fragment {
         setupAddress(session.getShippingAddress());
 
         // 2. Shipping
-        setupShipping(session.getShippingMethod(), session.getShippingAmount(), session.getEstimatedDelivery());
+        setupShipping(session.getShippingMethod(), safeDouble(session.getShippingAmount()), session.getEstimatedDelivery());
 
         // 3. Payment
         setupPayment(session.getPaymentMethod());
 
         // 4. Voucher
-        setupVoucher(session.getDiscountAmount());
+        setupVoucher(safeDouble(session.getDiscountAmount()));
 
         // 5. Items
         bindItems(session.getItems());
@@ -445,11 +445,17 @@ public class CheckoutFragment extends Fragment {
             tvSubtotalLabel.setText("Tạm tính (" + session.getItems().size() + " sản phẩm)");
         }
 
-        tvSubtotal.setText(formatPrice(session.getSubtotalAmount()));
-        tvShipping.setText(formatPrice(session.getShippingAmount()));
-        tvDiscount.setText("-" + formatPrice(session.getDiscountAmount()));
-        tvPoints.setText("-" + formatPrice(session.getPointsAmount()));
-        tvTotal.setText(formatPrice(session.getTotalAmount()));
+        tvSubtotal.setText(formatPrice(safeDouble(session.getSubtotalAmount())));
+        tvShipping.setText(formatPrice(safeDouble(session.getShippingAmount())));
+        tvDiscount.setText("-" + formatPrice(safeDouble(session.getDiscountAmount())));
+        tvPoints.setText("-" + formatPrice(safeDouble(session.getPointsAmount())));
+        
+        double total = safeDouble(session.getTotalAmount());
+        if (total <= 0) {
+            total = safeDouble(session.getSubtotalAmount()) + safeDouble(session.getShippingAmount()) 
+                    - safeDouble(session.getDiscountAmount()) - safeDouble(session.getPointsAmount());
+        }
+        tvTotal.setText(formatPrice(Math.max(0, total)));
 
 
 
@@ -576,6 +582,9 @@ public class CheckoutFragment extends Fragment {
 
         for (int i = 0; i < items.size(); i++) {
             CheckoutSessionDto.CheckoutItemDto item = items.get(i);
+            
+            // Only show selected items
+            if (!item.isSelected()) continue;
 
             View itemView = getLayoutInflater().inflate(R.layout.item_cart_selected, layoutCheckoutItemsList, false);
             TextView tvName = itemView.findViewById(R.id.tvSelectedCartProductName);
@@ -677,6 +686,10 @@ public class CheckoutFragment extends Fragment {
         }
 
         return display.isEmpty() ? "Mặc định" : display;
+    }
+
+    private double safeDouble(Double value) {
+        return value != null ? value : 0.0;
     }
 
     private String formatPrice(double price) {

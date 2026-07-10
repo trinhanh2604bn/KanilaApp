@@ -312,7 +312,7 @@
     <string name="skin_type_combination">Da hỗn hợp</string>
     <string name="skin_type_normal">Da thường</string>
     <string name="skin_type_sensitive">Da nhạy cảm</string>
-    <string name="skin_type_unknown">Chưa chắc chắn</string>
+    <string name="skin_type_unknown">Chưa xác định</string>
     <string name="skin_score_oily">72/100</string>
     <string name="skin_score_dry">38/100</string>
     <string name="skin_score_combination">64/100</string>
@@ -679,7 +679,7 @@
     <string name="label_skin_type">Loại da:</string>
     <string name="label_skin_tone">Tone da:</string>
     <string name="sample_skin_tone_light">Sáng</string>
-    <string name="profile_completion_format">Hồ sơ của bạn hoàn thành %d%%</string>
+    <string name="profile_completion_format">Hồ sơ của bạn hoàn thành %1$d%%</string>
     <string name="remaining_steps_format">Chỉ còn %d bước để hoàn thành hồ sơ</string>
     <string name="section_skin_type">1. Loại da</string>
     <string name="section_skin_tone">2. Tone da</string>

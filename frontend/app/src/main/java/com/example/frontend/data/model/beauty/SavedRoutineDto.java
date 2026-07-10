@@ -19,4 +19,8 @@ public class SavedRoutineDto implements Serializable {
     public String getName() { return name; }
     public long getSavedTimestamp() { return savedTimestamp; }
     public int getImageRes() { return imageRes; }
+
+    public void setName(String name) { this.name = name; }
+    public void setSavedTimestamp(long savedTimestamp) { this.savedTimestamp = savedTimestamp; }
+    public void setImageRes(int imageRes) { this.imageRes = imageRes; }
 }

@@ -205,6 +205,7 @@ public class HomeFragment extends Fragment {
             }
             else if ("orders".equals(item.getId())) navigateToFragment(new com.example.frontend.feature.order.OrderListFragment());
             else if ("support".equals(item.getId())) navigateToFragment(new HelpCenterFragment());
+            else if ("policy".equals(item.getId())) navigateToFragment(new ui.support.PolicyFragment());
             else Toast.makeText(requireContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
         });
 
@@ -215,7 +216,7 @@ public class HomeFragment extends Fragment {
         shortcuts.add(new HomeShortcutItem("ar", "AR", R.drawable.ic_shortcut_ar, "ar_try_on", "", false, false));
         shortcuts.add(new HomeShortcutItem("kanila_beauty", "Kanila Beauty", R.drawable.ic_shortcut_kanila_beauty, "beauty", "", false, false));
         shortcuts.add(new HomeShortcutItem("support", "Trợ giúp", R.drawable.ic_shortcut_help, "support", "", false, false));
-        shortcuts.add(new HomeShortcutItem("policy", "Chính sách", R.drawable.ic_shortcut_policy, "policy", "", false, false));
+        shortcuts.add(new HomeShortcutItem("policy", "Chính sách & Điều khoản", R.drawable.ic_shortcut_policy, "policy", "", false, false));
         shortcutAdapter.setItems(shortcuts);
     }
 

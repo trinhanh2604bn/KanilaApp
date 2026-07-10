@@ -27,7 +27,7 @@ public class BlogDetailFragment extends Fragment {
 
     private static final String ARG_BLOG_ID = "blog_id";
     private String blogId;
-    private BlogViewModel viewModel;
+    private BlogViewModel blogViewModel;
     private BlogPost blog;
 
     private ImageView ivThumbnail, ivLikeIcon, btnSaveDetail, ivLikeIconBottom, ivVerified;
@@ -167,11 +167,18 @@ public class BlogDetailFragment extends Fragment {
     }
 
     private void setupViewModel() {
-        viewModel = new ViewModelProvider(this).get(BlogViewModel.class);
-        blog = viewModel.getBlogById(blogId);
-        if (blog != null) {
-            displayBlog();
-        }
+        blogViewModel = new ViewModelProvider(requireActivity()).get(BlogViewModel.class);
+        blogViewModel.getFeaturedBlogs().observe(getViewLifecycleOwner(), blogs -> {
+            if (blogs != null) {
+                for (BlogPost b : blogs) {
+                    if (b.getId().equals(blogId)) {
+                        blog = b;
+                        displayBlog();
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     private void displayBlog() {
@@ -243,9 +250,7 @@ public class BlogDetailFragment extends Fragment {
 
     private void toggleLike() {
         if (blog == null) return;
-        blog.setLiked(!blog.isLiked());
-        blog.setLikeCount(blog.isLiked() ? blog.getLikeCount() + 1 : blog.getLikeCount() - 1);
-        updateLikeUI();
+        blogViewModel.toggleLikeBlog(blog.getId(), !blog.isLiked());
     }
 
     private void updateLikeUI() {
@@ -270,9 +275,8 @@ public class BlogDetailFragment extends Fragment {
 
     private void toggleSave() {
         if (blog == null) return;
-        blog.setSaved(!blog.isSaved());
-        updateSaveUI();
-        Toast.makeText(getContext(), blog.isSaved() ? "Đã lưu" : "Đã bỏ lưu", Toast.LENGTH_SHORT).show();
+        blogViewModel.toggleSaveBlog(blog.getId(), !blog.isSaved());
+        Toast.makeText(getContext(), !blog.isSaved() ? "Đã lưu" : "Đã bỏ lưu", Toast.LENGTH_SHORT).show();
     }
 
     private void updateSaveUI() {

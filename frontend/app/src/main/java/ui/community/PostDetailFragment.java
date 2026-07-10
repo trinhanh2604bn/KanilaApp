@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
@@ -28,6 +29,8 @@ public class PostDetailFragment extends Fragment {
 
     private String postId;
     private Post currentPost;
+    private CommunityViewModel communityViewModel;
+    private com.example.frontend.feature.account.AccountViewModel accountViewModel;
     private CommentAdapter commentAdapter;
     private EditText edtComment;
     private ImageButton btnSendComment;
@@ -44,6 +47,12 @@ public class PostDetailFragment extends Fragment {
     private TextView tvLikeCount, tvShareCount, tvCommentCount;
     private ImageButton btnSave;
     private View layoutLike, layoutShare;
+    
+    // Missing view components for badges, products, and images
+    private TextView tvPostType, tvPostSkinType;
+    private View hsvPostProducts, hsvPostImages;
+    private ViewGroup layoutPostProducts;
+    private ImageView ivImage1, ivImage2, ivImage3;
 
     public static PostDetailFragment newInstance(String postId) {
         PostDetailFragment fragment = new PostDetailFragment();
@@ -89,6 +98,16 @@ public class PostDetailFragment extends Fragment {
         btnSave = view.findViewById(R.id.btnPostSave);
         layoutLike = view.findViewById(R.id.layoutPostLike);
         layoutShare = view.findViewById(R.id.layoutPostShare);
+        
+        // Bind missing UI elements
+        tvPostType = view.findViewById(R.id.tvPostType);
+        tvPostSkinType = view.findViewById(R.id.tvPostSkinType);
+        hsvPostProducts = view.findViewById(R.id.hsvPostProducts);
+        layoutPostProducts = view.findViewById(R.id.layoutPostProducts);
+        hsvPostImages = view.findViewById(R.id.hsvPostImages);
+        ivImage1 = view.findViewById(R.id.ivPostImage1);
+        ivImage2 = view.findViewById(R.id.ivPostImage2);
+        ivImage3 = view.findViewById(R.id.ivPostImage3);
         
         view.findViewById(R.id.btnBack).setOnClickListener(v -> getParentFragmentManager().popBackStack());
         
@@ -139,19 +158,34 @@ public class PostDetailFragment extends Fragment {
         String content = edtComment.getText().toString().trim();
         if (content.isEmpty()) return;
 
+        String userName = "Người dùng Kanila";
+        String userAvatar = null;
+
+        // Get real user info
+        com.example.frontend.data.remote.NetworkResult<com.example.frontend.data.model.account.ProfileHubDto> userResult = accountViewModel.getProfileHubResult().getValue();
+        if (userResult != null && userResult.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && userResult.data != null) {
+            if (userResult.data.getProfile() != null) {
+                userName = userResult.data.getProfile().getFullName();
+                userAvatar = userResult.data.getProfile().getAvatarUrl();
+            }
+        }
+
         String parentId = replyingToComment != null ? replyingToComment.getId() : null;
         String newId = String.valueOf(System.currentTimeMillis());
         
         Comment newComment = new Comment(
                 newId,
-                "User Name", // Should be real current user
-                null,
+                userName,
+                userAvatar,
                 content,
                 "Vừa xong",
                 0,
                 false,
                 parentId
         );
+
+        // Notify ViewModel to update comment count globally
+        communityViewModel.addComment(postId, newComment);
 
         List<Comment> currentComments = new ArrayList<>(commentAdapter.getComments());
         
@@ -254,8 +288,7 @@ public class PostDetailFragment extends Fragment {
         btnSave.setOnClickListener(v -> {
             if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
                 if (currentPost != null) {
-                    currentPost.setSaved(!currentPost.isSaved());
-                    updateSaveUI();
+                    communityViewModel.toggleSave(currentPost.getId(), !currentPost.isSaved());
                     Toast.makeText(getContext(), currentPost.isSaved() ? "Đã lưu bài viết" : "Đã bỏ lưu", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -263,9 +296,10 @@ public class PostDetailFragment extends Fragment {
     }
 
     private void setupViewModel() {
-        androidx.lifecycle.ViewModelProvider provider = new androidx.lifecycle.ViewModelProvider(requireActivity());
-        CommunityViewModel viewModel = provider.get(CommunityViewModel.class);
-        viewModel.getFeedPosts().observe(getViewLifecycleOwner(), posts -> {
+        communityViewModel = new ViewModelProvider(requireActivity()).get(CommunityViewModel.class);
+        accountViewModel = new ViewModelProvider(requireActivity()).get(com.example.frontend.feature.account.AccountViewModel.class);
+
+        communityViewModel.getFeedPosts().observe(getViewLifecycleOwner(), posts -> {
             if (posts != null) {
                 for (Post p : posts) {
                     if (p.getId().equals(postId)) {
@@ -277,9 +311,22 @@ public class PostDetailFragment extends Fragment {
             }
             // Fallback mock if not found
             if (currentPost == null) {
-                currentPost = new Post(postId, "Kim Trần", null, "2 giờ trước", 
-                    "Serum Niacinamide 10%", "Nội dung bài viết chi tiết...", 
-                    new java.util.ArrayList<>(), 1200, 137, 36, true, true);
+                currentPost = new Post(postId, "Gia Ngân Helus", null, "Vừa xong", 
+                    "Before/After", "dsdfdsfdfdfsfds", 
+                    new java.util.ArrayList<>(), 0, 0, 0, false, false);
+                currentPost.setPostType("Before/After");
+                currentPost.setSkinType("Da dầu mụn");
+                
+                List<com.example.frontend.model.Product> mockProds = new ArrayList<>();
+                mockProds.add(new com.example.frontend.model.Product("1", "Brand", "Serum Glow", "250000", "4.5", "100", 0, "REVIEW", "Category"));
+                mockProds.add(new com.example.frontend.model.Product("2", "Brand", "Moisturizer", "300000", "4.8", "50", 0, "", "Category"));
+                currentPost.setProducts(mockProds);
+                
+                List<String> mockImages = new ArrayList<>();
+                mockImages.add("https://picsum.photos/400/400?random=1");
+                mockImages.add("https://picsum.photos/400/400?random=2");
+                currentPost.setImages(mockImages);
+                
                 bindPostData();
             }
         });
@@ -318,6 +365,96 @@ public class PostDetailFragment extends Fragment {
         tvCommentCount.setText(String.valueOf(currentPost.getCommentCount()));
         tvShareCount.setText(String.valueOf(currentPost.getShareCount()));
         
+        // Bind Badges
+        String type = currentPost.getPostType();
+        if (type == null) type = currentPost.getTitle(); // Fallback to title as per mock logic
+        
+        if (type != null && getContext() != null) {
+            tvPostType.setVisibility(View.VISIBLE);
+            tvPostType.setText(type.toUpperCase());
+            
+            int bgColor, textColor;
+            switch (type) {
+                case "Review":
+                    bgColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.post_type_review_bg);
+                    textColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.post_type_review_text);
+                    break;
+                case "Routine":
+                    bgColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.post_type_routine_bg);
+                    textColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.post_type_routine_text);
+                    break;
+                case "Before/After":
+                    bgColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.post_type_before_after_bg);
+                    textColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.post_type_before_after_text);
+                    break;
+                case "Hỏi đáp":
+                    bgColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.post_type_qa_bg);
+                    textColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.post_type_qa_text);
+                    break;
+                default:
+                    bgColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.border_divider);
+                    textColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.text_tertiary);
+                    break;
+            }
+            if (tvPostType.getBackground() != null) {
+                tvPostType.getBackground().setTint(bgColor);
+            }
+            tvPostType.setTextColor(textColor);
+        } else {
+            tvPostType.setVisibility(View.GONE);
+        }
+
+        if (currentPost.getSkinType() != null && !currentPost.getSkinType().isEmpty()) {
+            tvPostSkinType.setVisibility(View.VISIBLE);
+            tvPostSkinType.setText(currentPost.getSkinType());
+        } else {
+            tvPostSkinType.setVisibility(View.GONE);
+        }
+
+        // Bind Products
+        List<com.example.frontend.model.Product> products = currentPost.getProducts();
+        if (products != null && !products.isEmpty()) {
+            hsvPostProducts.setVisibility(View.VISIBLE);
+            layoutPostProducts.removeAllViews();
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            for (com.example.frontend.model.Product product : products) {
+                View productTag = inflater.inflate(R.layout.item_post_product_tag, layoutPostProducts, false);
+                ImageView ivProd = productTag.findViewById(R.id.ivProductImage);
+                TextView tvProd = productTag.findViewById(R.id.tvProductName);
+                
+                tvProd.setText(product.getName());
+                Glide.with(this)
+                        .load(product.getImageUrl())
+                        .placeholder(R.drawable.ic_product)
+                        .into(ivProd);
+                
+                layoutPostProducts.addView(productTag);
+            }
+        } else {
+            hsvPostProducts.setVisibility(View.GONE);
+        }
+
+        // Bind Images
+        List<String> images = currentPost.getImages();
+        if (images != null && !images.isEmpty()) {
+            hsvPostImages.setVisibility(View.VISIBLE);
+            ImageView[] ivs = {ivImage1, ivImage2, ivImage3};
+            for (int i = 0; i < ivs.length; i++) {
+                if (i < images.size()) {
+                    ivs[i].setVisibility(View.VISIBLE);
+                    Glide.with(this)
+                            .load(images.get(i))
+                            .centerCrop()
+                            .placeholder(R.drawable.bg_skeleton_placeholder)
+                            .into(ivs[i]);
+                } else {
+                    ivs[i].setVisibility(View.GONE);
+                }
+            }
+        } else {
+            hsvPostImages.setVisibility(View.GONE);
+        }
+
         updateLikeUI();
         updateSaveUI();
         updateShareUI();
@@ -343,6 +480,9 @@ public class PostDetailFragment extends Fragment {
 
     private void setupComments() {
         commentAdapter = new CommentAdapter();
+        if (currentPost != null) {
+            commentAdapter.setPostAuthorName(currentPost.getUserName());
+        }
         rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
         rvComments.setAdapter(commentAdapter);
         
@@ -355,11 +495,24 @@ public class PostDetailFragment extends Fragment {
             }
         });
 
-        List<Comment> mockComments = new ArrayList<>();
-        mockComments.add(new Comment("1", "Mai Anh", null, "Mình dùng em này thấy da căng mịn hẳn luôn!", "1 giờ trước", 12, false));
-        mockComments.add(new Comment("2", "Kim Trần", null, "Cảm ơn bạn nhé!", "45 phút trước", 5, true, "1"));
-        mockComments.add(new Comment("3", "Linh Nguyễn", null, "Em này kiềm dầu ổn không ạ?", "30 phút trước", 2, false));
-        commentAdapter.setComments(mockComments);
+        // Hide mock comments for user-created posts (ID is long timestamp)
+        boolean isUserPost = false;
+        try {
+            if (postId != null && postId.length() > 10) {
+                Long.parseLong(postId);
+                isUserPost = true;
+            }
+        } catch (NumberFormatException ignored) {}
+
+        if (!isUserPost) {
+            List<Comment> mockComments = new ArrayList<>();
+            mockComments.add(new Comment("1", "Mai Anh", null, "Mình dùng em này thấy da căng mịn hẳn luôn!", "1 giờ trước", 12, false));
+            mockComments.add(new Comment("2", "Kim Trần", null, "Cảm ơn bạn nhé!", "45 phút trước", 5, true, "1"));
+            mockComments.add(new Comment("3", "Linh Nguyễn", null, "Em này kiềm dầu ổn không ạ?", "30 phút trước", 2, false));
+            commentAdapter.setComments(mockComments);
+        } else {
+            commentAdapter.setComments(new ArrayList<>());
+        }
     }
 
     private void enterReplyMode(Comment comment) {

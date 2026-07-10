@@ -226,9 +226,8 @@ public class CommunityBlogFragment extends Fragment implements BlogAdapter.OnBlo
     @Override
     public void onSaveClick(BlogPost blog) {
         if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
-            blog.setSaved(!blog.isSaved());
-            adapter.notifyDataSetChanged();
-            String msg = blog.isSaved() ? "Đã lưu bài viết" : "Đã bỏ lưu bài viết";
+            blogViewModel.toggleSaveBlog(blog.getId(), !blog.isSaved());
+            String msg = !blog.isSaved() ? "Đã lưu bài viết" : "Đã bỏ lưu bài viết";
             Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
         }
     }
@@ -236,16 +235,7 @@ public class CommunityBlogFragment extends Fragment implements BlogAdapter.OnBlo
     @Override
     public void onLikeClick(BlogPost blog) {
         if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
-            boolean newLikedState = !blog.isLiked();
-            blog.setLiked(newLikedState);
-
-            if (newLikedState) {
-                blog.setLikeCount(blog.getLikeCount() + 1);
-            } else {
-                blog.setLikeCount(Math.max(0, blog.getLikeCount() - 1));
-            }
-
-            adapter.notifyDataSetChanged();
+            blogViewModel.toggleLikeBlog(blog.getId(), !blog.isLiked());
         }
     }
 

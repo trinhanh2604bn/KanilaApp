@@ -17,9 +17,14 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
     private List<Comment> comments = new ArrayList<>();
     private OnCommentActionListener listener;
+    private String postAuthorName;
 
     public interface OnCommentActionListener {
         void onReplyClick(Comment comment);
+    }
+
+    public void setPostAuthorName(String name) {
+        this.postAuthorName = name;
     }
 
     public void setOnCommentActionListener(OnCommentActionListener listener) {
@@ -53,12 +58,14 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     }
 
     class CommentViewHolder extends RecyclerView.ViewHolder {
+        private final com.example.frontend.feature.account.AccountViewModel accountViewModel;
         ImageView ivAvatar;
         TextView tvUserName, tvAuthorBadge, tvContent, tvTime, tvReply, tvLikeCount;
         ImageButton btnLike;
 
         public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
+            accountViewModel = new androidx.lifecycle.ViewModelProvider((androidx.activity.ComponentActivity) itemView.getContext()).get(com.example.frontend.feature.account.AccountViewModel.class);
             ivAvatar = itemView.findViewById(R.id.ivCommentAvatar);
             tvUserName = itemView.findViewById(R.id.tvCommentUserName);
             tvAuthorBadge = itemView.findViewById(R.id.tvCommentAuthorBadge);
@@ -83,10 +90,26 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             tvContent.setText(comment.getContent());
             tvTime.setText(comment.getTime());
             tvLikeCount.setText(String.valueOf(comment.getLikeCount()));
-            tvAuthorBadge.setVisibility(comment.isAuthor() ? View.VISIBLE : View.GONE);
+            
+            // Show "Tác giả" tag if names match
+            if (postAuthorName != null && postAuthorName.equals(comment.getUserName())) {
+                tvAuthorBadge.setVisibility(View.VISIBLE);
+                tvAuthorBadge.setText("Tác giả");
+            } else {
+                tvAuthorBadge.setVisibility(View.GONE);
+            }
 
-            if (comment.getUserAvatar() != null) {
-                Glide.with(itemView.getContext()).load(comment.getUserAvatar()).into(ivAvatar);
+            // Sync avatar with real account if it's the current user's comment
+            String userAvatar = comment.getUserAvatar();
+            com.example.frontend.data.remote.NetworkResult<com.example.frontend.data.model.account.ProfileHubDto> userResult = accountViewModel.getProfileHubResult().getValue();
+            if (userResult != null && userResult.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && userResult.data != null) {
+                if (userResult.data.getProfile() != null && userResult.data.getProfile().getFullName().equals(comment.getUserName())) {
+                    userAvatar = userResult.data.getProfile().getAvatarUrl();
+                }
+            }
+
+            if (userAvatar != null) {
+                Glide.with(itemView.getContext()).load(userAvatar).circleCrop().into(ivAvatar);
             } else {
                 ivAvatar.setImageResource(R.drawable.ic_account);
             }

@@ -21,10 +21,18 @@ public class AuthResponse {
     @SerializedName("reset_token")
     private String resetToken;
 
+    @SerializedName("account")
+    private AccountDto account;
+
+    @SerializedName("customer")
+    private CustomerDto customer;
+
     public String getAccessToken() { return accessToken; }
     public String getRefreshToken() { return refreshToken; }
     public boolean isVerificationRequired() { return verificationRequired; }
     public String getTargetType() { return targetType; }
     public String getMaskedTarget() { return maskedTarget; }
     public String getResetToken() { return resetToken; }
+    public AccountDto getAccount() { return account; }
+    public CustomerDto getCustomer() { return customer; }
 }

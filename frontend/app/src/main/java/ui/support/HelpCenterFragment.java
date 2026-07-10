@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.frontend.R;
+import com.example.frontend.feature.chatbot.ChatConversationFragment;
 import ui.common.FragmentNavigationHelper;
 
 public class HelpCenterFragment extends Fragment {
@@ -62,7 +63,7 @@ public class HelpCenterFragment extends Fragment {
         });
 
         view.findViewById(R.id.chatNowFooter).setOnClickListener(v -> {
-            replaceFragment(new ChatConversationFragment());
+            replaceFragment(ChatConversationFragment.newInstance(""));
         });
 
         // "Xem tất cả" FAQ button
@@ -77,7 +78,7 @@ public class HelpCenterFragment extends Fragment {
 
         // More Info Section
         view.findViewById(R.id.itemPrioritySupport).setOnClickListener(v -> {
-            replaceFragment(new ChatConversationFragment());
+            replaceFragment(ChatConversationFragment.newInstance(""));
         });
 
         view.findViewById(R.id.itemCallSupport).setOnClickListener(v -> {

@@ -49,14 +49,24 @@
             app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
         <ui.common.KanilaInputField
-            android:id="@+id/inputAuth"
+            android:id="@+id/inputUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
+            app:kanilaLabel="@string/auth_full_name_label"
+            app:kanilaHint="@string/auth_full_name_hint"
+            app:kanilaShowLeadingIcon="true"
+            app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
+
+        <ui.common.KanilaInputField
+            android:id="@+id/inputAuth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             app:kanilaLabel="@string/auth_email_label"
             app:kanilaHint="@string/auth_email_hint"
             app:kanilaShowLeadingIcon="true"
-            app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
+            app:layout_constraintTop_toBottomOf="@id/inputUsername" />
 
         <TextView
             android:id="@+id/tvRegisterModeToggle"

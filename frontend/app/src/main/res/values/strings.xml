@@ -805,6 +805,7 @@
     <string name="challenge_tab_ongoing">Đang diễn ra</string>
     <string name="challenge_tab_joined">Đã tham gia</string>
     <string name="challenge_tab_leaderboard">Bảng xếp hạng</string>
+    <string name="challenge_active_title">Thử Thách</string>
     <string name="challenge_participants">%s tham gia</string>
     <string name="challenge_reward_points">%s điểm</string>
     <string name="challenge_action_join">Tham gia</string>
@@ -821,6 +822,10 @@
     <string name="challenge_ended">Thử thách đã kết thúc</string>
     <string name="challenge_remaining_time">Còn lại: %s</string>
     <string name="challenge_day_format">Ngày %1$d/%2$d</string>
+    <string name="challenge_participants_list">Danh sách đã tham gia</string>
+    <string name="challenge_participant_progress_title">Tiến trình của %s</string>
+    <string name="challenge_no_participants">Chưa có người tham gia</string>
+    <string name="challenge_progress_summary">%d bài viết</string>
 
     <string name="leaderboard_weekly">Tuần này</string>
 
@@ -930,4 +935,25 @@
     <string name="help_more_info_title">Bạn có muốn tìm thêm thông tin gì không?</string>
     <string name="priority_customer_service">Chăm sóc khách hàng ưu tiên</string>
     <string name="call_center">Gọi cho tổng đài</string>
+    <string name="challenge_daily_title_format">Thử thách ngày %s</string>
+    <string name="challenge_write_content_label">Viết nội dung</string>
+    <string name="challenge_media_attach_label">Ảnh/Video đính kèm</string>
+    <string name="challenge_add_hashtag_label">Thêm hashtag</string>
+    <string name="challenge_product_attach_label">Sản phẩm đính kèm (tối đa 5)</string>
+    <string name="challenge_hashtag_hint">Nhập hashtag và nhấn Enter</string>
+    <string name="challenge_product_attach_tip">Gợi ý: Thêm sản phẩm bạn đã sử dụng để bài viết chi tiết và hữu ích hơn cho cộng đồng.</string>
+    <string name="challenge_post_progress_action">Đăng tiến trình</string>
+    <string name="challenge_media_count_format">%1$d/6</string>
+    <string name="challenge_product_count_format">%1$d/5</string>
+    <string name="challenge_char_counter_format">%1$d/2000</string>
+    <string name="challenge_media_support_note">Hỗ trợ ảnh, video. Dung lượng tối đa 30MB/1 file.</string>
+    <string name="challenge_add_media">Thêm ảnh/video</string>
+    <string name="challenge_add_product">Thêm sản phẩm</string>
+    <string name="challenge_sample_date">01/06 - 07/06/2026</string>
+    <string name="challenge_participants_count_format">%s người</string>
+    <string name="challenge_participants_helper_text">Theo dõi các bài tiến trình được đăng trong thử thách này</string>
+    <string name="challenge_progress_summary_full">Đã đăng %1$s/%2$s bài tiến trình</string>
+    <string name="challenge_more_posts_format">+%d bài tiến trình khác</string>
+    <string name="challenge_day_label_format">Ngày %d</string>
+    <string name="challenge_rules_title">Quy tắc thử thách</string>
 </resources>

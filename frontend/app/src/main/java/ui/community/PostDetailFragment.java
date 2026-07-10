@@ -131,7 +131,9 @@ public class PostDetailFragment extends Fragment {
 
         edtComment.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEND) {
-                submitComment();
+                if (btnSendComment.isEnabled()) {
+                    btnSendComment.performClick();
+                }
                 return true;
             }
             return false;
@@ -184,46 +186,11 @@ public class PostDetailFragment extends Fragment {
                 parentId
         );
 
-        // Notify ViewModel to update comment count globally
+        // Notify ViewModel to update comment count and persist
         communityViewModel.addComment(postId, newComment);
 
-        List<Comment> currentComments = new ArrayList<>(commentAdapter.getComments());
-        
-        if (parentId == null) {
-            // Normal comment - add to end or top depending on preference, here end
-            currentComments.add(newComment);
-        } else {
-            // Reply - find parent and insert after parent or its last reply
-            int insertIndex = -1;
-            for (int i = 0; i < currentComments.size(); i++) {
-                if (currentComments.get(i).getId().equals(parentId)) {
-                    insertIndex = i + 1;
-                    // Find the end of existing replies for this parent
-                    while (insertIndex < currentComments.size() && 
-                           currentComments.get(insertIndex).isReply() && 
-                           currentComments.get(insertIndex).getParentId().equals(parentId)) {
-                        insertIndex++;
-                    }
-                    break;
-                }
-            }
-            
-            if (insertIndex != -1) {
-                currentComments.add(insertIndex, newComment);
-            } else {
-                currentComments.add(newComment);
-            }
-        }
-
-        commentAdapter.setComments(currentComments);
         edtComment.setText("");
         cancelReplyMode();
-        
-        // Scroll to new comment
-        int scrollPos = currentComments.indexOf(newComment);
-        if (scrollPos != -1) {
-            rvComments.smoothScrollToPosition(scrollPos);
-        }
         
         Toast.makeText(getContext(), parentId == null ? "Đã đăng bình luận" : "Đã trả lời", Toast.LENGTH_SHORT).show();
     }
@@ -365,6 +332,10 @@ public class PostDetailFragment extends Fragment {
         tvCommentCount.setText(String.valueOf(currentPost.getCommentCount()));
         tvShareCount.setText(String.valueOf(currentPost.getShareCount()));
         
+        if (commentAdapter != null && currentPost.getComments() != null) {
+            commentAdapter.setComments(new ArrayList<>(currentPost.getComments()));
+        }
+        
         // Bind Badges
         String type = currentPost.getPostType();
         if (type == null) type = currentPost.getTitle(); // Fallback to title as per mock logic
@@ -482,6 +453,7 @@ public class PostDetailFragment extends Fragment {
         commentAdapter = new CommentAdapter();
         if (currentPost != null) {
             commentAdapter.setPostAuthorName(currentPost.getUserName());
+            commentAdapter.setComments(new ArrayList<>(currentPost.getComments()));
         }
         rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
         rvComments.setAdapter(commentAdapter);
@@ -494,25 +466,6 @@ public class PostDetailFragment extends Fragment {
                 }
             }
         });
-
-        // Hide mock comments for user-created posts (ID is long timestamp)
-        boolean isUserPost = false;
-        try {
-            if (postId != null && postId.length() > 10) {
-                Long.parseLong(postId);
-                isUserPost = true;
-            }
-        } catch (NumberFormatException ignored) {}
-
-        if (!isUserPost) {
-            List<Comment> mockComments = new ArrayList<>();
-            mockComments.add(new Comment("1", "Mai Anh", null, "Mình dùng em này thấy da căng mịn hẳn luôn!", "1 giờ trước", 12, false));
-            mockComments.add(new Comment("2", "Kim Trần", null, "Cảm ơn bạn nhé!", "45 phút trước", 5, true, "1"));
-            mockComments.add(new Comment("3", "Linh Nguyễn", null, "Em này kiềm dầu ổn không ạ?", "30 phút trước", 2, false));
-            commentAdapter.setComments(mockComments);
-        } else {
-            commentAdapter.setComments(new ArrayList<>());
-        }
     }
 
     private void enterReplyMode(Comment comment) {

@@ -101,7 +101,8 @@ public class CommunityRepository {
     public void addComment(String postId, Comment comment) {
         for (Post p : inMemoryPosts) {
             if (p.getId().equals(postId)) {
-                p.setCommentCount(p.getCommentCount() + 1);
+                p.getComments().add(comment);
+                p.setCommentCount(p.getComments().size());
                 feedPostsData.setValue(new ArrayList<>(inMemoryPosts));
                 saveToStorage();
                 break;

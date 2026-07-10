@@ -1,6 +1,10 @@
 package ui.account;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,8 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -18,7 +26,12 @@ import com.example.frontend.R;
 import com.example.frontend.data.model.account.ProfileHubDto;
 import com.example.frontend.feature.account.AccountViewModel;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class ProfileOverviewFragment extends Fragment {
@@ -31,6 +44,56 @@ public class ProfileOverviewFragment extends Fragment {
     private String currentPhone;
     private String currentBirthday;
     private String currentGender;
+
+    private Uri pendingCameraUri;
+    private ActivityResultLauncher<Uri> takePictureLauncher;
+    private ActivityResultLauncher<String> getContentLauncher;
+    private ActivityResultLauncher<String> cameraPermissionLauncher;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setupActivityResultLaunchers();
+    }
+
+    private void setupActivityResultLaunchers() {
+        takePictureLauncher = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                result -> {
+                    if (result && pendingCameraUri != null) {
+                        updateLocalAvatar(pendingCameraUri);
+                    }
+                }
+        );
+
+        getContentLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
+                        updateLocalAvatar(uri);
+                    }
+                }
+        );
+
+        cameraPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        openCameraForPhoto();
+                    } else {
+                        Toast.makeText(getContext(), "Cần quyền camera để chụp ảnh", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+    }
+
+    private void updateLocalAvatar(Uri uri) {
+        Glide.with(this)
+                .load(uri)
+                .circleCrop()
+                .into(ivAvatarLarge);
+        // TODO: Upload to server and get URL if needed
+    }
 
     @Nullable
     @Override
@@ -92,7 +155,58 @@ public class ProfileOverviewFragment extends Fragment {
                 .show();
         });
 
+        view.findViewById(R.id.btnChangeAvatar).setOnClickListener(v -> showAvatarBottomSheet());
+
         btnSaveProfile.setOnClickListener(v -> saveProfile());
+    }
+
+    private void showAvatarBottomSheet() {
+        AvatarBottomSheet bottomSheet = new AvatarBottomSheet();
+        bottomSheet.setShowRemoveOption(false); // Only Take Photo and Choose Gallery
+        bottomSheet.setOnAvatarSourceSelectedListener(new AvatarBottomSheet.OnAvatarSourceSelectedListener() {
+            @Override
+            public void onTakePhotoSelected() {
+                checkCameraPermissionAndOpen();
+            }
+
+            @Override
+            public void onChooseGallerySelected() {
+                openGalleryForImage();
+            }
+        });
+        bottomSheet.show(getChildFragmentManager(), "AvatarBottomSheet");
+    }
+
+    private void checkCameraPermissionAndOpen() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            openCameraForPhoto();
+        } else {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    private void openCameraForPhoto() {
+        try {
+            File photoFile = createImageFile();
+            pendingCameraUri = FileProvider.getUriForFile(requireContext(),
+                    requireContext().getPackageName() + ".fileprovider",
+                    photoFile);
+            takePictureLauncher.launch(pendingCameraUri);
+        } catch (IOException e) {
+            Toast.makeText(getContext(), "Error creating file", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void openGalleryForImage() {
+        getContentLauncher.launch("image/*");
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(imageFileName, ".jpg", storageDir);
     }
 
     private void showEditDialog(String title, String currentValue, OnValueEnteredListener listener) {

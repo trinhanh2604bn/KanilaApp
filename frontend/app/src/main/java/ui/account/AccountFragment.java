@@ -52,7 +52,14 @@ public class AccountFragment extends Fragment {
             scrollAccountContent.setVisibility(View.VISIBLE);
             layoutGuestState.setVisibility(View.GONE);
             observeViewModel();
-            // Don't always reload if data is already there, but for this task we want fresh data
+            
+            // Bước 1: Hiển thị ngay dữ liệu cũ nếu đã có (Tránh nháy UI)
+            com.example.frontend.data.remote.NetworkResult<ProfileHubDto> currentResult = viewModel.getProfileHubResult().getValue();
+            if (currentResult != null && currentResult.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS) {
+                bindData(currentResult.data);
+            }
+            
+            // Bước 2: Tải dữ liệu mới nhất từ Server
             viewModel.loadProfileHub();
         } else {
             scrollAccountContent.setVisibility(View.GONE);
@@ -165,7 +172,8 @@ public class AccountFragment extends Fragment {
         if (data == null) return;
 
         if (data.getProfile() != null) {
-            tvName.setText(data.getProfile().getFullName());
+            String name = data.getProfile().getFullName();
+            tvName.setText(name == null || name.trim().isEmpty() ? "Khách hàng Kanila" : name);
             Glide.with(this)
                     .load(data.getProfile().getAvatarUrl())
                     .placeholder(R.drawable.ic_account)
@@ -177,7 +185,7 @@ public class AccountFragment extends Fragment {
             String points = String.format(Locale.US, "%,d", data.getLoyalty().getPointsBalance());
             tvPointsHeader.setText(points);
             tvPointsVal.setText(points);
-            tvRankName.setText(data.getLoyalty().getTierName());
+            tvRankName.setText(data.getLoyalty().getTierName() == null ? "Thành viên" : data.getLoyalty().getTierName());
         }
 
         if (data.getStats() != null) {

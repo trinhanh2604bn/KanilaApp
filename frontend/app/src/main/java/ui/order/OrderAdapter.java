@@ -226,8 +226,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
                     btnReturn.setText("Trả hàng/Hoàn tiền");
                     break;
                 case "cancelled":
-                case "returned":
                     btnAction.setText("Mua lại");
+                    break;
+                case "returned":
+                    btnAction.setText("Xem chi tiết hoàn trả");
                     break;
                 default:
                     btnAction.setVisibility(View.GONE);

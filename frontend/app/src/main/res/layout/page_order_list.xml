@@ -110,28 +110,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvOrderList"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vpOrderList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingVertical="@dimen/spacing_s"
-            tools:listitem="@layout/item_order_card" />
-
-        <include
-            android:id="@+id/layoutLoading"
-            layout="@layout/view_loading_state"
-            android:visibility="gone" />
-
-        <include
-            android:id="@+id/layoutError"
-            layout="@layout/view_error_generic"
-            android:visibility="gone" />
-
-        <include
-            android:id="@+id/layoutEmpty"
-            layout="@layout/view_empty_state"
-            android:visibility="gone" />
+            android:layout_height="match_parent" />
 
     </FrameLayout>
 

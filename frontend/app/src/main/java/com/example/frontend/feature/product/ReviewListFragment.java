@@ -89,13 +89,46 @@ public class ReviewListFragment extends Fragment {
         MutableLiveData<NetworkResult<List<com.example.frontend.data.model.review.ReviewDto>>> productReviewsResult = new MutableLiveData<>();
         productReviewsResult.observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
-            if (result.status == NetworkResult.Status.SUCCESS && result.data != null) {
-                productAdapter.setReviews(result.data);
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                List<com.example.frontend.data.model.review.ReviewDto> finalItems = new ArrayList<>();
+                if (result.data != null) {
+                    finalItems.addAll(result.data);
+                }
+                // Append mock data after real data
+                finalItems.addAll(getMockReviews());
+                productAdapter.setReviews(finalItems);
             } else if (result.status == NetworkResult.Status.ERROR) {
                 Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                // Even on error, show mock data
+                productAdapter.setReviews(getMockReviews());
             }
         });
         repo.getReviewsByProductId(productId, productReviewsResult);
+    }
+
+    private List<com.example.frontend.data.model.review.ReviewDto> getMockReviews() {
+        List<com.example.frontend.data.model.review.ReviewDto> mocks = new ArrayList<>();
+        // Mock 1
+        com.example.frontend.data.model.review.ReviewDto m1 = new com.example.frontend.data.model.review.ReviewDto();
+        m1.setCustomer(new com.example.frontend.data.model.review.ReviewDto.CustomerInfo("Kim Trân", ""));
+        m1.setContent("Màu son lên chuẩn, chất son nhẹ môi, bám khá tốt và giúp gương mặt trông tươi tắn.");
+        m1.setRating(5);
+        m1.setCreatedAt("2025-05-10T10:00:00Z");
+        m1.setVerifiedPurchase(true);
+        m1.setHelpfulCount(124);
+        mocks.add(m1);
+
+        // Mock 2
+        com.example.frontend.data.model.review.ReviewDto m2 = new com.example.frontend.data.model.review.ReviewDto();
+        m2.setCustomer(new com.example.frontend.data.model.review.ReviewDto.CustomerInfo("Minh Anh", ""));
+        m2.setContent("Sản phẩm đóng gói rất cẩn thận, giao hàng nhanh. Sẽ ủng hộ shop lần sau.");
+        m2.setRating(4);
+        m2.setCreatedAt("2025-05-08T14:30:00Z");
+        m2.setVerifiedPurchase(true);
+        m2.setHelpfulCount(45);
+        mocks.add(m2);
+
+        return mocks;
     }
 
     private void observeViewModel() {

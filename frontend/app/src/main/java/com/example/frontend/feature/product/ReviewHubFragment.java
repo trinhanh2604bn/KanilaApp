@@ -73,7 +73,12 @@ public class ReviewHubFragment extends Fragment {
         @Override
         public Fragment createFragment(int position) {
             if (position == 0) return new ReviewOverviewFragment();
-            return new ReviewListFragment();
+            
+            ReviewListFragment fragment = new ReviewListFragment();
+            Bundle args = new Bundle();
+            args.putString("product_id", productId);
+            fragment.setArguments(args);
+            return fragment;
         }
 
         @Override

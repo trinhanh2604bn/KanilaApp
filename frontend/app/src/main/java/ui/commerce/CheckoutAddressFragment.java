@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
 import com.example.frontend.data.model.address.AddressDto;
+import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.checkout.CheckoutAddressViewModel;
 import com.example.frontend.feature.checkout.CheckoutViewModel;
 import com.google.android.material.button.MaterialButton;
@@ -132,7 +133,7 @@ public class CheckoutAddressFragment extends Fragment {
     }
 
     private void observeViewModel() {
-        viewModel.getSaveResult().observe(getViewLifecycleOwner(), result -> {
+        viewModel.getSetDefaultResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             switch (result.status) {
                 case LOADING:
@@ -140,11 +141,20 @@ public class CheckoutAddressFragment extends Fragment {
                 case SUCCESS:
                     Toast.makeText(getContext(), "Đã thiết lập địa chỉ mặc định", Toast.LENGTH_SHORT).show();
                     viewModel.loadCustomerAddresses(); // Refresh list
-                    viewModel.clearSaveResult();
+                    viewModel.clearSetDefaultResult();
                     break;
                 case ERROR:
                     Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    viewModel.clearSetDefaultResult();
                     break;
+            }
+        });
+
+        viewModel.getSaveResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                // Just refresh list when an address is saved/updated elsewhere
+                viewModel.loadCustomerAddresses();
             }
         });
 

@@ -168,7 +168,7 @@ public class LoyaltyFragment extends Fragment {
                 if (tvSpentProgress != null) tvSpentProgress.setText(formatPrice(spent));
                 
                 // Calculate Progress Bar (based on next tier)
-                updateProgressBars(orders, spent);
+                updateProgressBars(tierName, orders, spent);
                 
                 // Update menu row title with real tier name
                 View rowTier = view.findViewById(R.id.menuTierPerks);
@@ -194,33 +194,31 @@ public class LoyaltyFragment extends Fragment {
         });
     }
 
-    private void updateProgressBars(int orders, double spent) {
+    private void updateProgressBars(String currentTier, int orders, double spent) {
         if (progressOrders == null || progressSpent == null) return;
         
         int nextOrderTarget;
         double nextSpentTarget;
         
-        // Tier thresholds
-        // Silver: 3 orders / 1M
-        // Gold: 20 orders / 5M
-        // Diamond: 75 orders / 15M
-
-        if (orders >= 75 || spent >= 15000000) {
-            // Already Diamond or reached Diamond spend
-            nextOrderTarget = 75;
-            nextSpentTarget = 15000000;
-        } else if (orders >= 20 || spent >= 5000000) {
-            // Gold -> Diamond
-            nextOrderTarget = 75;
-            nextSpentTarget = 15000000;
-        } else if (orders >= 3 || spent >= 1000000) {
-            // Silver -> Gold
-            nextOrderTarget = 20;
-            nextSpentTarget = 5000000;
-        } else {
-            // Bronze -> Silver
-            nextOrderTarget = 3;
-            nextSpentTarget = 1000000;
+        // Milestones for NEXT tier based on CURRENT tier
+        switch (currentTier) {
+            case "Bạc":
+                nextOrderTarget = 20; // Goal is Gold
+                nextSpentTarget = 5000000;
+                break;
+            case "Vàng":
+                nextOrderTarget = 75; // Goal is Diamond
+                nextSpentTarget = 15000000;
+                break;
+            case "Kim Cương":
+                nextOrderTarget = 75; // Maxed
+                nextSpentTarget = 15000000;
+                break;
+            case "Đồng":
+            default:
+                nextOrderTarget = 3; // Goal is Silver
+                nextSpentTarget = 1000000;
+                break;
         }
         
         if (tvOrderTarget != null) tvOrderTarget.setText("/" + nextOrderTarget);

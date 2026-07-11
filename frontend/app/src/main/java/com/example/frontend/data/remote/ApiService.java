@@ -1,5 +1,6 @@
 package com.example.frontend.data.remote;
 
+import com.example.frontend.data.model.category.CategoryDto;
 import com.example.frontend.model.Product;
 import com.example.frontend.data.model.auth.LoginRequest;
 import com.example.frontend.data.model.auth.RegisterRequest;
@@ -26,10 +27,12 @@ import com.example.frontend.data.model.product.ProductDetailResponse;
 import com.example.frontend.feature.chatbot.data.request.ChatbotMessageRequest;
 import com.example.frontend.feature.chatbot.data.response.ChatbotMessageResponse;
 import java.util.List;
+import java.util.Map;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 import retrofit2.http.PATCH;
@@ -267,4 +270,33 @@ public interface ApiService {
 
     @GET("api/accounts")
     Call<ApiResponse<List<Object>>> getAccounts();
+    @GET("api/categories/root")
+    Call<ApiResponse<List<CategoryDto>>> getRootCategories();
+
+    @GET("api/categories/{parentId}/children")
+    Call<ApiResponse<List<CategoryDto>>> getChildCategories(
+            @Path("parentId") String parentId
+    );
+
+    @GET("api/products")
+    Call<ApiResponse<List<Product>>> getProductsByCategory(
+            @Query("page") int page,
+            @Query("limit") int limit,
+            @Query("fields") String fields,
+            @Query("categoryId") String categoryId,
+            @Query("includeChildren") boolean includeChildren
+    );
+
+    @GET("api/products")
+    Call<ApiResponse<List<Product>>> getProductsByCollection(
+            @Query("page") int page,
+            @Query("limit") int limit,
+            @Query("fields") String fields,
+            @Query("collection") String collection
+    );
+
+    @GET("api/products")
+    Call<ApiResponse<List<Product>>> getProductsByQuery(
+            @QueryMap Map<String, String> query
+    );
 }

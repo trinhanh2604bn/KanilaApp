@@ -44,12 +44,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         this.listener = listener;
     }
 
-    public void setOnWishlistClickListener(OnWishlistClickListener listener) {
-        this.wishlistListener = listener;
+    public void setOnWishlistClickListener(OnWishlistClickListener wishlistListener) {
+        this.wishlistListener = wishlistListener;
     }
 
-    public void setOnSimilarClickListener(OnSimilarClickListener listener) {
-        this.similarClickListener = listener;
+    public void setOnSimilarClickListener(OnSimilarClickListener similarClickListener) {
+        this.similarClickListener = similarClickListener;
     }
 
     public void setShowSimilarAction(boolean showSimilarAction) {
@@ -59,10 +59,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     public void setProducts(List<Product> products) {
         this.products = products;
         notifyDataSetChanged();
-    }
-
-    public List<Product> getProducts() {
-        return products;
     }
 
     public void setSelectionMode(boolean selectionMode) {
@@ -160,14 +156,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             }
         });
 
-        if (holder.btnAddToCart != null) {
-            holder.btnAddToCart.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onAddToCartClick(product);
-                }
-            });
-        }
-
         if (holder.btnWishlist != null) {
             holder.btnWishlist.setOnClickListener(v -> {
                 if (wishlistListener != null) {
@@ -176,6 +164,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                     boolean newState = !product.isFavorite();
                     product.setFavorite(newState);
                     v.setSelected(newState);
+                }
+            });
+        }
+
+        if (holder.btnAddToCart != null) {
+            holder.btnAddToCart.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onAddToCartClick(product);
                 }
             });
         }
@@ -190,16 +186,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         void onSelectionChanged(int count);
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivImage;
-        TextView tvName, tvBrand, tvPrice, tvReviewCount, tvBadge;
-        RatingBar ratingBar;
-        View layoutBadge;
-        ImageButton btnAddToCart, btnWishlist;
-        CheckBox cbSelect;
-        TextView tvFindSimilar;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public ImageView ivImage;
+        public TextView tvName, tvBrand, tvPrice, tvReviewCount, tvBadge;
+        public RatingBar ratingBar;
+        public View layoutBadge;
+        public ImageButton btnAddToCart, btnWishlist;
+        public CheckBox cbSelect;
+        public TextView tvFindSimilar;
 
-        ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivImage = itemView.findViewById(R.id.ivProductImage);
             tvName = itemView.findViewById(R.id.tvProductName);

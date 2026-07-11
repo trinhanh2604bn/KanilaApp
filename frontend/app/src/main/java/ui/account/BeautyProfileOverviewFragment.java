@@ -31,6 +31,8 @@ import com.example.frontend.R;
 import com.example.frontend.data.model.beauty.CustomerBeautyProfileDto;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.beauty.BeautyProfileViewModel;
+import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.model.Product;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +52,7 @@ public class BeautyProfileOverviewFragment extends Fragment {
     private boolean isRecExpanded = false;
     private CustomerBeautyProfileDto currentProfile;
     private BeautyProfileViewModel viewModel;
+    private CartViewModel cartViewModel;
     private final Map<String, Boolean> expandedSections = new HashMap<>();
     private final Handler ctaHandler = new Handler(Looper.getMainLooper());
     private boolean isCtaShown = false;
@@ -65,6 +68,7 @@ public class BeautyProfileOverviewFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(BeautyProfileViewModel.class);
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
 
         initColors();
         initSectionData();
@@ -124,6 +128,19 @@ public class BeautyProfileOverviewFragment extends Fragment {
         rvRecommendedProducts = view.findViewById(R.id.rvRecommendedProducts);
         
         productAdapter = new com.example.frontend.feature.home.HomeProductAdapter();
+        productAdapter.setOnAddToCartListener(product -> {
+            cartViewModel.addToCart(product.getId(), null, 1);
+            Toast.makeText(getContext(), "Đã thêm " + product.getName() + " vào giỏ hàng", Toast.LENGTH_SHORT).show();
+        });
+        productAdapter.setOnProductClickListener(product -> {
+            int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                    ? R.id.main_fragment_container : R.id.main;
+            getParentFragmentManager().beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(containerId, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                    .addToBackStack("beauty_profile_to_detail")
+                    .commit();
+        });
         int screenWidth = getResources().getDisplayMetrics().widthPixels;
         // Reduce width slightly to show more of the next card and fit better
         productAdapter.setItemWidth((int) (screenWidth * 0.43));
@@ -153,6 +170,17 @@ public class BeautyProfileOverviewFragment extends Fragment {
                 }
             }
         });
+
+        viewModel.getRecommendedProductsResult().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.status == NetworkResult.Status.SUCCESS) {
+                if (result.data != null && !result.data.isEmpty()) {
+                    productAdapter.setProducts(result.data);
+                    if (layoutRecommendations != null) {
+                        layoutRecommendations.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
     }
 
     private void bindProfileData(@Nullable CustomerBeautyProfileDto profile) {
@@ -160,110 +188,58 @@ public class BeautyProfileOverviewFragment extends Fragment {
         this.currentProfile = profile;
         
         int completion = profile.getProfileCompletion();
-        if (progressProfile != null) progressProfile.setProgress(completion);
-        if (tvProgressLabel != null) tvProgressLabel.setText(getString(R.string.profile_completion_format, completion));
+        if (progressProfile != null) {
+            progressProfile.setProgress(completion);
+        }
+        
+        if (tvProgressLabel != null) {
+            tvProgressLabel.setText(String.format(java.util.Locale.getDefault(), "Hồ sơ của bạn hoàn thành %d%%", completion));
+        }
 
-        if (profile.getSkinType() != null) {
+        if (profile.getSkinType() != null && !profile.getSkinType().isEmpty() && !profile.getSkinType().equalsIgnoreCase("Chưa xác định")) {
             tvSummarySkinType.setText(profile.getSkinType());
+        } else {
+            tvSummarySkinType.setText(R.string.skin_type_unknown);
         }
 
         if (layoutSectionsList != null) {
             layoutSectionsList.removeAllViews();
-            renderSummarySection(sections.get(0), profile.getSkinType());
-            renderMultiSummarySection(sections.get(1), profile.getSkinConcerns());
-            renderSummarySection(sections.get(2), profile.getSensitivityLevel());
-            renderSummarySection(sections.get(3), profile.getSkinColor());
-            renderSummarySection(sections.get(4), profile.getSkinUndertone());
-            renderSummarySection(sections.get(5), profile.getFoundationFinish());
-            renderMultiSummarySection(sections.get(6), profile.getLipstickColors());
-            renderMultiSummarySection(sections.get(7), profile.getMakeupStyles());
-            renderSummarySection(sections.get(8), profile.getBudget());
-            renderMultiSummarySection(sections.get(9), profile.getAvoidIngredients());
+            
+            // Add sections one by one if data exists
+            if (profile.getSkinType() != null) renderSummarySection(sections.get(0), profile.getSkinType());
+            if (profile.getSkinConcerns() != null && !profile.getSkinConcerns().isEmpty()) renderMultiSummarySection(sections.get(1), profile.getSkinConcerns());
+            if (profile.getSensitivityLevel() != null) renderSummarySection(sections.get(2), profile.getSensitivityLevel());
+            if (profile.getSkinColor() != null) renderSummarySection(sections.get(3), profile.getSkinColor());
+            if (profile.getSkinUndertone() != null) renderSummarySection(sections.get(4), profile.getSkinUndertone());
+            if (profile.getFoundationFinish() != null) renderSummarySection(sections.get(5), profile.getFoundationFinish());
+            if (profile.getLipstickColors() != null && !profile.getLipstickColors().isEmpty()) renderMultiSummarySection(sections.get(6), profile.getLipstickColors());
+            if (profile.getMakeupStyles() != null && !profile.getMakeupStyles().isEmpty()) renderMultiSummarySection(sections.get(7), profile.getMakeupStyles());
+            if (profile.getBudget() != null) renderSummarySection(sections.get(8), profile.getBudget());
+            if (profile.getAvoidIngredients() != null && !profile.getAvoidIngredients().isEmpty()) renderMultiSummarySection(sections.get(9), profile.getAvoidIngredients());
 
+            boolean hasContent = layoutSectionsList.getChildCount() > 0;
             if (layoutEmptyState != null) {
-                boolean isEmpty = layoutSectionsList.getChildCount() == 0;
-                layoutEmptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+                layoutEmptyState.setVisibility(hasContent ? View.GONE : View.VISIBLE);
                 
-                if (isEmpty) {
+                if (!hasContent) {
                     showCtaPopup();
                 }
-
-                // Hide recommendations if no profile data yet
-                if (layoutRecommendations != null) {
-                    layoutRecommendations.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
-                }
             }
-        }
 
-        if (layoutSectionsList != null && layoutSectionsList.getChildCount() > 0) {
-            showRecommendations(profile);
+            // Always try to load recommendations if we have at least skin type or any selection
+            if (hasContent || profile.getSkinType() != null) {
+                if (layoutRecommendations != null) layoutRecommendations.setVisibility(View.VISIBLE);
+                viewModel.loadRecommendedProducts(profile.getSkinType(), profile.getBudget());
+            } else {
+                if (layoutRecommendations != null) layoutRecommendations.setVisibility(View.GONE);
+            }
         }
     }
 
     private void showRecommendations(CustomerBeautyProfileDto profile) {
-        if (layoutRecommendations != null) {
-            layoutRecommendations.setVisibility(View.VISIBLE);
-            
-            List<com.example.frontend.model.Product> mockProducts = new ArrayList<>();
-            String skinType = profile.getSkinType() != null ? profile.getSkinType() : "Da dầu";
-            String budget = profile.getBudget() != null ? profile.getBudget() : "500K +";
-
-            // Danh sách tất cả sản phẩm giả lập có thể gợi ý
-            List<com.example.frontend.model.Product> pool = new ArrayList<>();
-            pool.add(new com.example.frontend.model.Product("1", "Cosrx", "Sữa rửa mặt BHA", "250000", "4.5", "120", R.drawable.cl_product, "Hot", "Face"));
-            pool.add(new com.example.frontend.model.Product("2", "The Ordinary", "Serum Niacinamide", "220000", "4.8", "450", R.drawable.cl_product, "Best Seller", "Serum"));
-            pool.add(new com.example.frontend.model.Product("3", "La Roche-Posay", "Kem dưỡng kiềm dầu", "480000", "4.7", "310", R.drawable.cl_product, "New", "Moisturizer"));
-            pool.add(new com.example.frontend.model.Product("4", "Neutrogena", "Kem dưỡng ẩm HA", "350000", "4.6", "215", R.drawable.cl_product, "Hot", "Moisturizer"));
-            pool.add(new com.example.frontend.model.Product("5", "Bioderma", "Tẩy trang dịu nhẹ", "390000", "4.9", "890", R.drawable.cl_product, "Recommended", "Cleansing"));
-            pool.add(new com.example.frontend.model.Product("6", "Paula's Choice", "BHA Liquid Exfoliant", "910000", "4.9", "1200", R.drawable.cl_product, "Premium", "Toner"));
-            pool.add(new com.example.frontend.model.Product("7", "Innisfree", "Jeju Volcanic Clay Mask", "340000", "4.6", "800", R.drawable.cl_product, "Popular", "Mask"));
-            pool.add(new com.example.frontend.model.Product("8", "Laneige", "Water Bank Cream", "850000", "4.8", "600", R.drawable.cl_product, "Best Seller", "Moisturizer"));
-
-            for (com.example.frontend.model.Product p : pool) {
-                double price = p.getPriceValue();
-                boolean budgetMatch = false;
-                
-                // Lọc theo ngân sách chính xác như khách hàng đã chọn
-                if ("Dưới 300K".equalsIgnoreCase(budget)) {
-                    budgetMatch = price < 300000;
-                } else if ("300K - 500K".equalsIgnoreCase(budget)) {
-                    budgetMatch = price >= 300000 && price <= 500000;
-                } else if ("500K +".equalsIgnoreCase(budget)) {
-                    budgetMatch = price > 500000;
-                } else {
-                    budgetMatch = true; // Nếu không chọn thì hiện tất cả
-                }
-
-                if (budgetMatch) {
-                    // Lọc thêm theo loại da (logic đơn giản cho demo)
-                    if (skinType.contains("dầu")) {
-                        if (p.getName().toLowerCase().contains("bha") || p.getName().toLowerCase().contains("dầu") || p.getName().toLowerCase().contains("niacinamide") || p.getName().toLowerCase().contains("mask")) {
-                            mockProducts.add(p);
-                        }
-                    } else {
-                        if (p.getName().toLowerCase().contains("ha") || p.getName().toLowerCase().contains("dịu nhẹ") || p.getName().toLowerCase().contains("cream")) {
-                            mockProducts.add(p);
-                        }
-                    }
-                }
-            }
-            
-            // Nếu lọc quá kỹ không còn sản phẩm, lấy ít nhất 2 cái theo đúng ngân sách
-            if (mockProducts.size() < 2) {
-                for (com.example.frontend.model.Product p : pool) {
-                    if (mockProducts.contains(p)) continue;
-                    double price = p.getPriceValue();
-                    if (("Dưới 300K".equalsIgnoreCase(budget) && price < 300000) ||
-                        ("300K - 500K".equalsIgnoreCase(budget) && price >= 300000 && price <= 500000) ||
-                        ("500K +".equalsIgnoreCase(budget) && price > 500000)) {
-                        mockProducts.add(p);
-                    }
-                    if (mockProducts.size() >= 3) break;
-                }
-            }
-            
-            productAdapter.setProducts(mockProducts);
-        }
+        // This method is now effectively replaced by loadRecommendedProducts + observer
+        // but kept for toggleRecommendations logic if it still relies on re-calling it
+        viewModel.loadRecommendedProducts(profile.getSkinType(), profile.getBudget());
     }
 
     private void renderSummarySection(SectionData section, String selectedValue) {

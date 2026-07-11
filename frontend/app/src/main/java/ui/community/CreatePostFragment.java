@@ -26,6 +26,7 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import ui.community.Post;
 import java.io.File;
@@ -147,12 +148,26 @@ public class CreatePostFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_post, container, false);
-        initViews(view);
-        setupMediaList();
+        
+        // 1. Initialize Product Adapter first (no view needed)
         setupProductList();
+        
+        // 2. Initialize Views (initializes rvSelectedMedia, layoutProductsUsed, etc.)
+        initViews(view);
+        
+        // 3. Setup Media List (requires rvSelectedMedia to be initialized)
+        setupMediaList();
+        
+        // Initial sync of dynamic layouts
+        if (editPostId != null) {
+            mediaAdapter.setMediaUris(new ArrayList<>(selectedMediaUris));
+        }
+        updateLayoutProductsUsed();
+
         setupPostTypes(view);
         setupSkinTypes(view);
         setupListeners(view);
+        updatePostButtonState(); // Initial state check
         return view;
     }
 
@@ -223,18 +238,49 @@ public class CreatePostFragment extends Fragment {
 
         TextView tvHeaderTitle = view.findViewById(R.id.tvHeaderTitle);
 
+        // Load User Info from AccountViewModel
+        TextView tvUserName = view.findViewById(R.id.tvUserName);
+        ImageView ivUserAvatar = view.findViewById(R.id.ivUserAvatar);
+        accountViewModel.getProfileHubResult().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && result.data != null) {
+                if (result.data.getProfile() != null) {
+                    if (tvUserName != null) tvUserName.setText(result.data.getProfile().getFullName());
+                    if (ivUserAvatar != null) {
+                        Glide.with(this)
+                                .load(result.data.getProfile().getAvatarUrl())
+                                .placeholder(R.drawable.ic_account)
+                                .error(R.drawable.ic_account)
+                                .into(ivUserAvatar);
+                    }
+                }
+            }
+        });
+        accountViewModel.loadProfileHub();
+
         if (editPostId != null) {
             Post post = communityViewModel.getPostById(editPostId);
             if (post != null) {
                 edtCaption.setText(post.getContent());
-                selectedPostType = post.getTitle(); // Title is used as type in this mock
+                
+                // Load existing type and skin type
+                if (post.getPostType() != null) selectedPostType = post.getPostType();
+                else selectedPostType = post.getTitle(); // Fallback
+                
+                if (post.getSkinType() != null) selectedSkinType = post.getSkinType();
+
                 if (tvHeaderTitle != null) tvHeaderTitle.setText("Chỉnh sửa bài viết");
                 btnPost.setText("Lưu");
 
+                // Load existing images
                 if (post.getImages() != null) {
                     for (String s : post.getImages()) {
                         selectedMediaUris.add(Uri.parse(s));
                     }
+                }
+                
+                // Load existing products
+                if (post.getProducts() != null) {
+                    productAdapter.setProducts(new ArrayList<>(post.getProducts()));
                 }
             }
         }
@@ -414,6 +460,9 @@ public class CreatePostFragment extends Fragment {
                     );
                     updated.setSaved(existing.isSaved());
                     updated.setLiked(existing.isLiked());
+                    updated.setSkinType(selectedSkinType);
+                    updated.setProducts(new ArrayList<>(productAdapter.getSelectedProducts()));
+                    updated.setComments(existing.getComments());
                     
                     communityViewModel.updatePost(updated);
                     Toast.makeText(getContext(), "Đã cập nhật bài viết!", Toast.LENGTH_SHORT).show();

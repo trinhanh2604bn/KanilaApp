@@ -223,7 +223,7 @@
                     android:orientation="horizontal"
                     android:paddingBottom="4dp">
 
-                    <include layout="@layout/item_create_post_product_used" />
+                    <!-- Products and Add button will be added dynamically in CreatePostFragment -->
                     <include layout="@layout/item_add_product_placeholder" />
                 </LinearLayout>
             </HorizontalScrollView>

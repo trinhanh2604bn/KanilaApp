@@ -17,6 +17,8 @@ public class Challenge {
     private int currentProgress; // current day/step
     private String remainingTime;
     private List<ChallengeTask> tasks;
+    private List<String> productIds;
+    private List<ChallengeParticipant> participants;
     private String rules;
 
     public Challenge(String id, String title, String bannerUrl, int participantCount, int rewardPoints, int durationDays, boolean isHot, boolean isNew) {
@@ -62,6 +64,18 @@ public class Challenge {
     public void setRemainingTime(String remainingTime) { this.remainingTime = remainingTime; }
     public List<ChallengeTask> getTasks() { return tasks; }
     public void setTasks(List<ChallengeTask> tasks) { this.tasks = tasks; }
+    public List<String> getProductIds() { return productIds; }
+    public void setProductIds(List<String> productIds) { this.productIds = productIds; }
+    public List<ChallengeParticipant> getParticipants() { return participants; }
+    public void setParticipants(List<ChallengeParticipant> participants) { this.participants = participants; }
+    public void addParticipant(ChallengeParticipant participant) {
+        if (participants == null) participants = new java.util.ArrayList<>();
+        // Check if already in list
+        for (ChallengeParticipant p : participants) {
+            if (p.getUserId().equals(participant.getUserId())) return;
+        }
+        participants.add(0, participant); // Add to top
+    }
     public String getRules() { return rules; }
     public void setRules(String rules) { this.rules = rules; }
 }

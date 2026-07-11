@@ -19,15 +19,21 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
     private List<Product> products = new ArrayList<>();
     private OnProductClickListener listener;
     private OnWishlistToggleListener wishlistToggleListener;
+    private OnAddToCartListener addToCartListener;
     private int itemWidth = -1;
 
+    @FunctionalInterface
     public interface OnProductClickListener {
         void onProductClick(Product product);
-        void onAddToCartClick(Product product);
+        default void onAddToCartClick(Product product) {}
     }
 
     public interface OnWishlistToggleListener {
         void onWishlistToggle(Product product, boolean isWishlisted);
+    }
+
+    public interface OnAddToCartListener {
+        void onAddToCart(Product product);
     }
 
     public void setOnProductClickListener(OnProductClickListener listener) {
@@ -36,6 +42,10 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
 
     public void setOnWishlistToggleListener(OnWishlistToggleListener listener) {
         this.wishlistToggleListener = listener;
+    }
+
+    public void setOnAddToCartListener(OnAddToCartListener listener) {
+        this.addToCartListener = listener;
     }
 
     public void setProducts(List<Product> products) {
@@ -98,6 +108,16 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
             });
         }
 
+        if (holder.btnAddToCart != null) {
+            holder.btnAddToCart.setOnClickListener(v -> {
+                if (addToCartListener != null) {
+                    addToCartListener.onAddToCart(product);
+                } else if (listener != null) {
+                    listener.onAddToCartClick(product);
+                }
+            });
+        }
+
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
             Glide.with(holder.ivImage.getContext())
                     .load(product.getImageUrl())
@@ -118,12 +138,6 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onProductClick(product);
         });
-
-        if (holder.btnAddToCart != null) {
-            holder.btnAddToCart.setOnClickListener(v -> {
-                if (listener != null) listener.onAddToCartClick(product);
-            });
-        }
     }
 
     @Override

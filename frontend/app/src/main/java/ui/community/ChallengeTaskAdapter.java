@@ -51,26 +51,41 @@ public class ChallengeTaskAdapter extends RecyclerView.Adapter<ChallengeTaskAdap
             holder.tvSubtitle.setVisibility(View.GONE);
         }
         
+        // Sequential logic: Task i is enabled if it's the first task or the previous one is completed
+        boolean isEnabled = position == 0 || (position > 0 && tasks.get(position - 1).isCompleted());
+        
         if (task.isCompleted()) {
             holder.ivStatus.setImageResource(R.drawable.ic_check_circle);
             holder.ivStatus.setColorFilter(holder.itemView.getContext().getColor(R.color.success));
-        } else {
+            holder.ivStatus.setVisibility(View.VISIBLE);
+            holder.itemView.setAlpha(1.0f);
+        } else if (listener == null) {
+            // Purely informational mode
+            holder.ivStatus.setVisibility(View.GONE);
+            holder.itemView.setAlpha(1.0f);
+        } else if (isEnabled) {
             holder.ivStatus.setImageResource(R.drawable.ic_chevron_right);
+            holder.ivStatus.setColorFilter(holder.itemView.getContext().getColor(R.color.button));
+            holder.ivStatus.setVisibility(View.VISIBLE);
+            holder.itemView.setAlpha(1.0f);
+        } else {
+            holder.ivStatus.setImageResource(R.drawable.ic_lock);
             holder.ivStatus.setColorFilter(holder.itemView.getContext().getColor(R.color.text_tertiary));
+            holder.ivStatus.setVisibility(View.VISIBLE);
+            holder.itemView.setAlpha(0.5f);
         }
 
         if (task.getIconResId() != 0) {
             holder.ivIcon.setImageResource(task.getIconResId());
         } else {
-            // Fallback icons if not set
-            if (position == 0) holder.ivIcon.setImageResource(R.drawable.ic_calendar);
-            else if (position == 1) holder.ivIcon.setImageResource(R.drawable.ic_camera);
-            else holder.ivIcon.setImageResource(R.drawable.ic_checklist);
+            holder.ivIcon.setImageResource(R.drawable.ic_routine);
         }
 
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
+            if (isEnabled && listener != null) {
                 listener.onTaskClick(task, position);
+            } else if (!isEnabled) {
+                android.widget.Toast.makeText(v.getContext(), "Vui lòng hoàn thành nhiệm vụ trước đó", android.widget.Toast.LENGTH_SHORT).show();
             }
         });
     }

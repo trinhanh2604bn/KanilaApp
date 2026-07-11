@@ -79,7 +79,7 @@ public class SavedBeautyRoutinesFragment extends Fragment {
                 ? R.id.main_fragment_container : R.id.main;
         getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(containerId, RecommendationLookFragment.newInstance(routine))
+                .replace(containerId, RoutineUsageGuideFragment.newInstance(routine))
                 .addToBackStack(null)
                 .commit();
     }

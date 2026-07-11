@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_l">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvDayLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_pill"
+            android:backgroundTint="@color/button"
+            android:fontFamily="@font/nunito_bold"
+            android:paddingHorizontal="@dimen/spacing_m"
+            android:paddingVertical="@dimen/spacing_xs"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            tools:text="Ngày 1" />
+
+        <TextView
+            android:id="@+id/tvPostDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_m"
+            android:fontFamily="@font/nunito_regular"
+            android:textColor="@color/text_tertiary"
+            android:textSize="12sp"
+            tools:text="12/05/2026 08:30" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvPostContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_m"
+        android:ellipsize="end"
+        android:fontFamily="@font/nunito_regular"
+        android:lineSpacingExtra="2dp"
+        android:maxLines="3"
+        android:textColor="@color/text_main"
+        android:textSize="14sp"
+        tools:text="Hôm nay mình đã bắt đầu thử thách với tinh thần rất thoải mái. Da mình sau khi làm sạch cảm thấy rất nhẹ nhàng và không hề bị khô căng." />
+
+    <!-- Media Thumbnails -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPostMedia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_m"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="3"
+        tools:listitem="@layout/item_product_thumbnail" />
+
+    <!-- Attached Products -->
+    <HorizontalScrollView
+        android:id="@+id/hsvProducts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_m"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/layoutProducts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <!-- Dynamically add tags -->
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/spacing_l"
+        android:background="@color/border_divider" />
+
+</LinearLayout>

@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.core.os.BundleCompat;
 
 import com.example.frontend.R;
 import com.example.frontend.data.model.beauty.SavedRoutineDto;
@@ -44,7 +45,7 @@ public class RecommendationLookFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            routineData = (SavedRoutineDto) getArguments().getSerializable("routine_data");
+            routineData = BundleCompat.getSerializable(getArguments(), "routine_data", SavedRoutineDto.class);
         }
     }
 

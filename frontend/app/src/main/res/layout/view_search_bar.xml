@@ -1,49 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:id="@+id/layoutSearchBar"
     android:layout_width="match_parent"
-    android:layout_height="36dp"
+    android:layout_height="44dp"
+
     android:background="@drawable/bg_search_bar"
+
     android:clickable="true"
     android:focusable="true"
+
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingStart="@dimen/spacing_m"
-    android:paddingEnd="8dp">
 
+    android:paddingStart="12dp"
+    android:paddingEnd="4dp">
+
+
+    <!-- Search Icon -->
     <ImageView
         android:id="@+id/ivSearchIcon"
+
         android:layout_width="20dp"
         android:layout_height="20dp"
+
         android:contentDescription="@string/content_desc_search"
+
         android:src="@drawable/ic_search"
+
         app:tint="@color/button" />
 
+
+    <!-- Search Hint -->
     <TextView
         android:id="@+id/tvSearchHint"
+
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_s"
+
         android:layout_weight="1"
+
+        android:layout_marginStart="@dimen/spacing_s"
+
         android:ellipsize="end"
+
         android:fontFamily="@font/nunito_regular"
+
         android:includeFontPadding="false"
+
         android:maxLines="1"
+
         android:text="@string/search_hint_product_brand"
+
         android:textColor="@color/text_tertiary"
+
         android:textSize="12sp"
-        tools:text="Tìm sản phẩm, thương hiệu&#8230;" />
+
+        tools:text="Tìm sản phẩm, thương hiệu..." />
+
+
+    <!-- Camera Search -->
     <ImageButton
         android:id="@+id/btnExpandedSearchCamera"
-        android:layout_width="32dp"
-        android:layout_height="36dp"
+
+        android:layout_width="40dp"
+        android:layout_height="44dp"
+
         android:background="?attr/selectableItemBackgroundBorderless"
+
         android:contentDescription="@string/content_desc_camera_search"
+
+        android:padding="10dp"
+
         android:scaleType="centerInside"
-        android:padding="8dp"
+
         android:src="@drawable/ic_camera"
+
         app:tint="@color/button" />
+
 
 </LinearLayout>

@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
 import com.example.frontend.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
@@ -102,15 +103,15 @@ public class LinkedWalletsFragment extends Fragment {
             if (wallet.isLinked) {
                 linkedCount++;
                 tvStatus.setText(String.format("%s • Mặc định", wallet.phone));
-                tvStatus.setTextColor(getResources().getColor(R.color.success));
+                tvStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.success));
                 btnAction.setText("Hủy");
-                btnAction.setTextColor(getResources().getColor(R.color.text_tertiary));
+                btnAction.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_tertiary));
                 btnAction.setOnClickListener(v -> showUnlinkDialog(wallet));
             } else {
                 tvStatus.setText("Chưa liên kết");
-                tvStatus.setTextColor(getResources().getColor(R.color.text_tertiary));
+                tvStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_tertiary));
                 btnAction.setText("Liên kết");
-                btnAction.setTextColor(getResources().getColor(R.color.button));
+                btnAction.setTextColor(ContextCompat.getColor(requireContext(), R.color.button));
                 btnAction.setOnClickListener(v -> showLinkInputSheet(wallet));
             }
 

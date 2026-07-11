@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -66,7 +67,7 @@ public class CheckoutAddressAddFragment extends Fragment {
             
             // Handle guest edit
             if (isGuest && getArguments().containsKey("guest_address")) {
-                AddressDto guestAddr = (AddressDto) getArguments().getSerializable("guest_address");
+                AddressDto guestAddr = BundleCompat.getSerializable(getArguments(), "guest_address", AddressDto.class);
                 if (guestAddr != null) {
                     populateViews(guestAddr);
                 }

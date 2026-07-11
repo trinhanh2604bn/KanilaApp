@@ -59,11 +59,12 @@ public class CheckoutFragment extends Fragment {
         observeViewModel();
 
         if (getArguments() != null) {
+            @SuppressWarnings("unchecked")
             java.util.List<com.example.frontend.data.model.cart.CartItemDto> selectedItems =
-                    (java.util.List<com.example.frontend.data.model.cart.CartItemDto>) getArguments().getSerializable("selected_items");
+                    BundleCompat.getSerializable(getArguments(), "selected_items", java.util.ArrayList.class);
             double coinsDiscount = getArguments().getDouble("coins_discount", 0);
             com.example.frontend.data.model.coupon.CouponDto selectedVoucher =
-                    (com.example.frontend.data.model.coupon.CouponDto) getArguments().getSerializable("selected_voucher");
+                    BundleCompat.getSerializable(getArguments(), "selected_voucher", com.example.frontend.data.model.coupon.CouponDto.class);
 
             if (selectedItems != null && !selectedItems.isEmpty()) {
                 android.util.Log.d("CheckoutFragment", "Setting mock data from cart arguments. Item count: " + selectedItems.size());

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.core.os.BundleCompat;
 import com.example.frontend.R;
 import com.example.frontend.data.model.beauty.SavedRoutineDto;
 import ui.common.ViewUtils;
@@ -36,7 +37,7 @@ public class RoutineUsageGuideFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getArguments() != null) {
-            routineData = (SavedRoutineDto) getArguments().getSerializable("routine_data");
+            routineData = BundleCompat.getSerializable(getArguments(), "routine_data", SavedRoutineDto.class);
         }
 
         setupHeader(view);

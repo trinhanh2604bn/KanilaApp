@@ -745,9 +745,9 @@ const getMyOrderReviewItems = async (req, res) => {
     const reviews = await Review.find({
       orderItemId: { $in: itemIds },
       customer_id: customer._id
-    }).select("orderItemId").lean();
+    }).select("orderItemId _id").lean();
 
-    const reviewedItemIds = new Set(reviews.map(r => String(r.orderItemId)));
+    const reviewMap = new Map(reviews.map(r => [String(r.orderItemId), String(r._id)]));
 
     const data = {
       orderId: String(order._id),
@@ -757,6 +757,7 @@ const getMyOrderReviewItems = async (req, res) => {
       items: items.map(it => {
         const itObj = it.toObject ? it.toObject() : it;
         const img = itObj.image_url_snapshot || (itObj.product_id ? itObj.product_id.imageUrl : "") || "";
+        const reviewId = reviewMap.get(String(itObj._id));
         return {
           orderItemId: String(itObj._id),
           productId: String(itObj.product_id?._id || itObj.product_id),
@@ -767,7 +768,8 @@ const getMyOrderReviewItems = async (req, res) => {
           imageUrl: img, // Add both for compatibility
           quantity: itObj.quantity,
           unitPrice: itObj.unit_final_price_amount,
-          reviewStatus: reviewedItemIds.has(String(itObj._id)) ? "reviewed" : "pending_review"
+          reviewStatus: reviewId ? "reviewed" : "pending_review",
+          reviewId: reviewId || null
         };
       })
     };

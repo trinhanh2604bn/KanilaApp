@@ -106,14 +106,7 @@ public class ReviewOrderFragment extends Fragment {
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new ReviewOrderAdapter(item -> {
             // Navigate to Review Creation screen
-            // Since we don't have a CreateReviewFragment, we might navigate to ReviewHubFragment or similar
-            // For now, let's toast and see where to go
-            Toast.makeText(getContext(), "Đánh giá " + item.getProductName(), Toast.LENGTH_SHORT).show();
-            
-            // If there's an existing Review Creation flow, we should use it.
-            // Requirement says "Navigate to existing product review screen if available."
-            // I found ReviewHubFragment earlier.
-            FragmentNavigationHelper.replaceFragment(requireActivity(), ReviewHubFragment.newInstance(item.getProductId()));
+            FragmentNavigationHelper.replaceFragment(requireActivity(), ReviewWriteFragment.newInstance(item.getOrderItemId()));
         });
         rv.setAdapter(adapter);
     }

@@ -220,6 +220,12 @@ public interface ApiService {
     @GET("api/orders/me/{id}/review-items")
     Call<ApiResponse<com.example.frontend.data.model.order.ReviewOrderItemsDto>> getOrderReviewItems(@Path("id") String orderId);
 
+    @GET("api/reviews/write-eligibility/{orderItemId}")
+    Call<ApiResponse<com.example.frontend.data.model.review.ReviewEligibilityDto>> getReviewWriteEligibility(@Path("orderItemId") String orderItemId);
+
+    @POST("api/reviews/submit")
+    Call<ApiResponse<Object>> submitReview(@Body com.example.frontend.data.model.review.SubmitReviewRequest request);
+
     @PATCH("api/orders/{id}/cancel")
     Call<ApiResponse<com.example.frontend.data.model.order.OrderSummaryDto>> cancelMyOrder(@Path("id") String id, @Body java.util.Map<String, String> body);
 

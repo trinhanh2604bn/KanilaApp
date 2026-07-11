@@ -1003,4 +1003,19 @@
     <string name="order_success_track">Theo dõi đơn hàng</string>
     <string name="order_success_continue">Tiếp tục mua sắm</string>
     <string name="challenge_active_title">Thử thách đang tham gia</string>
+
+    <!-- Review Write -->
+    <string name="review_write_title">Viết đánh giá</string>
+    <string name="review_write_rating_title">Đánh giá của bạn</string>
+    <string name="review_write_rating_hint">Chọn mức độ hài lòng</string>
+    <string name="review_write_tags_title">Chọn nhanh (chọn nhiều)</string>
+    <string name="review_write_content_title">Cảm nhận của bạn</string>
+    <string name="review_write_content_hint">Chia sẻ trải nghiệm của bạn về sản phẩm này...</string>
+    <string name="review_write_media_title">Thêm ảnh / video (tối đa 5)</string>
+    <string name="review_write_media_reward">Đánh giá có ảnh/video sẽ nhận thêm điểm</string>
+    <string name="review_write_skin_type_title">Loại da của bạn</string>
+    <string name="review_write_submit">Gửi đánh giá</string>
+    <string name="review_write_success">Cảm ơn bạn đã đánh giá!</string>
+    <string name="review_write_rating_required">Vui lòng chọn số sao đánh giá</string>
+    <string name="review_write_char_counter_format">%1$d/1000</string>
 </resources>

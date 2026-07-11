@@ -48,30 +48,6 @@ public class OrderRepository {
         });
     }
 
-    public void getOrderReviewItems(String orderId, MutableLiveData<NetworkResult<com.example.frontend.data.model.order.ReviewOrderItemsDto>> result) {
-        result.setValue(NetworkResult.loading());
-        apiService.getOrderReviewItems(orderId).enqueue(new Callback<ApiResponse<com.example.frontend.data.model.order.ReviewOrderItemsDto>>() {
-            @Override
-            public void onResponse(Call<ApiResponse<com.example.frontend.data.model.order.ReviewOrderItemsDto>> call, Response<ApiResponse<com.example.frontend.data.model.order.ReviewOrderItemsDto>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<com.example.frontend.data.model.order.ReviewOrderItemsDto> apiResponse = response.body();
-                    if (apiResponse.isSuccess()) {
-                        result.setValue(NetworkResult.success(apiResponse.getData()));
-                    } else {
-                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
-                    }
-                } else {
-                    result.setValue(NetworkResult.error("Failed to load review items"));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ApiResponse<com.example.frontend.data.model.order.ReviewOrderItemsDto>> call, Throwable t) {
-                result.setValue(NetworkResult.error(t.getMessage()));
-            }
-        });
-    }
-
     public void getOrderByCode(String orderCode, MutableLiveData<NetworkResult<OrderDetailDto>> result) {
         result.setValue(NetworkResult.loading());
         apiService.getOrderByCode(orderCode).enqueue(new Callback<ApiResponse<OrderDetailDto>>() {

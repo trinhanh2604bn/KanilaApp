@@ -21,7 +21,8 @@ public class PendingAuthAction {
         JOIN_CHALLENGE,
         COMMUNITY_INTERACTION,
         OPEN_LOYALTY,
-        OPEN_SUPPORT_TICKET
+        OPEN_SUPPORT_TICKET,
+        OPEN_ADDRESS_BOOK
     }
 
     private final ActionType actionType;

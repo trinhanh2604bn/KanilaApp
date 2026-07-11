@@ -283,19 +283,19 @@ public class OrderDetailFragment extends Fragment {
 
     private void setupOrderItemView(View itemView, OrderDetailDto.OrderItemDetailDto item) {
         ((TextView) itemView.findViewById(R.id.tvSelectedCartProductName)).setText(item.getProductName());
-        
+
         String displayVariant = item.getVariantName();
         if (displayVariant != null && displayVariant.contains(" - ")) {
             String[] parts = displayVariant.split(" - ");
             displayVariant = parts[parts.length - 1];
         }
         ((TextView) itemView.findViewById(R.id.tvSelectedCartVariant)).setText(displayVariant);
-        
-        ((TextView) itemView.findViewById(R.id.tvSelectedCartQuantity)).setText("Số lượng: " + item.getQuantity());
+
+        ((TextView) itemView.findViewById(R.id.tvSelectedCartQuantity)).setText("Số lượng: x" + item.getQuantity());
         ((TextView) itemView.findViewById(R.id.tvSelectedCartPrice)).setText(formatPrice(item.getUnitPrice()));
-        
+
         ImageView ivProduct = itemView.findViewById(R.id.ivSelectedCartProductImage);
-        
+
         // Cập nhật load ảnh giống CheckoutFragment
         com.bumptech.glide.Glide.with(this)
             .load(item.getImageUrl() != null ? item.getImageUrl() : "")

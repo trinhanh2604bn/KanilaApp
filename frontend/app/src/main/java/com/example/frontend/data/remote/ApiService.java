@@ -1,5 +1,6 @@
 package com.example.frontend.data.remote;
 
+import com.example.frontend.data.model.category.CategoryDto;
 import com.example.frontend.model.Product;
 import com.example.frontend.data.model.auth.LoginRequest;
 import com.example.frontend.data.model.auth.RegisterRequest;
@@ -26,10 +27,12 @@ import com.example.frontend.data.model.product.ProductDetailResponse;
 import com.example.frontend.feature.chatbot.data.request.ChatbotMessageRequest;
 import com.example.frontend.feature.chatbot.data.response.ChatbotMessageResponse;
 import java.util.List;
+import java.util.Map;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 import retrofit2.http.PATCH;
@@ -164,10 +167,16 @@ public interface ApiService {
     Call<ApiResponse<CheckoutSessionDto>> createBuyNowSession(@Body AddToCartRequest request);
 
     @POST("api/checkout-sessions/me/{id}/place-order")
-    Call<ApiResponse<Object>> placeOrder(@Path("id") String sessionId, @Body Object request);
+    Call<ApiResponse<OrderDto>> placeOrder(@Path("id") String sessionId, @Body Object request);
 
     @POST("api/checkout-sessions/guest/{id}/place-order")
-    Call<ApiResponse<Object>> placeGuestOrder(@Path("id") String sessionId, @Body Object request);
+    Call<ApiResponse<OrderDto>> placeGuestOrder(@Path("id") String sessionId, @Body Object request);
+
+    @POST("api/orders/mock-checkout")
+    Call<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>> createMockOrder(@Body java.util.Map<String, Object> request);
+
+    @GET("api/orders/code/{orderCode}")
+    Call<ApiResponse<com.example.frontend.data.model.order.OrderDetailDto>> getOrderByCode(@Path("orderCode") String orderCode);
 
     @GET("api/beauty-references")
     Call<ApiResponse<List<BeautyReferenceDto>>> getBeautyReferences();
@@ -211,6 +220,15 @@ public interface ApiService {
     @GET("api/orders/me/{id}")
     Call<ApiResponse<com.example.frontend.data.model.order.OrderDetailDto>> getMyOrderDetail(@Path("id") String id);
 
+    @GET("api/orders/me/{id}/review-items")
+    Call<ApiResponse<com.example.frontend.data.model.order.ReviewOrderItemsDto>> getOrderReviewItems(@Path("id") String orderId);
+
+    @GET("api/reviews/write-eligibility/{orderItemId}")
+    Call<ApiResponse<com.example.frontend.data.model.review.ReviewEligibilityDto>> getReviewWriteEligibility(@Path("orderItemId") String orderItemId);
+
+    @POST("api/reviews/submit")
+    Call<ApiResponse<Object>> submitReview(@Body com.example.frontend.data.model.review.SubmitReviewRequest request);
+
     @PATCH("api/orders/{id}/cancel")
     Call<ApiResponse<com.example.frontend.data.model.order.OrderSummaryDto>> cancelMyOrder(@Path("id") String id, @Body java.util.Map<String, String> body);
 
@@ -242,7 +260,7 @@ public interface ApiService {
     Call<ApiResponse<Object>> bulkDeleteWishlistItems(@Body BulkDeleteRequest request);
 
     @GET("api/orders/me/summary")
-    Call<ApiResponse<Object>> getMyOrderSummary();
+    Call<ApiResponse<com.example.frontend.data.model.order.UserOrderSummaryDto>> getMyOrderSummary();
 
     @GET("api/loyalty/me")
     Call<ApiResponse<Object>> getMyLoyaltyAccount();
@@ -252,4 +270,33 @@ public interface ApiService {
 
     @GET("api/accounts")
     Call<ApiResponse<List<Object>>> getAccounts();
+    @GET("api/categories/root")
+    Call<ApiResponse<List<CategoryDto>>> getRootCategories();
+
+    @GET("api/categories/{parentId}/children")
+    Call<ApiResponse<List<CategoryDto>>> getChildCategories(
+            @Path("parentId") String parentId
+    );
+
+    @GET("api/products")
+    Call<ApiResponse<List<Product>>> getProductsByCategory(
+            @Query("page") int page,
+            @Query("limit") int limit,
+            @Query("fields") String fields,
+            @Query("categoryId") String categoryId,
+            @Query("includeChildren") boolean includeChildren
+    );
+
+    @GET("api/products")
+    Call<ApiResponse<List<Product>>> getProductsByCollection(
+            @Query("page") int page,
+            @Query("limit") int limit,
+            @Query("fields") String fields,
+            @Query("collection") String collection
+    );
+
+    @GET("api/products")
+    Call<ApiResponse<List<Product>>> getProductsByQuery(
+            @QueryMap Map<String, String> query
+    );
 }

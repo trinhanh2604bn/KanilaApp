@@ -216,11 +216,9 @@ public class CommunityBlogFragment extends Fragment implements BlogAdapter.OnBlo
 
     @Override
     public void onBlogClick(BlogPost blog) {
-        BlogDetailFragment fragment = BlogDetailFragment.newInstance(blog.getId());
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main, fragment)
-                .addToBackStack(null)
-                .commit();
+        if (getActivity() instanceof com.example.frontend.MainActivity) {
+            ((com.example.frontend.MainActivity) getActivity()).loadFragment(BlogDetailFragment.newInstance(blog.getId()));
+        }
     }
 
     @Override

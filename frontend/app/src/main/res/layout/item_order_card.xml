@@ -53,6 +53,46 @@
                 android:layout_height="wrap_content"
                 android:text="Hoàn thành"
                 android:textColor="@color/button" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="12dp"
+                android:layout_marginHorizontal="8dp"
+                android:background="@color/border_divider" />
+
+            <TextView
+                android:id="@+id/tvPaymentStatus"
+                style="@style/Text.Kanila.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đã thanh toán"
+                android:textColor="@color/text_secondary" />
+        </LinearLayout>
+
+        <!-- Order Info: Code & Date -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/spacing_m"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/tvOrderNumber"
+                style="@style/Text.Kanila.Micro"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mã đơn: KNL123456"
+                android:textColor="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/tvOrderDate"
+                style="@style/Text.Kanila.Micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="20/07/2024"
+                android:textColor="@color/text_secondary" />
         </LinearLayout>
 
         <View

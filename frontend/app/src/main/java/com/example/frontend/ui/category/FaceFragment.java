@@ -16,27 +16,21 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
+import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.data.model.cart.AddToCartRequest;
+import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.data.repository.ProductRepository;
 import com.example.frontend.feature.search.SearchActivity;
 import com.example.frontend.model.Product;
 import java.util.ArrayList;
 import java.util.List;
-import com.example.frontend.data.model.cart.AddToCartRequest;
-import com.example.frontend.data.remote.TokenManager;
-import com.example.frontend.feature.cart.CartViewModel;
-import com.example.frontend.data.remote.NetworkResult;
-import com.example.frontend.feature.wishlist.WishlistViewModel;
-import com.example.frontend.core.auth.AuthNavigationHelper;
-import com.example.frontend.core.auth.PendingAuthAction;
 import androidx.lifecycle.ViewModelProvider;
-import com.example.frontend.ui.common.BottomNavigationHelper;
+import ui.common.BottomNavigationHelper;
 
 public class FaceFragment extends Fragment {
 
     private RecyclerView rvFaceProducts;
     private ProductAdapter adapter;
-    private WishlistViewModel wishlistViewModel;
-    private CartViewModel cartViewModel;
     private List<Product> allFaceProducts = new ArrayList<>();
     private View containerSearchNoResult;
     private View loadingState;
@@ -52,6 +46,7 @@ public class FaceFragment extends Fragment {
     private TextView chipTintedMoisturizer;
 
     private ProductRepository productRepository;
+    private CartViewModel cartViewModel;
 
     @Nullable
     @Override
@@ -64,8 +59,7 @@ public class FaceFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         productRepository = new ProductRepository(requireContext());
-        wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
-        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
 
         initViews(view);
         setupSearch(view);
@@ -74,9 +68,7 @@ public class FaceFragment extends Fragment {
         setupActions(view);
         loadProductsFromRepository();
 
-        BottomNavigationHelper.setup(view, tabIndex -> {
-            // Handle bottom nav
-        });
+        BottomNavigationHelper.setupStandardNavigation(this, view);
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
     }
 
@@ -185,21 +177,6 @@ public class FaceFragment extends Fragment {
 
     private void setupProductList() {
         adapter = new ProductAdapter();
-        adapter.setOnWishlistClickListener((product, position) -> {
-            if (TokenManager.getInstance(requireContext()).isLoggedIn()) {
-                wishlistViewModel.toggleWishlist(product.getId(), product.isFavorite());
-                product.setFavorite(!product.isFavorite());
-                adapter.notifyItemChanged(position);
-                String msg = product.isFavorite() ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích";
-                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-            } else {
-                Bundle extras = new Bundle();
-                extras.putString("productId", product.getId());
-                extras.putBoolean("wasWishlisted", product.isFavorite());
-                PendingAuthAction action = new PendingAuthAction(PendingAuthAction.ActionType.ADD_TO_WISHLIST, "FaceFragment", R.id.main, extras);
-                AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
-            }
-        });
         adapter.setOnProductClickListener(new ProductAdapter.OnProductClickListener() {
             @Override
             public void onProductClick(Product product) {
@@ -221,7 +198,7 @@ public class FaceFragment extends Fragment {
     }
 
     private void handleAddToCart(Product product) {
-        if (product == null || product.getId() == null) return;
+        if (product.getId() == null) return;
 
         AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
         cartViewModel.addToCart(request);
@@ -242,51 +219,33 @@ public class FaceFragment extends Fragment {
     }
 
     private void loadProductsFromRepository() {
-        // Fetch products for "Face" category.
-        // Usually, the category name is "Face" and slug might be "face".
-        // Trying "face" first as a slug.
-        String categorySlug = "face";
-        android.util.Log.d("FaceFragment", "Loading products for category: " + categorySlug);
-        
-        showLoading(true);
-        productRepository.getProducts(null, categorySlug, null).observe(getViewLifecycleOwner(), result -> {
-            if (result == null) {
-                showLoading(false);
-                android.util.Log.e("FaceFragment", "NetworkResult is null");
-                return;
-            }
-
-            android.util.Log.d("FaceFragment", "Status: " + result.status + ", Message: " + result.message);
+        // Fetch products for "Face" category. Using "face" as slug/id placeholder.
+        productRepository.getProducts(null, "face", null).observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
 
             switch (result.status) {
+                case LOADING:
+                    showLoading(true);
+                    break;
                 case SUCCESS:
                     showLoading(false);
-                    if (result.data != null && !result.data.isEmpty()) {
-                        android.util.Log.d("FaceFragment", "Received " + result.data.size() + " products");
+                    if (result.data != null) {
                         allFaceProducts = result.data;
                         selectChip(chipAllFace);
                         showProducts(allFaceProducts);
-                    } else {
-                        android.util.Log.d("FaceFragment", "Data is empty, showing no result container");
-                        showProducts(new ArrayList<>());
                     }
                     break;
                 case EMPTY:
                     showLoading(false);
-                    android.util.Log.d("FaceFragment", "Category returned empty results");
                     showProducts(new ArrayList<>());
                     break;
                 case ERROR:
                     showLoading(false);
-                    android.util.Log.e("FaceFragment", "Error loading products: " + result.message);
                     Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
                     break;
                 case NO_INTERNET:
                     showLoading(false);
                     Toast.makeText(getContext(), R.string.error_no_internet, Toast.LENGTH_SHORT).show();
-                    break;
-                case LOADING:
-                    // Already showing loading
                     break;
             }
         });

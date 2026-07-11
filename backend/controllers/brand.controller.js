@@ -4,21 +4,46 @@ const validateObjectId = require("../utils/validateObjectId");
 // GET /api/brands (listing / filters: skip long description when scanning full collection)
 const getAllBrands = async (req, res) => {
   try {
-    const brands = await Brand.find()
-      .select("brandName brandCode logoUrl brandStatus isActive")
-      .sort({ createdAt: -1 })
+    const limitRaw = Number(req.query.limit || 0);
+    const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? limitRaw : 0;
+
+    const filter = {};
+
+    // Nếu model Brand có isActive thì dùng.
+    // Nếu không có, MongoDB vẫn không lỗi nếu field không tồn tại, nhưng nên kiểm tra model trước.
+    if (req.query.activeOnly !== "false") {
+      filter.isActive = { $ne: false };
+    }
+
+    let query = Brand.find(filter)
+      .select("_id brandName brandCode logoUrl brandLogo imageUrl brandImageUrl isActive displayOrder createdAt")
+      .sort({
+        displayOrder: 1,
+        brandName: 1,
+        createdAt: -1,
+      })
       .lean();
 
-    res.status(200).json({
+    if (limit > 0) {
+      query = query.limit(limit);
+    }
+
+    const brands = await query;
+
+    return res.status(200).json({
       success: true,
-      message: "Get all brands successfully",
+      message: "Get brands successfully",
       count: brands.length,
       data: brands,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
+
 
 // GET /api/brands/:id
 const getBrandById = async (req, res) => {

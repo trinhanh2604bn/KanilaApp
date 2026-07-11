@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
+import ui.common.FragmentNavigationHelper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,14 @@ public class OrderListFragment extends Fragment {
     
     private final List<TextView> tabViews = new ArrayList<>();
     private String currentStatus = null; // null for "All"
+
+    public static OrderListFragment newInstance(String initialStatus) {
+        OrderListFragment fragment = new OrderListFragment();
+        Bundle args = new Bundle();
+        args.putString("initial_status", initialStatus);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Nullable
     @Override
@@ -54,7 +63,26 @@ public class OrderListFragment extends Fragment {
             }
         });
 
-        viewModel.loadOrders(null);
+        if (getArguments() != null && getArguments().containsKey("initial_status")) {
+            String initialStatus = getArguments().getString("initial_status");
+            int index = getTabIndexForStatus(initialStatus);
+            onTabSelected(index);
+        } else {
+            viewModel.loadOrders(null);
+        }
+    }
+
+    private int getTabIndexForStatus(String status) {
+        if (status == null) return 0;
+        switch (status) {
+            case "pending": return 1;
+            case "confirmed": return 2;
+            case "processing": return 3;
+            case "completed": return 4;
+            case "returned": return 5;
+            case "cancelled": return 6;
+            default: return 0;
+        }
     }
 
     private void initViews(View view) {
@@ -122,11 +150,8 @@ public class OrderListFragment extends Fragment {
     private void setupRecyclerView() {
         adapter = new OrderAdapter();
         adapter.setOnOrderClickListener(order -> {
-            OrderDetailFragment fragment = OrderDetailFragment.newInstance(order.getId());
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main, fragment)
-                    .addToBackStack(null)
-                    .commit();
+            OrderDetailFragment fragment = OrderDetailFragment.newInstance(order.getId(), order.getOrderNumber());
+            FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
         });
         rvOrders.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvOrders.setAdapter(adapter);

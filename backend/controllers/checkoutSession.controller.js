@@ -1075,6 +1075,7 @@ const placeMyCheckoutSessionOrder = async (req, res) => {
         sku_snapshot: item.sku_snapshot || info.variant?.sku || String(item.variant_id),
         product_name_snapshot: item.product_name_snapshot || info.product?.productName || "Product",
         variant_name_snapshot: item.variant_name_snapshot || info.variant?.variantName || "Default",
+        image_url_snapshot: item.image_url_snapshot || info.product?.imageUrl || "",
         quantity: qty,
         unit_list_price_amount: toMoney(item.compare_at_price_amount || unit),
         unit_sale_price_amount: unit,
@@ -1411,6 +1412,7 @@ const placeGuestCheckoutSessionOrder = async (req, res) => {
         sku_snapshot: item.sku_snapshot || info.variant?.sku || String(item.variant_id),
         product_name_snapshot: item.product_name_snapshot || info.product?.productName || "Product",
         variant_name_snapshot: item.variant_name_snapshot || info.variant?.variantName || "Default",
+        image_url_snapshot: item.image_url_snapshot || info.product?.imageUrl || "",
         quantity: qty,
         unit_list_price_amount: toMoney(item.compare_at_price_amount || unit),
         unit_sale_price_amount: unit,
@@ -1447,6 +1449,15 @@ const placeGuestCheckoutSessionOrder = async (req, res) => {
     session.checkout_status = "completed";
     await session.save();
     await CartItem.deleteMany({ cart_id: session.cart_id, selected: true });
+
+    const remain = await CartItem.find({ cart_id: session.cart_id });
+    const newSummary = computeCartSummary(remain);
+    await Cart.findByIdAndUpdate(session.cart_id, {
+      item_count: newSummary.itemCount,
+      subtotal_amount: newSummary.subtotal,
+      discount_amount: newSummary.discountTotal,
+      total_amount: newSummary.grandTotal,
+    });
 
     return res.status(201).json({
       success: true,

@@ -27,8 +27,10 @@ import com.example.frontend.data.repository.CatalogRepository;
 import com.example.frontend.model.Brand;
 import com.example.frontend.model.HomeBannerItem;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import com.example.frontend.ui.common.BottomNavigationHelper;
+import android.util.Log;
+import ui.common.BottomNavigationHelper;
 
 public class BrandPageFragment extends Fragment {
 
@@ -68,9 +70,7 @@ public class BrandPageFragment extends Fragment {
         setupHeroSlider(view);
         loadBrandsFromRepository();
 
-        BottomNavigationHelper.setup(view, tabIndex -> {
-            // Handle tab navigation
-        });
+        BottomNavigationHelper.setupStandardNavigation(this, view);
         BottomNavigationHelper.setSelectedTab(view, BottomNavigationHelper.TAB_CATEGORY);
     }
 
@@ -89,8 +89,15 @@ public class BrandPageFragment extends Fragment {
         adapter.setOnBrandClickListener(brand -> {
             // Handle brand click - navigate to products by brand
             if (getActivity() != null) {
+                if (brand == null || brand.getId() == null || brand.getId().trim().isEmpty()) {
+                    Toast.makeText(getContext(), "Không tìm thấy ID thương hiệu", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Log.d("BrandPage", "Open brand products id = " + brand.getId() + ", name = " + brand.getBrandName());
+
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_fragment_container, ProductListingFragment.newBrandInstance(brand.getBrandName()))
+                        .replace(R.id.main_fragment_container, ProductListingFragment.newBrandInstance(brand.getId(), brand.getBrandName()))
                         .addToBackStack(null)
                         .commit();
             }
@@ -146,15 +153,19 @@ public class BrandPageFragment extends Fragment {
     }
 
     private void filterBrandsLocally(String query) {
-        if (query.isEmpty()) {
+        if (query == null || query.trim().isEmpty()) {
             adapter.updateData(fullBrandList);
             showEmpty(fullBrandList.isEmpty());
             return;
         }
 
+        String normalizedQuery = query.trim().toLowerCase();
+
         List<Brand> filtered = new ArrayList<>();
         for (Brand brand : fullBrandList) {
-            if (brand.getBrandName().toLowerCase().contains(query.toLowerCase())) {
+            if (brand == null || brand.getBrandName() == null) continue;
+
+            if (brand.getBrandName().toLowerCase().contains(normalizedQuery)) {
                 filtered.add(brand);
             }
         }
@@ -240,32 +251,52 @@ public class BrandPageFragment extends Fragment {
 
     private void loadBrandsFromRepository() {
         catalogRepository.getBrands().observe(getViewLifecycleOwner(), result -> {
-            if (result == null) return;
-            
+            if (result == null) {
+                android.util.Log.d("BrandPage", "result = null");
+                return;
+            }
+
+            android.util.Log.d(
+                    "BrandPage",
+                    "status = " + result.status
+                            + ", dataSize = " + (result.data == null ? "null" : result.data.size())
+                            + ", message = " + result.message
+            );
+
             switch (result.status) {
                 case LOADING:
                     showLoading(true);
                     showEmpty(false);
                     break;
+
                 case SUCCESS:
                     showLoading(false);
+
                     if (result.data != null) {
-                        fullBrandList = result.data;
+                        fullBrandList = new ArrayList<>(result.data);
+
+                        android.util.Log.d("BrandPage", "submit brands size = " + fullBrandList.size());
+
                         adapter.updateData(fullBrandList);
                         showEmpty(fullBrandList.isEmpty());
                     } else {
+                        adapter.updateData(new ArrayList<>());
                         showEmpty(true);
                     }
                     break;
+
                 case EMPTY:
                     showLoading(false);
+                    android.util.Log.d("BrandPage", "EMPTY from repository");
                     adapter.updateData(new ArrayList<>());
                     showEmpty(true);
                     break;
+
                 case ERROR:
                 case NO_INTERNET:
                     showLoading(false);
                     showEmpty(false);
+                    android.util.Log.d("BrandPage", "error = " + result.message);
                     Toast.makeText(
                             getContext(),
                             result.message != null ? result.message : "Không tải được danh sách thương hiệu",
@@ -277,17 +308,27 @@ public class BrandPageFragment extends Fragment {
     }
 
     private void showLoading(boolean isLoading) {
-        if (loadingState != null) loadingState.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        if (isLoading) {
-            rvBrandGrid.setVisibility(View.GONE);
-        } else {
-            rvBrandGrid.setVisibility(View.VISIBLE);
+        if (loadingState != null) {
+            loadingState.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        }
+
+        if (rvBrandGrid != null) {
+            rvBrandGrid.setVisibility(isLoading ? View.GONE : View.VISIBLE);
+        }
+
+        if (isLoading && emptyState != null) {
+            emptyState.setVisibility(View.GONE);
         }
     }
 
     private void showEmpty(boolean isEmpty) {
-        if (emptyState != null) emptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-        if (isEmpty) rvBrandGrid.setVisibility(View.GONE);
+        if (emptyState != null) {
+            emptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        }
+
+        if (rvBrandGrid != null) {
+            rvBrandGrid.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        }
     }
 
     private void setupFilterLogic() {
@@ -298,18 +339,28 @@ public class BrandPageFragment extends Fragment {
                 TextView chip = (TextView) child;
                 chip.setOnClickListener(v -> {
                     updateFilterUI(chip);
-                    String chipText = chip.getText().toString();
-                    if (chipText.equals(getString(R.string.filter_all))) {
-                        adapter.updateData(fullBrandList);
-                        showEmpty(fullBrandList.isEmpty());
-                    } else {
-                        // Backend does not return region. Show empty for other regions as per TODO
-                        adapter.updateData(new ArrayList<>());
-                        showEmpty(true);
-                    }
+                    clearBrandSearchWithoutBreakingShuffle();
+                    showRandomBrands();
                 });
             }
         }
+    }
+
+    private void clearBrandSearchWithoutBreakingShuffle() {
+        if (edtBrandSearch != null && edtBrandSearch.getText() != null && edtBrandSearch.getText().length() > 0) {
+            edtBrandSearch.setText("");
+        }
+
+        if (btnClearBrandSearch != null) {
+            btnClearBrandSearch.setVisibility(View.GONE);
+        }
+    }
+
+    private void showRandomBrands() {
+        List<Brand> randomBrands = new ArrayList<>(fullBrandList);
+        Collections.shuffle(randomBrands);
+        adapter.updateData(randomBrands);
+        showEmpty(randomBrands.isEmpty());
     }
 
     private void updateFilterUI(TextView selectedChip) {

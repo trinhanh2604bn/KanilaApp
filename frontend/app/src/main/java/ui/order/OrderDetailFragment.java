@@ -23,14 +23,16 @@ import com.example.frontend.R;
 import com.example.frontend.data.model.order.OrderDetailDto;
 import com.example.frontend.feature.home.HomeProductAdapter;
 import com.example.frontend.feature.wishlist.WishlistViewModel;
+import ui.common.FragmentNavigationHelper;
 import java.util.List;
 import java.util.Locale;
 
 public class OrderDetailFragment extends Fragment {
 
     private static final String ARG_ORDER_ID = "order_id";
+    private static final String ARG_ORDER_CODE = "order_code";
 
-    private String orderId;
+    private String orderId, orderCode;
     private OrderDetailViewModel viewModel;
     private WishlistViewModel wishlistViewModel;
     private HomeProductAdapter recommendationAdapter;
@@ -39,6 +41,7 @@ public class OrderDetailFragment extends Fragment {
     private View layoutBanner, layoutRefundDetail, layoutShipping, layoutAddress, layoutOrderDetails;
     private TextView tvBannerStatus, tvBannerTime, tvRefundAmount;
     private TextView tvShippingMethod, tvTrackingNumber;
+    private ImageView ivShippingMethodIcon;
     private TextView tvRecipientInfo, tvFullAddress;
     private LinearLayout layoutItemsList;
     private TextView tvGrandTotal, tvOrderNumber, tvOrderPlacedTime, tvPaymentMethod;
@@ -46,9 +49,14 @@ public class OrderDetailFragment extends Fragment {
     private View btnCopyOrderNumber;
 
     public static OrderDetailFragment newInstance(String orderId) {
+        return newInstance(orderId, null);
+    }
+
+    public static OrderDetailFragment newInstance(String orderId, String orderCode) {
         OrderDetailFragment fragment = new OrderDetailFragment();
         Bundle args = new Bundle();
         args.putString(ARG_ORDER_ID, orderId);
+        args.putString(ARG_ORDER_CODE, orderCode);
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,6 +66,7 @@ public class OrderDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             orderId = getArguments().getString(ARG_ORDER_ID);
+            orderCode = getArguments().getString(ARG_ORDER_CODE);
         }
     }
 
@@ -99,11 +108,12 @@ public class OrderDetailFragment extends Fragment {
 
         tvShippingMethod = view.findViewById(R.id.tvOrderShippingMethod);
         tvTrackingNumber = view.findViewById(R.id.tvOrderTrackingNumber);
+        ivShippingMethodIcon = view.findViewById(R.id.ivOrderShippingIcon);
 
         tvRecipientInfo = view.findViewById(R.id.tvOrderRecipientNamePhone);
         tvFullAddress = view.findViewById(R.id.tvOrderFullAddress);
 
-        layoutItemsList = view.findViewById(R.id.layoutOrderItemsList);
+        layoutItemsList = view.findViewById(R.id.layoutCheckoutItemsList);
         tvGrandTotal = view.findViewById(R.id.tvOrderGrandTotal);
 
         tvOrderNumber = view.findViewById(R.id.tvOrderNumber);
@@ -222,7 +232,34 @@ public class OrderDetailFragment extends Fragment {
         
         // 2. Thông tin vận chuyển (Chỉ hiện khi không phải đơn mới/đã hủy)
         if (layoutShipping.getVisibility() == View.VISIBLE) {
-            tvShippingMethod.setText("Giao hàng nhanh");
+            String method = order.getShippingMethodName();
+            
+            // Try to get from shipment if root is null
+            if ((method == null || method.isEmpty()) && order.getShipment() != null) {
+                method = order.getShipment().getServiceName();
+            }
+
+            // Ultimate Fallback: Guess by fee if still null
+            if (method == null || method.isEmpty()) {
+                double fee = order.getTotal() != null ? order.getTotal().getShippingFee() : -1;
+                if (fee == 45000) method = "Hỏa tốc";
+                else if (fee == 0) method = "Nhận tại cửa hàng";
+                else if (fee == 25000) method = "Nhanh";
+                else if (fee == 15000) method = "Tiêu chuẩn";
+                else method = "Giao hàng nhanh";
+            }
+
+            tvShippingMethod.setText(method);
+
+            // Set corresponding icon
+            if (ivShippingMethodIcon != null) {
+                if ("Nhận tại cửa hàng".equals(method)) {
+                    ivShippingMethodIcon.setImageResource(R.drawable.ic_routine);
+                } else {
+                    ivShippingMethodIcon.setImageResource(R.drawable.ic_shipping);
+                }
+            }
+
             if (order.getShipment() != null && order.getShipment().getTrackingNumber() != null) {
                 tvTrackingNumber.setText(getString(R.string.order_detail_tracking_number, order.getShipment().getTrackingNumber()));
                 tvTrackingNumber.setVisibility(View.VISIBLE);
@@ -252,7 +289,7 @@ public class OrderDetailFragment extends Fragment {
         layoutItemsList.removeAllViews();
         if (order.getItems() != null) {
             for (OrderDetailDto.OrderItemDetailDto item : order.getItems()) {
-                View itemView = getLayoutInflater().inflate(R.layout.item_order_card, layoutItemsList, false);
+                View itemView = getLayoutInflater().inflate(R.layout.item_cart_selected, layoutItemsList, false);
                 setupOrderItemView(itemView, item);
                 layoutItemsList.addView(itemView);
             }
@@ -274,24 +311,26 @@ public class OrderDetailFragment extends Fragment {
     }
 
     private void setupOrderItemView(View itemView, OrderDetailDto.OrderItemDetailDto item) {
-        View cardContainer = itemView.findViewById(R.id.cardOrder);
-        if (cardContainer instanceof com.google.android.material.card.MaterialCardView) {
-            ((com.google.android.material.card.MaterialCardView) cardContainer).setStrokeWidth(0);
-            cardContainer.setBackground(null);
-        }
-        
-        itemView.findViewById(R.id.layoutOrderHeader).setVisibility(View.GONE);
-        itemView.findViewById(R.id.dividerOrder).setVisibility(View.GONE);
-        itemView.findViewById(R.id.layoutOrderActionArea).setVisibility(View.GONE);
-        
-        View totalArea = itemView.findViewById(R.id.tvOrderTotalSummary).getParent() instanceof View ? (View)itemView.findViewById(R.id.tvOrderTotalSummary).getParent() : null;
-        if (totalArea != null) totalArea.setVisibility(View.GONE);
-
         ((TextView) itemView.findViewById(R.id.tvSelectedCartProductName)).setText(item.getProductName());
-        ((TextView) itemView.findViewById(R.id.tvSelectedCartVariant)).setText(item.getVariantName());
+
+        String displayVariant = item.getVariantName();
+        if (displayVariant != null && displayVariant.contains(" - ")) {
+            String[] parts = displayVariant.split(" - ");
+            displayVariant = parts[parts.length - 1];
+        }
+        ((TextView) itemView.findViewById(R.id.tvSelectedCartVariant)).setText(displayVariant);
+
         ((TextView) itemView.findViewById(R.id.tvSelectedCartQuantity)).setText("Số lượng: x" + item.getQuantity());
         ((TextView) itemView.findViewById(R.id.tvSelectedCartPrice)).setText(formatPrice(item.getUnitPrice()));
-        ((ImageView) itemView.findViewById(R.id.ivSelectedCartProductImage)).setImageResource(R.drawable.ic_product);
+
+        ImageView ivProduct = itemView.findViewById(R.id.ivSelectedCartProductImage);
+
+        // Cập nhật load ảnh giống CheckoutFragment
+        com.bumptech.glide.Glide.with(this)
+            .load(item.getImageUrl() != null ? item.getImageUrl() : "")
+            .placeholder(R.drawable.ic_product)
+            .error(R.drawable.ic_product)
+            .into(ivProduct);
     }
 
     private void setupActions(String status) {
@@ -303,9 +342,9 @@ public class OrderDetailFragment extends Fragment {
 
         switch (status) {
             case "pending":
-                btnActionSecondary.setVisibility(View.GONE);
-                btnActionPrimary.setText("Hủy đơn hàng");
-                btnActionPrimary.setOnClickListener(v -> showCancelDialog());
+                btnActionPrimary.setVisibility(View.GONE);
+                btnActionSecondary.setText("Hủy đơn hàng");
+                btnActionSecondary.setOnClickListener(v -> showCancelDialog());
                 break;
             case "confirmed":
                 btnActionSecondary.setText("Hủy đơn hàng");
@@ -313,15 +352,21 @@ public class OrderDetailFragment extends Fragment {
                 btnActionPrimary.setText("Liên hệ Shop");
                 break;
             case "processing":
-                btnActionSecondary.setText("Theo dõi đơn");
-                btnActionPrimary.setText("Đã nhận được hàng");
+                btnActionSecondary.setText("Trả hàng/Hoàn tiền");
+                btnActionPrimary.setText("Đã nhận hàng");
                 btnActionPrimary.setEnabled(false);
                 break;
             case "completed":
-                btnActionSecondary.setText("Trả hàng/Hoàn tiền");
+                btnActionSecondary.setText(R.string.order_detail_return_refund);
                 btnActionPrimary.setText("Đánh giá");
+                btnActionPrimary.setOnClickListener(v -> {
+                    ReviewOrderFragment fragment = ReviewOrderFragment.newInstance(orderId);
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+                });
                 break;
             case "cancelled":
+                btnActionPrimary.setVisibility(View.GONE);
+                btnActionSecondary.setVisibility(View.GONE);
             case "returned":
                 btnActionSecondary.setText("Mua lại");
                 btnActionPrimary.setText("Xem chi tiết");
@@ -342,7 +387,12 @@ public class OrderDetailFragment extends Fragment {
     }
 
     private String getStatusTimeText(String status, OrderDetailDto order) {
-        if ("confirmed".equals(status)) return "Dự kiến giao hàng sau 2-3 ngày";
+        if ("confirmed".equals(status)) {
+            if (order.getEstimatedDelivery() != null && !order.getEstimatedDelivery().isEmpty()) {
+                return "Dự kiến giao hàng: " + order.getEstimatedDelivery();
+            }
+            return "Dự kiến giao hàng sau 2-3 ngày";
+        }
         if ("processing".equals(status)) return "Shipper đang trên đường giao đến bạn";
         return "Cảm ơn bạn đã mua sắm tại Kanila!";
     }

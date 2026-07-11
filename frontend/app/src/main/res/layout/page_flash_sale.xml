@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical">
+
+    <!-- Top Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutFlashSaleTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/background_main"
+        android:paddingHorizontal="@dimen/spacing_s">
+
+        <ImageButton
+            android:id="@+id/btnFlashSaleBack"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_back"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/text_main" />
+
+        <LinearLayout
+            android:id="@+id/layoutFlashSaleTitleContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_hot"
+                app:tint="@color/button" />
+
+            <TextView
+                android:id="@+id/tvFlashSalePageTitle"
+                style="@style/Text.Kanila.H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_xs"
+                android:text="@string/flash_sale_page_title"
+                android:textColor="@color/button" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnFlashSaleSearch"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_search"
+            android:src="@drawable/ic_search"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/text_main" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Session Row -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/layoutFlashSaleSessions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- 21:00 -->
+            <LinearLayout
+                android:id="@+id/layoutSessionNow"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingVertical="@dimen/spacing_s">
+
+                <TextView
+                    android:id="@+id/tvSessionNowTime"
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="21:00"
+                    android:textColor="@color/button" />
+
+                <TextView
+                    android:id="@+id/tvSessionNowStatus"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/flash_sale_status_ongoing"
+                    android:textColor="@color/button" />
+
+                <View
+                    android:id="@+id/viewSessionNowIndicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:background="@color/button" />
+            </LinearLayout>
+
+            <!-- 00:00 -->
+            <LinearLayout
+                android:id="@+id/layoutSessionMidnight"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingVertical="@dimen/spacing_s">
+
+                <TextView
+                    android:id="@+id/tvSessionMidnightTime"
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textColor="@color/text_secondary" />
+
+                <TextView
+                    android:id="@+id/tvSessionMidnightStatus"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/flash_sale_status_tomorrow"
+                    android:textColor="@color/text_tertiary" />
+
+                <View
+                    android:id="@+id/viewSessionMidnightIndicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:background="@color/button"
+                    android:visibility="invisible" />
+            </LinearLayout>
+
+            <!-- 02:00 -->
+            <LinearLayout
+                android:id="@+id/layoutSessionTwo"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingVertical="@dimen/spacing_s">
+
+                <TextView
+                    android:id="@+id/tvSessionTwoTime"
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="02:00"
+                    android:textColor="@color/text_secondary" />
+
+                <TextView
+                    android:id="@+id/tvSessionTwoStatus"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/flash_sale_status_tomorrow"
+                    android:textColor="@color/text_tertiary" />
+
+                <View
+                    android:id="@+id/viewSessionTwoIndicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:background="@color/button"
+                    android:visibility="invisible" />
+            </LinearLayout>
+
+            <!-- 09:00 -->
+            <LinearLayout
+                android:id="@+id/layoutSessionNine"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingVertical="@dimen/spacing_s">
+
+                <TextView
+                    android:id="@+id/tvSessionNineTime"
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="09:00"
+                    android:textColor="@color/text_secondary" />
+
+                <TextView
+                    android:id="@+id/tvSessionNineStatus"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/flash_sale_status_tomorrow"
+                    android:textColor="@color/text_tertiary" />
+
+                <View
+                    android:id="@+id/viewSessionNineIndicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:background="@color/button"
+                    android:visibility="invisible" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/ivFlashSaleBanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_banner_flashsale" />
+
+                <!-- Countdown Row -->
+                <LinearLayout
+                    android:id="@+id/layoutFlashSalePageCountdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FFF4F7"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="@dimen/spacing_l"
+                    android:paddingVertical="@dimen/spacing_m">
+
+                    <TextView
+                        android:id="@+id/tvFlashSalePageCountdownLabel"
+                        style="@style/Text.Kanila.Body"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/nunito_bold"
+                        android:text="@string/flash_sale_ends_in"
+                        android:textColor="@color/text_main"
+                        android:textSize="12sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvFlashSalePageHour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_discount_badge"
+                            android:fontFamily="@font/nunito_bold"
+                            android:paddingHorizontal="4dp"
+                            android:paddingVertical="2dp"
+                            android:text="00"
+                            android:textColor="@color/white"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="2dp"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text=":"
+                            android:textColor="@color/button" />
+
+                        <TextView
+                            android:id="@+id/tvFlashSalePageMinute"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_discount_badge"
+                            android:fontFamily="@font/nunito_bold"
+                            android:paddingHorizontal="4dp"
+                            android:paddingVertical="2dp"
+                            android:text="31"
+                            android:textColor="@color/white"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="2dp"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text=":"
+                            android:textColor="@color/button" />
+
+                        <TextView
+                            android:id="@+id/tvFlashSalePageSecond"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_discount_badge"
+                            android:fontFamily="@font/nunito_bold"
+                            android:paddingHorizontal="4dp"
+                            android:paddingVertical="2dp"
+                            android:text="26"
+                            android:textColor="@color/white"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvFlashSalePageProducts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingBottom="@dimen/spacing_l"
+                    tools:listitem="@layout/item_flash_sale_page_product" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <include
+            android:id="@+id/layoutFlashSaleLoading"
+            layout="@layout/view_loading_state"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/layoutFlashSaleEmpty"
+            layout="@layout/view_empty_state"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+</LinearLayout>

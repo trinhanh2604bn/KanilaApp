@@ -9,6 +9,8 @@ const reviewSchema = new mongoose.Schema(
     rating: { type: Number, required: true, min: 1, max: 5 },
     reviewTitle: { type: String, default: "" },
     reviewContent: { type: String, default: "" },
+    reviewTags: { type: [String], default: [] },
+    skinTypes: { type: [String], default: [] },
     reviewStatus: { type: String, enum: ["visible", "hidden"], default: "visible" },
     helpfulCount: { type: Number, default: 0 },
     verifiedPurchaseFlag: { type: Boolean, default: false },

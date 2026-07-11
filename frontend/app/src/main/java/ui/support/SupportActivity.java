@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import com.example.frontend.R;
 import com.example.frontend.feature.home.HomeFragment;
 import ui.account.AccountFragment;
-import ui.category.ProductCategoryFragment;
+import com.example.frontend.ui.category.ProductCategoryFragment;
 import ui.common.BottomNavigationHelper;
 import com.example.frontend.feature.chatbot.ChatbotQuickMenuBottomSheet;
 

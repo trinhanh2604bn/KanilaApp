@@ -75,6 +75,7 @@
     <string name="category_cheeks">Cheeks</string>
     <string name="category_gift">Gift</string>
     <string name="category_new">New</string>
+    <string name="category_new_arrival">New Arrival</string>
     <string name="category_hot">Hot</string>
     <string name="category_brushes">Mini &amp; Travel</string>
     <string name="category_ar">AR</string>
@@ -845,6 +846,7 @@
     <string name="challenge_tab_ongoing">Đang diễn ra</string>
     <string name="challenge_tab_joined">Đã tham gia</string>
     <string name="challenge_tab_leaderboard">Bảng xếp hạng</string>
+    <string name="challenge_active_title">Thử Thách</string>
     <string name="challenge_participants">%s tham gia</string>
     <string name="challenge_reward_points">%s điểm</string>
     <string name="challenge_action_join">Tham gia</string>
@@ -861,6 +863,10 @@
     <string name="challenge_ended">Thử thách đã kết thúc</string>
     <string name="challenge_remaining_time">Còn lại: %s</string>
     <string name="challenge_day_format">Ngày %1$d/%2$d</string>
+    <string name="challenge_participants_list">Danh sách đã tham gia</string>
+    <string name="challenge_participant_progress_title">Tiến trình của %s</string>
+    <string name="challenge_no_participants">Chưa có người tham gia</string>
+    <string name="challenge_progress_summary">%d bài viết</string>
 
     <string name="leaderboard_weekly">Tuần này</string>
 
@@ -970,4 +976,86 @@
     <string name="help_more_info_title">Bạn có muốn tìm thêm thông tin gì không?</string>
     <string name="priority_customer_service">Chăm sóc khách hàng ưu tiên</string>
     <string name="call_center">Gọi cho tổng đài</string>
+    <string name="challenge_daily_title_format">Thử thách ngày %s</string>
+    <string name="challenge_write_content_label">Viết nội dung</string>
+    <string name="challenge_media_attach_label">Ảnh/Video đính kèm</string>
+    <string name="challenge_add_hashtag_label">Thêm hashtag</string>
+    <string name="challenge_product_attach_label">Sản phẩm đính kèm (tối đa 5)</string>
+    <string name="challenge_hashtag_hint">Nhập hashtag và nhấn Enter</string>
+    <string name="challenge_product_attach_tip">Gợi ý: Thêm sản phẩm bạn đã sử dụng để bài viết chi tiết và hữu ích hơn cho cộng đồng.</string>
+    <string name="challenge_post_progress_action">Đăng tiến trình</string>
+    <string name="challenge_media_count_format">%1$d/6</string>
+    <string name="challenge_product_count_format">%1$d/5</string>
+    <string name="challenge_char_counter_format">%1$d/2000</string>
+    <string name="challenge_media_support_note">Hỗ trợ ảnh, video. Dung lượng tối đa 30MB/1 file.</string>
+    <string name="challenge_add_media">Thêm ảnh/video</string>
+    <string name="challenge_add_product">Thêm sản phẩm</string>
+    <string name="challenge_sample_date">01/06 - 07/06/2026</string>
+    <string name="challenge_participants_count_format">%s người</string>
+    <string name="challenge_participants_helper_text">Theo dõi các bài tiến trình được đăng trong thử thách này</string>
+    <string name="challenge_progress_summary_full">Đã đăng %1$s/%2$s bài tiến trình</string>
+    <string name="challenge_more_posts_format">+%d bài tiến trình khác</string>
+    <string name="challenge_day_label_format">Ngày %d</string>
+    <string name="challenge_rules_title">Quy tắc thử thách</string>
+
+    <string name="filter_concerns">Nhu cầu</string>
+    <string name="concern_long_wear">Lâu trôi</string>
+    <string name="concern_smooth_finish">Mịn da</string>
+    <string name="concern_photo_ready">Ăn ảnh</string>
+    <string name="filter_sensitive_only">Phù hợp da nhạy cảm</string>
+    <string name="filter_best_seller_only">Bán chạy</string>
+
+    <string name="ing_glycerin">Glycerin</string>
+    <string name="ing_tocopherol">Tocopherol</string>
+    <string name="ing_mica">Mica</string>
+
+    <!-- Order Success -->
+
+
+
+    <string name="order_success_title">Đặt hàng thành công</string>
+    <string name="order_success_desc">Cảm ơn bạn đã mua sắm tại Kanila!\nChúng tôi sẽ xử lý đơn hàng của bạn ngay.</string>
+    <string name="order_success_code">Mã đơn hàng</string>
+    <string name="order_success_payment">Phương thức thanh toán</string>
+    <string name="order_success_delivery">Thời gian giao dự kiến</string>
+    <string name="order_success_amount">Số tiền đã thanh toán</string>
+    <string name="order_success_reward">Bạn nhận được %d điểm Kanila</string>
+    <string name="order_success_track">Theo dõi đơn hàng</string>
+    <string name="order_success_continue">Tiếp tục mua sắm</string>
+
+    <!-- Review Write -->
+    <string name="review_write_title">Viết đánh giá</string>
+    <string name="review_write_rating_title">Đánh giá của bạn</string>
+    <string name="review_write_rating_hint">Chọn mức độ hài lòng</string>
+    <string name="review_write_tags_title">Chọn nhanh (chọn nhiều)</string>
+    <string name="review_write_content_title">Cảm nhận của bạn</string>
+    <string name="review_write_content_hint">Chia sẻ trải nghiệm của bạn về sản phẩm này...</string>
+    <string name="review_write_media_title">Thêm ảnh / video (tối đa 5)</string>
+    <string name="review_write_media_reward">Đánh giá có ảnh/video sẽ nhận thêm điểm</string>
+    <string name="review_write_skin_type_title">Loại da của bạn</string>
+    <string name="review_write_submit">Gửi đánh giá</string>
+    <string name="review_write_success">Cảm ơn bạn đã đánh giá!</string>
+    <string name="review_write_rating_required">Vui lòng chọn số sao đánh giá</string>
+    <string name="review_write_char_counter_format">%1$d/1000</string>
+
+    <!-- Flash Sale & Voucher -->
+    <string name="flash_sale_title">Flash Sale</string>
+    <string name="flash_sale_countdown_label">Kết thúc sau</string>
+    <string name="voucher_title">Kho voucher</string>
+    <string name="voucher_save">Lưu</string>
+    <string name="voucher_claim">Săn ít</string>
+
+    <!-- Mock Flash Sale Countdown -->
+    <string name="mock_flash_hour">02</string>
+    <string name="mock_flash_minute">45</string>
+    <string name="mock_flash_second">32</string>
+    <string name="symbol_colon">:</string>
+    <string name="badge_sale">SALE</string>
+    <string name="badge_trending">ĐANG BÁN CHẠY</string>
+    <string name="action_buy_now">Mua ngay</string>
+    <string name="flash_sale_page_title">FLASH SALE</string>
+    <string name="flash_sale_status_ongoing">Đang diễn ra</string>
+    <string name="flash_sale_status_tomorrow">Ngày mai</string>
+    <string name="flash_sale_ends_in">KẾT THÚC TRONG</string>
+    <string name="flash_sale_starts_in">BẮT ĐẦU SAU</string>
 </resources>

@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ui.account.AccountFragment;
-import ui.category.ProductCategoryFragment;
+import com.example.frontend.ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
 import ui.commerce.CheckoutFragment;
 import ui.common.BottomNavigationHelper;
@@ -543,7 +543,7 @@ public class MainActivity extends AppCompatActivity {
         shortcutAdapter.setOnShortcutClickListener(item -> {
             String id = item.getId();
             if ("orders".equals(id)) {
-                loadFragment(new com.example.frontend.feature.order.OrderListFragment());
+                loadFragment(new ui.order.OrderListFragment());
             } else if ("kanila_beauty".equals(id)) {
                 loadFragment(new ui.account.BeautyProfileOverviewFragment());
             } else if ("support".equals(id)) {

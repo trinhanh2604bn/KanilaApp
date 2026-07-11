@@ -1,6 +1,7 @@
 package ui.community;
 
 import com.example.frontend.model.Product;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Post {
@@ -23,6 +24,7 @@ public class Post {
     private String postType;
     private String skinType;
     private List<Product> products;
+    private List<Comment> comments = new ArrayList<>();
 
     public Post(String id, String userName, String userAvatar, String time, String title, String content, List<String> images, int likeCount, int commentCount, int shareCount, boolean isVerified, boolean isPurchased) {
         this.id = id;
@@ -69,4 +71,13 @@ public class Post {
     public void setSkinType(String skinType) { this.skinType = skinType; }
     public List<Product> getProducts() { return products; }
     public void setProducts(List<Product> products) { this.products = products; }
+
+    public List<Comment> getComments() {
+        if (comments == null) comments = new ArrayList<>();
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 }

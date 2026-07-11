@@ -157,21 +157,23 @@ public class CheckoutRepository {
         });
     }
 
-    public void placeOrder(String sessionId, boolean isGuest, MutableLiveData<NetworkResult<Object>> result) {
+    public void placeOrder(String sessionId, boolean isGuest, MutableLiveData<NetworkResult<com.example.frontend.data.model.order.OrderDto>> result) {
         result.setValue(NetworkResult.loading());
 
-        Call<ApiResponse<Object>> call;
+        Call<ApiResponse<com.example.frontend.data.model.order.OrderDto>> call;
         if (isGuest) {
-            call = apiService.placeGuestOrder(sessionId, new java.util.HashMap<>());
+            // Need to update ApiService if possible, but let's see if we can cast or use Object for now if it's too much
+            // Actually, better to update ApiService.
+            call = (Call) apiService.placeGuestOrder(sessionId, new java.util.HashMap<>());
         } else {
-            call = apiService.placeOrder(sessionId, new java.util.HashMap<>());
+            call = (Call) apiService.placeOrder(sessionId, new java.util.HashMap<>());
         }
 
-        call.enqueue(new Callback<ApiResponse<Object>>() {
+        call.enqueue(new Callback<ApiResponse<com.example.frontend.data.model.order.OrderDto>>() {
             @Override
-            public void onResponse(Call<ApiResponse<Object>> call, Response<ApiResponse<Object>> response) {
+            public void onResponse(Call<ApiResponse<com.example.frontend.data.model.order.OrderDto>> call, Response<ApiResponse<com.example.frontend.data.model.order.OrderDto>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<Object> apiResponse = response.body();
+                    ApiResponse<com.example.frontend.data.model.order.OrderDto> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
                         result.setValue(NetworkResult.success(apiResponse.getData()));
                     } else {
@@ -183,7 +185,31 @@ public class CheckoutRepository {
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<Object>> call, Throwable t) {
+            public void onFailure(Call<ApiResponse<com.example.frontend.data.model.order.OrderDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void createMockOrder(java.util.Map<String, Object> request, MutableLiveData<NetworkResult<com.example.frontend.data.model.order.MockOrderResponse>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.createMockOrder(request).enqueue(new Callback<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>> call, Response<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<com.example.frontend.data.model.order.MockOrderResponse> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to create mock order"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>> call, Throwable t) {
                 result.setValue(NetworkResult.error(t.getMessage()));
             }
         });

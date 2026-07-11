@@ -359,7 +359,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/nunito_bold"
-                        android:text="Nhiệm vụ mỗi ngày"
+                        android:text="Nhiệm vụ"
                         android:textColor="@color/text_main"
                         android:textSize="16sp" />
 
@@ -399,7 +399,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/nunito_bold"
-                            android:text="Sản phẩm trong thử thách"
+                            android:text="Sản phẩm"
                             android:textColor="@color/text_main"
                             android:textSize="16sp" />
 
@@ -421,12 +421,13 @@
                         android:orientation="horizontal"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:itemCount="3"
-                        tools:listitem="@layout/item_product_thumbnail" />
+                        tools:listitem="@layout/item_product_card" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Rewards Card -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/layoutRewards"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_l"
@@ -541,6 +542,69 @@
                                 android:textSize="11sp" />
                         </LinearLayout>
                     </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Participants Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_l"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="@dimen/radius_l"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_l">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/tvParticipantsTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="Danh sách đã tham gia"
+                            android:textColor="@color/text_main"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/tvParticipantCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_s"
+                            android:layout_toEndOf="@id/tvParticipantsTitle"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:textColor="@color/button"
+                            android:textSize="14sp"
+                            tools:text="24 người" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tvParticipantsTitle"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="Theo dõi các bài tiến trình được đăng trong thử thách này"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="12sp" />
+                    </RelativeLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvParticipants"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_m"
+                        android:nestedScrollingEnabled="false"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:itemCount="3"
+                        tools:listitem="@layout/item_challenge_participant" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

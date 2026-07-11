@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_soft"
+    android:orientation="vertical">
+
+    <!-- Header -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/white"
+        android:paddingHorizontal="@dimen/spacing_l">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_back"
+            android:src="@drawable/ic_back"
+            app:tint="@color/burgundy" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/nunito_bold"
+            android:text="@string/reward_center_title"
+            android:textColor="@color/text_main"
+            android:textSize="18sp" />
+
+        <ImageButton
+            android:id="@+id/btnRewardInfo"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/notification"
+            android:src="@drawable/ic_info"
+            app:tint="@color/burgundy" />
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_l">
+
+            <!-- Points Summary Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="@dimen/radius_l"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_reward_points_gradient"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_l"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:text="@string/reward_my_points"
+                            android:textColor="@color/secondary"
+                            android:textSize="13sp" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_star"
+                                app:tint="@color/white"
+                                android:contentDescription="@null" />
+
+                            <TextView
+                                android:id="@+id/tvTotalPoints"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/spacing_xs"
+                                android:fontFamily="@font/nunito_bold"
+                                android:textColor="@color/white"
+                                android:textSize="28sp"
+                                tools:text="2.500" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvEquivalentValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:fontFamily="@font/nunito_regular"
+                            android:textColor="@color/secondary"
+                            android:textSize="12sp"
+                            tools:text="Tương đương 250.000đ" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRedeemGift"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:backgroundTint="@color/white"
+                        android:fontFamily="@font/nunito_bold"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="@string/reward_redeem_button"
+                        android:textColor="@color/burgundy"
+                        android:textSize="13sp"
+                        app:cornerRadius="@dimen/radius_pill"
+                        app:icon="@drawable/ic_gift"
+                        app:iconGravity="textStart"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/burgundy" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Voucher Summary Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardVoucherSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_m"
+                app:cardElevation="1dp"
+                app:cardCornerRadius="@dimen/radius_l"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_reward_soft_card"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_l"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="@string/reward_my_vouchers"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tvVoucherCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:fontFamily="@font/nunito_bold"
+                            android:textColor="@color/burgundy"
+                            android:textSize="20sp"
+                            tools:text="5" />
+
+                        <TextView
+                            android:id="@+id/tvVoucherLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/reward_available_vouchers"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_marginEnd="@dimen/spacing_m"
+                        android:src="@drawable/ic_coupon"
+                        android:alpha="0.2"
+                        app:tint="@color/burgundy"
+                        android:contentDescription="@null" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnUseVoucher"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:fontFamily="@font/nunito_bold"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="@string/reward_use_voucher"
+                        android:textColor="@color/burgundy"
+                        android:textSize="13sp"
+                        app:cornerRadius="@dimen/radius_pill"
+                        app:strokeColor="@color/burgundy"
+                        app:strokeWidth="1dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Activity Streak Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardActivityStreak"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_l"
+                app:cardElevation="1dp"
+                app:cardCornerRadius="@dimen/radius_l"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_l">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="@string/reward_activity_streak"
+                            android:textColor="@color/text_main"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/tvStreakStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:text="@string/reward_streak_7_days"
+                            android:textColor="@color/burgundy"
+                            android:textSize="13sp" />
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutStreakDays"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_m"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <!-- Mock Streak Days -->
+                        <include layout="@layout/item_streak_day" />
+                        <include layout="@layout/item_streak_day" />
+                        <include layout="@layout/item_streak_day" />
+                        <include layout="@layout/item_streak_day" />
+                        <include layout="@layout/item_streak_day" />
+                        <include layout="@layout/item_streak_day" />
+                        <include layout="@layout/item_streak_day" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Today Missions Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTodayMissions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_l"
+                app:cardElevation="1dp"
+                app:cardCornerRadius="@dimen/radius_l"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_l">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="@string/reward_today_missions"
+                            android:textColor="@color/text_main"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/tvMissionRefreshTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:fontFamily="@font/nunito_regular"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="12sp"
+                            tools:text="Làm mới sau: 10:18:22" />
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutTodayMissions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_m"
+                        android:orientation="vertical">
+
+                        <!-- Mission Row 1 -->
+                        <include layout="@layout/item_reward_mission_compact" />
+                        <!-- Mission Row 2 -->
+                        <include layout="@layout/item_reward_mission_compact" />
+                        <!-- Mission Row 3 -->
+                        <include layout="@layout/item_reward_mission_compact" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Redeem Rewards Section -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xl">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_bold"
+                    android:text="@string/reward_redeem_gift"
+                    android:textColor="@color/text_main"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvViewAllRewards"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/nunito_semibold"
+                    android:text="@string/action_see_all"
+                    android:textColor="@color/burgundy"
+                    android:textSize="13sp" />
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvRewards"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_m"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_reward_horizontal" />
+
+            <!-- Bottom Motivational Banner -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardRewardTipBanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:layout_marginBottom="@dimen/spacing_l"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="@dimen/radius_m"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_reward_tip_banner"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_l"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/nunito_semibold"
+                        android:text="@string/reward_tip_banner"
+                        android:textColor="@color/burgundy"
+                        android:textSize="12sp"
+                        android:lineSpacingExtra="2dp" />
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="@dimen/spacing_m"
+                        android:src="@drawable/ic_gift"
+                        app:tint="@color/burgundy" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

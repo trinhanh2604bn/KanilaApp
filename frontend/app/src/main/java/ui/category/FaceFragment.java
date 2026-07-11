@@ -16,11 +16,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
+import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.data.model.cart.AddToCartRequest;
+import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.data.repository.ProductRepository;
 import com.example.frontend.feature.search.SearchActivity;
 import com.example.frontend.model.Product;
 import java.util.ArrayList;
 import java.util.List;
+import androidx.lifecycle.ViewModelProvider;
 import ui.common.BottomNavigationHelper;
 
 public class FaceFragment extends Fragment {
@@ -42,6 +46,7 @@ public class FaceFragment extends Fragment {
     private TextView chipTintedMoisturizer;
 
     private ProductRepository productRepository;
+    private CartViewModel cartViewModel;
 
     @Nullable
     @Override
@@ -54,6 +59,7 @@ public class FaceFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         productRepository = new ProductRepository(requireContext());
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
 
         initViews(view);
         setupSearch(view);
@@ -171,16 +177,45 @@ public class FaceFragment extends Fragment {
 
     private void setupProductList() {
         adapter = new ProductAdapter();
-        adapter.setOnProductClickListener(product -> {
-            if (getActivity() != null) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
-                        .addToBackStack(null)
-                        .commit();
+        adapter.setOnProductClickListener(new ProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main_fragment_container, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
             }
         });
         rvFaceProducts.setLayoutManager(new GridLayoutManager(getContext(), 2));
         rvFaceProducts.setAdapter(adapter);
+    }
+
+    private void handleAddToCart(Product product) {
+        if (product.getId() == null) return;
+
+        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
+        cartViewModel.addToCart(request);
+
+        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
+            @Override
+            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
+                if (result == null) return;
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                }
+            }
+        });
     }
 
     private void loadProductsFromRepository() {

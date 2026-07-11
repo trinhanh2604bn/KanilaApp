@@ -13,7 +13,7 @@ public class VerifyOtpRequest {
     private String otp;
 
     @SerializedName("purpose")
-    private String purpose; // "register" or "login"
+    private String purpose; // "register", "login", or "reset_password"
 
     @SerializedName("guest_session_id")
     private String guestSessionId;

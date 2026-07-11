@@ -17,7 +17,7 @@
         android:paddingVertical="10dp"
         android:lineSpacingExtra="2dp"
         android:text="Đơn hàng của mình đang ở đâu rồi nhỉ?"
-        android:textAppearance="@style/Body"
+        style="@style/Text.Kanila.Body"
         android:textColor="@color/text_main" />
 
     <LinearLayout
@@ -32,15 +32,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="09:41"
-            android:textAppearance="@style/Micro"
+            style="@style/Text.Kanila.Micro"
             android:textColor="@color/text_tertiary" />
 
         <TextView
+            android:id="@+id/tvStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:text="✓✓"
-            android:textAppearance="@style/Micro"
+            style="@style/Text.Kanila.Micro"
             android:textColor="@color/button" />
     </LinearLayout>
 </LinearLayout>

@@ -51,7 +51,7 @@
             style="@style/Widget.Kanila.Button.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Xác nhận phương thức vận chuyển" />
+            tools:text="Xác nhận" />
     </FrameLayout>
 
 </LinearLayout>

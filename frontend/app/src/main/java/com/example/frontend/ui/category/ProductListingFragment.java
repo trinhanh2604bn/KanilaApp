@@ -27,7 +27,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.example.frontend.data.model.cart.AddToCartRequest;
+import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.data.remote.TokenManager;
+import com.example.frontend.data.repository.ProductRepository;
+import com.example.frontend.feature.cart.CartViewModel;
 import com.example.frontend.feature.wishlist.WishlistViewModel;
 import com.example.frontend.core.auth.AuthNavigationHelper;
 import com.example.frontend.core.auth.PendingAuthAction;
@@ -50,10 +54,13 @@ public class ProductListingFragment extends Fragment {
     private RecyclerView rvCategoryProducts;
     private ProductAdapter adapter;
     private WishlistViewModel wishlistViewModel;
+    private CartViewModel cartViewModel;
     private List<Product> baseProducts = new ArrayList<>();
     private View containerSearchNoResult;
     private LinearLayout layoutCategoryFilterChips;
     private View hsvCategoryFilterChips;
+    private ProductRepository productRepository;
+    private View loadingState;
     private ArrangeBottomSheetDialog.SortOption currentSortOption = ArrangeBottomSheetDialog.SortOption.BEST_MATCH;
 
     public static ProductListingFragment newCategoryInstance(String categoryName) {
@@ -94,7 +101,9 @@ public class ProductListingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        productRepository = new ProductRepository(requireContext());
         wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
+        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
 
         initViews(view);
         setupHeader();
@@ -113,6 +122,7 @@ public class ProductListingFragment extends Fragment {
         containerSearchNoResult = root.findViewById(R.id.containerSearchNoResult);
         layoutCategoryFilterChips = root.findViewById(R.id.layoutCategoryFilterChips);
         hsvCategoryFilterChips = root.findViewById(R.id.hsvCategoryFilterChips);
+        loadingState = root.findViewById(R.id.layoutLoading);
 
         ImageButton btnBack = root.findViewById(R.id.btnCategoryBack);
         if (btnBack != null) {
@@ -235,75 +245,73 @@ public class ProductListingFragment extends Fragment {
                 AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
             }
         });
-        adapter.setOnProductClickListener(product -> {
-            if (getActivity() != null) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
-                        .addToBackStack(null)
-                        .commit();
+        adapter.setOnProductClickListener(new ProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main_fragment_container, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
             }
         });
         rvCategoryProducts.setLayoutManager(new GridLayoutManager(getContext(), 2));
         rvCategoryProducts.setAdapter(adapter);
 
-        loadMockData();
-        showProducts(baseProducts);
+        loadProductsFromRepository();
     }
 
-    private void loadMockData() {
-        baseProducts.clear();
-        // This is a mock implementation. In real app, this would call a repository.
-        List<Product> allMockProducts = getAllMockProducts();
-        
-        for (Product p : allMockProducts) {
-            if (TYPE_CATEGORY.equals(listingType)) {
-                // For simplicity, we assume some products match the category
-                // In real mock, we would check p.getCategory()
-                if (categoryName.equals("Face") && p.getId().startsWith("f")) baseProducts.add(p);
-                else if (categoryName.equals("Eyes") && p.getId().startsWith("e")) baseProducts.add(p);
-                else if (categoryName.equals("Lips") && p.getId().startsWith("l")) baseProducts.add(p);
-                else if (categoryName.equals("Cheeks") && p.getId().startsWith("c")) baseProducts.add(p);
-                else if (categoryName.equals("Mini & Travel") && p.getId().startsWith("mt")) baseProducts.add(p);
-                else if (categoryName.equals("Gift") && p.getId().startsWith("g")) baseProducts.add(p);
-            } else if (TYPE_BRAND.equals(listingType)) {
-                if (brandName.equalsIgnoreCase(p.getBrand())) {
-                    baseProducts.add(p);
+    private void loadProductsFromRepository() {
+        String category = TYPE_CATEGORY.equals(listingType) ? categoryName.toLowerCase() : null;
+        String brand = TYPE_BRAND.equals(listingType) ? brandName : null;
+
+        showLoading(true);
+        productRepository.getProducts(brand, category, null).observe(getViewLifecycleOwner(), result -> {
+            showLoading(false);
+            if (result == null) return;
+
+            switch (result.status) {
+                case SUCCESS:
+                    if (result.data != null) {
+                        baseProducts = result.data;
+                        showProducts(baseProducts);
+                    }
+                    break;
+                case EMPTY:
+                    showProducts(new ArrayList<>());
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
+    }
+
+    private void handleAddToCart(Product product) {
+        if (product == null || product.getId() == null) return;
+
+        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
+        cartViewModel.addToCart(request);
+
+        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
+            @Override
+            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
+                if (result == null) return;
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
                 }
             }
-        }
-    }
-
-    private List<Product> getAllMockProducts() {
-        List<Product> list = new ArrayList<>();
-        // Face
-        list.add(new Product("f1", "BeautyBlender", "Bounce Liquid Foundation", "450000", "4.5", "1.2k", R.drawable.img_foudation, "New", "Foundation"));
-        list.add(new Product("f2", "Maybelline", "Fit Me Matte + Poreless", "250000", "4.8", "5.1k", R.drawable.img_brand_1, "Best Seller", "Foundation"));
-        list.add(new Product("f3", "BeautyBlender", "Phấn phủ BOUNCE Soft Focus", "450000", "4.2", "800", R.drawable.img_foudation, "", "Powder"));
-        list.add(new Product("f4", "Huda Beauty", "Easy Bake Loose Powder", "950000", "4.9", "12k", R.drawable.img_brand_2, "Hot", "Powder"));
-        list.add(new Product("f5", "Nars", "Radiant Creamy Concealer", "850000", "4.8", "3.2k", R.drawable.brand_nars, "Essential", "Concealer"));
-        
-        // Eyes
-        list.add(new Product("e1", "L'Oreal", "Voluminous Lash Paradise", "350000", "4.7", "10k", R.drawable.ic_product, "Best Seller", "Mascara"));
-        list.add(new Product("e2", "NYX", "Epic Ink Liner", "200000", "4.6", "8k", R.drawable.ic_product, "Hot", "Eyeliner"));
-        
-        // Lips
-        list.add(new Product("l1", "MAC", "Matte Lipstick", "480000", "4.8", "25k", R.drawable.img_lipstick, "Classic", "Lipstick"));
-        list.add(new Product("l2", "Fwee", "Lip Suede", "350000", "4.9", "1k", R.drawable.img_lipstick, "New", "Lipstick"));
-        
-        // Brands specific
-        list.add(new Product("fwee1", "Fwee", "Blurry Pudding Pot", "420000", "4.9", "2k", R.drawable.img_brand_1, "Hot", "Blush"));
-        list.add(new Product("nars1", "Nars", "Light Reflecting Foundation", "1200000", "4.8", "5k", R.drawable.brand_nars, "Premium", "Foundation"));
-
-        // Mini & Travel
-        list.add(new Product("mt1", "Laneige", "Mini Foundation Tint", "320000", "4.7", "500", R.drawable.img_foudation, "Mini", "Mini Foundation"));
-        list.add(new Product("mt2", "Innisfree", "Travel Makeup Kit", "550000", "4.5", "300", R.drawable.img_gift, "Kit", "Trial Kits"));
-
-        // Gift
-        list.add(new Product("g1", "Judydoll", "All-in-one Face Palette", "450000", "4.9", "1.5k", R.drawable.img_blush, "Palette", "Face Palette"));
-        list.add(new Product("g2", "Huda Beauty", "Naughty Nude Eyeshadow", "1650000", "4.9", "2k", R.drawable.img_eyeshadow, "Premium", "Eyeshadow Palette"));
-
-        for (Product p : list) p.setHasAr(true);
-        return list;
+        });
     }
 
     private void filterBySubcategory(String subcategory) {
@@ -353,6 +361,16 @@ public class ProductListingFragment extends Fragment {
             });
             dialog.show(getChildFragmentManager(), "ArrangeBottomSheet");
         });
+    }
+
+    private void showLoading(boolean isLoading) {
+        if (loadingState != null) loadingState.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        if (isLoading) {
+            rvCategoryProducts.setVisibility(View.GONE);
+            containerSearchNoResult.setVisibility(View.GONE);
+        } else {
+            rvCategoryProducts.setVisibility(View.VISIBLE);
+        }
     }
 
     private void showProducts(List<Product> products) {

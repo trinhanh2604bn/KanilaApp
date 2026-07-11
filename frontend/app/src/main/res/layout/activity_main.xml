@@ -6,88 +6,76 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main"
-    tools:context=".MainActivity"
-    android:fitsSystemWindows="true">
+    tools:context=".MainActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutHomeSearchHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="5dp"
-        android:paddingTop="@dimen/spacing_m"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp">
-
-        <FrameLayout
-            android:id="@+id/containerSearchArea"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/spacing_xs"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnNotification"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0">
-
-            <include
-                android:id="@+id/layoutSearchBar"
-                layout="@layout/view_search_bar" />
-        </FrameLayout>
-
-        <ImageButton
-            android:id="@+id/btnNotification"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/notification"
-            android:src="@drawable/ic_notification"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnCart"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/button"
-            tools:ignore="TouchTargetSizeCheck" />
-
-        <ImageButton
-            android:id="@+id/btnCart"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/cart"
-            android:src="@drawable/ic_cart"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnWishlist"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/button"
-            tools:ignore="TouchTargetSizeCheck" />
-
-        <ImageButton
-            android:id="@+id/btnWishlist"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/wishlist"
-            android:src="@drawable/ic_heart_outline"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/button"
-
-            tools:ignore="TouchTargetSizeCheck" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <!-- Scrollable Home Content -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/layoutHomeScroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:clipToPadding="false"
         app:layout_constraintBottom_toTopOf="@id/layoutBottomNavigation"
-        app:layout_constraintTop_toBottomOf="@id/layoutHomeSearchHeader">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingBottom="@dimen/spacing_xl">
+
+            <!-- Header with Search and Icons -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutHomeSearchHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="5dp"
+                android:paddingTop="@dimen/spacing_m">
+
+                <FrameLayout
+                    android:id="@+id/containerSearchArea"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/spacing_xs"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/btnNotification"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+                    <include android:id="@+id/layoutSearchBar" layout="@layout/view_search_bar" />
+                </FrameLayout>
+
+                <ImageButton
+                    android:id="@+id/btnNotification"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_notification"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/btnCart"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/button" />
+
+                <ImageButton
+                    android:id="@+id/btnCart"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_cart"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/btnWishlist"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/button" />
+
+                <ImageButton
+                    android:id="@+id/btnWishlist"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_heart_outline"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/button" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/vpHomeBanner"
@@ -115,7 +103,6 @@
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
                     android:orientation="horizontal"
-                    android:padding="0dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_home_shortcut" />
 
@@ -160,8 +147,7 @@
                         android:paddingHorizontal="4dp"
                         android:text="Xem tất cả"
                         android:textColor="@color/pink_primary"
-                        android:textSize="14sp"
-                        tools:ignore="TouchTargetSizeCheck" />
+                        android:textSize="14sp" />
 
                     <TextView
                         android:id="@+id/tvRecommendationSubtitle"
@@ -175,7 +161,6 @@
                         android:textSize="12sp" />
                 </RelativeLayout>
 
-                <!-- Recommended Products RecyclerView -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvRecommendedProducts"
                     android:layout_width="match_parent"
@@ -221,27 +206,26 @@
 
             </LinearLayout>
 
-
-            <!-- Loading / Error States -->
             <FrameLayout
                 android:id="@+id/layoutHomeStateContainer"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:visibility="gone">
-
-                <include
-                    android:id="@+id/viewHomeLoading"
-                    layout="@layout/view_loading_state"
-                    android:visibility="gone" />
-
-                <include
-                    android:id="@+id/viewHomeError"
-                    layout="@layout/view_error_generic"
-                    android:visibility="gone" />
+                <include android:id="@+id/viewHomeLoading" layout="@layout/view_loading_state" />
+                <include android:id="@+id/viewHomeError" layout="@layout/view_error_generic" />
             </FrameLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- Fragment Container (Over Home content when navigating) -->
+    <FrameLayout
+        android:id="@+id/main_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/layoutBottomNavigation"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Bottom Navigation -->
     <include

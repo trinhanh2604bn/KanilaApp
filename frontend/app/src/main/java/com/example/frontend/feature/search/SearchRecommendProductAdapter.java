@@ -27,6 +27,7 @@ public class SearchRecommendProductAdapter extends RecyclerView.Adapter<SearchRe
 
     public interface OnProductClickListener {
         void onProductClick(Product product);
+        void onAddToCartClick(Product product);
     }
 
     public interface OnWishlistClickListener {
@@ -114,7 +115,7 @@ public class SearchRecommendProductAdapter extends RecyclerView.Adapter<SearchRe
         
         if (holder.btnAddToCart != null) {
             holder.btnAddToCart.setOnClickListener(v -> {
-                // TODO: Handle add to cart
+                if (listener != null) listener.onAddToCartClick(product);
             });
         }
     }

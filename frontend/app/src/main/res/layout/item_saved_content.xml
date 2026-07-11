@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_m"
+    app:cardCornerRadius="@dimen/radius_m"
+    app:cardElevation="1dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/spacing_m">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivSavedThumbnail"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/bg_slide_4"
+            app:shapeAppearanceOverlay="@style/RoundedEight" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/spacing_m"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvSavedType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chip_pill"
+                android:backgroundTint="@color/bg_section"
+                android:paddingHorizontal="@dimen/spacing_s"
+                android:paddingVertical="2dp"
+                android:textColor="@color/text_tertiary"
+                android:textSize="10sp"
+                tools:text="BLOG"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/tvSavedTitle"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:fontFamily="@font/nunito_bold"
+                android:maxLines="2"
+                android:textColor="@color/text_main"
+                android:textSize="14sp"
+                tools:text="5 bước skincare buổi sáng cho người bận rộn" />
+
+            <TextView
+                android:id="@+id/tvSavedMeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/nunito_regular"
+                android:textColor="@color/text_tertiary"
+                android:textSize="12sp"
+                tools:text="Kanila Official • 2 ngày trước" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnRemoveSave"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_bookmark"
+            app:tint="@color/button"
+            android:contentDescription="@null" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -72,7 +72,7 @@ public class ForgotPasswordFragment extends Fragment {
     }
 
     private void observeViewModel() {
-        viewModel.getAuthResult().observe(getViewLifecycleOwner(), result -> {
+        viewModel.getForgotPasswordResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             switch (result.status) {
                 case LOADING:
@@ -114,7 +114,7 @@ public class ForgotPasswordFragment extends Fragment {
                 channel, identifier, "reset_password"
         );
         getParentFragmentManager().beginTransaction()
-                .replace(R.id.main, fragment)
+                .replace(R.id.main_fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
     }

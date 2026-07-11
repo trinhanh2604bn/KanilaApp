@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,7 +60,7 @@ public class ProductInfoDetailFragment extends Fragment {
         if (getArguments() != null) {
             String title = getArguments().getString(ARG_TITLE);
             String content = getArguments().getString(ARG_CONTENT);
-            InfoMode mode = (InfoMode) getArguments().getSerializable(ARG_MODE);
+            InfoMode mode = BundleCompat.getSerializable(getArguments(), ARG_MODE, InfoMode.class);
             if (mode == null) mode = InfoMode.DESCRIPTION;
 
             renderHeader(view, title, mode);

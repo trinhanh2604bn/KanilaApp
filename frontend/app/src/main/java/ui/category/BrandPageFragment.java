@@ -88,7 +88,7 @@ public class BrandPageFragment extends Fragment {
             // Handle brand click - navigate to products by brand
             if (getActivity() != null) {
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main, ProductListingFragment.newBrandInstance(brand.getBrandName()))
+                        .replace(R.id.main_fragment_container, ProductListingFragment.newBrandInstance(brand.getBrandName()))
                         .addToBackStack(null)
                         .commit();
             }

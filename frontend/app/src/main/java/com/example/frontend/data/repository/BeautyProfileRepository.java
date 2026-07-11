@@ -67,4 +67,28 @@ public class BeautyProfileRepository {
             }
         });
     }
+
+    public void updateBeautyProfile(String customerId, CustomerBeautyProfileDto profile, MutableLiveData<NetworkResult<CustomerBeautyProfileDto>> result) {
+        // Not setting loading here to avoid UI flickering during optimistic update
+        apiService.updateBeautyProfile(customerId, profile).enqueue(new Callback<ApiResponse<CustomerBeautyProfileDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<CustomerBeautyProfileDto>> call, Response<ApiResponse<CustomerBeautyProfileDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<CustomerBeautyProfileDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to update beauty profile"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<CustomerBeautyProfileDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
 }

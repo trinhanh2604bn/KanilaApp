@@ -42,6 +42,30 @@ public class CheckoutRepository {
         });
     }
 
+    public void prepareGuestCheckout(MutableLiveData<NetworkResult<CheckoutSessionDto>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.prepareGuestCheckout().enqueue(new Callback<ApiResponse<CheckoutSessionDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<CheckoutSessionDto>> call, Response<ApiResponse<CheckoutSessionDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<CheckoutSessionDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to prepare guest checkout"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<CheckoutSessionDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
     public void createBuyNowSession(String productId, String variantId, int quantity, MutableLiveData<NetworkResult<CheckoutSessionDto>> result) {
         result.setValue(NetworkResult.loading());
         com.example.frontend.data.model.cart.AddToCartRequest request = new com.example.frontend.data.model.cart.AddToCartRequest(productId, variantId, quantity);
@@ -62,6 +86,130 @@ public class CheckoutRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<CheckoutSessionDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void updateShippingMethod(String sessionId, String shippingMethodId, boolean isGuest, MutableLiveData<NetworkResult<CheckoutSessionDto>> result) {
+        result.setValue(NetworkResult.loading());
+        java.util.Map<String, Object> body = new java.util.HashMap<>();
+        body.put("shippingMethodId", shippingMethodId);
+
+        Call<ApiResponse<CheckoutSessionDto>> call;
+        if (isGuest) {
+            call = apiService.updateGuestCheckoutSession(sessionId, body);
+        } else {
+            call = apiService.updateCheckoutSession(sessionId, body);
+        }
+
+        call.enqueue(new Callback<ApiResponse<CheckoutSessionDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<CheckoutSessionDto>> call, Response<ApiResponse<CheckoutSessionDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<CheckoutSessionDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to update shipping method"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<CheckoutSessionDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void updateCheckoutSession(String sessionId, java.util.Map<String, Object> body, boolean isGuest, MutableLiveData<NetworkResult<CheckoutSessionDto>> result) {
+        result.setValue(NetworkResult.loading());
+
+        Call<ApiResponse<CheckoutSessionDto>> call;
+        if (isGuest) {
+            call = apiService.updateGuestCheckoutSession(sessionId, body);
+        } else {
+            call = apiService.updateCheckoutSession(sessionId, body);
+        }
+
+        call.enqueue(new Callback<ApiResponse<CheckoutSessionDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<CheckoutSessionDto>> call, Response<ApiResponse<CheckoutSessionDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<CheckoutSessionDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to update checkout session"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<CheckoutSessionDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void placeOrder(String sessionId, boolean isGuest, MutableLiveData<NetworkResult<com.example.frontend.data.model.order.OrderDto>> result) {
+        result.setValue(NetworkResult.loading());
+
+        Call<ApiResponse<com.example.frontend.data.model.order.OrderDto>> call;
+        if (isGuest) {
+            // Need to update ApiService if possible, but let's see if we can cast or use Object for now if it's too much
+            // Actually, better to update ApiService.
+            call = (Call) apiService.placeGuestOrder(sessionId, new java.util.HashMap<>());
+        } else {
+            call = (Call) apiService.placeOrder(sessionId, new java.util.HashMap<>());
+        }
+
+        call.enqueue(new Callback<ApiResponse<com.example.frontend.data.model.order.OrderDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.example.frontend.data.model.order.OrderDto>> call, Response<ApiResponse<com.example.frontend.data.model.order.OrderDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<com.example.frontend.data.model.order.OrderDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to place order"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<com.example.frontend.data.model.order.OrderDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void createMockOrder(java.util.Map<String, Object> request, MutableLiveData<NetworkResult<com.example.frontend.data.model.order.MockOrderResponse>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.createMockOrder(request).enqueue(new Callback<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>> call, Response<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<com.example.frontend.data.model.order.MockOrderResponse> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to create mock order"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>> call, Throwable t) {
                 result.setValue(NetworkResult.error(t.getMessage()));
             }
         });

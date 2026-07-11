@@ -4,19 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutSearchBar"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="36dp"
     android:background="@drawable/bg_search_bar"
     android:clickable="true"
     android:focusable="true"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingStart="@dimen/spacing_l"
-    android:paddingEnd="@dimen/spacing_l">
+    android:paddingStart="@dimen/spacing_m"
+    android:paddingEnd="8dp">
 
     <ImageView
         android:id="@+id/ivSearchIcon"
-        android:layout_width="24dp"
-        android:layout_height="@dimen/icon_size"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:contentDescription="@string/content_desc_search"
         android:src="@drawable/ic_search"
         app:tint="@color/button" />
@@ -37,11 +37,12 @@
         tools:text="Tìm sản phẩm, thương hiệu&#8230;" />
     <ImageButton
         android:id="@+id/btnExpandedSearchCamera"
-        android:layout_width="@dimen/icon_size"
-        android:layout_height="@dimen/icon_size"
+        android:layout_width="32dp"
+        android:layout_height="36dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/content_desc_camera_search"
         android:scaleType="centerInside"
+        android:padding="8dp"
         android:src="@drawable/ic_camera"
         app:tint="@color/button" />
 

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_l">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/spacing_l"
+        android:background="@drawable/bg_drag_handle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/spacing_xl"
+        android:fontFamily="@font/nunito_bold"
+        android:text="@string/media_picker_title"
+        android:textColor="@color/text_main"
+        android:textSize="18sp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnTakePhoto"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="start|center_vertical"
+        android:text="@string/profile_take_photo"
+        android:textAllCaps="false"
+        android:textColor="@color/text_main"
+        android:textSize="16sp"
+        app:icon="@drawable/ic_camera"
+        app:iconPadding="@dimen/spacing_l"
+        app:iconTint="@color/text_main" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnChooseGallery"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="start|center_vertical"
+        android:text="@string/profile_choose_gallery"
+        android:textAllCaps="false"
+        android:textColor="@color/text_main"
+        android:textSize="16sp"
+        app:icon="@drawable/ic_image"
+        app:iconPadding="@dimen/spacing_l"
+        app:iconTint="@color/text_main" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnRecordVideo"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="start|center_vertical"
+        android:text="@string/profile_record_video"
+        android:textAllCaps="false"
+        android:textColor="@color/text_main"
+        android:textSize="16sp"
+        app:icon="@drawable/ic_reel"
+        app:iconPadding="@dimen/spacing_l"
+        app:iconTint="@color/text_main" />
+
+</LinearLayout>

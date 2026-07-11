@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:orientation="vertical">
+
+    <!-- Header Toolbar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="@color/background_main"
+        android:elevation="4dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/accent_dark" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="64dp"
+            android:text="@string/support_history_title"
+            style="@style/Text.Kanila.H2"
+            android:textColor="@color/accent_dark"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/btnSupportIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_comment"
+            android:contentDescription="@string/chat_now"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/accent_dark" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabIndicatorColor="@color/button"
+        app:tabSelectedTextColor="@color/button"
+        app:tabTextColor="@color/text_main"
+        app:tabIndicatorHeight="2dp"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        app:tabTextAppearance="@style/Text.Kanila.BodyMedium">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đang mở (2)" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đã hoàn tất (8)" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        android:background="@color/background_sub">
+
+        <LinearLayout
+            android:id="@+id/layoutTicketsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Item 1: Đang mở -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/itemTicket1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#F5F5F5"
+                app:strokeWidth="1dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivIcon1"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@color/icon_bg_pink"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_comment"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:shapeAppearanceOverlay="@style/CircleImage"
+                        app:tint="@color/button" />
+                    <TextView
+                        android:id="@+id/tvTitle1"
+                        style="@style/Text.Kanila.BodyMedium"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Đổi trả sản phẩm bị lỗi"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/tvStatus1"
+                        app:layout_constraintStart_toEndOf="@id/ivIcon1"
+                        app:layout_constraintTop_toTopOf="@id/ivIcon1" />
+                    <TextView
+                        android:id="@+id/tvDetails1"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:alpha="0.6"
+                        android:text="#SR24060031 - Đơn #KB24052568"
+                        app:layout_constraintEnd_toEndOf="@id/tvTitle1"
+                        app:layout_constraintStart_toStartOf="@id/tvTitle1"
+                        app:layout_constraintTop_toBottomOf="@id/tvTitle1" />
+                    <TextView
+                        android:id="@+id/tvTime1"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:alpha="0.8"
+                        android:text="Cập nhật: 1 giờ trước"
+                        app:layout_constraintEnd_toEndOf="@id/tvDetails1"
+                        app:layout_constraintStart_toStartOf="@id/tvDetails1"
+                        app:layout_constraintTop_toBottomOf="@id/tvDetails1" />
+                    <TextView
+                        android:id="@+id/tvStatus1"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_chip_pill"
+                        android:backgroundTint="@color/status_pending_bg"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="2dp"
+                        android:text="Đang xử lý"
+                        android:textColor="@color/status_pending_text"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvTitle1" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Item 2: Đang mở -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/itemTicket2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#F5F5F5"
+                app:strokeWidth="1dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivIcon2"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="#F5F5F5"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_shopping_bag"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:shapeAppearanceOverlay="@style/CircleImage"
+                        app:tint="@color/text_main" />
+                    <TextView
+                        android:id="@+id/tvTitle2"
+                        style="@style/Text.Kanila.BodyMedium"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Hỏi về đơn hàng"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/tvStatus2"
+                        app:layout_constraintStart_toEndOf="@id/ivIcon2"
+                        app:layout_constraintTop_toTopOf="@id/ivIcon2" />
+                    <TextView
+                        android:id="@+id/tvDetails2"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:alpha="0.6"
+                        android:text="#SR24060012 - Đơn #KB24052611"
+                        app:layout_constraintEnd_toEndOf="@id/tvTitle2"
+                        app:layout_constraintStart_toStartOf="@id/tvTitle2"
+                        app:layout_constraintTop_toBottomOf="@id/tvTitle2" />
+                    <TextView
+                        android:id="@+id/tvTime2"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:alpha="0.8"
+                        android:text="Cập nhật: 5 giờ trước"
+                        app:layout_constraintEnd_toEndOf="@id/tvDetails2"
+                        app:layout_constraintStart_toStartOf="@id/tvDetails2"
+                        app:layout_constraintTop_toBottomOf="@id/tvDetails2" />
+                    <TextView
+                        android:id="@+id/tvStatus2"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_chip_pill"
+                        android:backgroundTint="@color/status_preparing_bg"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="2dp"
+                        android:text="Chờ phản hồi"
+                        android:textColor="@color/status_preparing_text"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvTitle2" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Item 3: Đã hoàn tất -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/itemTicket3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#F5F5F5"
+                app:strokeWidth="1dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivIcon3"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@color/icon_bg_pink"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_comment"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:shapeAppearanceOverlay="@style/CircleImage"
+                        app:tint="@color/button" />
+                    <TextView
+                        android:id="@+id/tvTitle3"
+                        style="@style/Text.Kanila.BodyMedium"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Tư vấn sản phẩm"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/tvStatus3"
+                        app:layout_constraintStart_toEndOf="@id/ivIcon3"
+                        app:layout_constraintTop_toTopOf="@id/ivIcon3" />
+                    <TextView
+                        android:id="@+id/tvDetails3"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:alpha="0.6"
+                        android:text="#SR24059980"
+                        app:layout_constraintEnd_toEndOf="@id/tvTitle3"
+                        app:layout_constraintStart_toStartOf="@id/tvTitle3"
+                        app:layout_constraintTop_toBottomOf="@id/tvTitle3" />
+                    <TextView
+                        android:id="@+id/tvTime3"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:alpha="0.8"
+                        android:text="Cập nhật: 1 ngày trước"
+                        app:layout_constraintEnd_toEndOf="@id/tvDetails3"
+                        app:layout_constraintStart_toStartOf="@id/tvDetails3"
+                        app:layout_constraintTop_toBottomOf="@id/tvDetails3" />
+                    <TextView
+                        android:id="@+id/tvStatus3"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_chip_pill"
+                        android:backgroundTint="@color/status_success_bg"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="2dp"
+                        android:text="Đã hoàn tất"
+                        android:textColor="@color/status_success_text"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvTitle3" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Item 4: Đã hoàn tất -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/itemTicket4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#F5F5F5"
+                app:strokeWidth="1dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivIcon4"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="#F5F5F5"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_paymeny_card"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:shapeAppearanceOverlay="@style/CircleImage"
+                        app:tint="@color/text_main" />
+                    <TextView
+                        android:id="@+id/tvTitle4"
+                        style="@style/Text.Kanila.BodyMedium"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Vấn đề thanh toán"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/tvStatus4"
+                        app:layout_constraintStart_toEndOf="@id/ivIcon4"
+                        app:layout_constraintTop_toTopOf="@id/ivIcon4" />
+                    <TextView
+                        android:id="@+id/tvDetails4"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:alpha="0.6"
+                        android:text="#SR24059876"
+                        app:layout_constraintEnd_toEndOf="@id/tvTitle4"
+                        app:layout_constraintStart_toStartOf="@id/tvTitle4"
+                        app:layout_constraintTop_toBottomOf="@id/tvTitle4" />
+                    <TextView
+                        android:id="@+id/tvTime4"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:alpha="0.8"
+                        android:text="2 ngày trước"
+                        app:layout_constraintEnd_toEndOf="@id/tvDetails4"
+                        app:layout_constraintStart_toStartOf="@id/tvDetails4"
+                        app:layout_constraintTop_toBottomOf="@id/tvDetails4" />
+                    <TextView
+                        android:id="@+id/tvStatus4"
+                        style="@style/Text.Kanila.Micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_chip_pill"
+                        android:backgroundTint="@color/status_success_bg"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="2dp"
+                        android:text="Đã hoàn tất"
+                        android:textColor="@color/status_success_text"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvTitle4" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

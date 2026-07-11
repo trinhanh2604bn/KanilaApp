@@ -19,6 +19,7 @@ public class PendingAuthAction {
         CREATE_COMMUNITY_POST,
         CREATE_REELS,
         JOIN_CHALLENGE,
+        COMMUNITY_INTERACTION,
         OPEN_LOYALTY,
         OPEN_SUPPORT_TICKET
     }

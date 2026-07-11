@@ -5,12 +5,11 @@
     android:id="@+id/layoutCommentItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="6dp"
-    android:background="@drawable/bg_community_card"
+    android:background="@android:color/transparent"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="10dp">
+    android:paddingVertical="8dp">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/ivCommentAvatar"
@@ -37,17 +36,28 @@
                 android:id="@+id/tvCommentUserName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_semibold"
+                android:fontFamily="@font/nunito_bold"
                 android:text="Kim Trần"
                 android:textColor="@color/text_main"
-                android:textSize="13sp"
+                android:textSize="14sp"
                 tools:text="Kim Trần" />
+
+            <TextView
+                android:id="@+id/tvFollowAction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/nunito_semibold"
+                android:text="•  Theo dõi"
+                android:textColor="@color/button"
+                android:textSize="12sp"
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/tvCommentAuthorBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="8dp"
                 android:background="@drawable/bg_community_chip"
                 android:fontFamily="@font/nunito_semibold"
                 android:paddingHorizontal="6dp"
@@ -55,6 +65,7 @@
                 android:text="Tác giả"
                 android:textColor="@color/button"
                 android:textSize="10sp"
+                android:visibility="gone"
                 tools:text="Tác giả" />
         </LinearLayout>
 
@@ -115,7 +126,7 @@
             android:contentDescription="Like comment"
             android:src="@drawable/ic_heart_outline"
             tools:ignore="TouchTargetSizeCheck"
-            app:tint="@color/button" />
+            app:tint="@color/selector_post_action_tint" />
 
         <TextView
             android:id="@+id/tvCommentLikeCount"

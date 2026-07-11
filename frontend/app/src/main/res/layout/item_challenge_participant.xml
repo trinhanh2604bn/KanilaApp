@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_m"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="@dimen/radius_m"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/border_divider"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_m">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivParticipantAvatar"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/CircleImage"
+                tools:src="@drawable/ic_account" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/spacing_m"
+                android:layout_toStartOf="@id/ivChevron"
+                android:layout_toEndOf="@id/ivParticipantAvatar"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvParticipantName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_bold"
+                    android:textColor="@color/text_main"
+                    android:textSize="14sp"
+                    tools:text="Thanh Thanh" />
+
+                <TextView
+                    android:id="@+id/tvProgressCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_semibold"
+                    android:textColor="@color/button"
+                    android:textSize="11sp"
+                    tools:text="Đã đăng 4/7 bài tiến trình" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivChevron"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_chevron_right"
+                app:tint="@color/text_tertiary"
+                android:contentDescription="@null" />
+        </RelativeLayout>
+
+        <!-- Previews Container -->
+        <LinearLayout
+            android:id="@+id/layoutPreviews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_s"
+            android:orientation="vertical">
+
+            <!-- Preview items will be added programmatically or we can use a small layout -->
+            <include layout="@layout/item_participant_progress_preview_simple" />
+            <include layout="@layout/item_participant_progress_preview_simple" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvMorePosts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_s"
+            android:fontFamily="@font/nunito_regular"
+            android:textStyle="italic"
+            android:textColor="@color/text_tertiary"
+            android:textSize="11sp"
+            android:visibility="gone"
+            tools:text="+2 bài tiến trình khác"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_sub"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/layoutHeader"
+        layout="@layout/view_app_top_bar" />
+
+    <!-- Tab Filter Row -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_main"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/layoutOrderTabs"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/spacing_s">
+
+            <TextView
+                android:id="@+id/tabAll"
+                style="@style/Text.Kanila.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:text="Tất cả"
+                android:textColor="@color/button" />
+
+            <TextView
+                android:id="@+id/tabPending"
+                style="@style/Text.Kanila.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:text="Chờ xác nhận"
+                android:textColor="@color/text_main" />
+
+            <TextView
+                android:id="@+id/tabConfirmed"
+                style="@style/Text.Kanila.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:text="Chờ lấy hàng"
+                android:textColor="@color/text_main" />
+
+            <TextView
+                android:id="@+id/tabProcessing"
+                style="@style/Text.Kanila.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:text="Chờ giao hàng"
+                android:textColor="@color/text_main" />
+
+            <TextView
+                android:id="@+id/tabCompleted"
+                style="@style/Text.Kanila.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:text="Đã giao"
+                android:textColor="@color/text_main" />
+
+            <TextView
+                android:id="@+id/tabReturned"
+                style="@style/Text.Kanila.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:text="Trả hàng"
+                android:textColor="@color/text_main" />
+
+            <TextView
+                android:id="@+id/tabCancelled"
+                style="@style/Text.Kanila.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:text="Đã hủy"
+                android:textColor="@color/text_main" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvOrderList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingVertical="@dimen/spacing_s"
+            tools:listitem="@layout/item_order_card" />
+
+        <include
+            android:id="@+id/layoutLoading"
+            layout="@layout/view_loading_state"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/layoutError"
+            layout="@layout/view_error_generic"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/layoutEmpty"
+            layout="@layout/view_empty_state"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+</LinearLayout>

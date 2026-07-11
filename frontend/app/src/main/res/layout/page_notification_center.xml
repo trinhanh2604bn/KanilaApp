@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
 
     <!-- Custom Toolbar -->
     <include
@@ -97,8 +98,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNotifications"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:clipToPadding="false"
         android:paddingBottom="@dimen/spacing_l"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -108,20 +108,12 @@
     <TextView
         android:id="@+id/layoutNotifEmpty"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:gravity="center"
         android:padding="@dimen/spacing_l"
         android:text="@string/notification_empty"
         android:textAppearance="@style/Text.Kanila.Caption"
         android:textColor="@color/text_tertiary"
         android:visibility="gone" />
-
-    <!-- Bottom Navigation -->
-    <include
-        android:id="@+id/layoutBottomNavigation"
-        layout="@layout/view_bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="64dp" />
 
 </LinearLayout>

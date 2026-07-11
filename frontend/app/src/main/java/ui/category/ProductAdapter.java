@@ -29,6 +29,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     public interface OnProductClickListener {
         void onProductClick(Product product);
+        void onAddToCartClick(Product product);
     }
 
     public interface OnWishlistClickListener {
@@ -166,6 +167,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 }
             });
         }
+
+        if (holder.btnAddToCart != null) {
+            holder.btnAddToCart.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onAddToCartClick(product);
+                }
+            });
+        }
     }
 
     @Override
@@ -177,16 +186,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         void onSelectionChanged(int count);
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivImage;
-        TextView tvName, tvBrand, tvPrice, tvReviewCount, tvBadge;
-        RatingBar ratingBar;
-        View layoutBadge;
-        ImageButton btnAddToCart, btnWishlist;
-        CheckBox cbSelect;
-        TextView tvFindSimilar;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public ImageView ivImage;
+        public TextView tvName, tvBrand, tvPrice, tvReviewCount, tvBadge;
+        public RatingBar ratingBar;
+        public View layoutBadge;
+        public ImageButton btnAddToCart, btnWishlist;
+        public CheckBox cbSelect;
+        public TextView tvFindSimilar;
 
-        ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivImage = itemView.findViewById(R.id.ivProductImage);
             tvName = itemView.findViewById(R.id.tvProductName);

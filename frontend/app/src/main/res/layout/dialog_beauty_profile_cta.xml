@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="12dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="28dp">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <!-- Hiệu ứng vòng tròn trang trí phía sau ảnh -->
+            <View
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:alpha="0.15"
+                android:background="@drawable/bg_circle"
+                android:backgroundTint="@color/secondary" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imgBeautyProfile"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                android:padding="2dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/hinh_nen"
+                app:shapeAppearanceOverlay="@style/CircleImage"
+                app:strokeColor="@color/white"
+                app:strokeWidth="4dp" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvTitle"
+            style="@style/Text.Kanila.H2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:text="Dành riêng cho vẻ đẹp của bạn."
+            android:textColor="@color/accent_dark"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvBody"
+            style="@style/Text.Kanila.Body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:alpha="0.8"
+            android:gravity="center"
+            android:lineSpacingExtra="4dp"
+            android:text="Hãy thiết lập hồ sơ để Kanila gợi ý quy trình chăm sóc hoàn hảo nhất cho riêng bạn."
+            android:textColor="@color/text_main" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGoToEdit"
+            style="@style/Widget.Kanila.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="32dp"
+            android:letterSpacing="0.02"
+            android:text="Thiết lập ngay"
+            android:textAllCaps="false"
+            app:cornerRadius="16dp" />
+
+        <TextView
+            android:id="@+id/btnMaybeLater"
+            style="@style/Text.Kanila.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/nunito_semibold"
+            android:padding="12dp"
+            android:text="Để sau"
+            android:textColor="@color/text_tertiary" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

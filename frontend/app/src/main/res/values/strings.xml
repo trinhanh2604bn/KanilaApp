@@ -845,7 +845,6 @@
     <string name="challenge_tab_ongoing">Đang diễn ra</string>
     <string name="challenge_tab_joined">Đã tham gia</string>
     <string name="challenge_tab_leaderboard">Bảng xếp hạng</string>
-    <string name="challenge_active_title">Thử Thách</string>
     <string name="challenge_participants">%s tham gia</string>
     <string name="challenge_reward_points">%s điểm</string>
     <string name="challenge_action_join">Tham gia</string>
@@ -862,10 +861,6 @@
     <string name="challenge_ended">Thử thách đã kết thúc</string>
     <string name="challenge_remaining_time">Còn lại: %s</string>
     <string name="challenge_day_format">Ngày %1$d/%2$d</string>
-    <string name="challenge_participants_list">Danh sách đã tham gia</string>
-    <string name="challenge_participant_progress_title">Tiến trình của %s</string>
-    <string name="challenge_no_participants">Chưa có người tham gia</string>
-    <string name="challenge_progress_summary">%d bài viết</string>
 
     <string name="leaderboard_weekly">Tuần này</string>
 
@@ -996,4 +991,16 @@
     <string name="challenge_more_posts_format">+%d bài tiến trình khác</string>
     <string name="challenge_day_label_format">Ngày %d</string>
     <string name="challenge_rules_title">Quy tắc thử thách</string>
+
+    <!-- Order Success -->
+    <string name="order_success_title">Đặt hàng thành công</string>
+    <string name="order_success_desc">Cảm ơn bạn đã mua sắm tại Kanila!\nChúng tôi sẽ xử lý đơn hàng của bạn ngay.</string>
+    <string name="order_success_code">Mã đơn hàng</string>
+    <string name="order_success_payment">Phương thức thanh toán</string>
+    <string name="order_success_delivery">Thời gian giao dự kiến</string>
+    <string name="order_success_amount">Số tiền đã thanh toán</string>
+    <string name="order_success_reward">Bạn nhận được %d điểm Kanila</string>
+    <string name="order_success_track">Theo dõi đơn hàng</string>
+    <string name="order_success_continue">Tiếp tục mua sắm</string>
+    <string name="challenge_active_title">Thử thách đang tham gia</string>
 </resources>

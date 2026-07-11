@@ -11,6 +11,7 @@ const orderItemSchema = new mongoose.Schema(
     sku_snapshot: { type: String, required: true },
     product_name_snapshot: { type: String, required: true },
     variant_name_snapshot: { type: String, required: true },
+    image_url_snapshot: { type: String },
     quantity: { type: Number, required: true, min: 1 },
     unit_list_price_amount: { type: Number, required: true, min: 0 },
     unit_sale_price_amount: { type: Number, default: 0, min: 0 },

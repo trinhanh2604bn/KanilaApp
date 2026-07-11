@@ -46,6 +46,9 @@ public class OrderSummaryDto {
     @SerializedName("first_item_variant")
     private String firstItemVariant;
 
+    @SerializedName(value = "first_item_image_url", alternate = {"first_item_image", "first_item_image_url_snapshot", "image_url", "imageUrl"})
+    private String firstItemImageUrl;
+
     @SerializedName("item_previews")
     private List<ItemPreview> itemPreviews;
 
@@ -83,6 +86,7 @@ public class OrderSummaryDto {
     public int getTotalQuantity() { return totalQuantity; }
     public String getFirstItemName() { return firstItemName; }
     public String getFirstItemVariant() { return firstItemVariant; }
+    public String getFirstItemImageUrl() { return firstItemImageUrl; }
     public List<ItemPreview> getItemPreviews() { return itemPreviews; }
     public String getShipmentStatus() { return shipmentStatus; }
     public String getTrackingNumber() { return trackingNumber; }
@@ -95,16 +99,21 @@ public class OrderSummaryDto {
         @SerializedName("quantity")
         private int quantity;
 
+        @SerializedName(value = "image_url", alternate = {"imageUrl", "image_url_snapshot", "image", "product_image", "thumbnail"})
+        private String imageUrl;
+
         public ItemPreview() {}
 
-        public ItemPreview(String productName, String variantName, int quantity) {
+        public ItemPreview(String productName, String variantName, int quantity, String imageUrl) {
             this.productName = productName;
             this.variantName = variantName;
             this.quantity = quantity;
+            this.imageUrl = imageUrl;
         }
 
         public String getProductName() { return productName; }
         public String getVariantName() { return variantName; }
         public int getQuantity() { return quantity; }
+        public String getImageUrl() { return imageUrl; }
     }
 }

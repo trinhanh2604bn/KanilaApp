@@ -86,6 +86,8 @@ public class OrderDetailDto {
         private String productName;
         @SerializedName("variant_name_snapshot")
         private String variantName;
+        @SerializedName(value = "image_url_snapshot", alternate = {"imageUrl", "image_url"})
+        private String imageUrl;
         @SerializedName("quantity")
         private int quantity;
         @SerializedName("unit_final_price_amount")
@@ -103,6 +105,7 @@ public class OrderDetailDto {
 
         public String getProductName() { return productName; }
         public String getVariantName() { return variantName; }
+        public String getImageUrl() { return imageUrl; }
         public int getQuantity() { return quantity; }
         public double getUnitPrice() { return unitPrice; }
         public double getLineTotal() { return lineTotal; }

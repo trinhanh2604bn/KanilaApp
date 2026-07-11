@@ -33,6 +33,9 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHol
 
     public void updateData(List<Brand> newList) {
         this.brandList = newList != null ? new ArrayList<>(newList) : new ArrayList<>();
+
+        android.util.Log.d("BrandAdapter", "updateData size = " + this.brandList.size());
+
         notifyDataSetChanged();
     }
 
@@ -46,18 +49,26 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHol
     @Override
     public void onBindViewHolder(@NonNull BrandViewHolder holder, int position) {
         Brand brand = brandList.get(position);
-        
-        if (brand.getLogoUrl() != null && !brand.getLogoUrl().isEmpty()) {
+
+        android.util.Log.d(
+                "BrandAdapter",
+                "bind position = " + position
+                        + ", name = " + (brand.getBrandName() == null ? "null" : brand.getBrandName())
+                        + ", id = " + (brand.getId() == null ? "null" : brand.getId())
+        );
+
+        holder.tvBrandName.setText(brand.getBrandName() != null ? brand.getBrandName() : "");
+
+        if (brand.getLogoUrl() != null && !brand.getLogoUrl().trim().isEmpty()) {
             Glide.with(holder.ivBrandLogo.getContext())
                     .load(brand.getLogoUrl())
                     .placeholder(R.drawable.bg_circle)
                     .error(R.drawable.bg_circle)
                     .into(holder.ivBrandLogo);
         } else {
-            holder.ivBrandLogo.setImageResource(R.drawable.bg_circle); // Reusing bg_circle as placeholder
+            holder.ivBrandLogo.setImageResource(R.drawable.bg_circle);
         }
 
-        holder.tvBrandName.setText(brand.getBrandName());
         holder.btnBrandFavorite.setSelected(brand.isFavorite());
 
         holder.btnBrandFavorite.setOnClickListener(v -> {

@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ui.account.AccountFragment;
-import ui.category.ProductCategoryFragment;
+import com.example.frontend.ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
 import ui.commerce.CheckoutFragment;
 import ui.common.BottomNavigationHelper;

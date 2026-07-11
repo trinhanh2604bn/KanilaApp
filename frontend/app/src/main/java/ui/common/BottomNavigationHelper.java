@@ -17,7 +17,7 @@ import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.feature.community.reels.ReelsFeedFragment;
 import ui.account.AccountFragment;
-import ui.category.ProductCategoryFragment;
+import com.example.frontend.ui.category.ProductCategoryFragment;
 
 public class BottomNavigationHelper {
 

@@ -22,7 +22,7 @@ public class LoyaltyFragment extends Fragment {
     private LoyaltyViewModel viewModel;
     private LoyaltyVoucherAdapter adapter;
     private View layoutLoading, layoutError, scrollLoyalty, layoutTierBanner;
-    private TextView tvTierName, tvPointsBalance, tvOrderProgress, tvSpentProgress;
+    private TextView tvTierName, tvPointsBalance, tvOrderProgress, tvSpentProgress, tvOrderTarget, tvSpentTarget;
     private android.widget.ProgressBar progressOrders, progressSpent;
 
     @Nullable
@@ -54,6 +54,8 @@ public class LoyaltyFragment extends Fragment {
         
         tvOrderProgress = view.findViewById(R.id.tvOrderProgress);
         tvSpentProgress = view.findViewById(R.id.tvSpentProgress);
+        tvOrderTarget = view.findViewById(R.id.tvOrderTarget);
+        tvSpentTarget = view.findViewById(R.id.tvSpentTarget);
         progressOrders = view.findViewById(R.id.progressOrders);
         progressSpent = view.findViewById(R.id.progressSpent);
 
@@ -198,20 +200,32 @@ public class LoyaltyFragment extends Fragment {
         int nextOrderTarget;
         double nextSpentTarget;
         
+        // Tier thresholds
+        // Silver: 3 orders / 1M
+        // Gold: 20 orders / 5M
+        // Diamond: 75 orders / 15M
+
         if (orders >= 75 || spent >= 15000000) {
+            // Already Diamond or reached Diamond spend
             nextOrderTarget = 75;
             nextSpentTarget = 15000000;
         } else if (orders >= 20 || spent >= 5000000) {
+            // Gold -> Diamond
             nextOrderTarget = 75;
             nextSpentTarget = 15000000;
         } else if (orders >= 3 || spent >= 1000000) {
+            // Silver -> Gold
             nextOrderTarget = 20;
             nextSpentTarget = 5000000;
         } else {
+            // Bronze -> Silver
             nextOrderTarget = 3;
             nextSpentTarget = 1000000;
         }
         
+        if (tvOrderTarget != null) tvOrderTarget.setText("/" + nextOrderTarget);
+        if (tvSpentTarget != null) tvSpentTarget.setText("/" + formatPrice(nextSpentTarget));
+
         progressOrders.setMax(nextOrderTarget);
         progressOrders.setProgress(Math.min(orders, nextOrderTarget));
         

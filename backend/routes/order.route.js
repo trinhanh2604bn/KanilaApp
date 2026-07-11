@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middlewares/auth.middleware");
+const maybeAuthMiddleware = require("../middlewares/maybeAuth.middleware");
 const {
   getAllOrders,
   getOrderById,
@@ -19,6 +20,8 @@ const {
   updateOrder,
   patchOrder,
   deleteOrder,
+  createMockCheckoutOrder,
+  getOrderByCode,
 } = require("../controllers/order.controller");
 router.get("/me", authMiddleware, getMyOrders);
 router.get("/me/summary", authMiddleware, getMyOrderSummary);
@@ -32,6 +35,8 @@ router.get("/guest/:id/tracking", getGuestOrderTracking);
 router.get("/guest/:id/summary", getGuestOrderSummary);
 router.get("/", getAllOrders);
 router.get("/customer/:customer_id", getOrdersByCustomerId);
+router.post("/mock-checkout", maybeAuthMiddleware, createMockCheckoutOrder);
+router.get("/code/:orderCode", getOrderByCode);
 router.get("/:id", getOrderById);
 router.post("/", createOrder);
 router.put("/:id", updateOrder);

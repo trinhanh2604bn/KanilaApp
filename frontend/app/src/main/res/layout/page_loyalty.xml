@@ -136,11 +136,10 @@
                                     android:textColor="@color/text_main" />
 
                                 <LinearLayout
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:gravity="bottom"
-                                    android:orientation="horizontal">
+                                    android:orientation="vertical">
 
                                     <TextView
                                         android:id="@+id/tvOrderProgress"
@@ -151,10 +150,10 @@
                                         android:textColor="@color/button" />
 
                                     <TextView
+                                        android:id="@+id/tvOrderTarget"
                                         style="@style/Text.Kanila.Body"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginBottom="4dp"
                                         android:text="/3"
                                         android:textColor="@color/text_secondary" />
                                 </LinearLayout>
@@ -206,11 +205,10 @@
                                     android:textColor="@color/text_main" />
 
                                 <LinearLayout
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:gravity="bottom"
-                                    android:orientation="horizontal">
+                                    android:orientation="vertical">
 
                                     <TextView
                                         android:id="@+id/tvSpentProgress"
@@ -221,10 +219,10 @@
                                         android:textColor="@color/button" />
 
                                     <TextView
+                                        android:id="@+id/tvSpentTarget"
                                         style="@style/Text.Kanila.Body"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginBottom="4dp"
                                         android:text="/1.000.000"
                                         android:textColor="@color/text_secondary" />
                                 </LinearLayout>

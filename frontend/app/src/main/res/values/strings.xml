@@ -975,6 +975,17 @@
     <string name="help_more_info_title">Bạn có muốn tìm thêm thông tin gì không?</string>
     <string name="priority_customer_service">Chăm sóc khách hàng ưu tiên</string>
     <string name="call_center">Gọi cho tổng đài</string>
+
+    <!-- Order Success -->
+    <string name="order_success_title">Đặt hàng thành công</string>
+    <string name="order_success_desc">Cảm ơn bạn đã mua sắm tại Kanila!\nChúng tôi sẽ xử lý đơn hàng của bạn ngay.</string>
+    <string name="order_success_code">Mã đơn hàng</string>
+    <string name="order_success_payment">Phương thức thanh toán</string>
+    <string name="order_success_delivery">Thời gian giao dự kiến</string>
+    <string name="order_success_amount">Số tiền đã thanh toán</string>
+    <string name="order_success_reward">Bạn nhận được %d điểm Kanila</string>
+    <string name="order_success_track">Theo dõi đơn hàng</string>
+    <string name="order_success_continue">Tiếp tục mua sắm</string>
     <string name="challenge_daily_title_format">Thử thách ngày %s</string>
     <string name="challenge_write_content_label">Viết nội dung</string>
     <string name="challenge_media_attach_label">Ảnh/Video đính kèm</string>

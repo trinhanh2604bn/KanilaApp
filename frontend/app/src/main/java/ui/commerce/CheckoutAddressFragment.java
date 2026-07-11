@@ -25,6 +25,9 @@ import java.util.List;
 
 public class CheckoutAddressFragment extends Fragment {
 
+    public static final String ARG_IS_SELECTION_MODE = "is_selection_mode";
+    private boolean isSelectionMode = true;
+
     private RecyclerView rvAddressList;
     private CheckoutAddressAdapter adapter;
     private CheckoutAddressViewModel viewModel;
@@ -42,6 +45,10 @@ public class CheckoutAddressFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        if (getArguments() != null) {
+            isSelectionMode = getArguments().getBoolean(ARG_IS_SELECTION_MODE, true);
+        }
+
         viewModel = new ViewModelProvider(requireActivity()).get(CheckoutAddressViewModel.class);
         checkoutViewModel = new ViewModelProvider(requireActivity()).get(CheckoutViewModel.class);
 
@@ -58,7 +65,9 @@ public class CheckoutAddressFragment extends Fragment {
         if (header == null) return;
 
         TextView tvTitle = header.findViewById(R.id.tvTopBarTitle);
-        if (tvTitle != null) tvTitle.setText(R.string.checkout_address_title);
+        if (tvTitle != null) {
+            tvTitle.setText(isSelectionMode ? R.string.checkout_address_title : R.string.address_book_title);
+        }
 
         View btnBack = header.findViewById(R.id.btnTopBarBack);
         if (btnBack != null) {
@@ -78,28 +87,23 @@ public class CheckoutAddressFragment extends Fragment {
             adapter = new CheckoutAddressAdapter(new CheckoutAddressAdapter.OnAddressClickListener() {
                 @Override
                 public void onAddressSelected(AddressDto address, int position) {
-                    viewModel.selectAddress(address);
-                    checkoutViewModel.setSelectedAddress(address);
-                    
-                    // Return to checkout after selection
-                    if (getActivity() != null) {
-                        getActivity().getSupportFragmentManager().popBackStack();
+                    if (isSelectionMode) {
+                        viewModel.selectAddress(address);
+                        checkoutViewModel.setSelectedAddress(address);
+                        
+                        // Return to checkout after selection
+                        if (getActivity() != null) {
+                            getActivity().getSupportFragmentManager().popBackStack();
+                        }
+                    } else {
+                        // In management mode, clicking an item opens edit
+                        openEditAddress(address);
                     }
                 }
 
                 @Override
                 public void onAddressEdit(AddressDto address, int position) {
-                    if (getActivity() != null) {
-                        CheckoutAddressAddFragment editFragment = new CheckoutAddressAddFragment();
-                        Bundle args = new Bundle();
-                        args.putString("address_id", address.getId());
-                        editFragment.setArguments(args);
-                        
-                        getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.main, editFragment)
-                                .addToBackStack(null)
-                                .commit();
-                    }
+                    openEditAddress(address);
                 }
 
                 @Override
@@ -107,7 +111,22 @@ public class CheckoutAddressFragment extends Fragment {
                     viewModel.setDefaultAddress(address.getId());
                 }
             });
+            adapter.setSelectionMode(isSelectionMode);
             rvAddressList.setAdapter(adapter);
+        }
+    }
+
+    private void openEditAddress(AddressDto address) {
+        if (getActivity() != null) {
+            CheckoutAddressAddFragment editFragment = new CheckoutAddressAddFragment();
+            Bundle args = new Bundle();
+            args.putString("address_id", address.getId());
+            editFragment.setArguments(args);
+            
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main, editFragment)
+                    .addToBackStack(null)
+                    .commit();
         }
     }
 
@@ -139,7 +158,20 @@ public class CheckoutAddressFragment extends Fragment {
                     break;
                 case SUCCESS:
                     Toast.makeText(getContext(), "Đã thiết lập địa chỉ mặc định", Toast.LENGTH_SHORT).show();
-                    viewModel.loadCustomerAddresses(); // Refresh list
+                    
+                    // Safe update current selected address in CheckoutViewModel if it matches
+                    AddressDto newDefault = result.data;
+                    AddressDto currentSelected = checkoutViewModel.getSelectedAddress().getValue();
+                    
+                    if (newDefault != null && currentSelected != null) {
+                        String newId = newDefault.getId();
+                        String currentId = currentSelected.getId();
+                        if (newId != null && newId.equals(currentId)) {
+                            checkoutViewModel.setSelectedAddress(newDefault);
+                        }
+                    }
+                    
+                    viewModel.loadCustomerAddresses(); // Refresh list to apply sorting
                     viewModel.clearSaveResult();
                     break;
                 case ERROR:
@@ -158,10 +190,13 @@ public class CheckoutAddressFragment extends Fragment {
                     if (result.data != null) {
                         handleInitialSelection(result.data);
                         adapter.setAddresses(result.data);
-                        // Make sure to apply selection UI state
-                        AddressDto selected = checkoutViewModel.getSelectedAddress().getValue();
-                        if (selected != null) {
-                            adapter.setSelectedAddressId(selected.getId());
+                        
+                        // Apply selection UI state only in selection mode
+                        if (isSelectionMode) {
+                            AddressDto selected = checkoutViewModel.getSelectedAddress().getValue();
+                            if (selected != null) {
+                                adapter.setSelectedAddressId(selected.getId());
+                            }
                         }
                     }
                     break;

@@ -61,7 +61,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     }
 
     static class OrderViewHolder extends RecyclerView.ViewHolder {
-        TextView tvBrandName, tvStatus, tvProductName, tvVariant, tvQuantity, tvPrice, tvTotalSummary, tvGrandTotal, tvDisclaimer;
+        TextView tvBrandName, tvStatus, tvPaymentStatus, tvOrderNumber, tvOrderDate;
+        TextView tvProductName, tvVariant, tvQuantity, tvPrice, tvTotalSummary, tvGrandTotal, tvDisclaimer;
         ImageView ivProduct;
         MaterialButton btnAction, btnReturn;
         LinearLayout layoutActionArea;
@@ -72,6 +73,9 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             this.listener = listener;
             tvBrandName = itemView.findViewById(R.id.tvOrderBrandName);
             tvStatus = itemView.findViewById(R.id.tvOrderHeaderStatus);
+            tvPaymentStatus = itemView.findViewById(R.id.tvPaymentStatus);
+            tvOrderNumber = itemView.findViewById(R.id.tvOrderNumber);
+            tvOrderDate = itemView.findViewById(R.id.tvOrderDate);
             
             // Views inside item_cart_selected
             tvProductName = itemView.findViewById(R.id.tvSelectedCartProductName);
@@ -89,23 +93,85 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         }
 
         public void bind(OrderSummaryDto order) {
-            // Brand (Backend doesn't return, using default)
-            tvBrandName.setText("Kanila Beauty");
+            Context context = itemView.getContext();
+            // Brand
+            tvBrandName.setText("Kanila Official");
 
             // Status mapping
-            String status = order.getOrderStatus();
-            tvStatus.setText(getStatusText(status));
+            tvStatus.setText(getStatusText(order.getOrderStatus()));
+            tvPaymentStatus.setText(getPaymentStatusText(order.getPaymentStatus()));
             
-            // Product info (Backend returns first item info)
-            tvProductName.setText(order.getFirstItemName());
-            tvVariant.setText(order.getFirstItemVariant());
+            // Order Info
+            String orderNumberLabel = context.getString(R.string.order_detail_number_label);
+            tvOrderNumber.setText(orderNumberLabel + ": " + order.getOrderNumber());
+            tvOrderDate.setText(order.getPlacedAt());
+            
+            // Product info
+            String productName = order.getFirstItemName();
+            tvProductName.setText(productName);
+            
+            // Clean up variant name: (Product Name - Variant) -> Variant
+            String variantDisplay = order.getFirstItemVariant();
+            if (variantDisplay != null && productName != null) {
+                if (variantDisplay.contains(productName + " - ")) {
+                    variantDisplay = variantDisplay.replace(productName + " - ", "");
+                } else if (variantDisplay.startsWith(productName)) {
+                    String potential = variantDisplay.substring(productName.length()).trim();
+                    if (!potential.isEmpty()) {
+                        if (potential.startsWith("-") || potential.startsWith(":") || potential.startsWith("•")) {
+                            variantDisplay = potential.substring(1).trim();
+                        } else {
+                            variantDisplay = potential;
+                        }
+                    }
+                }
+            }
+            
+            // Try to get cleaner variant from ItemPreview if available
+            if (order.getItemPreviews() != null && !order.getItemPreviews().isEmpty()) {
+                String previewVariant = order.getItemPreviews().get(0).getVariantName();
+                if (previewVariant != null && !previewVariant.isEmpty()) {
+                    if (productName != null && previewVariant.contains(productName + " - ")) {
+                        previewVariant = previewVariant.replace(productName + " - ", "");
+                    }
+                    variantDisplay = previewVariant;
+                }
+            }
+
+            if (variantDisplay == null || variantDisplay.isEmpty() || variantDisplay.equalsIgnoreCase(productName)) {
+                variantDisplay = "Mặc định";
+            }
+            tvVariant.setText(variantDisplay);
             
             String qtyLabel = "Số lượng: x" + order.getTotalQuantity();
             tvQuantity.setText(qtyLabel);
             tvPrice.setText(formatPrice(order.getGrandTotalAmount()));
             
-            // Placeholder image
-            ivProduct.setImageResource(R.drawable.ic_product);
+            // Load image using Glide
+            String imageUrl = order.getFirstItemImageUrl();
+            
+            // If image is missing at root level, try to find it in itemPreviews matching the first item name
+            if ((imageUrl == null || imageUrl.isEmpty()) && order.getItemPreviews() != null && !order.getItemPreviews().isEmpty()) {
+                if (productName != null) {
+                    for (OrderSummaryDto.ItemPreview preview : order.getItemPreviews()) {
+                        if (productName.equals(preview.getProductName())) {
+                            imageUrl = preview.getImageUrl();
+                            break;
+                        }
+                    }
+                }
+                // Fallback to first preview if still null
+                if (imageUrl == null || imageUrl.isEmpty()) {
+                    imageUrl = order.getItemPreviews().get(0).getImageUrl();
+                }
+            }
+            
+            com.bumptech.glide.Glide.with(context)
+                .load(imageUrl != null && !imageUrl.isEmpty() ? imageUrl : "")
+                .placeholder(R.drawable.ic_product)
+                .error(R.drawable.ic_product)
+                .centerCrop()
+                .into(ivProduct);
 
             // Summary
             String summaryLabel = String.format(Locale.getDefault(), "Tổng số tiền (%d sản phẩm): ", order.getTotalQuantity());
@@ -113,7 +179,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             tvGrandTotal.setText(formatPrice(order.getGrandTotalAmount()));
 
             // Action Button & Disclaimer
-            setupActionArea(status);
+            setupActionArea(order.getOrderStatus());
 
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
@@ -160,14 +226,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
                     btnAction.setVisibility(View.GONE);
                     break;
             }
-            
-            btnAction.setOnClickListener(v -> {
-                // TODO: Handle action based on button text
-            });
-
-            btnReturn.setOnClickListener(v -> {
-                // TODO: Handle return/refund
-            });
         }
 
         private String getStatusText(String status) {
@@ -179,6 +237,17 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
                 case "completed": return "Đã giao";
                 case "cancelled": return "Đã hủy";
                 case "returned": return "Trả hàng";
+                default: return status;
+            }
+        }
+
+        private String getPaymentStatusText(String status) {
+            if (status == null) return "Chưa thanh toán";
+            switch (status) {
+                case "paid": return "Đã thanh toán";
+                case "unpaid": return "Chưa thanh toán";
+                case "pending": return "Chờ thanh toán";
+                case "refunded": return "Đã hoàn tiền";
                 default: return status;
             }
         }

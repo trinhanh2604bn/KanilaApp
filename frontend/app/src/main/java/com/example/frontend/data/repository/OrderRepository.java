@@ -48,6 +48,30 @@ public class OrderRepository {
         });
     }
 
+    public void getOrderByCode(String orderCode, MutableLiveData<NetworkResult<OrderDetailDto>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.getOrderByCode(orderCode).enqueue(new Callback<ApiResponse<OrderDetailDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<OrderDetailDto>> call, Response<ApiResponse<OrderDetailDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<OrderDetailDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to load order by code"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<OrderDetailDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
     public void cancelOrder(String orderId, String reason, MutableLiveData<NetworkResult<OrderSummaryDto>> result) {
         result.setValue(NetworkResult.loading());
         Map<String, String> body = new HashMap<>();

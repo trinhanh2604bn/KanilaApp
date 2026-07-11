@@ -1,6 +1,7 @@
 package com.example.frontend.core.auth;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.widget.Toast;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.MutableLiveData;
@@ -81,6 +82,13 @@ public class AuthResultHandler {
                 break;
             case OPEN_LOYALTY:
                 ui.common.FragmentNavigationHelper.replaceFragment(activity, new ui.loyalty.LoyaltyFragment());
+                break;
+            case OPEN_ADDRESS_BOOK:
+                ui.commerce.CheckoutAddressFragment addressFragment = new ui.commerce.CheckoutAddressFragment();
+                Bundle args = new Bundle();
+                args.putBoolean("is_selection_mode", false);
+                addressFragment.setArguments(args);
+                ui.common.FragmentNavigationHelper.replaceFragment(activity, addressFragment);
                 break;
         }
     }

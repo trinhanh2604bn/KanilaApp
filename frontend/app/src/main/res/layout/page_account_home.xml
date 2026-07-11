@@ -31,11 +31,15 @@
             android:textColor="@color/accent_dark" />
 
         <ImageView
+            android:id="@+id/btnToolbarCart"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:contentDescription="Thông báo"
-            android:src="@drawable/ic_notification"
-            app:tint="@color/text_main" />
+            android:contentDescription="Giỏ hàng"
+            android:src="@drawable/ic_cart"
+            app:tint="@color/text_main"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -474,11 +478,15 @@
 
                 <!-- Địa chỉ -->
                 <LinearLayout
+                    android:id="@+id/menuAddress"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="16dp">
+                    android:paddingHorizontal="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
 
                     <ImageView
                         android:id="@+id/ivMenu3"

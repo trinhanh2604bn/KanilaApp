@@ -33,6 +33,12 @@
                 android:text="@string/payment_card_title"
                 android:textColor="@color/text_tertiary" />
 
+            <LinearLayout
+                android:id="@+id/containerActiveCards"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnAddNewCard"
                 style="@style/Widget.MaterialComponents.CardView"
@@ -79,6 +85,12 @@
                 android:layout_marginTop="24dp"
                 android:text="@string/payment_bank_title"
                 android:textColor="@color/text_tertiary" />
+
+            <LinearLayout
+                android:id="@+id/containerActiveBanks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnAddNewBank"
@@ -163,6 +175,7 @@
                             android:contentDescription="@string/payment_wallet_shopeepay" />
 
                         <TextView
+                            android:id="@+id/tvShopeePayTitle"
                             style="@style/Text.Kanila.Body"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -171,9 +184,18 @@
                             android:text="@string/payment_wallet_shopeepay"
                             android:textColor="@color/text_main" />
 
+                        <TextView
+                            android:id="@+id/tvShopeePayStatus"
+                            style="@style/Text.Kanila.Caption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/payment_wallet_not_connected"
+                            android:textColor="@color/text_tertiary" />
+
                         <ImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
+                            android:layout_marginStart="4dp"
                             android:src="@drawable/ic_chevron_right"
                             app:tint="@color/text_tertiary"
                             android:contentDescription="@string/action_see_all" />
@@ -205,6 +227,7 @@
                             android:contentDescription="@string/payment_wallet_momo" />
 
                         <TextView
+                            android:id="@+id/tvMoMoTitle"
                             style="@style/Text.Kanila.Body"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -214,6 +237,7 @@
                             android:textColor="@color/text_main" />
 
                         <TextView
+                            android:id="@+id/tvMoMoStatus"
                             style="@style/Text.Kanila.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -255,6 +279,7 @@
                             android:contentDescription="@string/payment_wallet_zalopay" />
 
                         <TextView
+                            android:id="@+id/tvZaloPayTitle"
                             style="@style/Text.Kanila.Body"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -264,6 +289,7 @@
                             android:textColor="@color/text_main" />
 
                         <TextView
+                            android:id="@+id/tvZaloPayStatus"
                             style="@style/Text.Kanila.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

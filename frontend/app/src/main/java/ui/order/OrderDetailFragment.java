@@ -29,8 +29,9 @@ import java.util.Locale;
 public class OrderDetailFragment extends Fragment {
 
     private static final String ARG_ORDER_ID = "order_id";
+    private static final String ARG_ORDER_CODE = "order_code";
 
-    private String orderId;
+    private String orderId, orderCode;
     private OrderDetailViewModel viewModel;
     private WishlistViewModel wishlistViewModel;
     private HomeProductAdapter recommendationAdapter;
@@ -46,9 +47,14 @@ public class OrderDetailFragment extends Fragment {
     private View btnCopyOrderNumber;
 
     public static OrderDetailFragment newInstance(String orderId) {
+        return newInstance(orderId, null);
+    }
+
+    public static OrderDetailFragment newInstance(String orderId, String orderCode) {
         OrderDetailFragment fragment = new OrderDetailFragment();
         Bundle args = new Bundle();
         args.putString(ARG_ORDER_ID, orderId);
+        args.putString(ARG_ORDER_CODE, orderCode);
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,6 +64,7 @@ public class OrderDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             orderId = getArguments().getString(ARG_ORDER_ID);
+            orderCode = getArguments().getString(ARG_ORDER_CODE);
         }
     }
 
@@ -103,7 +110,7 @@ public class OrderDetailFragment extends Fragment {
         tvRecipientInfo = view.findViewById(R.id.tvOrderRecipientNamePhone);
         tvFullAddress = view.findViewById(R.id.tvOrderFullAddress);
 
-        layoutItemsList = view.findViewById(R.id.layoutOrderItemsList);
+        layoutItemsList = view.findViewById(R.id.layoutCheckoutItemsList);
         tvGrandTotal = view.findViewById(R.id.tvOrderGrandTotal);
 
         tvOrderNumber = view.findViewById(R.id.tvOrderNumber);
@@ -252,7 +259,7 @@ public class OrderDetailFragment extends Fragment {
         layoutItemsList.removeAllViews();
         if (order.getItems() != null) {
             for (OrderDetailDto.OrderItemDetailDto item : order.getItems()) {
-                View itemView = getLayoutInflater().inflate(R.layout.item_order_card, layoutItemsList, false);
+                View itemView = getLayoutInflater().inflate(R.layout.item_cart_selected, layoutItemsList, false);
                 setupOrderItemView(itemView, item);
                 layoutItemsList.addView(itemView);
             }
@@ -274,24 +281,26 @@ public class OrderDetailFragment extends Fragment {
     }
 
     private void setupOrderItemView(View itemView, OrderDetailDto.OrderItemDetailDto item) {
-        View cardContainer = itemView.findViewById(R.id.cardOrder);
-        if (cardContainer instanceof com.google.android.material.card.MaterialCardView) {
-            ((com.google.android.material.card.MaterialCardView) cardContainer).setStrokeWidth(0);
-            cardContainer.setBackground(null);
-        }
-        
-        itemView.findViewById(R.id.layoutOrderHeader).setVisibility(View.GONE);
-        itemView.findViewById(R.id.dividerOrder).setVisibility(View.GONE);
-        itemView.findViewById(R.id.layoutOrderActionArea).setVisibility(View.GONE);
-        
-        View totalArea = itemView.findViewById(R.id.tvOrderTotalSummary).getParent() instanceof View ? (View)itemView.findViewById(R.id.tvOrderTotalSummary).getParent() : null;
-        if (totalArea != null) totalArea.setVisibility(View.GONE);
-
         ((TextView) itemView.findViewById(R.id.tvSelectedCartProductName)).setText(item.getProductName());
-        ((TextView) itemView.findViewById(R.id.tvSelectedCartVariant)).setText(item.getVariantName());
+        
+        String displayVariant = item.getVariantName();
+        if (displayVariant != null && displayVariant.contains(" - ")) {
+            String[] parts = displayVariant.split(" - ");
+            displayVariant = parts[parts.length - 1];
+        }
+        ((TextView) itemView.findViewById(R.id.tvSelectedCartVariant)).setText(displayVariant);
+        
         ((TextView) itemView.findViewById(R.id.tvSelectedCartQuantity)).setText("Số lượng: x" + item.getQuantity());
         ((TextView) itemView.findViewById(R.id.tvSelectedCartPrice)).setText(formatPrice(item.getUnitPrice()));
-        ((ImageView) itemView.findViewById(R.id.ivSelectedCartProductImage)).setImageResource(R.drawable.ic_product);
+        
+        ImageView ivProduct = itemView.findViewById(R.id.ivSelectedCartProductImage);
+        
+        // Cập nhật load ảnh giống CheckoutFragment
+        com.bumptech.glide.Glide.with(this)
+            .load(item.getImageUrl() != null ? item.getImageUrl() : "")
+            .placeholder(R.drawable.ic_product)
+            .error(R.drawable.ic_product)
+            .into(ivProduct);
     }
 
     private void setupActions(String status) {

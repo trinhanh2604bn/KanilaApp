@@ -148,7 +148,7 @@ public class FilterBottomSheetDialog extends BottomSheetDialogFragment {
             brandGroup.removeAllViews();
             for (Brand brand : brands) {
                 Chip chip = (Chip) LayoutInflater.from(requireContext())
-                        .inflate(R.layout.view_filter_chip, brandGroup, false);
+                        .inflate(R.layout.item_filter_chip, brandGroup, false);
                 chip.setText(brand.getBrandName());
                 chip.setTag(brand.getId());
                 chip.setCheckable(true);

@@ -168,7 +168,7 @@ public class AccountFragment extends Fragment {
     private void performAction(com.example.frontend.core.auth.PendingAuthAction.ActionType actionType) {
         switch (actionType) {
             case OPEN_ORDER_LIST:
-                FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.order.OrderListFragment());
+                FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.order.OrderListFragment());
                 break;
             case OPEN_VOUCHER_WALLET:
                 FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.voucher.VoucherListFragment());

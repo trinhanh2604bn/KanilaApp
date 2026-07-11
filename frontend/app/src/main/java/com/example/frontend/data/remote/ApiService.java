@@ -167,10 +167,16 @@ public interface ApiService {
     Call<ApiResponse<CheckoutSessionDto>> createBuyNowSession(@Body AddToCartRequest request);
 
     @POST("api/checkout-sessions/me/{id}/place-order")
-    Call<ApiResponse<Object>> placeOrder(@Path("id") String sessionId, @Body Object request);
+    Call<ApiResponse<OrderDto>> placeOrder(@Path("id") String sessionId, @Body Object request);
 
     @POST("api/checkout-sessions/guest/{id}/place-order")
-    Call<ApiResponse<Object>> placeGuestOrder(@Path("id") String sessionId, @Body Object request);
+    Call<ApiResponse<OrderDto>> placeGuestOrder(@Path("id") String sessionId, @Body Object request);
+
+    @POST("api/orders/mock-checkout")
+    Call<ApiResponse<com.example.frontend.data.model.order.MockOrderResponse>> createMockOrder(@Body java.util.Map<String, Object> request);
+
+    @GET("api/orders/code/{orderCode}")
+    Call<ApiResponse<com.example.frontend.data.model.order.OrderDetailDto>> getOrderByCode(@Path("orderCode") String orderCode);
 
     @GET("api/beauty-references")
     Call<ApiResponse<List<BeautyReferenceDto>>> getBeautyReferences();
@@ -213,6 +219,15 @@ public interface ApiService {
 
     @GET("api/orders/me/{id}")
     Call<ApiResponse<com.example.frontend.data.model.order.OrderDetailDto>> getMyOrderDetail(@Path("id") String id);
+
+    @GET("api/orders/me/{id}/review-items")
+    Call<ApiResponse<com.example.frontend.data.model.order.ReviewOrderItemsDto>> getOrderReviewItems(@Path("id") String orderId);
+
+    @GET("api/reviews/write-eligibility/{orderItemId}")
+    Call<ApiResponse<com.example.frontend.data.model.review.ReviewEligibilityDto>> getReviewWriteEligibility(@Path("orderItemId") String orderItemId);
+
+    @POST("api/reviews/submit")
+    Call<ApiResponse<Object>> submitReview(@Body com.example.frontend.data.model.review.SubmitReviewRequest request);
 
     @PATCH("api/orders/{id}/cancel")
     Call<ApiResponse<com.example.frontend.data.model.order.OrderSummaryDto>> cancelMyOrder(@Path("id") String id, @Body java.util.Map<String, String> body);

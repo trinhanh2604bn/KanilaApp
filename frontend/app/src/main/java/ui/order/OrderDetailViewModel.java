@@ -78,56 +78,21 @@ public class OrderDetailViewModel extends AndroidViewModel {
     }
 
     public void loadOrderDetail(String orderId) {
-        // repository.getOrderDetail(orderId, orderResult);
-        
-        // Temporarily using Mock Data for development
-        loadMockOrderDetail(orderId);
+        if (orderId == null || orderId.isEmpty()) return;
+
+        // If it's a mock checkout placeholder, we might still be loading it or it might be a code
+        if (orderId.startsWith("KNL")) {
+            repository.getOrderByCode(orderId, orderResult);
+        } else if (orderId.equals("mock_order_id")) {
+             // Skip or handle as error if we don't have a real ID yet
+             uiState.setValue(OrderDetailUiState.error("Đang khởi tạo đơn hàng..."));
+        } else {
+            repository.getOrderDetail(orderId, orderResult);
+        }
         
         productRepository.getProducts("popular", null, null).observeForever(result -> {
             recResult.setValue(result);
         });
-    }
-
-    private void loadMockOrderDetail(String orderId) {
-        uiState.setValue(OrderDetailUiState.loading());
-        
-        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-            OrderDetailDto mock = createMockData(orderId);
-            uiState.setValue(OrderDetailUiState.success(mock, currentRecs));
-        }, 600);
-    }
-
-    private OrderDetailDto createMockData(String id) {
-        // Khớp với dữ liệu từ OrderListViewModel
-        String status = "confirmed";
-        if ("1".equals(id)) status = "pending";
-        else if ("2".equals(id)) status = "confirmed";
-        else if ("3".equals(id)) status = "processing";
-        else if ("4".equals(id)) status = "completed";
-        else if ("5".equals(id)) status = "returned";
-        else if ("6".equals(id)) status = "cancelled";
-
-        OrderDetailDto mock = new OrderDetailDto(
-            id,
-            "KNL250" + (id != null ? id : "7002"),
-            status,
-            "Thanh toán khi nhận hàng",
-            "10-07-2025 14:30"
-        );
-        
-        mock.addItem("Son kem lì Merzy The First Velvet Tint", "V6 Fire Rose", 1, 250000);
-        
-        // Thêm thông tin đặc thù
-        if ("cancelled".equals(status)) {
-            mock.setPaymentStatus("Chưa thanh toán");
-        } else if ("returned".equals(status)) {
-            mock.setPaymentStatus("Đã hoàn tiền vào ví");
-        }
-
-        mock.setShippingAddress("Nguyễn Hoàng Gia Bảo", "(+84) 377 211 334", "Cổng Sau Ktx Khu B, Phường Đông Hòa", "Thành phố Dĩ An", "Tỉnh Bình Dương");
-        mock.setTotal(250000);
-        
-        return mock;
     }
 
     public void cancelOrder(String orderId, String reason) {

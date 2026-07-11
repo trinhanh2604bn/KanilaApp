@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 
 import com.example.frontend.R;
 import java.util.Locale;
+import ui.order.OrderListFragment;
+import ui.common.FragmentNavigationHelper;
 
 public class OrderSuccessFragment extends Fragment {
 
@@ -68,12 +70,10 @@ public class OrderSuccessFragment extends Fragment {
         tvRewardPoints.setText(getString(R.string.order_success_reward, earnedPoints));
 
         view.findViewById(R.id.btnTrackOrder).setOnClickListener(v -> {
-            if (getActivity() != null && orderCode != null) {
-                // Navigate to Order Tracking
-                // Since I don't have OrderTrackingFragment yet, I'll pop back and show message or navigate if it exists.
-                // Requirement says: "Navigate to Order Tracking page. Pass the current order ID."
-                // I'll check if OrderTrackingFragment exists.
-                navigateToOrderTracking(orderCode);
+            if (getActivity() != null) {
+                // Navigate to Order List - Pending tab
+                OrderListFragment fragment = OrderListFragment.newInstance("pending");
+                FragmentNavigationHelper.loadFragment(getActivity(), fragment);
             }
         });
 
@@ -83,13 +83,6 @@ public class OrderSuccessFragment extends Fragment {
                 getActivity().getSupportFragmentManager().popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
         });
-    }
-
-    private void navigateToOrderTracking(String orderId) {
-        if (getActivity() != null) {
-            ui.order.OrderDetailFragment fragment = ui.order.OrderDetailFragment.newInstance(orderId);
-            ui.common.FragmentNavigationHelper.loadFragment(getActivity(), fragment);
-        }
     }
 
     private String formatPrice(double price) {

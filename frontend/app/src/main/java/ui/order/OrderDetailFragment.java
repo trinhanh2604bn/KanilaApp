@@ -41,6 +41,7 @@ public class OrderDetailFragment extends Fragment {
     private View layoutBanner, layoutRefundDetail, layoutShipping, layoutAddress, layoutOrderDetails;
     private TextView tvBannerStatus, tvBannerTime, tvRefundAmount;
     private TextView tvShippingMethod, tvTrackingNumber;
+    private ImageView ivShippingMethodIcon;
     private TextView tvRecipientInfo, tvFullAddress;
     private LinearLayout layoutItemsList;
     private TextView tvGrandTotal, tvOrderNumber, tvOrderPlacedTime, tvPaymentMethod;
@@ -107,6 +108,7 @@ public class OrderDetailFragment extends Fragment {
 
         tvShippingMethod = view.findViewById(R.id.tvOrderShippingMethod);
         tvTrackingNumber = view.findViewById(R.id.tvOrderTrackingNumber);
+        ivShippingMethodIcon = view.findViewById(R.id.ivOrderShippingIcon);
 
         tvRecipientInfo = view.findViewById(R.id.tvOrderRecipientNamePhone);
         tvFullAddress = view.findViewById(R.id.tvOrderFullAddress);
@@ -230,7 +232,34 @@ public class OrderDetailFragment extends Fragment {
         
         // 2. Thông tin vận chuyển (Chỉ hiện khi không phải đơn mới/đã hủy)
         if (layoutShipping.getVisibility() == View.VISIBLE) {
-            tvShippingMethod.setText("Giao hàng nhanh");
+            String method = order.getShippingMethodName();
+            
+            // Try to get from shipment if root is null
+            if ((method == null || method.isEmpty()) && order.getShipment() != null) {
+                method = order.getShipment().getServiceName();
+            }
+
+            // Ultimate Fallback: Guess by fee if still null
+            if (method == null || method.isEmpty()) {
+                double fee = order.getTotal() != null ? order.getTotal().getShippingFee() : -1;
+                if (fee == 45000) method = "Hỏa tốc";
+                else if (fee == 0) method = "Nhận tại cửa hàng";
+                else if (fee == 25000) method = "Nhanh";
+                else if (fee == 15000) method = "Tiêu chuẩn";
+                else method = "Giao hàng nhanh";
+            }
+
+            tvShippingMethod.setText(method);
+
+            // Set corresponding icon
+            if (ivShippingMethodIcon != null) {
+                if ("Nhận tại cửa hàng".equals(method)) {
+                    ivShippingMethodIcon.setImageResource(R.drawable.ic_routine);
+                } else {
+                    ivShippingMethodIcon.setImageResource(R.drawable.ic_shipping);
+                }
+            }
+
             if (order.getShipment() != null && order.getShipment().getTrackingNumber() != null) {
                 tvTrackingNumber.setText(getString(R.string.order_detail_tracking_number, order.getShipment().getTrackingNumber()));
                 tvTrackingNumber.setVisibility(View.VISIBLE);
@@ -283,19 +312,19 @@ public class OrderDetailFragment extends Fragment {
 
     private void setupOrderItemView(View itemView, OrderDetailDto.OrderItemDetailDto item) {
         ((TextView) itemView.findViewById(R.id.tvSelectedCartProductName)).setText(item.getProductName());
-        
+
         String displayVariant = item.getVariantName();
         if (displayVariant != null && displayVariant.contains(" - ")) {
             String[] parts = displayVariant.split(" - ");
             displayVariant = parts[parts.length - 1];
         }
         ((TextView) itemView.findViewById(R.id.tvSelectedCartVariant)).setText(displayVariant);
-        
-        ((TextView) itemView.findViewById(R.id.tvSelectedCartQuantity)).setText("Số lượng: " + item.getQuantity());
+
+        ((TextView) itemView.findViewById(R.id.tvSelectedCartQuantity)).setText("Số lượng: x" + item.getQuantity());
         ((TextView) itemView.findViewById(R.id.tvSelectedCartPrice)).setText(formatPrice(item.getUnitPrice()));
-        
+
         ImageView ivProduct = itemView.findViewById(R.id.ivSelectedCartProductImage);
-        
+
         // Cập nhật load ảnh giống CheckoutFragment
         com.bumptech.glide.Glide.with(this)
             .load(item.getImageUrl() != null ? item.getImageUrl() : "")
@@ -358,7 +387,12 @@ public class OrderDetailFragment extends Fragment {
     }
 
     private String getStatusTimeText(String status, OrderDetailDto order) {
-        if ("confirmed".equals(status)) return "Dự kiến giao hàng sau 2-3 ngày";
+        if ("confirmed".equals(status)) {
+            if (order.getEstimatedDelivery() != null && !order.getEstimatedDelivery().isEmpty()) {
+                return "Dự kiến giao hàng: " + order.getEstimatedDelivery();
+            }
+            return "Dự kiến giao hàng sau 2-3 ngày";
+        }
         if ("processing".equals(status)) return "Shipper đang trên đường giao đến bạn";
         return "Cảm ơn bạn đã mua sắm tại Kanila!";
     }

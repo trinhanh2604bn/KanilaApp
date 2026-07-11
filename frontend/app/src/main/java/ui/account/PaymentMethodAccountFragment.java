@@ -18,9 +18,10 @@ import com.google.android.material.card.MaterialCardView;
 
 public class PaymentMethodAccountFragment extends Fragment {
 
-    private LinearLayout layoutExpanded;
+    private LinearLayout layoutExpanded, containerActiveCards, containerActiveBanks;
     private TextView tvExpandedTitle;
     private LinearLayout containerMethodItems;
+    private TextView tvShopeePayStatus, tvMoMoStatus, tvZaloPayStatus;
 
     @Nullable
     @Override
@@ -51,6 +52,12 @@ public class PaymentMethodAccountFragment extends Fragment {
         layoutExpanded = view.findViewById(R.id.layoutExpandedMethods);
         tvExpandedTitle = view.findViewById(R.id.tvExpandedTitle);
         containerMethodItems = view.findViewById(R.id.containerMethodItems);
+        containerActiveCards = view.findViewById(R.id.containerActiveCards);
+        containerActiveBanks = view.findViewById(R.id.containerActiveBanks);
+        
+        tvShopeePayStatus = view.findViewById(R.id.tvShopeePayStatus);
+        tvMoMoStatus = view.findViewById(R.id.tvMoMoStatus);
+        tvZaloPayStatus = view.findViewById(R.id.tvZaloPayStatus);
 
         view.findViewById(R.id.btnAddNewCard).setOnClickListener(v -> showExpandedList("card"));
         view.findViewById(R.id.btnAddNewBank).setOnClickListener(v -> showExpandedList("bank"));
@@ -69,7 +76,7 @@ public class PaymentMethodAccountFragment extends Fragment {
 
         switch (type) {
             case "card":
-                title = "Thẻ của bạn";
+                title = "Chọn loại thẻ";
                 items = new String[]{"Visa **** 1234", "MasterCard **** 5678", "JCB **** 9012"};
                 iconRes = R.drawable.ic_paymeny_card;
                 break;
@@ -80,7 +87,7 @@ public class PaymentMethodAccountFragment extends Fragment {
                 break;
             case "shopeepay":
                 title = "Dịch vụ liên kết ShopeePay";
-                items = new String[]{"Liên kết ví ShopeePay"};
+                items = new String[]{"Tài khoản: bảo_kanila@gmail.com"};
                 iconRes = R.drawable.ic_gift;
                 break;
             case "momo":
@@ -100,15 +107,14 @@ public class PaymentMethodAccountFragment extends Fragment {
         tvExpandedTitle.setText(title);
 
         for (String itemText : items) {
-            View itemView = createMethodItemView(itemText, iconRes);
+            View itemView = createMethodItemView(itemText, iconRes, type);
             containerMethodItems.addView(itemView);
         }
 
-        // Scroll to the bottom to show the expanded list
         layoutExpanded.requestFocus();
     }
 
-    private View createMethodItemView(String text, int iconRes) {
+    private View createMethodItemView(String text, int iconRes, String type) {
         MaterialCardView card = new MaterialCardView(requireContext());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -149,7 +155,11 @@ public class PaymentMethodAccountFragment extends Fragment {
         btn.setPadding(px(12), 0, px(12), 0);
         btn.setCornerRadius(px(18));
         btn.setBackgroundTintList(getResources().getColorStateList(R.color.button, null));
-        btn.setOnClickListener(v -> Toast.makeText(getContext(), "Đã chọn: " + text, Toast.LENGTH_SHORT).show());
+        
+        btn.setOnClickListener(v -> {
+            handleMethodSelection(text, iconRes, type);
+            layoutExpanded.setVisibility(View.GONE);
+        });
 
         layout.addView(ivIcon);
         layout.addView(tv);
@@ -157,6 +167,68 @@ public class PaymentMethodAccountFragment extends Fragment {
         card.addView(layout);
 
         return card;
+    }
+
+    private void handleMethodSelection(String text, int iconRes, String type) {
+        if ("card".equals(type)) {
+            addActiveMethodToContainer(containerActiveCards, text, iconRes);
+        } else if ("bank".equals(type)) {
+            addActiveMethodToContainer(containerActiveBanks, text, iconRes);
+        } else if ("shopeepay".equals(type)) {
+            tvShopeePayStatus.setText("Đã liên kết");
+            tvShopeePayStatus.setTextColor(getResources().getColor(R.color.button, null));
+        } else if ("momo".equals(type)) {
+            tvMoMoStatus.setText("Đã liên kết");
+            tvMoMoStatus.setTextColor(getResources().getColor(R.color.button, null));
+        } else if ("zalopay".equals(type)) {
+            tvZaloPayStatus.setText("Đã liên kết");
+            tvZaloPayStatus.setTextColor(getResources().getColor(R.color.button, null));
+        }
+        
+        Toast.makeText(getContext(), "Đã thêm phương thức: " + text, Toast.LENGTH_SHORT).show();
+    }
+
+    private void addActiveMethodToContainer(LinearLayout container, String text, int iconRes) {
+        MaterialCardView activeCard = new MaterialCardView(requireContext());
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(px(16), px(8), px(16), 0);
+        activeCard.setLayoutParams(params);
+        activeCard.setRadius(px(12));
+        activeCard.setCardElevation(0);
+        activeCard.setStrokeColor(getResources().getColorStateList(R.color.border_divider, null));
+        activeCard.setStrokeWidth(px(1));
+        activeCard.setCardBackgroundColor(getResources().getColorStateList(R.color.background_main, null));
+
+        LinearLayout layout = new LinearLayout(requireContext());
+        layout.setOrientation(LinearLayout.HORIZONTAL);
+        layout.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        layout.setPadding(px(16), px(16), px(16), px(16));
+
+        ImageView ivIcon = new ImageView(requireContext());
+        ivIcon.setLayoutParams(new LinearLayout.LayoutParams(px(32), px(24)));
+        ivIcon.setImageResource(iconRes);
+        ivIcon.setImageTintList(getResources().getColorStateList(R.color.button, null));
+
+        TextView tv = new TextView(requireContext());
+        LinearLayout.LayoutParams tvParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+        tvParams.setMarginStart(px(16));
+        tv.setLayoutParams(tvParams);
+        tv.setText(text);
+        tv.setTextColor(getResources().getColor(R.color.text_main, null));
+        tv.setTextSize(14);
+        
+        ImageView ivCheck = new ImageView(requireContext());
+        ivCheck.setLayoutParams(new LinearLayout.LayoutParams(px(20), px(20)));
+        ivCheck.setImageResource(R.drawable.ic_routine); // Using routine as a checkmark for demo
+        ivCheck.setImageTintList(getResources().getColorStateList(R.color.button, null));
+
+        layout.addView(ivIcon);
+        layout.addView(tv);
+        layout.addView(ivCheck);
+        activeCard.addView(layout);
+
+        container.addView(activeCard);
     }
 
     private int px(int dp) {

@@ -260,7 +260,7 @@ public interface ApiService {
     Call<ApiResponse<Object>> bulkDeleteWishlistItems(@Body BulkDeleteRequest request);
 
     @GET("api/orders/me/summary")
-    Call<ApiResponse<Object>> getMyOrderSummary();
+    Call<ApiResponse<com.example.frontend.data.model.order.UserOrderSummaryDto>> getMyOrderSummary();
 
     @GET("api/loyalty/me")
     Call<ApiResponse<Object>> getMyLoyaltyAccount();

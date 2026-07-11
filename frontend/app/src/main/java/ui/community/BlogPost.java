@@ -1,5 +1,6 @@
 package ui.community;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BlogPost {
@@ -19,6 +20,7 @@ public class BlogPost {
     private boolean isLiked;
     private boolean isSaved;
     private List<String> productIds;
+    private List<Comment> comments = new ArrayList<>();
 
     public BlogPost(String id, String title, String excerpt, String thumbnailUrl, String authorName, boolean isAuthorVerified, String createdAt, String category) {
         this.id = id;
@@ -67,4 +69,13 @@ public class BlogPost {
     public void setSaved(boolean saved) { isSaved = saved; }
     public List<String> getProductIds() { return productIds; }
     public void setProductIds(List<String> productIds) { this.productIds = productIds; }
+
+    public List<Comment> getComments() {
+        if (comments == null) comments = new ArrayList<>();
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 }

@@ -28,13 +28,22 @@ public class BlogDetailFragment extends Fragment {
     private static final String ARG_BLOG_ID = "blog_id";
     private String blogId;
     private BlogViewModel blogViewModel;
+    private com.example.frontend.feature.account.AccountViewModel accountViewModel;
     private BlogPost blog;
 
     private ImageView ivThumbnail, ivLikeIcon, btnSaveDetail, ivLikeIconBottom, ivVerified;
     private TextView tvTitle, tvCategory, tvAuthor, tvTime, tvContent, tvLikeCountDetail, tvCommentsTitle;
     private TextView tvLikeCountBottom, tvCommentCountDetail, tvShareCountDetail;
+    private android.widget.ImageButton btnSendComment;
     private RecyclerView rvSuggestedProducts, rvBlogComments;
     private CommentAdapter commentAdapter;
+    private com.example.frontend.feature.home.HomeProductAdapter suggestedProductsAdapter;
+
+    // Reply state
+    private Comment replyingToComment = null;
+    private View layoutReplyStatus;
+    private TextView tvReplyingTo;
+    private android.widget.ImageButton btnCancelReply;
 
     public static BlogDetailFragment newInstance(String blogId) {
         BlogDetailFragment fragment = new BlogDetailFragment();
@@ -80,10 +89,12 @@ public class BlogDetailFragment extends Fragment {
         rvSuggestedProducts = view.findViewById(R.id.rvSuggestedProducts);
         rvBlogComments = view.findViewById(R.id.rvBlogComments);
 
+        layoutReplyStatus = view.findViewById(R.id.layoutReplyStatus);
+        tvReplyingTo = view.findViewById(R.id.tvReplyingTo);
+        btnCancelReply = view.findViewById(R.id.btnCancelReply);
+
         view.findViewById(R.id.btnBack).setOnClickListener(v -> getParentFragmentManager().popBackStack());
         
-        View.OnClickListener shareListener = v -> showShareBottomSheet();
-
         view.findViewById(R.id.layoutLikeDetail).setOnClickListener(v -> {
             if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
                 toggleLike();
@@ -104,16 +115,43 @@ public class BlogDetailFragment extends Fragment {
         });
         
         EditText edtComment = view.findViewById(R.id.edtComment);
-        view.findViewById(R.id.btnSendComment).setOnClickListener(v -> {
+        btnSendComment = view.findViewById(R.id.btnSendComment);
+        
+        btnSendComment.setEnabled(false);
+        btnSendComment.setAlpha(0.5f);
+
+        btnSendComment.setOnClickListener(v -> {
             if (ui.community.util.CommunityAuthGuard.checkMember(this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
-                if (edtComment != null && !edtComment.getText().toString().trim().isEmpty()) {
-                    Toast.makeText(getContext(), "Đã gửi bình luận", Toast.LENGTH_SHORT).show();
-                    edtComment.setText("");
-                }
+                submitComment(edtComment);
             }
         });
 
         if (edtComment != null) {
+            edtComment.addTextChangedListener(new android.text.TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    boolean hasText = !s.toString().trim().isEmpty();
+                    btnSendComment.setEnabled(hasText);
+                    btnSendComment.setAlpha(hasText ? 1.0f : 0.5f);
+                }
+
+                @Override
+                public void afterTextChanged(android.text.Editable s) {}
+            });
+
+            edtComment.setOnEditorActionListener((v, actionId, event) -> {
+                if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEND) {
+                    if (btnSendComment.isEnabled()) {
+                        btnSendComment.performClick();
+                    }
+                    return true;
+                }
+                return false;
+            });
+
             edtComment.setOnTouchListener((v, event) -> {
                 if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
                     v.performClick();
@@ -122,6 +160,8 @@ public class BlogDetailFragment extends Fragment {
                 return false;
             });
         }
+        
+        btnCancelReply.setOnClickListener(v -> cancelReplyMode());
 
         if (view.findViewById(R.id.btnViewAllProducts) != null) {
             view.findViewById(R.id.btnViewAllProducts).setOnClickListener(v -> 
@@ -168,15 +208,34 @@ public class BlogDetailFragment extends Fragment {
 
     private void setupViewModel() {
         blogViewModel = new ViewModelProvider(requireActivity()).get(BlogViewModel.class);
+        accountViewModel = new ViewModelProvider(requireActivity()).get(com.example.frontend.feature.account.AccountViewModel.class);
+        
+        if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+            accountViewModel.loadProfileHub();
+        }
+
         blogViewModel.getFeaturedBlogs().observe(getViewLifecycleOwner(), blogs -> {
             if (blogs != null) {
                 for (BlogPost b : blogs) {
                     if (b.getId().equals(blogId)) {
                         blog = b;
                         displayBlog();
+                        // Load real products from backend
+                        blogViewModel.loadSuggestedProducts(blog.getProductIds());
                         break;
                     }
                 }
+            }
+        });
+
+        // Observe suggested products once here
+        blogViewModel.getSuggestedProductsResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null || suggestedProductsAdapter == null) return;
+            if (result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && result.data != null) {
+                suggestedProductsAdapter.setProducts(result.data);
+                rvSuggestedProducts.setVisibility(View.VISIBLE);
+            } else if (result.status != com.example.frontend.data.remote.NetworkResult.Status.LOADING) {
+                rvSuggestedProducts.setVisibility(View.GONE);
             }
         });
     }
@@ -195,6 +254,10 @@ public class BlogDetailFragment extends Fragment {
         if (tvCommentCountDetail != null) tvCommentCountDetail.setText(formatCount(blog.getCommentCount()));
         if (tvShareCountDetail != null) tvShareCountDetail.setText(formatCount(blog.getShareCount()));
         
+        if (commentAdapter != null && blog.getComments() != null) {
+            commentAdapter.setComments(new ArrayList<>(blog.getComments()));
+        }
+
         tvCommentsTitle.setText("Tất cả bình luận");
 
         if (blog.getImageResId() != 0) {
@@ -224,28 +287,47 @@ public class BlogDetailFragment extends Fragment {
     }
 
     private void setupSuggestedProducts() {
-        com.example.frontend.feature.home.HomeProductAdapter productsAdapter = new com.example.frontend.feature.home.HomeProductAdapter();
-        // Set item width for horizontal scroll
-        int width = (int) (160 * getResources().getDisplayMetrics().density);
-        productsAdapter.setItemWidth(width);
-        
-        rvSuggestedProducts.setAdapter(productsAdapter);
-        // Mock products
-        List<com.example.frontend.model.Product> mock = new ArrayList<>();
-        mock.add(new com.example.frontend.model.Product("p1", "The Ordinary", "Niacinamide 10% + Zinc 1%", "250.000đ", "4.8", "1.2K", R.drawable.ic_product, "HOT", "Serum"));
-        mock.add(new com.example.frontend.model.Product("p2", "Kanila", "Airy Cushion", "580.000đ", "4.8", "246", R.drawable.bg_slide_1, "NEW", "Makeup"));
-        mock.add(new com.example.frontend.model.Product("p3", "Kanila", "Tone Up Sun Cream", "420.000đ", "4.9", "312", R.drawable.bg_slide_2, "HOT", "Skincare"));
-        productsAdapter.setProducts(mock);
+        if (suggestedProductsAdapter == null) {
+            suggestedProductsAdapter = new com.example.frontend.feature.home.HomeProductAdapter();
+            // Set item width for horizontal scroll
+            int width = (int) (160 * getResources().getDisplayMetrics().density);
+            suggestedProductsAdapter.setItemWidth(width);
+
+            suggestedProductsAdapter.setOnProductClickListener(new com.example.frontend.feature.home.HomeProductAdapter.OnProductClickListener() {
+                @Override
+                public void onProductClick(com.example.frontend.model.Product product) {
+                    if (getActivity() instanceof com.example.frontend.MainActivity) {
+                        ((com.example.frontend.MainActivity) getActivity())
+                                .loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()));
+                    }
+                }
+
+                @Override
+                public void onAddToCartClick(com.example.frontend.model.Product product) {
+                    // Handled if necessary
+                }
+            });
+            
+            rvSuggestedProducts.setAdapter(suggestedProductsAdapter);
+        }
     }
 
     private void setupComments() {
         commentAdapter = new CommentAdapter();
+        if (blog != null) {
+            commentAdapter.setPostAuthorName(blog.getAuthorName());
+            commentAdapter.setComments(new ArrayList<>(blog.getComments()));
+        }
         rvBlogComments.setAdapter(commentAdapter);
-        // Mock comments
-        List<Comment> mock = new ArrayList<>();
-        mock.add(new Comment("c1", "Minh Thư", null, "Bài viết rất hữu ích ạ!", "2 giờ trước", 5, false));
-        mock.add(new Comment("c2", "Ngọc Anh", null, "Mình cũng đang dùng serum này, mê xỉu", "5 giờ trước", 12, false));
-        commentAdapter.setComments(mock);
+        
+        commentAdapter.setOnCommentActionListener(new CommentAdapter.OnCommentActionListener() {
+            @Override
+            public void onReplyClick(Comment comment) {
+                if (ui.community.util.CommunityAuthGuard.checkMember(BlogDetailFragment.this, com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION)) {
+                    enterReplyMode(comment, (EditText) getView().findViewById(R.id.edtComment));
+                }
+            }
+        });
     }
 
     private void toggleLike() {
@@ -284,5 +366,87 @@ public class BlogDetailFragment extends Fragment {
         btnSaveDetail.setImageResource(blog.isSaved() ? R.drawable.ic_bookmark : R.drawable.ic_bookmark_outline);
         btnSaveDetail.setColorFilter(androidx.core.content.ContextCompat.getColor(getContext(), 
             blog.isSaved() ? R.color.button : R.color.accent_dark));
+    }
+
+    private void submitComment(EditText edtComment) {
+        if (edtComment == null || blog == null) return;
+        String content = edtComment.getText().toString().trim();
+        if (content.isEmpty()) return;
+
+        String userName = "Người dùng Kanila";
+        String userAvatar = null;
+
+        // Get real user info
+        com.example.frontend.data.remote.NetworkResult<com.example.frontend.data.model.account.ProfileHubDto> userResult = accountViewModel.getProfileHubResult().getValue();
+        if (userResult != null && userResult.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && userResult.data != null) {
+            if (userResult.data.getProfile() != null) {
+                userName = userResult.data.getProfile().getFullName();
+                userAvatar = userResult.data.getProfile().getAvatarUrl();
+            }
+        }
+
+        String parentId = replyingToComment != null ? replyingToComment.getId() : null;
+        String newId = String.valueOf(System.currentTimeMillis());
+
+        Comment newComment = new Comment(
+                newId,
+                userName,
+                userAvatar,
+                content,
+                "Vừa xong",
+                0,
+                false,
+                parentId
+        );
+
+        // Persist comment via ViewModel
+        blogViewModel.addComment(blogId, newComment);
+
+        edtComment.setText("");
+        cancelReplyMode();
+        
+        Toast.makeText(getContext(), parentId == null ? "Đã gửi bình luận" : "Đã trả lời", Toast.LENGTH_SHORT).show();
+        
+        // Hide keyboard
+        hideKeyboard();
+    }
+
+    private void enterReplyMode(Comment comment, EditText edtComment) {
+        replyingToComment = comment;
+        layoutReplyStatus.setVisibility(View.VISIBLE);
+        tvReplyingTo.setText("Đang trả lời " + comment.getUserName());
+        if (edtComment != null) {
+            edtComment.setHint("Trả lời " + comment.getUserName() + "...");
+            edtComment.requestFocus();
+            showKeyboard(edtComment);
+        }
+    }
+
+    private void cancelReplyMode() {
+        replyingToComment = null;
+        layoutReplyStatus.setVisibility(View.GONE);
+        EditText edtComment = getView().findViewById(R.id.edtComment);
+        if (edtComment != null) {
+            edtComment.setHint("Viết bình luận...");
+        }
+        hideKeyboard();
+    }
+
+    private void hideKeyboard() {
+        View view = getActivity() != null ? getActivity().getCurrentFocus() : null;
+        if (view != null) {
+            android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }
+    }
+
+    private void showKeyboard(View view) {
+        if (getActivity() == null || view == null) return;
+        android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.showSoftInput(view, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 }

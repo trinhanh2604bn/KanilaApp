@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.frontend.data.model.cart.AddToCartRequest;
 import com.example.frontend.data.model.cart.CartDto;
 import com.example.frontend.data.model.cart.CartItemDto;
 import com.example.frontend.data.remote.NetworkResult;
@@ -93,6 +94,10 @@ public class CartViewModel extends AndroidViewModel {
         cartRepository.removeItem(itemId, cartResult);
     }
 
+    public void addToCart(String productId, String variantId, int quantity) {
+        addToCart(new AddToCartRequest(productId, variantId, quantity));
+    }
+
     public void selectAllItems(boolean selected) {
         if (USE_MOCK_CART && mockCart != null) {
             List<CartItemDto> newList = new ArrayList<>();
@@ -114,7 +119,7 @@ public class CartViewModel extends AndroidViewModel {
         cartRepository.selectAllItems(selected, cartResult);
     }
 
-    public void addToCart(com.example.frontend.data.model.cart.AddToCartRequest request) {
+    public void addToCart(AddToCartRequest request) {
         // Reset trạng thái về LOADING để tránh observer nhận dữ liệu cũ (như lỗi 400 trước đó)
         cartResult.setValue(NetworkResult.loading());
 

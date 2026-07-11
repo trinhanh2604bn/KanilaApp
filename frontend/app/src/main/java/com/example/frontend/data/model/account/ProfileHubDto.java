@@ -45,6 +45,7 @@ public class ProfileHubDto {
         @SerializedName("avatarUrl")
         private String avatarUrl;
 
+        public String getCustomerId() { return customerId; }
         public String getFullName() { return fullName; }
         public String getEmail() { return email; }
         public String getAvatarUrl() { return avatarUrl; }

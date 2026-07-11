@@ -673,6 +673,49 @@
                         app:tint="@color/text_tertiary" />
                 </LinearLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="56dp"
+                    android:background="@color/border_divider" />
+
+                <!-- Chính sách & Điều khoản -->
+                <LinearLayout
+                    android:id="@+id/menuPolicies"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/ivMenu7"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_chatbot_soft_dot"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_shortcut_policy"
+                        app:tint="@color/accent_dark" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:text="Chính sách &amp; Điều khoản"
+                        android:textAppearance="@style/H3"
+                        android:textColor="@color/text_main" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_tertiary" />
+                </LinearLayout>
+
             </LinearLayout>
 
         </LinearLayout>

@@ -8,17 +8,29 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
+import com.example.frontend.feature.beauty.BeautyProfileViewModel;
+import com.example.frontend.feature.cart.CartViewModel;
 import com.example.frontend.feature.home.HomeProductAdapter;
+import com.example.frontend.feature.product.ProductDetailFragment;
+import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.data.repository.ProductRepository;
 import com.example.frontend.model.Product;
+import com.example.frontend.data.model.beauty.CustomerBeautyProfileDto;
+import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StepProductSuggestionsFragment extends Fragment {
 
     private String stepName;
+    private CartViewModel cartViewModel;
+    private BeautyProfileViewModel beautyViewModel;
+    private ProductRepository productRepository;
+    private View layoutLoading;
 
     public static StepProductSuggestionsFragment newInstance(String stepName) {
         StepProductSuggestionsFragment fragment = new StepProductSuggestionsFragment();
@@ -45,6 +57,9 @@ public class StepProductSuggestionsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
+        beautyViewModel = new ViewModelProvider(requireActivity()).get(BeautyProfileViewModel.class);
+        productRepository = new ProductRepository(requireContext());
         
         TextView tvTitle = view.findViewById(R.id.tvStepTitle);
         if (stepName != null) {
@@ -55,11 +70,74 @@ public class StepProductSuggestionsFragment extends Fragment {
 
         RecyclerView rvProducts = view.findViewById(R.id.rvStepProducts);
         HomeProductAdapter adapter = new HomeProductAdapter();
+        adapter.setOnAddToCartListener(product -> {
+            cartViewModel.addToCart(product.getId(), null, 1);
+            Toast.makeText(getContext(), "Đã thêm " + product.getName() + " vào giỏ hàng", Toast.LENGTH_SHORT).show();
+        });
+        adapter.setOnProductClickListener(product -> {
+            int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                    ? R.id.main_fragment_container : R.id.main;
+            getParentFragmentManager().beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(containerId, ProductDetailFragment.newInstance(product.getId()))
+                    .addToBackStack("step_suggest_to_detail")
+                    .commit();
+        });
         rvProducts.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         rvProducts.setAdapter(adapter);
 
-        // Load dummy products based on step
-        loadDummyProducts(adapter);
+        // Load real products from database based on step
+        loadRealProducts(adapter);
+    }
+
+    private void loadRealProducts(HomeProductAdapter adapter) {
+        if (stepName == null) return;
+        
+        // Get user budget from beauty profile
+        String userBudget = null;
+        NetworkResult<CustomerBeautyProfileDto> profileResult = beautyViewModel.getProfileResult().getValue();
+        if (profileResult != null && profileResult.status == NetworkResult.Status.SUCCESS && profileResult.data != null) {
+            userBudget = profileResult.data.getBudget();
+        }
+        
+        final String finalBudget = userBudget;
+        
+        // Use the step name as a search query to get relevant products from DB
+        productRepository.getProducts(stepName, null, null).observe(getViewLifecycleOwner(), result -> {
+            if (result != null) {
+                if (result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+                    List<Product> filtered = filterByBudget(result.data, finalBudget);
+                    adapter.setProducts(filtered);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    Toast.makeText(getContext(), "Không thể tải sản phẩm: " + result.message, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private List<Product> filterByBudget(List<Product> products, String budget) {
+        if (budget == null || budget.isEmpty()) return products;
+        
+        List<Product> filtered = new ArrayList<>();
+        for (Product p : products) {
+            double price = p.getPriceValue();
+            boolean match = false;
+            
+            if ("Dưới 300K".equalsIgnoreCase(budget)) {
+                match = price < 300000;
+            } else if ("300K - 500K".equalsIgnoreCase(budget)) {
+                match = price >= 300000 && price <= 500000;
+            } else if ("500K +".equalsIgnoreCase(budget)) {
+                match = price > 500000;
+            } else {
+                match = true;
+            }
+            
+            if (match) {
+                filtered.add(p);
+            }
+        }
+        return filtered;
     }
 
     private void loadDummyProducts(HomeProductAdapter adapter) {

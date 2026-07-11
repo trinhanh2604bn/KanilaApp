@@ -21,6 +21,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
     public interface OnOrderClickListener {
         void onOrderClick(OrderSummaryDto order);
+        default void onActionClick(OrderSummaryDto order, String action) {}
     }
 
     private final List<OrderSummaryDto> orders = new ArrayList<>();
@@ -184,6 +185,12 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onOrderClick(order);
+                }
+            });
+
+            btnAction.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onActionClick(order, btnAction.getText().toString());
                 }
             });
         }

@@ -16,7 +16,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
+import com.example.frontend.data.model.order.OrderSummaryDto;
 import ui.common.FragmentNavigationHelper;
+import ui.order.OrderAdapter;
+import ui.order.OrderDetailFragment;
+import ui.order.OrderListViewModel;
+import ui.order.ReviewOrderFragment;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,9 +154,24 @@ public class OrderListFragment extends Fragment {
 
     private void setupRecyclerView() {
         adapter = new OrderAdapter();
-        adapter.setOnOrderClickListener(order -> {
-            OrderDetailFragment fragment = OrderDetailFragment.newInstance(order.getId(), order.getOrderNumber());
-            FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+        adapter.setOnOrderClickListener(new OrderAdapter.OnOrderClickListener() {
+            @Override
+            public void onOrderClick(OrderSummaryDto order) {
+                OrderDetailFragment fragment = OrderDetailFragment.newInstance(order.getId(), order.getOrderNumber());
+                FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+            }
+
+            @Override
+            public void onActionClick(OrderSummaryDto order, String action) {
+                if ("Đánh giá".equals(action)) {
+                    ReviewOrderFragment fragment = ReviewOrderFragment.newInstance(order.getId());
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+                } else if ("Mua lại".equals(action)) {
+                    // Existing reorder logic if any, or just navigate to detail
+                    OrderDetailFragment fragment = OrderDetailFragment.newInstance(order.getId(), order.getOrderNumber());
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+                }
+            }
         });
         rvOrders.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvOrders.setAdapter(adapter);

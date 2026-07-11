@@ -23,6 +23,7 @@ import com.example.frontend.R;
 import com.example.frontend.data.model.order.OrderDetailDto;
 import com.example.frontend.feature.home.HomeProductAdapter;
 import com.example.frontend.feature.wishlist.WishlistViewModel;
+import ui.common.FragmentNavigationHelper;
 import java.util.List;
 import java.util.Locale;
 
@@ -290,7 +291,7 @@ public class OrderDetailFragment extends Fragment {
         }
         ((TextView) itemView.findViewById(R.id.tvSelectedCartVariant)).setText(displayVariant);
         
-        ((TextView) itemView.findViewById(R.id.tvSelectedCartQuantity)).setText("Số lượng: x" + item.getQuantity());
+        ((TextView) itemView.findViewById(R.id.tvSelectedCartQuantity)).setText("Số lượng: " + item.getQuantity());
         ((TextView) itemView.findViewById(R.id.tvSelectedCartPrice)).setText(formatPrice(item.getUnitPrice()));
         
         ImageView ivProduct = itemView.findViewById(R.id.ivSelectedCartProductImage);
@@ -312,9 +313,9 @@ public class OrderDetailFragment extends Fragment {
 
         switch (status) {
             case "pending":
-                btnActionSecondary.setVisibility(View.GONE);
-                btnActionPrimary.setText("Hủy đơn hàng");
-                btnActionPrimary.setOnClickListener(v -> showCancelDialog());
+                btnActionPrimary.setVisibility(View.GONE);
+                btnActionSecondary.setText("Hủy đơn hàng");
+                btnActionSecondary.setOnClickListener(v -> showCancelDialog());
                 break;
             case "confirmed":
                 btnActionSecondary.setText("Hủy đơn hàng");
@@ -322,15 +323,21 @@ public class OrderDetailFragment extends Fragment {
                 btnActionPrimary.setText("Liên hệ Shop");
                 break;
             case "processing":
-                btnActionSecondary.setText("Theo dõi đơn");
-                btnActionPrimary.setText("Đã nhận được hàng");
+                btnActionSecondary.setText("Trả hàng/Hoàn tiền");
+                btnActionPrimary.setText("Đã nhận hàng");
                 btnActionPrimary.setEnabled(false);
                 break;
             case "completed":
-                btnActionSecondary.setText("Trả hàng/Hoàn tiền");
+                btnActionSecondary.setText(R.string.order_detail_return_refund);
                 btnActionPrimary.setText("Đánh giá");
+                btnActionPrimary.setOnClickListener(v -> {
+                    ReviewOrderFragment fragment = ReviewOrderFragment.newInstance(orderId);
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+                });
                 break;
             case "cancelled":
+                btnActionPrimary.setVisibility(View.GONE);
+                btnActionSecondary.setVisibility(View.GONE);
             case "returned":
                 btnActionSecondary.setText("Mua lại");
                 btnActionPrimary.setText("Xem chi tiết");

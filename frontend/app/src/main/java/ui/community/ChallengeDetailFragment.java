@@ -17,7 +17,7 @@ import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.data.repository.ProductRepository;
 import com.example.frontend.model.Product;
-import ui.category.ProductAdapter;
+import com.example.frontend.ui.category.ProductAdapter;
 import java.util.ArrayList;
 import java.util.List;
 import com.google.android.material.button.MaterialButton;

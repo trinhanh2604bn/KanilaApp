@@ -75,6 +75,7 @@
     <string name="category_cheeks">Cheeks</string>
     <string name="category_gift">Gift</string>
     <string name="category_new">New</string>
+    <string name="category_new_arrival">New Arrival</string>
     <string name="category_hot">Hot</string>
     <string name="category_brushes">Mini &amp; Travel</string>
     <string name="category_ar">AR</string>
@@ -996,4 +997,15 @@
     <string name="challenge_more_posts_format">+%d bài tiến trình khác</string>
     <string name="challenge_day_label_format">Ngày %d</string>
     <string name="challenge_rules_title">Quy tắc thử thách</string>
+
+    <string name="filter_concerns">Nhu cầu</string>
+    <string name="concern_long_wear">Lâu trôi</string>
+    <string name="concern_smooth_finish">Mịn da</string>
+    <string name="concern_photo_ready">Ăn ảnh</string>
+    <string name="filter_sensitive_only">Phù hợp da nhạy cảm</string>
+    <string name="filter_best_seller_only">Bán chạy</string>
+
+    <string name="ing_glycerin">Glycerin</string>
+    <string name="ing_tocopherol">Tocopherol</string>
+    <string name="ing_mica">Mica</string>
 </resources>

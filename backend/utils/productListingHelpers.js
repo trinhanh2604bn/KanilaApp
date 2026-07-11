@@ -86,12 +86,66 @@ function parseCatalogPagination(query) {
 
 function parseSortKey(sortRaw) {
   const s = String(sortRaw || "newest").toLowerCase().trim();
-  if (s === "price_asc") return { price: 1, createdAt: -1 };
-  if (s === "price_desc") return { price: -1, createdAt: -1 };
-  if (s === "popular" || s === "bought") return { bought: -1, createdAt: -1 };
-  if (s === "hot_deal") return { bought: -1, createdAt: -1 };
-  if (s === "new" || s === "newest") return { createdAt: -1 };
-  return { createdAt: -1 };
+
+  if (s === "best_match" || s === "relevance") {
+    return {
+      is_best_seller: -1,
+      averageRating: -1,
+      bought: -1,
+      sales_count: -1,
+      createdAt: -1,
+    };
+  }
+
+  if (s === "best_seller" || s === "popular" || s === "bought") {
+    return {
+      sales_count: -1,
+      bought: -1,
+      createdAt: -1,
+    };
+  }
+
+  if (s === "price_asc") {
+    return {
+      price: 1,
+      createdAt: -1,
+    };
+  }
+
+  if (s === "price_desc") {
+    return {
+      price: -1,
+      createdAt: -1,
+    };
+  }
+
+  if (s === "hot_deal") {
+    return {
+      bought: -1,
+      createdAt: -1,
+    };
+  }
+
+  if (s === "new" || s === "newest") {
+    return {
+      createdAt: -1,
+    };
+  }
+
+  return {
+    createdAt: -1,
+  };
+}
+
+function parseCsvValues(value) {
+  if (value == null || String(value).trim() === "") {
+    return [];
+  }
+
+  return String(value)
+    .split(",")
+    .map((x) => decodeURIComponent(x.trim()))
+    .filter(Boolean);
 }
 
 /**
@@ -192,6 +246,41 @@ function buildMongoFilterFromQuery(query, opts = {}) {
     }
   }
 
+  //Tone
+
+  const tonesParam = query.tones ?? query.toneMatches;
+
+const tones = parseCsvValues(tonesParam);
+
+if (tones.length > 0) {
+  filter.tone_match_supported = {
+    $in: tones,
+  };
+}
+
+//Ingredients filter: product.key_ingredients intersects with selected values
+
+const ingredientsParam = query.ingredients ?? query.keyIngredients;
+
+const ingredients = parseCsvValues(ingredientsParam);
+
+if (ingredients.length > 0) {
+  filter.key_ingredients = {
+    $in: ingredients,
+  };
+}
+
+//Concerns filter: product.concerns_targeted intersects with selected values
+const concernsParam = query.concerns;
+
+const concerns = parseCsvValues(concernsParam);
+
+if (concerns.length > 0) {
+  filter.concerns_targeted = {
+    $in: concerns,
+  };
+}
+
   // Shade filter: product must contain at least one selected shade hex
   const shadesParam = query.shades;
   if (shadesParam != null && String(shadesParam).trim()) {
@@ -203,6 +292,14 @@ function buildMongoFilterFromQuery(query, opts = {}) {
       filter["shades.hex"] = { $in: shadeHexes };
     }
   }
+
+  if (query.sensitiveOnly === "true" || query.sensitiveOnly === "1") {
+  filter.is_sensitive_friendly = true;
+}
+
+if (query.bestSellerOnly === "true" || query.bestSellerOnly === "1") {
+  filter.is_best_seller = true;
+}
 
   const sortStr = String(query.sort || "").toLowerCase().trim();
   const saleOnly = query.saleOnly === "true" || query.saleOnly === "1";

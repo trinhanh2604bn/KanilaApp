@@ -23,7 +23,7 @@ import com.google.android.material.chip.Chip;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import ui.category.ProductAdapter;
+import com.example.frontend.ui.category.ProductAdapter;
 import ui.common.BottomNavigationHelper;
 
 public class WishlistFragment extends Fragment implements ProductAdapter.OnSelectionChangeListener {

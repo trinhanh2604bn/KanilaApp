@@ -20,6 +20,62 @@ const getAllCategories = async (req, res) => {
   }
 };
 
+// GET /api/categories/root
+const getRootCategories = async (req, res) => {
+  try {
+    const categories = await Category.find({
+      parentCategoryId: null,
+      isActive: true,
+      categoryStatus: "active",
+    })
+      .select("categoryName categoryCode parentCategoryId parentName displayOrder categoryStatus isActive slug name")
+      .sort({ displayOrder: 1, createdAt: -1 })
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      message: "Get root categories successfully",
+      count: categories.length,
+      data: categories,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+// GET /api/categories/:parentId/children
+const getChildCategories = async (req, res) => {
+  try {
+    const { parentId } = req.params;
+
+    if (!validateObjectId(parentId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid parent category ID",
+      });
+    }
+
+    const categories = await Category.find({
+      parentCategoryId: parentId,
+      isActive: true,
+      categoryStatus: "active",
+    })
+      .select("categoryName categoryCode parentCategoryId parentName displayOrder categoryStatus isActive slug name")
+      .sort({ displayOrder: 1, createdAt: -1 })
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      message: "Get child categories successfully",
+      count: categories.length,
+      data: categories,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // GET /api/categories/:id
 const getCategoryById = async (req, res) => {
   try {
@@ -177,6 +233,8 @@ const deleteCategory = async (req, res) => {
 module.exports = {
   getAllCategories,
   getCategoryById,
+  getRootCategories,
+  getChildCategories,
   createCategory,
   updateCategory,
   deleteCategory,

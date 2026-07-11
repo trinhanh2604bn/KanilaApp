@@ -161,6 +161,14 @@ const createProfile = async (req, res) => {
     };
 
     const profile = await customerBeautyProfileService.createProfile(resolvedId, req.body, context);
+
+    // Lập tức trigger sinh recommendation và AI skin analysis
+    const { generateSnapshotByAccountId } = require("../services/recommendationSnapshot.service");
+    await generateSnapshotByAccountId({ 
+      accountId: req.user?.account_id || req.user?.accountId, 
+      generateAnalysis: true 
+    });
+
     return res.status(201).json({
       success: true,
       message: "Created customer beauty profile successfully",
@@ -214,6 +222,14 @@ const updateProfile = async (req, res) => {
     };
 
     const profile = await customerBeautyProfileService.updateProfile(resolvedId, req.body, context);
+
+    // Lập tức trigger sinh recommendation và AI skin analysis
+    const { generateSnapshotByAccountId } = require("../services/recommendationSnapshot.service");
+    await generateSnapshotByAccountId({ 
+      accountId: req.user?.account_id || req.user?.accountId, 
+      generateAnalysis: true 
+    });
+
     return res.status(200).json({
       success: true,
       message: "Updated customer beauty profile successfully",

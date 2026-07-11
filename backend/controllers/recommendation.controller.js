@@ -186,6 +186,12 @@ const getMyHomepageRecommendations = async (req, res) => {
       recommendationType: SNAPSHOT_RECOMMENDATION_TYPE,
     });
 
+    const activeSnap = await CustomerRecommendationSnapshot.findOne({
+      customer_id: cust?._id,
+      recommendation_type: SNAPSHOT_RECOMMENDATION_TYPE,
+    }).lean();
+    const ai_analysis = activeSnap?.ai_analysis || null;
+
     const products = productsRaw.map(it => ({
       product: it.product || it,
       score: Number(it.score || 0),
@@ -204,6 +210,7 @@ const getMyHomepageRecommendations = async (req, res) => {
         from_snapshot,
         algorithm_version: ALGORITHM_VERSION,
         snapshot_generated_at,
+        ai_analysis,
         products,
       },
     });

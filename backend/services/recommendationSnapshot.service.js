@@ -206,7 +206,7 @@ function shouldUseSnapshot(snapshotDoc, { profileHash, now }) {
   return true;
 }
 
-async function generateSnapshotByAccountId({ accountId, recommendationType = "skin_profile_homepage", limit = 20, ttlHours = 48 }) {
+async function generateSnapshotByAccountId({ accountId, recommendationType = "skin_profile_homepage", limit = 20, ttlHours = 48, generateAnalysis = false }) {
   // Regenerate based on customer beauty profile (CustomerBeautyProfile primary,
   // CustomerPreference fallback) + behavior signals.
   const { customer, profile } = await (async () => {
@@ -240,6 +240,12 @@ async function generateSnapshotByAccountId({ accountId, recommendationType = "sk
   const algorithmVersion = items?.[0]?.algorithm_version || ALGORITHM_VERSION;
   const profileSource = profile._source || "CustomerPreference";
 
+  let aiAnalysis = null;
+  if (generateAnalysis) {
+    const { generateSkinAnalysis } = require("./gemini.provider");
+    aiAnalysis = await generateSkinAnalysis(profile, items.slice(0, 5));
+  }
+
   await CustomerRecommendationSnapshot.findOneAndUpdate(
     { customer_id: customer._id, recommendation_type: recType },
     {
@@ -248,6 +254,7 @@ async function generateSnapshotByAccountId({ accountId, recommendationType = "sk
       profile_hash: profileHash,
       product_ids: productIds,
       items: snapshotItems,
+      ai_analysis: aiAnalysis,
       algorithm_version: algorithmVersion,
       generated_at: now,
       expires_at: expiresAt,

@@ -91,7 +91,7 @@ const NO_PRODUCT_QUICK_REPLIES = [
 const MISSING_INFO_QUICK_REPLIES = {
   skin_type: ["Da dầu", "Da khô", "Da hỗn hợp", "Da nhạy cảm", "Da thường"],
   skin_concerns: ["Mụn", "Thâm", "Xỉn màu", "Lão hóa", "Khô ráp"],
-  budget_range: ["Dưới 200k", "200k - 500k", "500k - 1 triệu", "Trên 1 triệu"],
+  budget: ["Dưới 200k", "200k - 500k", "500k - 1 triệu", "Trên 1 triệu"],
 };
 
 const ORDER_LOGIN_QUICK_REPLIES = ["Đăng nhập tài khoản", "Nhập mã đơn hàng", "Gặp nhân viên hỗ trợ"];
@@ -301,7 +301,7 @@ async function handlePersonalizedProductRecommendation(message, user, history) {
       const fallbacks = {
         skin_type: "Để tư vấn chính xác hơn, bạn thuộc loại da nào? Da dầu / Da khô / Da hỗn hợp / Da nhạy cảm / Da thường",
         skin_concerns: "Bạn đang gặp vấn đề gì về da? Ví dụ: Mụn, Thâm, Xỉn màu, Lão hóa...",
-        budget_range: "Bạn thường chi bao nhiêu cho một sản phẩm chăm sóc da?",
+        budget: "Bạn thường chi bao nhiêu cho một sản phẩm chăm sóc da?",
       };
       botText = fallbacks[missingField] || "Bạn có thể cho mình biết thêm về nhu cầu của bạn không?";
     }

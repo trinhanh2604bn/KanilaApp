@@ -14,31 +14,9 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 // Health check endpoint
-app.get("/api/health", async (req, res) => {
-  const mongoose = require("mongoose");
-  const isConnected = mongoose.connection.readyState === 1;
-  let diagnostics = {
-    database: isConnected ? "connected" : "disconnected",
-    dbName: isConnected ? mongoose.connection.name : null,
-    productCount: 0,
-    brandCount: 0,
-    categoryCount: 0,
-    error: null
-  };
-
-  if (isConnected) {
-    try {
-      diagnostics.productCount = await mongoose.connection.db.collection("products").countDocuments();
-      diagnostics.brandCount = await mongoose.connection.db.collection("brands").countDocuments();
-      diagnostics.categoryCount = await mongoose.connection.db.collection("categories").countDocuments();
-    } catch (e) {
-      diagnostics.error = e.message;
-    }
-  }
-
+app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
-    diagnostics,
     timestamp: new Date().toISOString()
   });
 });

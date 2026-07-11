@@ -157,7 +157,7 @@ function buildMissingInfoMessage(missingField, userMessage) {
     skin_concerns:
       "Bạn đang gặp vấn đề gì về da mà muốn cải thiện? " +
       "Ví dụ: Mụn, Thâm, Xỉn màu, Khô ráp, Lão hóa...",
-    budget_range:
+    budget:
       "Bạn thường chi bao nhiêu cho một sản phẩm chăm sóc da? " +
       "Ví dụ: Dưới 200k / 200k-500k / Trên 500k",
   };

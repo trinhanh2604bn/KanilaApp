@@ -116,7 +116,7 @@ async function generatePersonalizedProductExplanation(products, userMessage, cus
 
 /**
  * Phase 4A: ask one progressive question when customer profile is incomplete.
- * @param {string} missingField — "skin_type" | "skin_concerns" | "budget_range"
+ * @param {string} missingField — "skin_type" | "skin_concerns" | "budget"
  * @param {string} userMessage
  * @param {Array} history
  * @returns {Promise<string>}

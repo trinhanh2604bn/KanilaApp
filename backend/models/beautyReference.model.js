@@ -10,27 +10,30 @@ const beautyReferenceSchema = new mongoose.Schema(
         "skin_type",
         "skin_concern",
         "sensitivity_level",
-        "skin_tone",
-        "undertone",
-        "shade_preference",
-        "lip_color_preference",
+        "skin_color",
+        "skin_undertone",
+        "foundation_finish",
+        "lipstick_color",
         "makeup_style",
-        "beauty_goal",
+        "budget",
         "avoid_ingredient",
+        "beauty_goal",
+        // Extended groups (for future features / chatbot / AI)
         "preferred_ingredient",
         "shopping_preference",
-        "budget_range",
         "texture_preference",
-        "finish_preference",
         "fragrance_preference",
         "purchase_intent",
       ],
     },
+    // reference_code must be UPPER_SNAKE_CASE (e.g. OILY_SKIN, ACNE, DARK_SPOT)
+    // Enforced by validations/beautyReference.validation.js
     reference_code: {
       type: String,
       required: true,
       index: true,
     },
+    // Flat display name fields — easier to index and query than nested objects
     display_name_vi: {
       type: String,
       required: true,
@@ -44,6 +47,10 @@ const beautyReferenceSchema = new mongoose.Schema(
       default: "",
     },
     helper_text: {
+      type: String,
+      default: "",
+    },
+    icon_url: {
       type: String,
       default: "",
     },

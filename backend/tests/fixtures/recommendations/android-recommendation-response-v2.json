@@ -1,0 +1,30 @@
+{
+  "success": true,
+  "message": "Recommendations fetched successfully",
+  "data": {
+    "recommendation_type": "skin_profile_homepage",
+    "profile_source": "CustomerBeautyProfile",
+    "from_snapshot": false,
+    "algorithm_version": "rule_v2",
+    "snapshot_generated_at": null,
+    "products": [
+      {
+        "product": {
+          "_id": "60d5ec49f1b2c8b1f8e4e1a1",
+          "productName": "Kanila Clear Skin Serum",
+          "brandId": "60d5ec49f1b2c8b1f8e4e1a0"
+        },
+        "score": 85.5,
+        "reasons": ["Contains niacinamide which you prefer", "Addresses acne concerns"],
+        "reason_codes": ["MATCH_PREFERRED_INGREDIENT", "MATCH_SKIN_CONCERN"],
+        "badges": ["Top Match", "Acne Safe"],
+        "score_breakdown": {
+          "base_score": 60,
+          "ingredient_bonus": 15,
+          "concern_bonus": 10.5
+        }
+      }
+    ]
+  },
+  "error": null
+}

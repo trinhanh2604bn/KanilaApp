@@ -1,0 +1,20 @@
+{
+  "skin_type": "oily",
+  "skin_concerns": ["acne"],
+  "sensitivity_level": "low",
+  "skin_color": null,
+  "skin_undertone": null,
+  "foundation_finish": null,
+  "lipstick_colors": [],
+  "makeup_styles": [],
+  "budget": "200_500k",
+  "avoid_ingredients": ["alcohol_denat"],
+  "beauty_goals": ["acne_care"],
+  "preferred_ingredients": ["niacinamide"],
+  "preferred_brands": [],
+  "disliked_brands": [],
+  "preferred_categories": [],
+  "texture_preference": [],
+  "fragrance_preference": null,
+  "purchase_intent": []
+}

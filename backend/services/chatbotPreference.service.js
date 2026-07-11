@@ -11,61 +11,103 @@
  * - Only save CONFIRMED, explicit information from the user message.
  * - Do NOT infer or guess sensitive attributes.
  * - Never save payment info, private health data, or internal IDs.
- * - All writes are upserts — never destructive to existing data.
+ * - All writes go through customerBeautyProfile.service.js (which triggers model hooks,
+ *   BeautyReference validation, and hash recalculation).
+ * - runValidators is NEVER bypassed.
+ * - All stored codes MUST be UPPER_SNAKE_CASE matching seed-beauty-references.js values.
+ * - Budget values MUST map to an actual seeded reference code (UNDER_300, 300_500, 500_1000, OVER_1000).
  */
 
 const mongoose = require("mongoose");
 const CustomerBeautyProfile = require("../models/customerBeautyProfile.model");
 const CustomerPreference = require("../models/customerPreference.model");
-const crypto = require("crypto");
+const customerBeautyProfileService = require("./customerBeautyProfile.service");
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Preference extraction from Vietnamese user messages
+// Canonical code maps — all codes match seed-beauty-references.js reference_codes
 // ─────────────────────────────────────────────────────────────────────────────
 
 const SKIN_TYPE_MAP = [
-  { keywords: ["da dầu", "da nhờn", "oily", "dầu và", "dầu mụn", "mình dầu", "da của mình dầu"], value: "oily" },
-  { keywords: ["da khô", "dry skin"], value: "dry" },
-  { keywords: ["da nhạy cảm", "da nhạy", "sensitive"], value: "sensitive" },
-  { keywords: ["da hỗn hợp", "combination"], value: "combination" },
-  { keywords: ["da thường", "da bình thường", "normal skin"], value: "normal" },
+  { keywords: ["da dầu", "da nhờn", "oily", "dầu và", "dầu mụn", "mình dầu", "da của mình dầu"], value: "OILY_SKIN" },
+  { keywords: ["da khô", "dry skin", "khô da"], value: "DRY_SKIN" },
+  { keywords: ["da nhạy cảm", "da nhạy", "sensitive", "nhạy cảm"], value: "SENSITIVE_SKIN" },
+  { keywords: ["da hỗn hợp", "combination", "hỗn hợp"], value: "COMBINATION_SKIN" },
+  { keywords: ["da thường", "da bình thường", "normal skin", "bình thường"], value: "NORMAL_SKIN" },
 ];
 
+// Canonical skin_concern reference_codes from seed-beauty-references.js
 const SKIN_CONCERN_MAP = [
-  { keywords: ["mụn", "acne", "nổi mụn", "dễ bị mụn"], value: "acne" },
-  { keywords: ["thâm", "dark spot", "nám", "tàn nhang"], value: "dark_spot" },
-  { keywords: ["xỉn màu", "xỉn", "dullness", "sạm"], value: "dullness" },
-  { keywords: ["thiếu ẩm", "khô ráp", "dryness", "mất ẩm"], value: "dryness" },
-  { keywords: ["kiểm soát dầu", "kiểm soát nhờn", "oil_control"], value: "oil_control" },
-  { keywords: ["lão hóa", "nếp nhăn", "anti aging"], value: "anti_aging" },
-  { keywords: ["lỗ chân lông", "pore"], value: "pore" },
+  { keywords: ["mụn", "acne", "nổi mụn", "dễ bị mụn", "hay bị mụn"], value: "ACNE" },
+  { keywords: ["thâm", "dark spot", "nám", "tàn nhang", "thâm nám"], value: "DARK_SPOT" },
+  { keywords: ["xỉn màu", "xỉn", "dullness", "sạm", "da xỉn"], value: "DULLNESS" },
+  { keywords: ["lỗ chân lông to", "pore", "lỗ chân lông"], value: "LARGE_PORES" },
+  { keywords: ["mụn đầu đen", "blackhead", "đầu đen"], value: "BLACKHEADS" },
+  { keywords: ["nếp nhăn", "wrinkle", "lão hóa", "anti aging", "chống lão"], value: "WRINKLES" },
+  { keywords: ["thiếu ẩm", "mất nước", "dehydration", "mất ẩm", "khô ráp"], value: "DEHYDRATION" },
+  { keywords: ["da đỏ", "redness", "đỏ ửng", "kích ứng"], value: "REDNESS" },
 ];
 
+// Canonical preferred_ingredient reference_codes from seed-beauty-references.js
+const PREFERRED_INGREDIENT_MAP = [
+  { keywords: ["niacinamide", "niacin"], value: "NIACINAMIDE" },
+  { keywords: ["hyaluronic acid", "ha", "axit hyaluronic", "hyaluronic"], value: "HYALURONIC_ACID" },
+  { keywords: ["ceramide"], value: "CERAMIDE" },
+  { keywords: ["centella", "rau má", "cica"], value: "CENTELLA" },
+  { keywords: ["vitamin c", "vit c", "ascorbic"], value: "VITAMIN_C" },
+  { keywords: ["retinol", "vitamin a"], value: "RETINOL" },
+  { keywords: ["aha", "glycolic acid", "lactic acid"], value: "AHA" },
+  { keywords: ["bha", "salicylic acid", "acid salicylic"], value: "BHA" },
+  { keywords: ["peptide"], value: "PEPTIDE" },
+  { keywords: ["panthenol", "provitamin b5", "b5"], value: "PANTHENOL" },
+];
+
+// Canonical budget reference_codes from seed-beauty-references.js:
+//   UNDER_300  → under 300,000 VND
+//   300_500    → 300,000 – 500,000 VND
+//   500_1000   → 500,000 – 1,000,000 VND
+//   OVER_1000  → over 1,000,000 VND
 const BUDGET_PATTERNS = [
-  // "khoảng 500 nghìn", "500 nghìn", "500 ngàn"
-  { re: /(\d+[\.,]?\d*)\s*(?:nghìn|ngàn)(?:đ|d|đồng)?/i, multiplier: 1000 },
-  // "dưới 300k", "khoảng 300k"
-  { re: /(\d+[\.,]?\d*)\s*k(?:đ|d)?/i,     multiplier: 1000 },
-  // "300.000" or "300,000"
-  { re: /(\d{2,3}[\.,]\d{3})\s*(?:đ|vnd)?/i, multiplier: 1, normalize: true },
-  // "300000đ"
-  { re: /(\d{4,7})\s*(?:đ|vnd|đồng)/i,       multiplier: 1 },
+  // Explicit "dưới 300k" or "under 300k" → UNDER_300
+  { re: /(?:dưới|under|below)\s*3\d{2}[kK]/i,       value: "UNDER_300" },
+  { re: /(?:dưới|under|below)\s*3\d{2}\s*nghìn/i,    value: "UNDER_300" },
+  // "khoảng 300–500k" or "300 đến 500k" → 300_500
+  { re: /3\d{2}[–\-]\s*5\d{2}[kK]/i,                value: "300_500" },
+  { re: /khoảng 4\d{2}[kK]/i,                       value: "300_500" },
+  // "500 đến 1 triệu" → 500_1000
+  { re: /5\d{2}[–\-]\s*[1-9]\d{2,3}[kK]/i,          value: "500_1000" },
+  { re: /khoảng 7\d{2}[kK]/i,                       value: "500_1000" },
+  // "trên 1 triệu" → OVER_1000
+  { re: /(?:trên|over|above)\s*1\s*(?:tr|triệu|m)/i, value: "OVER_1000" },
+  // Exact numeric fallback — bucket by amount
+  { re: /(\d+[.,]?\d*)\s*(?:nghìn|ngàn|[kK])(?:\s*(?:đ|d|đồng))?/i, numeric: true },
 ];
 
 /**
- * Parse max budget from a message string.
- * @param {string} message
- * @returns {number|null}
+ * Map a raw numeric VND amount to a canonical budget reference code.
+ * Thresholds match seed-beauty-references.js groups.
  */
-function parseBudgetMax(message) {
+function bucketBudget(vndAmount) {
+  if (vndAmount < 300000) return "UNDER_300";
+  if (vndAmount < 500000) return "300_500";
+  if (vndAmount < 1000000) return "500_1000";
+  return "OVER_1000";
+}
+
+/**
+ * Parse a budget reference code from a Vietnamese message.
+ * Returns a canonical reference_code (e.g. "UNDER_300") or null.
+ */
+function parseBudgetCode(message) {
   const text = message.toLowerCase();
-  for (const { re, multiplier, normalize } of BUDGET_PATTERNS) {
-    const m = text.match(re);
-    if (m) {
-      const raw = normalize
-        ? parseInt(m[1].replace(/[\.,]/g, ""))
-        : parseFloat(m[1].replace(",", ".")) * multiplier;
-      if (!isNaN(raw) && raw > 0) return Math.round(raw);
+  for (const pattern of BUDGET_PATTERNS) {
+    if (pattern.numeric) {
+      const m = text.match(pattern.re);
+      if (m) {
+        const raw = parseFloat(m[1].replace(",", ".")) * 1000;
+        if (!isNaN(raw) && raw > 0) return bucketBudget(Math.round(raw));
+      }
+    } else {
+      if (pattern.re.test(text)) return pattern.value;
     }
   }
   return null;
@@ -79,42 +121,38 @@ function parseBudgetMax(message) {
  * @returns {{
  *   skin_type: string|null,
  *   skin_concerns: string[],
- *   budget_max: number|null
+ *   budget: string|null,
+ *   preferred_ingredients: string[]
  * }}
  */
 function extractPreferenceFromMessage(message) {
   const lower = message.toLowerCase();
   let skin_type = null;
   const skin_concerns = [];
+  const preferred_ingredients = [];
 
   for (const entry of SKIN_TYPE_MAP) {
     if (entry.keywords.some((kw) => lower.includes(kw))) {
-      skin_type = entry.value;
+      skin_type = entry.value; // Already UPPER_SNAKE_CASE
       break;
     }
   }
 
   for (const entry of SKIN_CONCERN_MAP) {
     if (entry.keywords.some((kw) => lower.includes(kw))) {
-      skin_concerns.push(entry.value);
+      skin_concerns.push(entry.value); // Already UPPER_SNAKE_CASE
     }
   }
 
-  const budget_max = parseBudgetMax(message);
+  for (const entry of PREFERRED_INGREDIENT_MAP) {
+    if (entry.keywords.some((kw) => lower.includes(kw))) {
+      preferred_ingredients.push(entry.value); // Already UPPER_SNAKE_CASE
+    }
+  }
 
-  return { skin_type, skin_concerns, budget_max };
-}
+  const budget = parseBudgetCode(message);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Helpers for beauty profile upsert
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Compute a stable MD5 hash for the profile fields used in CustomerBeautyProfile.
- * Mirrors the pre-validate hook logic so the hash is always consistent.
- */
-function computeProfileHash(fields) {
-  return crypto.createHash("md5").update(JSON.stringify(fields)).digest("hex");
+  return { skin_type, skin_concerns, preferred_ingredients, budget };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -124,11 +162,10 @@ function computeProfileHash(fields) {
 /**
  * Save confirmed preferences extracted from the user message.
  *
- * Writes to:
- *   1. CustomerBeautyProfile (upsert, source: "chatbot")
- *      — Only updates fields that were explicitly extracted (never overwrites with null)
- *   2. CustomerPreference key-value rows (upsert per field)
- *      — Mirror for fast chatbot context reads
+ * ALL writes go through customerBeautyProfile.service.js, which:
+ *   - Runs the Mongoose pre("validate") hook (BeautyReference validation + hash)
+ *   - Invalidates recommendation snapshots on hash change
+ *   - Does NOT use runValidators: false
  *
  * @param {object} params
  * @param {ObjectId|string} params.customerId
@@ -138,69 +175,54 @@ function computeProfileHash(fields) {
 async function updateCustomerPreference({ customerId, message }) {
   if (!customerId) return { saved: false, extracted: {} };
 
-  const { skin_type, skin_concerns, budget_max } = extractPreferenceFromMessage(message);
+  const { skin_type, skin_concerns, preferred_ingredients, budget } = extractPreferenceFromMessage(message);
 
   // Nothing extracted — nothing to save
-  if (!skin_type && !skin_concerns.length && budget_max == null) {
+  if (!skin_type && !skin_concerns.length && !preferred_ingredients.length && budget == null) {
     return { saved: false, extracted: {} };
   }
 
-  const extracted = { skin_type, skin_concerns, budget_max };
+  const extracted = { skin_type, skin_concerns, preferred_ingredients, budget };
 
   try {
-    // ── 1. Upsert CustomerBeautyProfile ──────────────────────────────────────
+    // Load existing profile to perform additive merges on arrays
     const existingProfile = await CustomerBeautyProfile.findOne({ customer_id: customerId }).lean();
 
-    // Build merge — only overwrite unknown/empty values
-    const update = { source: "chatbot", last_updated_at: new Date() };
+    const update = {};
 
     if (skin_type) {
       update.skin_type = skin_type;
     }
 
     if (skin_concerns.length) {
-      // Merge new concerns with existing ones (deduplicate)
       const existing = existingProfile ? existingProfile.skin_concerns || [] : [];
-      const merged = [...new Set([...existing, ...skin_concerns])];
-      update.skin_concerns = merged;
+      // Deduplicate, preserve canonical UPPER_SNAKE_CASE
+      update.skin_concerns = [...new Set([...existing, ...skin_concerns])];
     }
 
-    if (budget_max != null) {
-      // Store as "under_X" format to match the budget_range string convention
-      update.budget_range = `under_${budget_max}`;
+    if (preferred_ingredients.length) {
+      const existing = existingProfile ? existingProfile.preferred_ingredients || [] : [];
+      update.preferred_ingredients = [...new Set([...existing, ...preferred_ingredients])];
     }
 
-    // Recompute profile_hash for the merged object
-    const mergedForHash = {
-      skin_type:          update.skin_type || existingProfile?.skin_type || "unknown",
-      skin_concerns:      update.skin_concerns || existingProfile?.skin_concerns || [],
-      sensitivity_level:  existingProfile?.sensitivity_level || "unknown",
-      skin_tone:          existingProfile?.skin_tone || "unknown",
-      undertone:          existingProfile?.undertone || "unknown",
-      shade_preference:   existingProfile?.shade_preference || [],
-      lip_color_preference: existingProfile?.lip_color_preference || [],
-      makeup_style:       existingProfile?.makeup_style || [],
-      beauty_goals:       existingProfile?.beauty_goals || [],
-      avoid_ingredients:  existingProfile?.avoid_ingredients || [],
-      preferred_ingredients: existingProfile?.preferred_ingredients || [],
-      budget_range:       update.budget_range || existingProfile?.budget_range || "unknown",
-      preferred_brands:   existingProfile?.preferred_brands || [],
-      disliked_brands:    existingProfile?.disliked_brands || [],
-      preferred_categories: existingProfile?.preferred_categories || [],
-      texture_preference: existingProfile?.texture_preference || [],
-      finish_preference:  existingProfile?.finish_preference || [],
-      fragrance_preference: existingProfile?.fragrance_preference || "no_preference",
-      purchase_intent:    existingProfile?.purchase_intent || [],
-    };
-    update.profile_hash = computeProfileHash(mergedForHash);
+    if (budget != null) {
+      update.budget = budget; // Canonical reference code (UNDER_300, 300_500, etc.)
+    }
 
-    await CustomerBeautyProfile.findOneAndUpdate(
-      { customer_id: customerId },
-      { $set: update },
-      { upsert: true, new: true, runValidators: false }
-    );
+    if (Object.keys(update).length === 0) {
+      return { saved: false, extracted };
+    }
 
-    // ── 2. Mirror to CustomerPreference key-value rows ────────────────────────
+    // ── Route through the service (triggers model hooks: validation + hash + snapshot invalidation)
+    const context = { source: "chatbot", trustedInternalCall: true };
+
+    if (existingProfile) {
+      await customerBeautyProfileService.updateProfile(String(customerId), update, context);
+    } else {
+      await customerBeautyProfileService.createProfile(String(customerId), update, context);
+    }
+
+    // ── Mirror to CustomerPreference key-value rows (fast lookup fallback)
     const kvUpdates = [];
 
     if (skin_type) {
@@ -214,7 +236,6 @@ async function updateCustomerPreference({ customerId, message }) {
     }
 
     if (skin_concerns.length) {
-      // Merge with existing KV concerns
       let existing = [];
       try {
         const row = await CustomerPreference.findOne({
@@ -233,11 +254,30 @@ async function updateCustomerPreference({ customerId, message }) {
       });
     }
 
-    if (budget_max != null) {
+    if (preferred_ingredients.length) {
+      let existing = [];
+      try {
+        const row = await CustomerPreference.findOne({
+          customer_id: customerId,
+          preference_key: "preferred_ingredients",
+        }).lean();
+        if (row) existing = row.preference_value.split(",").filter(Boolean);
+      } catch (_) {}
+      const merged = [...new Set([...existing, ...preferred_ingredients])].join(",");
       kvUpdates.push({
         updateOne: {
-          filter: { customer_id: customerId, preference_key: "budget_max" },
-          update: { $set: { preference_value: String(budget_max), updated_at: new Date() } },
+          filter: { customer_id: customerId, preference_key: "preferred_ingredients" },
+          update: { $set: { preference_value: merged, updated_at: new Date() } },
+          upsert: true,
+        },
+      });
+    }
+
+    if (budget != null) {
+      kvUpdates.push({
+        updateOne: {
+          filter: { customer_id: customerId, preference_key: "budget" },
+          update: { $set: { preference_value: budget, updated_at: new Date() } },
           upsert: true,
         },
       });

@@ -472,45 +472,6 @@
                     android:layout_marginStart="56dp"
                     android:background="@color/border_divider" />
 
-                <!-- Skin Journey -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="16dp">
-
-                    <ImageView
-                        android:id="@+id/ivMenu2"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:background="@drawable/bg_chatbot_soft_dot"
-                        android:padding="6dp"
-                        android:src="@drawable/ic_drops"
-                        app:tint="@color/accent_dark" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_weight="1"
-                        android:text="Skin Journey"
-                        android:textAppearance="@style/H3"
-                        android:textColor="@color/text_main" />
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/text_tertiary" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="56dp"
-                    android:background="@color/border_divider" />
-
                 <!-- Địa chỉ -->
                 <LinearLayout
                     android:layout_width="match_parent"

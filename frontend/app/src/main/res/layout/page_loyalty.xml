@@ -27,6 +27,7 @@
 
             <!-- 1. Banner Hạng (Gradient) - Chứa cả Card tiến độ bên trong -->
             <LinearLayout
+                android:id="@+id/layoutTierBanner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_banner_loyalty"
@@ -53,7 +54,7 @@
                             style="@style/Text.Kanila.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/loyalty_member_label"
+                            android:text="Hạng thành viên :"
                             android:textColor="@color/white"
                             android:alpha="0.8"/>
 

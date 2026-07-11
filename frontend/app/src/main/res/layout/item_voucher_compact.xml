@@ -2,20 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutVoucherItem"
-    android:layout_width="wrap_content"
+    android:id="@+id/layoutVoucherCompactItem"
+    android:layout_width="290dp"
     android:layout_height="120dp"
-    android:layout_marginEnd="@dimen/spacing_m"
-    android:layout_marginVertical="6dp"
+    android:layout_marginVertical="4dp"
     android:background="@drawable/bg_voucher"
     android:gravity="center_vertical"
-    android:minHeight="96dp"
     android:orientation="horizontal">
 
-    <!-- Left Section -->
     <LinearLayout
-        android:id="@+id/layoutVoucherLeft"
-        android:layout_width="174dp"
+        android:id="@+id/layoutVoucherCompactLeft"
+        android:layout_width="115dp"
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
@@ -23,114 +20,111 @@
         android:paddingEnd="8dp">
 
         <TextView
-            android:id="@+id/tvVoucherDiscountPercent"
+            android:id="@+id/tvVoucherCompactDiscount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/nunito_bold"
-            android:gravity="center"
             android:includeFontPadding="false"
-            android:text="10%"
+            android:text="50K"
             android:textColor="@color/button"
             android:textSize="24sp"
-            tools:text="10%" />
+            tools:text="50K" />
 
         <TextView
-            android:id="@+id/tvVoucherDiscountLimit"
+            android:id="@+id/tvVoucherCompactConditionLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:fontFamily="@font/nunito_semibold"
             android:gravity="center"
             android:includeFontPadding="false"
-            android:lineSpacingExtra="1dp"
             android:maxLines="2"
-            android:text="GIẢM TỐI ĐA\n100.000đ"
+            android:text="GIẢM NGAY"
             android:textColor="@color/text_main"
-            android:textSize="10sp"
-            tools:text="GIẢM TỐI ĐA\n100.000đ" />
+            android:textSize="9sp"
+            tools:text="GIẢM NGAY" />
     </LinearLayout>
 
-    <!-- Vertical Divider -->
     <View
-        android:id="@+id/viewVoucherDivider"
+        android:id="@+id/viewVoucherCompactDivider"
         android:layout_width="1dp"
         android:layout_height="match_parent"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
         android:background="@color/secondary" />
 
-    <!-- Right Section -->
     <LinearLayout
-        android:id="@+id/layoutVoucherRight"
-        android:layout_width="198dp"
-        android:layout_height="129dp"
+        android:id="@+id/layoutVoucherCompactRight"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        android:paddingStart="16dp"
-        android:paddingTop="12dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="12dp">
+        android:paddingStart="12dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp">
 
         <TextView
-            android:id="@+id/tvVoucherCode"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvVoucherCompactCode"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
             android:fontFamily="@font/nunito_bold"
             android:includeFontPadding="false"
             android:maxLines="1"
-            android:text="KANILA10"
+            android:text="KANILA50"
             android:textColor="@color/text_main"
-            android:textSize="14sp"
-            tools:text="KANILA10" />
+            android:textSize="13sp"
+            tools:text="KANILA50" />
 
         <TextView
-            android:id="@+id/tvVoucherCondition"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvVoucherCompactCondition"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:fontFamily="@font/nunito_regular"
             android:includeFontPadding="false"
             android:maxLines="1"
-            android:text="Đơn tối thiểu 500.000đ"
+            android:text="Đơn từ 499K"
             android:textColor="@color/text_main"
-            android:textSize="11sp"
-            tools:text="Đơn tối thiểu 500.000đ" />
+            android:textSize="10sp"
+            tools:text="Đơn từ 499K" />
 
         <TextView
-            android:id="@+id/tvVoucherExpiredDate"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvVoucherCompactExpiredDate"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
+            android:ellipsize="end"
             android:fontFamily="@font/nunito_regular"
             android:includeFontPadding="false"
             android:maxLines="1"
-            android:text="HSD: 25/05/2025"
+            android:text="HSD: 30/07/2025"
             android:textColor="@color/text_main"
-            android:textSize="11sp"
-            tools:text="HSD: 25/05/2025" />
+            android:textSize="10sp"
+            tools:text="HSD: 30/07/2025" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCopyVoucher"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginTop="8dp"
+            android:id="@+id/btnVoucherCompactSave"
+            android:layout_width="73dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:fontFamily="@font/nunito_bold"
             android:gravity="center"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:minWidth="0dp"
             android:minHeight="0dp"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
-            android:text="Sao chép"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="Lưu"
             android:textColor="@android:color/white"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:backgroundTint="@color/button"
-            app:cornerRadius="18dp"
-            tools:ignore="TouchTargetSizeCheck"
-            tools:text="Sao chép" />
+            app:cornerRadius="14dp"
+            tools:ignore="TouchTargetSizeCheck" />
     </LinearLayout>
 
 </LinearLayout>

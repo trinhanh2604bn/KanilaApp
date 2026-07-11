@@ -53,6 +53,9 @@ public class ReviewOrderItemsDto {
         @SerializedName("reviewStatus")
         private String reviewStatus;
 
+        @SerializedName("reviewId")
+        private String reviewId;
+
         public String getOrderItemId() { return orderItemId; }
         public String getProductId() { return productId; }
         public String getVariantId() { return variantId; }
@@ -62,5 +65,6 @@ public class ReviewOrderItemsDto {
         public int getQuantity() { return quantity; }
         public double getUnitPrice() { return unitPrice; }
         public String getReviewStatus() { return reviewStatus; }
+        public String getReviewId() { return reviewId; }
     }
 }

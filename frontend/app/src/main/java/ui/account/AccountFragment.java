@@ -139,6 +139,13 @@ public class AccountFragment extends Fragment {
             });
         }
 
+        View menuMyReviews = view.findViewById(R.id.menuMyReviews);
+        if (menuMyReviews != null) {
+            menuMyReviews.setOnClickListener(v -> {
+                FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.product.ReviewListFragment());
+            });
+        }
+
         View menuSupportCenter = view.findViewById(R.id.menuSupportCenter);
         if (menuSupportCenter != null) {
             menuSupportCenter.setOnClickListener(v -> {

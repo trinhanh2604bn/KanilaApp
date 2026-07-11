@@ -76,6 +76,9 @@ public interface ApiService {
     @GET("api/products/slug/{slug}")
     Call<ApiResponse<Product>> getProductBySlug(@Path("slug") String slug);
 
+    @GET("api/reviews/product/{productId}")
+    Call<ApiResponse<List<com.example.frontend.data.model.review.ReviewDto>>> getReviewsByProductId(@Path("productId") String productId);
+
     @GET("api/product-media/product/{productId}")
     Call<ApiResponse<List<ProductMediaDto>>> getProductMedia(@Path("productId") String productId);
 
@@ -228,6 +231,12 @@ public interface ApiService {
 
     @POST("api/reviews/submit")
     Call<ApiResponse<Object>> submitReview(@Body com.example.frontend.data.model.review.SubmitReviewRequest request);
+
+    @GET("api/reviews/me")
+    Call<ApiResponse<List<com.example.frontend.data.model.review.MyReviewDto>>> getMyReviews();
+
+    @GET("api/reviews/me/{id}")
+    Call<ApiResponse<com.example.frontend.data.model.review.MyReviewDto>> getMyReviewDetail(@Path("id") String reviewId);
 
     @PATCH("api/orders/{id}/cancel")
     Call<ApiResponse<com.example.frontend.data.model.order.OrderSummaryDto>> cancelMyOrder(@Path("id") String id, @Body java.util.Map<String, String> body);

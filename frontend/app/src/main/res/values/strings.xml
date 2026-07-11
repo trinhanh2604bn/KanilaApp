@@ -1002,4 +1002,5 @@
     <string name="order_success_reward">Bạn nhận được %d điểm Kanila</string>
     <string name="order_success_track">Theo dõi đơn hàng</string>
     <string name="order_success_continue">Tiếp tục mua sắm</string>
+    <string name="challenge_active_title">Thử thách đang tham gia</string>
 </resources>

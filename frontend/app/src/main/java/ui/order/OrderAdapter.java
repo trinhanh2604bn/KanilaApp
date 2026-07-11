@@ -193,6 +193,12 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
                     listener.onActionClick(order, btnAction.getText().toString());
                 }
             });
+
+            btnReturn.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onActionClick(order, "Trả hàng/Hoàn tiền");
+                }
+            });
         }
 
         private void setupActionArea(String status) {

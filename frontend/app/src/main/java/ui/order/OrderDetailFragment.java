@@ -197,8 +197,15 @@ public class OrderDetailFragment extends Fragment {
             }
 
             if (state.cancelSuccess) {
-                Toast.makeText(getContext(), getString(R.string.order_detail_cancel_success), Toast.LENGTH_SHORT).show();
-                getParentFragmentManager().popBackStack();
+                Toast.makeText(getContext(), "Hủy yêu cầu thành công", Toast.LENGTH_SHORT).show();
+                
+                // Quay về danh sách đơn hàng, tab "Đã giao"
+                OrderListFragment listFragment = OrderListFragment.newInstance("completed");
+                if (getActivity() instanceof com.example.frontend.MainActivity) {
+                    ((com.example.frontend.MainActivity) getActivity()).loadFragment(listFragment);
+                } else {
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), listFragment);
+                }
             }
         });
     }
@@ -324,11 +331,19 @@ public class OrderDetailFragment extends Fragment {
                 break;
             case "processing":
                 btnActionSecondary.setText("Trả hàng/Hoàn tiền");
+                btnActionSecondary.setOnClickListener(v -> {
+                    ReturnRefundFragment fragment = ReturnRefundFragment.newInstance(orderId, null);
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+                });
                 btnActionPrimary.setText("Đã nhận hàng");
                 btnActionPrimary.setEnabled(false);
                 break;
             case "completed":
                 btnActionSecondary.setText(R.string.order_detail_return_refund);
+                btnActionSecondary.setOnClickListener(v -> {
+                    ReturnRefundFragment fragment = ReturnRefundFragment.newInstance(orderId, null);
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+                });
                 btnActionPrimary.setText("Đánh giá");
                 btnActionPrimary.setOnClickListener(v -> {
                     ReviewOrderFragment fragment = ReviewOrderFragment.newInstance(orderId);
@@ -337,11 +352,15 @@ public class OrderDetailFragment extends Fragment {
                 break;
             case "cancelled":
                 btnActionPrimary.setVisibility(View.GONE);
-                btnActionSecondary.setVisibility(View.GONE);
-            case "returned":
                 btnActionSecondary.setText("Mua lại");
-                btnActionPrimary.setText("Xem chi tiết");
-                if ("returned".equals(status)) btnActionSecondary.setVisibility(View.GONE);
+                break;
+            case "returned":
+                btnActionSecondary.setText("Hủy yêu cầu");
+                btnActionSecondary.setOnClickListener(v -> viewModel.cancelReturnRequest(orderId));
+                btnActionPrimary.setText("Liên hệ Shop");
+                btnActionPrimary.setOnClickListener(v -> {
+                    // Logic liên hệ shop
+                });
                 break;
         }
     }

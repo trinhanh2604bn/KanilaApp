@@ -241,6 +241,12 @@ public interface ApiService {
     @PATCH("api/orders/{id}/cancel")
     Call<ApiResponse<com.example.frontend.data.model.order.OrderSummaryDto>> cancelMyOrder(@Path("id") String id, @Body java.util.Map<String, String> body);
 
+    @POST("api/orders/{id}/return-refund")
+    Call<ApiResponse<Object>> submitReturnRefund(@Path("id") String orderId, @Body com.example.frontend.data.model.returnrefund.ReturnRefundRequestDto request);
+
+    @PATCH("api/orders/{id}/cancel-return")
+    Call<ApiResponse<Object>> cancelReturnRequest(@Path("id") String orderId);
+
     @GET("api/coupons/me")
     Call<ApiResponse<List<CouponDto>>> getMyCoupons();
 

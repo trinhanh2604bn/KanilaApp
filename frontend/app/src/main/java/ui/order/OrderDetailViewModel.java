@@ -98,4 +98,18 @@ public class OrderDetailViewModel extends AndroidViewModel {
     public void cancelOrder(String orderId, String reason) {
         repository.cancelOrder(orderId, reason, cancelResult);
     }
+
+    public void cancelReturnRequest(String orderId) {
+        repository.cancelReturnRequest(orderId, new MutableLiveData<com.example.frontend.data.remote.NetworkResult<Object>>() {
+            @Override
+            public void setValue(com.example.frontend.data.remote.NetworkResult<Object> value) {
+                super.setValue(value);
+                if (value.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS) {
+                    uiState.setValue(OrderDetailUiState.cancelSuccess());
+                } else if (value.status == com.example.frontend.data.remote.NetworkResult.Status.ERROR) {
+                    uiState.setValue(OrderDetailUiState.error(value.message));
+                }
+            }
+        });
+    }
 }

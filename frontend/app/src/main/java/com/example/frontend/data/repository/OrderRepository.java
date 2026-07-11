@@ -13,6 +13,7 @@ import com.example.frontend.data.model.common.PaginatedData;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import com.example.frontend.data.model.returnrefund.ReturnRefundRequestDto;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -117,6 +118,54 @@ public class OrderRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<OrderSummaryDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void submitReturnRefund(String orderId, ReturnRefundRequestDto request, MutableLiveData<NetworkResult<Object>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.submitReturnRefund(orderId, request).enqueue(new Callback<ApiResponse<Object>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Object>> call, Response<ApiResponse<Object>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<Object> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to submit return request"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Object>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void cancelReturnRequest(String orderId, MutableLiveData<NetworkResult<Object>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.cancelReturnRequest(orderId).enqueue(new Callback<ApiResponse<Object>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Object>> call, Response<ApiResponse<Object>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<Object> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to cancel return request"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Object>> call, Throwable t) {
                 result.setValue(NetworkResult.error(t.getMessage()));
             }
         });

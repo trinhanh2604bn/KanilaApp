@@ -83,6 +83,9 @@ public class OrderTabContentFragment extends Fragment {
                 } else if ("Mua lại".equals(action)) {
                     OrderDetailFragment fragment = OrderDetailFragment.newInstance(order.getId(), order.getOrderNumber());
                     FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+                } else if ("Trả hàng/Hoàn tiền".equals(action)) {
+                    ReturnRefundFragment fragment = ReturnRefundFragment.newInstance(order.getId(), null);
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
                 }
             }
         });

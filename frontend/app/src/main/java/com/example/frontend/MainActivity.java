@@ -543,7 +543,7 @@ public class MainActivity extends AppCompatActivity {
         shortcutAdapter.setOnShortcutClickListener(item -> {
             String id = item.getId();
             if ("orders".equals(id)) {
-                loadFragment(new com.example.frontend.feature.order.OrderListFragment());
+                loadFragment(new ui.order.OrderListFragment());
             } else if ("kanila_beauty".equals(id)) {
                 loadFragment(new ui.account.BeautyProfileOverviewFragment());
             } else if ("support".equals(id)) {

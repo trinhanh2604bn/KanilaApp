@@ -1,6 +1,14 @@
 package ui.account;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,8 +16,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -18,7 +30,14 @@ import com.example.frontend.R;
 import com.example.frontend.data.model.account.ProfileHubDto;
 import com.example.frontend.feature.account.AccountViewModel;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class ProfileOverviewFragment extends Fragment {
@@ -26,16 +45,30 @@ public class ProfileOverviewFragment extends Fragment {
     private AccountViewModel viewModel;
     private ImageView ivAvatarLarge;
     private TextView tvNameValue, tvEmailValue, tvPhoneValue, tvBirthValue, tvGenderValue, btnSaveProfile;
+    private View btnChangeAvatar;
     
     private String currentFullName;
     private String currentPhone;
     private String currentBirthday;
     private String currentGender;
 
+    private Uri pendingCameraUri;
+    private ActivityResultLauncher<Uri> takePictureLauncher;
+    private ActivityResultLauncher<String> getContentLauncher;
+    private ActivityResultLauncher<String> cameraPermissionLauncher;
+
+    private String pendingAvatarBase64 = null;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.page_profile_overview, container, false);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setupActivityResultLaunchers();
     }
 
     @Override
@@ -48,8 +81,76 @@ public class ProfileOverviewFragment extends Fragment {
         observeViewModel();
     }
 
+    private void setupActivityResultLaunchers() {
+        takePictureLauncher = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                result -> {
+                    if (result && pendingCameraUri != null) {
+                        updateAvatar(pendingCameraUri);
+                    }
+                }
+        );
+
+        getContentLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
+                        updateAvatar(uri);
+                    }
+                }
+        );
+
+        cameraPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        openCameraForPhoto();
+                    } else {
+                        Toast.makeText(getContext(), "Cấp quyền camera để chụp ảnh", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+    }
+
+    private void updateAvatar(Uri uri) {
+        try {
+            // Quan trọng: Xóa tint để ảnh không bị ám màu accent_dark từ XML
+            if (ivAvatarLarge != null) {
+                ivAvatarLarge.setImageTintList(null);
+            }
+
+            InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
+            if (bitmap == null) return;
+
+            // Resize nhỏ lại trước khi encode (tránh quá nặng khi gửi API)
+            Bitmap resized = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            resized.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+            String base64 = "data:image/jpeg;base64," +
+                    Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP);
+
+            // Hiển thị lên giao diện
+            Glide.with(this)
+                    .load(uri) // Load từ URI gốc để chất lượng tốt nhất trên UI
+                    .placeholder(R.drawable.ic_account)
+                    .circleCrop()
+                    .into(ivAvatarLarge);
+
+            // Lưu base64 để gửi đi khi nhấn "Lưu thay đổi"
+            pendingAvatarBase64 = base64;
+
+        } catch (Exception e) {
+            Log.e("ProfileOverview", "Error processing image", e);
+            Toast.makeText(getContext(), "Lỗi xử lý ảnh", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void initViews(View view) {
         ivAvatarLarge = view.findViewById(R.id.ivAvatarLarge);
+        btnChangeAvatar = view.findViewById(R.id.btnChangeAvatar);
         tvNameValue = view.findViewById(R.id.tvNameValue);
         tvEmailValue = view.findViewById(R.id.tvEmailValue);
         tvPhoneValue = view.findViewById(R.id.tvPhoneValue);
@@ -59,8 +160,7 @@ public class ProfileOverviewFragment extends Fragment {
 
         view.findViewById(R.id.btnBack).setOnClickListener(v -> getParentFragmentManager().popBackStack());
         
-        // In a real app, these would open edit dialogs or bottom sheets.
-        // For this task, we will simulate the "filling in" part if they are empty.
+        btnChangeAvatar.setOnClickListener(v -> showAvatarBottomSheet());
         
         tvNameValue.setOnClickListener(v -> showEditDialog("Họ tên", tvNameValue.getText().toString(), value -> {
             if (!value.isEmpty()) {
@@ -93,6 +193,64 @@ public class ProfileOverviewFragment extends Fragment {
         });
 
         btnSaveProfile.setOnClickListener(v -> saveProfile());
+    }
+
+    private void showAvatarBottomSheet() {
+        ProfileAvatarBottomSheet bottomSheet = new ProfileAvatarBottomSheet();
+        bottomSheet.setOnAvatarActionSelectedListener(new ProfileAvatarBottomSheet.OnAvatarActionSelectedListener() {
+            @Override
+            public void onTakePhotoSelected() {
+                checkCameraPermissionAndOpen();
+            }
+
+            @Override
+            public void onChooseGallerySelected() {
+                openGalleryForImage();
+            }
+
+            @Override
+            public void onRemoveAvatarSelected() {
+                if (ivAvatarLarge != null) {
+                    ivAvatarLarge.setImageResource(R.drawable.ic_account);
+                    // Có thể cần set lại tint nếu quay về icon mặc định
+                    ivAvatarLarge.setImageTintList(android.content.res.ColorStateList.valueOf(
+                            ContextCompat.getColor(requireContext(), R.color.accent_dark)));
+                }
+                pendingAvatarBase64 = ""; // Hoặc giá trị để xóa ảnh trên server
+            }
+        });
+        bottomSheet.show(getChildFragmentManager(), "ProfileAvatarBottomSheet");
+    }
+
+    private void checkCameraPermissionAndOpen() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            openCameraForPhoto();
+        } else {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    private void openCameraForPhoto() {
+        try {
+            File photoFile = createImageFile();
+            pendingCameraUri = FileProvider.getUriForFile(requireContext(),
+                    requireContext().getPackageName() + ".fileprovider",
+                    photoFile);
+            takePictureLauncher.launch(pendingCameraUri);
+        } catch (IOException e) {
+            Toast.makeText(getContext(), "Lỗi khi tạo file ảnh", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void openGalleryForImage() {
+        getContentLauncher.launch("image/*");
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(imageFileName, ".jpg", storageDir);
     }
 
     private void showEditDialog(String title, String currentValue, OnValueEnteredListener listener) {
@@ -157,10 +315,14 @@ public class ProfileOverviewFragment extends Fragment {
         currentBirthday = profile.getBirthday();
         currentGender = profile.getGender();
         
-        Glide.with(this)
-                .load(profile.getAvatarUrl())
-                .placeholder(R.drawable.ic_account)
-                .into(ivAvatarLarge);
+        if (profile.getAvatarUrl() != null && !profile.getAvatarUrl().isEmpty()) {
+            if (ivAvatarLarge != null) ivAvatarLarge.setImageTintList(null);
+            Glide.with(this)
+                    .load(profile.getAvatarUrl())
+                    .placeholder(R.drawable.ic_account)
+                    .circleCrop()
+                    .into(ivAvatarLarge);
+        }
     }
 
     private void saveProfile() {
@@ -171,12 +333,29 @@ public class ProfileOverviewFragment extends Fragment {
 
         Map<String, Object> data = new HashMap<>();
         data.put("fullName", currentFullName);
-        data.put("full_name", currentFullName); // Send both to be safe
+        data.put("full_name", currentFullName); 
         if (currentPhone != null) data.put("phone", currentPhone);
         if (currentBirthday != null) data.put("birthday", currentBirthday);
         if (currentGender != null) data.put("gender", currentGender);
+        if (pendingAvatarBase64 != null) data.put("avatar_url", pendingAvatarBase64);
         
         viewModel.updateProfile(data);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (pendingCameraUri != null) {
+            outState.putParcelable("pending_camera_uri", pendingCameraUri);
+        }
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            pendingCameraUri = savedInstanceState.getParcelable("pending_camera_uri");
+        }
     }
 
     interface OnValueEnteredListener {

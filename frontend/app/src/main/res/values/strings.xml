@@ -1010,6 +1010,9 @@
     <string name="ing_mica">Mica</string>
 
     <!-- Order Success -->
+
+
+
     <string name="order_success_title">Đặt hàng thành công</string>
     <string name="order_success_desc">Cảm ơn bạn đã mua sắm tại Kanila!\nChúng tôi sẽ xử lý đơn hàng của bạn ngay.</string>
     <string name="order_success_code">Mã đơn hàng</string>

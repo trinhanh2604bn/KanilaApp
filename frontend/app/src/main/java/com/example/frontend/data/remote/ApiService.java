@@ -11,6 +11,7 @@ import com.example.frontend.data.model.cart.UpdateCartItemRequest;
 import com.example.frontend.data.model.checkout.CheckoutSessionDto;
 import com.example.frontend.data.model.beauty.BeautyReferenceDto;
 import com.example.frontend.data.model.beauty.CustomerBeautyProfileDto;
+import com.example.frontend.data.model.recommendation.RecommendationData;
 import com.example.frontend.data.model.account.ProfileHubDto;
 import com.example.frontend.data.model.order.OrderDto;
 import com.example.frontend.data.model.address.AddressDto;
@@ -92,7 +93,10 @@ public interface ApiService {
     Call<ApiResponse<Object>> getCatalogBundle();
 
     @GET("api/recommendations/me/homepage")
-    Call<ApiResponse<List<Product>>> getHomepageRecommendations();
+    Call<ApiResponse<RecommendationData>> getHomepageRecommendations();
+
+    @GET("api/recommendations/me")
+    Call<ApiResponse<RecommendationData>> getMyRecommendations();
 
     @GET("api/carts/me")
     Call<ApiResponse<CartDto>> getMyCart();
@@ -172,11 +176,26 @@ public interface ApiService {
     @GET("api/beauty-references")
     Call<ApiResponse<List<BeautyReferenceDto>>> getBeautyReferences();
 
+    @GET("api/beauty-references/group/{reference_group}")
+    Call<ApiResponse<List<BeautyReferenceDto>>> getBeautyReferencesByGroup(@Path("reference_group") String group);
+
+    @GET("api/customers/me/beauty-profile")
+    Call<ApiResponse<CustomerBeautyProfileDto>> getMyBeautyProfile();
+
     @GET("api/customers/{customer_id}/beauty-profile")
     Call<ApiResponse<CustomerBeautyProfileDto>> getBeautyProfile(@Path("customer_id") String customerId);
 
+    @POST("api/customers/me/beauty-profile")
+    Call<ApiResponse<CustomerBeautyProfileDto>> createMyBeautyProfile(@Body com.example.frontend.feature.beauty.UpdateBeautyProfileRequest profileData);
+
+    @PATCH("api/customers/me/beauty-profile")
+    Call<ApiResponse<CustomerBeautyProfileDto>> updateMyBeautyProfile(@Body com.example.frontend.feature.beauty.UpdateBeautyProfileRequest profileData);
+
+    @POST("api/customers/{customer_id}/beauty-profile")
+    Call<ApiResponse<CustomerBeautyProfileDto>> createBeautyProfile(@Path("customer_id") String customerId, @Body com.example.frontend.feature.beauty.UpdateBeautyProfileRequest profileData);
+
     @PATCH("api/customers/{customer_id}/beauty-profile")
-    Call<ApiResponse<CustomerBeautyProfileDto>> updateBeautyProfile(@Path("customer_id") String customerId, @Body Object profileData);
+    Call<ApiResponse<CustomerBeautyProfileDto>> updateBeautyProfile(@Path("customer_id") String customerId, @Body com.example.frontend.feature.beauty.UpdateBeautyProfileRequest profileData);
 
     @GET("api/accounts/profile-hub")
     Call<ApiResponse<ProfileHubDto>> getProfileHub();

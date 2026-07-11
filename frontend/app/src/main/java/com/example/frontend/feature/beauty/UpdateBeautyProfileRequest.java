@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Request body for PATCH /api/customers/{customer_id}/beauty-profile
- * Only contains user-editable fields.
+ * Standardized mapping as per Beauty Profile API Guide.
  */
 public class UpdateBeautyProfileRequest {
 
@@ -64,22 +64,44 @@ public class UpdateBeautyProfileRequest {
     private List<String> purchaseIntent;
 
     // Setters
-    public void setSkinType(String skinType) { this.skinType = skinType; }
-    public void setSensitivityLevel(String sensitivityLevel) { this.sensitivityLevel = sensitivityLevel; }
-    public void setSkinColor(String skinColor) { this.skinColor = skinColor; }
-    public void setSkinUndertone(String skinUndertone) { this.skinUndertone = skinUndertone; }
-    public void setFoundationFinish(String foundationFinish) { this.foundationFinish = foundationFinish; }
-    public void setBudget(String budget) { this.budget = budget; }
-    public void setFragrancePreference(String fragrancePreference) { this.fragrancePreference = fragrancePreference; }
-    public void setSkinConcerns(List<String> skinConcerns) { this.skinConcerns = skinConcerns; }
-    public void setLipstickColors(List<String> lipstickColors) { this.lipstickColors = lipstickColors; }
-    public void setMakeupStyles(List<String> makeupStyles) { this.makeupStyles = makeupStyles; }
-    public void setAvoidIngredients(List<String> avoidIngredients) { this.avoidIngredients = avoidIngredients; }
-    public void setBeautyGoals(List<String> beautyGoals) { this.beautyGoals = beautyGoals; }
-    public void setPreferredIngredients(List<String> preferredIngredients) { this.preferredIngredients = preferredIngredients; }
-    public void setPreferredBrands(List<String> preferredBrands) { this.preferredBrands = preferredBrands; }
-    public void setDislikedBrands(List<String> dislikedBrands) { this.dislikedBrands = dislikedBrands; }
-    public void setPreferredCategories(List<String> preferredCategories) { this.preferredCategories = preferredCategories; }
-    public void setTexturePreference(List<String> texturePreference) { this.texturePreference = texturePreference; }
-    public void setPurchaseIntent(List<String> purchaseIntent) { this.purchaseIntent = purchaseIntent; }
+    public void setSkinType(String val) { this.skinType = val; }
+    public void setSensitivityLevel(String val) { this.sensitivityLevel = val; }
+    public void setSkinColor(String val) { this.skinColor = val; }
+    public void setSkinUndertone(String val) { this.skinUndertone = val; }
+    public void setFoundationFinish(String val) { this.foundationFinish = val; }
+    public void setBudget(String val) { this.budget = val; }
+    public void setFragrancePreference(String val) { this.fragrancePreference = val; }
+    
+    public void setSkinConcerns(List<String> val) { this.skinConcerns = val; }
+    public void setLipstickColors(List<String> val) { this.lipstickColors = val; }
+    public void setMakeupStyles(List<String> val) { this.makeupStyles = val; }
+    public void setAvoidIngredients(List<String> val) { this.avoidIngredients = val; }
+    public void setBeautyGoals(List<String> val) { this.beautyGoals = val; }
+    public void setPreferredIngredients(List<String> val) { this.preferredIngredients = val; }
+    public void setPreferredBrands(List<String> val) { this.preferredBrands = val; }
+    public void setDislikedBrands(List<String> val) { this.dislikedBrands = val; }
+    public void setPreferredCategories(List<String> val) { this.preferredCategories = val; }
+    public void setTexturePreference(List<String> val) { this.texturePreference = val; }
+    public void setPurchaseIntent(List<String> val) { this.purchaseIntent = val; }
+
+    // Getters
+    public String getSkinType() { return skinType; }
+    public String getSensitivityLevel() { return sensitivityLevel; }
+    public String getSkinColor() { return skinColor; }
+    public String getSkinUndertone() { return skinUndertone; }
+    public String getFoundationFinish() { return foundationFinish; }
+    public String getBudget() { return budget; }
+    public String getFragrancePreference() { return fragrancePreference; }
+
+    public List<String> getSkinConcerns() { return skinConcerns; }
+    public List<String> getLipstickColors() { return lipstickColors; }
+    public List<String> getMakeupStyles() { return makeupStyles; }
+    public List<String> getAvoidIngredients() { return avoidIngredients; }
+    public List<String> getBeautyGoals() { return beautyGoals; }
+    public List<String> getPreferredIngredients() { return preferredIngredients; }
+    public List<String> getPreferredBrands() { return preferredBrands; }
+    public List<String> getDislikedBrands() { return dislikedBrands; }
+    public List<String> getPreferredCategories() { return preferredCategories; }
+    public List<String> getTexturePreference() { return texturePreference; }
+    public List<String> getPurchaseIntent() { return purchaseIntent; }
 }

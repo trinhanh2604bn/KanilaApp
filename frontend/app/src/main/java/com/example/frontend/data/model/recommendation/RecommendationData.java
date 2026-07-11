@@ -19,6 +19,9 @@ public class RecommendationData {
     @SerializedName("snapshot_generated_at")
     private String snapshotGeneratedAt;
 
+    @SerializedName("ai_analysis")
+    private AiAnalysis aiAnalysis;
+
     @SerializedName("products")
     private List<RecommendedProduct> products;
 
@@ -40,6 +43,10 @@ public class RecommendationData {
 
     public String getSnapshotGeneratedAt() {
         return snapshotGeneratedAt;
+    }
+
+    public AiAnalysis getAiAnalysis() {
+        return aiAnalysis;
     }
 
     public List<RecommendedProduct> getProducts() {

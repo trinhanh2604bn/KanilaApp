@@ -21,7 +21,7 @@
         android:layout_marginTop="12dp"
         android:fontFamily="@font/nunito_bold"
         android:gravity="center"
-        android:text="Khám phá gợi ý riêng cho bạn"
+        android:text="@string/recommendation_guest_title"
         android:textColor="@color/text_main"
         android:textSize="16sp" />
 
@@ -31,7 +31,7 @@
         android:layout_marginTop="4dp"
         android:fontFamily="@font/nunito_regular"
         android:gravity="center"
-        android:text="Đăng nhập và hoàn thành Beauty Profile để nhận gợi ý phù hợp nhất."
+        android:text="@string/recommendation_guest_desc"
         android:textColor="@color/text_secondary"
         android:textSize="12sp" />
 
@@ -42,6 +42,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:paddingHorizontal="32dp"
-        android:text="Đăng nhập ngay"
+        android:text="@string/auth_login_title"
         app:cornerRadius="24dp" />
 </LinearLayout>

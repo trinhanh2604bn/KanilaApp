@@ -996,4 +996,14 @@
     <string name="challenge_more_posts_format">+%d bài tiến trình khác</string>
     <string name="challenge_day_label_format">Ngày %d</string>
     <string name="challenge_rules_title">Quy tắc thử thách</string>
+
+    <!-- Recommendation Feature -->
+    <string name="recommendation_title">Sản phẩm phù hợp với bạn</string>
+    <string name="recommendation_subtitle">Dựa trên hồ sơ làm đẹp và sở thích của bạn</string>
+    <string name="recommendation_guest_title">Khám phá gợi ý riêng cho bạn</string>
+    <string name="recommendation_guest_desc">Đăng nhập và hoàn thành Beauty Profile để nhận gợi ý phù hợp nhất.</string>
+    <string name="recommendation_empty_title">Chưa có gợi ý phù hợp</string>
+    <string name="recommendation_empty_desc">Hoàn thành Beauty Profile để nhận gợi ý phù hợp hơn.</string>
+    <string name="recommendation_error_msg">Không thể tải gợi ý lúc này. Vui lòng thử lại.</string>
+    <string name="auth_token_expired_msg">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</string>
 </resources>

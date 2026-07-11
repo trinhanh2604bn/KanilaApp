@@ -14,7 +14,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp">
+        android:padding="@dimen/spacing_m">
 
         <!-- Match Score Badge -->
         <LinearLayout
@@ -43,7 +43,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Add to wishlist"
+            android:contentDescription="@string/wishlist"
             android:padding="6dp"
             android:scaleType="centerInside"
             android:src="@drawable/selector_post_like"
@@ -56,7 +56,7 @@
             android:id="@+id/ivProductImage"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/spacing_s"
             android:scaleType="centerInside"
             android:contentDescription="@string/product_image_desc"
             app:layout_constraintDimensionRatio="1:1"
@@ -70,7 +70,7 @@
             android:id="@+id/tvProductBrand"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="@dimen/spacing_m"
             android:fontFamily="@font/nunito_bold"
             android:textColor="@color/text_main"
             android:textSize="14sp"
@@ -84,7 +84,7 @@
             android:id="@+id/tvProductName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="@dimen/spacing_xs"
             android:ellipsize="end"
             android:fontFamily="@font/nunito_regular"
             android:maxLines="2"
@@ -100,7 +100,7 @@
             android:id="@+id/layoutProductPriceContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/spacing_s"
             android:gravity="bottom"
             android:orientation="horizontal"
             app:layout_constraintEnd_toStartOf="@id/btnAddToCart"
@@ -123,38 +123,38 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:background="@drawable/bg_circle_primary"
-            android:contentDescription="Add to cart"
+            android:contentDescription="@string/cart"
             android:src="@drawable/ic_plus"
             android:padding="6dp"
             app:layout_constraintBottom_toBottomOf="@id/layoutProductPriceContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/layoutProductPriceContainer"
-            app:tint="#FFFFFF" />
+            app:tint="@color/white" />
 
         <!-- Recommendation Reason Chips -->
         <LinearLayout
             android:id="@+id/layoutReasonChips"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/spacing_s"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/layoutProductPriceContainer">
-
-            <!-- Example of what a chip might look like -->
-            <!-- <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_chip_pill"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="2dp"
-                android:textSize="10sp"
-                android:textColor="@color/text_main"
-                android:text="Da dầu"
-                android:layout_marginEnd="4dp"/> -->
         </LinearLayout>
 
+        <!-- Caution Reasons -->
+        <LinearLayout
+            android:id="@+id/layoutCautionChips"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutReasonChips">
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

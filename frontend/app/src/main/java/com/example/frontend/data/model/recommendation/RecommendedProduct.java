@@ -10,7 +10,7 @@ public class RecommendedProduct {
     private Product product;
 
     @SerializedName("score")
-    private int score;
+    private Double score;
 
     @SerializedName("reasons")
     private List<String> reasons;
@@ -21,6 +21,9 @@ public class RecommendedProduct {
     @SerializedName("badges")
     private List<String> badges;
 
+    @SerializedName("caution_reasons")
+    private List<String> cautionReasons;
+
     @SerializedName("score_breakdown")
     private Map<String, Object> scoreBreakdown;
 
@@ -28,7 +31,7 @@ public class RecommendedProduct {
         return product;
     }
 
-    public int getScore() {
+    public Double getScore() {
         return score;
     }
 
@@ -42,6 +45,10 @@ public class RecommendedProduct {
 
     public List<String> getBadges() {
         return badges;
+    }
+
+    public List<String> getCautionReasons() {
+        return cautionReasons;
     }
 
     public Map<String, Object> getScoreBreakdown() {

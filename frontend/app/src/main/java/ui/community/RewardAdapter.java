@@ -38,6 +38,21 @@ public class RewardAdapter extends RecyclerView.Adapter<RewardAdapter.ViewHolder
         } else {
             holder.ivImage.setImageResource(R.drawable.ic_gift);
         }
+
+        holder.itemView.setOnClickListener(v -> {
+            // Show a simple confirmation dialog or toast for now
+            androidx.appcompat.app.AlertDialog dialog = new com.google.android.material.dialog.MaterialAlertDialogBuilder(v.getContext())
+                    .setTitle("Đổi phần thưởng")
+                    .setMessage("Bạn có muốn dùng " + reward.getPointCost() + " điểm để đổi " + reward.getTitle() + " không?")
+                    .setNegativeButton("Hủy", (d, which) -> d.dismiss())
+                    .setPositiveButton("Đổi ngay", (d, which) -> {
+                        d.dismiss();
+                        android.widget.Toast.makeText(v.getContext(), "Đổi thưởng thành công!", android.widget.Toast.LENGTH_SHORT).show();
+                    })
+                    .show();
+            ui.common.ViewUtils.customizeDialogButtons(dialog);
+        });
+        ui.common.ViewUtils.applyClickAnimation(holder.itemView);
     }
 
     @Override

@@ -68,19 +68,35 @@ public class RecommendationProductAdapter extends RecyclerView.Adapter<Recommend
         String badgeText = "";
         if (recommendedProduct.getBadges() != null && !recommendedProduct.getBadges().isEmpty()) {
             badgeText = recommendedProduct.getBadges().get(0);
-        } else {
-            badgeText = recommendedProduct.getScore() + "% phù hợp";
+        } else if (recommendedProduct.getScore() != null) {
+            badgeText = Math.round(recommendedProduct.getScore()) + "% phù hợp";
         }
         holder.tvMatchScore.setText(badgeText);
+        holder.tvMatchScore.setVisibility(badgeText.isEmpty() ? View.GONE : View.VISIBLE);
 
         // Reason Chips
         holder.layoutReasonChips.removeAllViews();
         List<String> reasons = recommendedProduct.getReasons();
-        if (reasons != null) {
+        if (reasons != null && !reasons.isEmpty()) {
+            holder.layoutReasonChips.setVisibility(View.VISIBLE);
             int limit = Math.min(reasons.size(), 2);
             for (int i = 0; i < limit; i++) {
                 addChip(holder.layoutReasonChips, reasons.get(i));
             }
+        } else {
+            holder.layoutReasonChips.setVisibility(View.GONE);
+        }
+
+        // Caution Reasons
+        holder.layoutCautionChips.removeAllViews();
+        List<String> cautionReasons = recommendedProduct.getCautionReasons();
+        if (cautionReasons != null && !cautionReasons.isEmpty()) {
+            holder.layoutCautionChips.setVisibility(View.VISIBLE);
+            for (String caution : cautionReasons) {
+                addCautionText(holder.layoutCautionChips, caution);
+            }
+        } else {
+            holder.layoutCautionChips.setVisibility(View.GONE);
         }
 
         // Image
@@ -102,7 +118,14 @@ public class RecommendationProductAdapter extends RecyclerView.Adapter<Recommend
         });
 
         holder.btnAddToCart.setOnClickListener(v -> {
-            if (listener != null) listener.onAddToCartClick(product);
+            if (listener != null) {
+                // Business Rule 7: If product has shades/variants, navigate to detail
+                if (product.getShades() != null && !product.getShades().isEmpty()) {
+                    listener.onProductClick(product);
+                } else {
+                    listener.onAddToCartClick(product);
+                }
+            }
         });
 
         holder.itemView.setOnClickListener(v -> {
@@ -114,14 +137,29 @@ public class RecommendationProductAdapter extends RecyclerView.Adapter<Recommend
         TextView chip = new TextView(container.getContext());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 0, 8, 0);
+        int marginEnd = container.getContext().getResources().getDimensionPixelSize(R.dimen.spacing_xs);
+        params.setMargins(0, 0, marginEnd, 0);
         chip.setLayoutParams(params);
         chip.setBackgroundResource(R.drawable.bg_chip_pill);
-        chip.setPadding(16, 4, 16, 4);
+        int paddingH = container.getContext().getResources().getDimensionPixelSize(R.dimen.spacing_s);
+        int paddingV = container.getContext().getResources().getDimensionPixelSize(R.dimen.spacing_xs);
+        chip.setPadding(paddingH, paddingV, paddingH, paddingV);
         chip.setTextSize(10f);
-        chip.setTextColor(container.getContext().getResources().getColor(R.color.text_main));
+        chip.setTextColor(androidx.core.content.ContextCompat.getColor(container.getContext(), R.color.text_main));
         chip.setText(text);
         container.addView(chip);
+    }
+
+    private void addCautionText(LinearLayout container, String text) {
+        TextView tv = new TextView(container.getContext());
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.topMargin = 4;
+        tv.setLayoutParams(params);
+        tv.setTextSize(10f);
+        tv.setTextColor(androidx.core.content.ContextCompat.getColor(container.getContext(), R.color.status_pending_text));
+        tv.setText("⚠ " + text);
+        container.addView(tv);
     }
 
     @Override
@@ -132,7 +170,7 @@ public class RecommendationProductAdapter extends RecyclerView.Adapter<Recommend
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivImage;
         TextView tvName, tvBrand, tvPrice, tvMatchScore;
-        LinearLayout layoutReasonChips;
+        LinearLayout layoutReasonChips, layoutCautionChips;
         ImageButton btnWishlist, btnAddToCart;
 
         ViewHolder(@NonNull View itemView) {
@@ -143,6 +181,7 @@ public class RecommendationProductAdapter extends RecyclerView.Adapter<Recommend
             tvPrice = itemView.findViewById(R.id.tvProductPrice);
             tvMatchScore = itemView.findViewById(R.id.tvMatchScore);
             layoutReasonChips = itemView.findViewById(R.id.layoutReasonChips);
+            layoutCautionChips = itemView.findViewById(R.id.layoutCautionChips);
             btnWishlist = itemView.findViewById(R.id.btnWishlist);
             btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
         }

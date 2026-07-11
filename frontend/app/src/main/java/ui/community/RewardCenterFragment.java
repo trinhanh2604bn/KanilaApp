@@ -38,6 +38,48 @@ public class RewardCenterFragment extends Fragment {
         // Mock data
         tvTotalPoints.setText("2.500");
         tvEquivalentValue.setText(getString(R.string.reward_equivalent_value, "250.000"));
+
+        setupMissions(view);
+    }
+
+    private void setupMissions(View view) {
+        View layoutMissions = view.findViewById(R.id.layoutTodayMissions);
+        if (layoutMissions instanceof ViewGroup) {
+            ViewGroup container = (ViewGroup) layoutMissions;
+            for (int i = 0; i < container.getChildCount(); i++) {
+                final int index = i;
+                View missionView = container.getChildAt(i);
+                TextView tvTitle = missionView.findViewById(R.id.tvMissionTitle);
+                View btnDo = missionView.findViewById(R.id.btnDoMission);
+                View ivStatus = missionView.findViewById(R.id.ivMissionStatus);
+
+                if (index == 0) {
+                    tvTitle.setText("Hoàn thành Beauty Profile");
+                    btnDo.setVisibility(View.VISIBLE);
+                    ivStatus.setVisibility(View.GONE);
+                    btnDo.setOnClickListener(v -> navigateToFragment(new ui.account.BeautyProfileOverviewFragment()));
+                } else if (index == 1) {
+                    tvTitle.setText("Đăng 1 bài viết Community");
+                    btnDo.setVisibility(View.VISIBLE);
+                    ivStatus.setVisibility(View.GONE);
+                    btnDo.setOnClickListener(v -> navigateToFragment(new ui.community.CommunityHomeFragment()));
+                } else {
+                    tvTitle.setText("Check-in hàng ngày");
+                    btnDo.setVisibility(View.GONE);
+                    ivStatus.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+    }
+
+    private void navigateToFragment(Fragment fragment) {
+        int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                ? R.id.main_fragment_container : R.id.main;
+        getParentFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(containerId, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     private void setupRewards() {

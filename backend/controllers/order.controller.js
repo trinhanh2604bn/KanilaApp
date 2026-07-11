@@ -19,6 +19,7 @@ const validateObjectId = require("../utils/validateObjectId");
 const { pickCustomerId } = require("../utils/pickCustomerRef");
 const { normalizeOrderBody } = require("../utils/orderNormalize");
 const { validateStatusTransition } = require("../utils/orderStatusGuard");
+const { computeCartSummary } = require("../utils/cartSummary");
 
 const CUST_POP = "customer_code full_name account_id";
 const CUST_POP_SHORT = "customer_code full_name";
@@ -1351,6 +1352,52 @@ const createMockCheckoutOrder = async (req, res) => {
 
     });
     console.log("ORDER STATUS HISTORY CREATED");
+
+
+
+    // ==============================
+    // Clean up cart (NEW)
+    // ==============================
+    try {
+      let cart = null;
+      if (customer_id) {
+        cart = await Cart.findOne({ customer_id, cart_status: "active" });
+      } else if (req.body.guest_session_id) {
+        cart = await Cart.findOne({ guest_session_id: req.body.guest_session_id, owner_type: "guest", cart_status: "active" });
+      }
+
+      if (cart) {
+        // Use specific item IDs from the request if available for precision
+        const itemIdsToDelete = items
+          .map(it => it.id || it._id || it.cartItemId)
+          .filter(id => id && validateObjectId(id));
+
+        if (itemIdsToDelete.length > 0) {
+          await CartItem.deleteMany({ _id: { $in: itemIdsToDelete }, cart_id: cart._id });
+        } else {
+          // Fallback to product/variant matching if IDs aren't provided
+          for (const item of items) {
+            const pid = item.product_id || item.productId;
+            const vid = item.variant_id || item.variantId;
+            if (pid && vid) {
+              await CartItem.deleteMany({ cart_id: cart._id, product_id: pid, variant_id: vid });
+            }
+          }
+        }
+
+        const remain = await CartItem.find({ cart_id: cart._id });
+        const summary = computeCartSummary(remain);
+        await Cart.findByIdAndUpdate(cart._id, {
+          item_count: summary.itemCount,
+          subtotal_amount: summary.subtotal,
+          discount_amount: summary.discountTotal,
+          total_amount: summary.grandTotal,
+        });
+        console.log("MOCK CHECKOUT CART CLEANUP SUCCESS - Deleted count:", itemIdsToDelete.length);
+      }
+    } catch (cartError) {
+      console.error("MOCK CHECKOUT CART CLEANUP ERROR:", cartError);
+    }
 
 
 

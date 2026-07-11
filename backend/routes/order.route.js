@@ -13,6 +13,7 @@ const {
   reorderMyOrder,
   cancelMyOrder,
   requestReturnMyOrder,
+  getMyOrderReviewItems,
   lookupGuestOrder,
   getGuestOrderSummary,
   getGuestOrderTracking,
@@ -26,6 +27,7 @@ const {
 router.get("/me", authMiddleware, getMyOrders);
 router.get("/me/summary", authMiddleware, getMyOrderSummary);
 router.get("/me/:id/tracking", authMiddleware, getMyOrderTracking);
+router.get("/me/:id/review-items", authMiddleware, getMyOrderReviewItems);
 router.get("/me/:id", authMiddleware, getMyOrderById);
 router.post("/:id/reorder", authMiddleware, reorderMyOrder);
 router.patch("/:id/cancel", authMiddleware, cancelMyOrder);

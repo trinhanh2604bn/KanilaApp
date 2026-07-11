@@ -14,6 +14,7 @@ const CartItem = require("../models/cartItem.model");
 const Product = require("../models/product.model");
 const ProductVariant = require("../models/productVariant.model");
 const ReturnRequest = require("../models/return.model");
+const Review = require("../models/review.model");
 const validateObjectId = require("../utils/validateObjectId");
 const { pickCustomerId } = require("../utils/pickCustomerRef");
 const { normalizeOrderBody } = require("../utils/orderNormalize");
@@ -705,6 +706,73 @@ const getMyOrderTracking = async (req, res) => {
         events,
       },
     });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// GET /api/orders/me/:id/review-items
+const getMyOrderReviewItems = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!validateObjectId(id)) {
+      return res.status(400).json({ success: false, message: "Invalid order ID" });
+    }
+    const customer = await resolveAuthCustomer(req);
+    if (!customer) {
+      return res.status(403).json({ success: false, message: "Authenticated account required" });
+    }
+
+    const order = await Order.findOne({ _id: id, customer_id: customer._id }).lean();
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const status = String(order.order_status || "").toLowerCase();
+    if (status !== "completed") {
+      return res.status(400).json({
+        success: false,
+        message: "Chỉ đơn hàng đã hoàn thành mới có thể đánh giá."
+      });
+    }
+
+    const items = await OrderItem.find({ order_id: id })
+      .populate("product_id", "imageUrl productName productCode")
+      .sort({ created_at: -1 });
+
+    const itemIds = items.map(it => it._id);
+
+    const reviews = await Review.find({
+      orderItemId: { $in: itemIds },
+      customer_id: customer._id
+    }).select("orderItemId").lean();
+
+    const reviewedItemIds = new Set(reviews.map(r => String(r.orderItemId)));
+
+    const data = {
+      orderId: String(order._id),
+      orderCode: order.order_number,
+      orderStatus: order.order_status,
+      deliveredAt: order.updated_at,
+      items: items.map(it => {
+        const itObj = it.toObject ? it.toObject() : it;
+        const img = itObj.image_url_snapshot || (itObj.product_id ? itObj.product_id.imageUrl : "") || "";
+        return {
+          orderItemId: String(itObj._id),
+          productId: String(itObj.product_id?._id || itObj.product_id),
+          variantId: String(itObj.variant_id),
+          productName: itObj.product_name_snapshot,
+          variantName: itObj.variant_name_snapshot,
+          image_url_snapshot: img,
+          imageUrl: img, // Add both for compatibility
+          quantity: itObj.quantity,
+          unitPrice: itObj.unit_final_price_amount,
+          reviewStatus: reviewedItemIds.has(String(itObj._id)) ? "reviewed" : "pending_review"
+        };
+      })
+    };
+
+    return res.status(200).json({ success: true, data });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -1446,6 +1514,7 @@ module.exports = {
   reorderMyOrder,
   cancelMyOrder,
   requestReturnMyOrder,
+  getMyOrderReviewItems,
   lookupGuestOrder,
   getGuestOrderSummary,
   getGuestOrderTracking,

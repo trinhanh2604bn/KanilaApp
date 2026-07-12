@@ -11,6 +11,7 @@ import com.example.frontend.R;
 import com.example.frontend.data.model.product.ProductMediaDto;
 import java.util.ArrayList;
 import java.util.List;
+import android.util.Log;
 
 public class ProductImageAdapter extends RecyclerView.Adapter<ProductImageAdapter.ViewHolder> {
     private List<ProductMediaDto> mediaList = new ArrayList<>();
@@ -30,9 +31,14 @@ public class ProductImageAdapter extends RecyclerView.Adapter<ProductImageAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ProductMediaDto media = mediaList.get(position);
+        String imageUrl = media != null ? media.getUrl() : null;
+
+        Log.d("ProductImageAdapter", "load image url = " + imageUrl);
+
         Glide.with(holder.ivImage.getContext())
-                .load(media.getUrl())
+                .load(imageUrl)
                 .placeholder(R.drawable.ic_product)
+                .error(R.drawable.ic_product)
                 .into(holder.ivImage);
     }
 

@@ -30,11 +30,17 @@ public class ProductRepository {
         MutableLiveData<NetworkResult<ProductDetailResponse>> result = new MutableLiveData<>();
         result.setValue(NetworkResult.loading());
 
+        android.util.Log.d("ProductRepository", "getProductDetail id = " + id);
+
         apiService.getProductDetail(id).enqueue(new Callback<ApiResponse<ProductDetailResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<ProductDetailResponse>> call, Response<ApiResponse<ProductDetailResponse>> response) {
+                android.util.Log.d("ProductRepository", "response code = " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<ProductDetailResponse> apiResponse = response.body();
+                    android.util.Log.d("ProductRepository", "api success = " + apiResponse.isSuccess());
+                    android.util.Log.d("ProductRepository", "detail data = " + new com.google.gson.Gson().toJson(apiResponse.getData()));
+
                     if (apiResponse.isSuccess() && apiResponse.getData() != null) {
                         result.setValue(NetworkResult.success(apiResponse.getData()));
                     } else {

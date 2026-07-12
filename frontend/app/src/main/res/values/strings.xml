@@ -1038,6 +1038,14 @@
     <string name="review_write_rating_required">Vui lòng chọn số sao đánh giá</string>
     <string name="review_write_char_counter_format">%1$d/1000</string>
 
+    <string name="review_empty_all">Chưa có đánh giá nào</string>
+    <string name="review_empty_5_star">Chưa có đánh giá 5 sao</string>
+    <string name="review_empty_4_star">Chưa có đánh giá 4 sao</string>
+    <string name="review_empty_3_star">Chưa có đánh giá 3 sao</string>
+    <string name="review_empty_2_star">Chưa có đánh giá 2 sao</string>
+    <string name="review_empty_1_star">Chưa có đánh giá 1 sao</string>
+    <string name="review_empty_has_media">Chưa có đánh giá kèm hình ảnh/video</string>
+
     <!-- Flash Sale & Voucher -->
     <string name="flash_sale_title">Flash Sale</string>
     <string name="flash_sale_countdown_label">Kết thúc sau</string>

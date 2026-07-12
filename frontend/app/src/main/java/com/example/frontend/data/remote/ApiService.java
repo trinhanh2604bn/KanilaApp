@@ -232,6 +232,20 @@ public interface ApiService {
     @GET("api/reviews/write-eligibility/{orderItemId}")
     Call<ApiResponse<com.example.frontend.data.model.review.ReviewEligibilityDto>> getReviewWriteEligibility(@Path("orderItemId") String orderItemId);
 
+    @GET("api/reviews/product/{productId}")
+    Call<ApiResponse<List<com.example.frontend.data.model.review.ReviewDto>>> getReviewsByProductId(
+            @Path("productId") String productId,
+            @QueryMap Map<String, String> query
+    );
+
+    @POST("api/reviews/{reviewId}/vote")
+    Call<ApiResponse<com.example.frontend.data.model.review.ReviewVoteResponse>> toggleReviewVote(
+            @Path("reviewId") String reviewId
+    );
+
+    @GET("api/review-summary/product/{productId}")
+    Call<ApiResponse<com.example.frontend.data.model.review.ReviewSummaryDto>> getReviewSummaryByProductId(@Path("productId") String productId);
+
     @POST("api/reviews/submit")
     Call<ApiResponse<Object>> submitReview(@Body com.example.frontend.data.model.review.SubmitReviewRequest request);
 

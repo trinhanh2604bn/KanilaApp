@@ -173,12 +173,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateHomeVisibility() {
-        boolean hasFragments = getSupportFragmentManager().getBackStackEntryCount() > 0;
+        int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+        boolean hasFragments = backStackCount > 0;
+
         if (layoutHomeScroll != null) {
             layoutHomeScroll.setVisibility(hasFragments ? View.GONE : View.VISIBLE);
         }
         if (mainFragmentContainer != null) {
             mainFragmentContainer.setVisibility(hasFragments ? View.VISIBLE : View.GONE);
+        }
+
+        View bottomNav = findViewById(R.id.layoutBottomNavigation);
+        if (bottomNav != null) {
+            if (!hasFragments) {
+                bottomNav.setVisibility(View.VISIBLE);
+            } else {
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
+                if (currentFragment instanceof com.example.frontend.feature.product.ProductDetailFragment) {
+                    bottomNav.setVisibility(View.GONE);
+                } else {
+                    bottomNav.setVisibility(View.VISIBLE);
+                }
+            }
         }
     }
 

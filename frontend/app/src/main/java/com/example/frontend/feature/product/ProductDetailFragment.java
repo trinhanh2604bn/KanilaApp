@@ -30,23 +30,26 @@ import com.example.frontend.data.model.cart.CartItemDto;
 import com.example.frontend.data.model.checkout.CheckoutSessionDto;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import java.util.Locale;
-import java.util.ArrayList;
-import java.util.List;
-
+import android.graphics.drawable.Drawable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import java.util.ArrayList;
+import java.util.Locale;
 import android.util.Log;
 
 public class ProductDetailFragment extends Fragment {
     private static final String TAG = "ProductDetail";
     private static final String ARG_PRODUCT_ID = "product_id";
-    
+
     private ProductDetailViewModel viewModel;
     private String productId;
-    
+
     private TextView tvName, tvBrand, tvPrice, tvComparePrice, tvGalleryCounter, tvRating, tvReviewCount, tvSoldCount, tvDesc, tvSelectedVariantName;
     private ViewPager2 vpGallery;
-    private RecyclerView rvThumbnails, rvRecentlyViewed, rvRelatedProducts;
+    private RecyclerView rvThumbnails, rvRecentlyViewed, rvRelatedProducts, rvReviewPreview;
     private ChipGroup cgBadges;
     private View layoutSkinMatch, layoutReviewSummary, layoutOutOfStock, layoutLoading, layoutError, layoutRecentlyViewed;
     private View btnAddToCart, btnBuyNow;
@@ -57,6 +60,7 @@ public class ProductDetailFragment extends Fragment {
     private RecentlyViewedAdapter recentlyViewedAdapter;
     private HomeProductAdapter relatedAdapter;
     private ReviewMediaAdapter reviewMediaAdapter;
+    private com.example.frontend.feature.product.adapter.ReviewAdapter reviewPreviewAdapter;
 
     public static ProductDetailFragment newInstance(String productId) {
         ProductDetailFragment fragment = new ProductDetailFragment();
@@ -85,11 +89,11 @@ public class ProductDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ProductDetailViewModel.class);
-        
+
         initViews(view);
         setupAdapters(view);
         observeViewModel();
-        
+
         if (productId != null) {
             viewModel.loadProductDetails(productId);
         }
@@ -113,26 +117,27 @@ public class ProductDetailFragment extends Fragment {
         tvSoldCount = view.findViewById(R.id.tvProductSoldCount);
         tvDesc = view.findViewById(R.id.tvProductDetailDesc);
         tvSelectedVariantName = view.findViewById(R.id.tvSelectedVariantName);
-        
+
         vpGallery = view.findViewById(R.id.vpProductGallery);
         rvThumbnails = view.findViewById(R.id.rvProductThumbnails);
         rvRecentlyViewed = view.findViewById(R.id.rvRecentlyViewed);
         rvRelatedProducts = view.findViewById(R.id.rvRelatedProducts);
+        rvReviewPreview = view.findViewById(R.id.rvProductDetailReviewPreview);
         cgBadges = view.findViewById(R.id.cgProductBadges);
-        
+
         layoutSkinMatch = view.findViewById(R.id.layoutSkinMatchScore);
         layoutReviewSummary = view.findViewById(R.id.layoutReviewSummary);
         layoutRecentlyViewed = view.findViewById(R.id.layoutRecentlyViewed);
         layoutOutOfStock = view.findViewById(R.id.layoutOutOfStockNotice);
-        
+
         View btnNotifyStock = view.findViewById(R.id.btnNotifyStock);
         if (btnNotifyStock != null) {
             btnNotifyStock.setOnClickListener(v -> Toast.makeText(getContext(), "Bạn sẽ nhận được thông báo khi có hàng", Toast.LENGTH_SHORT).show());
         }
-        
+
         layoutLoading = view.findViewById(R.id.layoutLoading);
         layoutError = view.findViewById(R.id.layoutError);
-        
+
         if (layoutError != null) {
             View btnRetry = layoutError.findViewById(R.id.btnErrorRetry);
             if (btnRetry != null) {
@@ -200,7 +205,7 @@ public class ProductDetailFragment extends Fragment {
                 ProductDetailUiState state = viewModel.getUiState().getValue();
                 if (state != null && state.product != null) {
                     ProductInfoDetailFragment fragment = ProductInfoDetailFragment.newInstance(
-                            "Mô tả sản phẩm", 
+                            "Mô tả sản phẩm",
                             state.product.getLongDescription(),
                             ProductInfoDetailFragment.InfoMode.DESCRIPTION
                     );
@@ -218,7 +223,7 @@ public class ProductDetailFragment extends Fragment {
                 ProductDetailUiState state = viewModel.getUiState().getValue();
                 String ingredients = (state != null && state.product != null) ? state.product.getIngredientText() : "Đang cập nhật...";
                 ProductInfoDetailFragment fragment = ProductInfoDetailFragment.newInstance(
-                        "Thành phần sản phẩm", 
+                        "Thành phần sản phẩm",
                         ingredients,
                         ProductInfoDetailFragment.InfoMode.INGREDIENTS
                 );
@@ -235,7 +240,7 @@ public class ProductDetailFragment extends Fragment {
                 ProductDetailUiState state = viewModel.getUiState().getValue();
                 String usage = (state != null && state.product != null) ? state.product.getUsageInstruction() : "Đang cập nhật...";
                 ProductInfoDetailFragment fragment = ProductInfoDetailFragment.newInstance(
-                        "Hướng dẫn sử dụng", 
+                        "Hướng dẫn sử dụng",
                         usage,
                         ProductInfoDetailFragment.InfoMode.USAGE
                 );
@@ -247,7 +252,7 @@ public class ProductDetailFragment extends Fragment {
         if (btnWishlist != null) {
             btnWishlist.setOnClickListener(v -> viewModel.toggleWishlist());
         }
-        
+
         View btnCart = view.findViewById(R.id.btnCart);
         if (btnCart != null) {
             btnCart.setOnClickListener(v -> {
@@ -281,12 +286,20 @@ public class ProductDetailFragment extends Fragment {
         }
 
         recentlyViewedAdapter = new RecentlyViewedAdapter();
-        recentlyViewedAdapter.setListener(product -> {
-            ProductDetailFragment fragment = ProductDetailFragment.newInstance(product.getId());
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
+        recentlyViewedAdapter.setListener(new RecentlyViewedAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                ProductDetailFragment fragment = ProductDetailFragment.newInstance(product.getId());
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
+            }
         });
         if (rvRecentlyViewed != null) {
             rvRecentlyViewed.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
@@ -314,6 +327,18 @@ public class ProductDetailFragment extends Fragment {
             rvRelatedProducts.setAdapter(relatedAdapter);
         }
 
+        reviewPreviewAdapter = new com.example.frontend.feature.product.adapter.ReviewAdapter();
+        reviewPreviewAdapter.setOnReviewLikeListener(review -> viewModel.toggleReviewLike(review));
+        reviewPreviewAdapter.setOnReviewClickListener(review -> {
+            ReviewHubFragment fragment = ReviewHubFragment.newInstance(productId);
+            ui.common.FragmentNavigationHelper.loadFragment(getActivity(), fragment);
+        });
+        if (rvReviewPreview != null) {
+            rvReviewPreview.setLayoutManager(new LinearLayoutManager(getContext()));
+            rvReviewPreview.setAdapter(reviewPreviewAdapter);
+            rvReviewPreview.setNestedScrollingEnabled(false);
+        }
+
         reviewMediaAdapter = new ReviewMediaAdapter();
         if (layoutReviewSummary != null) {
             RecyclerView rvReviewMedia = layoutReviewSummary.findViewById(R.id.rvReviewMediaPreview);
@@ -327,10 +352,10 @@ public class ProductDetailFragment extends Fragment {
     private void observeViewModel() {
         viewModel.getUiState().observe(getViewLifecycleOwner(), state -> {
             if (state == null) return;
-            
+
             // Xử lý trạng thái Loading
             if (layoutLoading != null) layoutLoading.setVisibility(state.isLoading ? View.VISIBLE : View.GONE);
-            
+
             // Xử lý trạng thái Error
             if (!state.isLoading && state.error != null) {
                 if (layoutError != null) {
@@ -342,7 +367,7 @@ public class ProductDetailFragment extends Fragment {
             } else {
                 if (layoutError != null) layoutError.setVisibility(View.GONE);
             }
-            
+
             if (state.product != null) {
                 Log.d(TAG, "Loaded product = " + state.product.getName());
                 bindProductData(state);
@@ -410,10 +435,41 @@ public class ProductDetailFragment extends Fragment {
 
         if (tvName != null) tvName.setText(product.getName());
         if (tvBrand != null) tvBrand.setText(product.getBrand());
-        if (tvRating != null) tvRating.setText(String.format(Locale.US, "%.1f", product.getAverageRatingValue()));
-        if (tvReviewCount != null) tvReviewCount.setText(String.format(Locale.US, "%d đánh giá", state.reviewSummary != null ? state.reviewSummary.getReviewCount() : 0));
-        if (tvSoldCount != null) tvSoldCount.setText(String.format(Locale.US, "Đã bán %d+", product.getBought()));
+
+        TextView tvReviewSectionTitle = null;
+        if (layoutReviewSummary != null) {
+            tvReviewSectionTitle = layoutReviewSummary.findViewById(R.id.tvReviewSectionTitle);
+        }
+
+        double averageRating = 0;
+        int reviewCount = 0;
+
+        if (state.reviewSummary != null) {
+            averageRating = state.reviewSummary.getAverageRating();
+            reviewCount = state.reviewSummary.getReviewCount();
+        } else if (state.product != null) {
+            averageRating = state.product.getAverageRatingValue();
+        }
+
+        if (tvReviewCount != null) tvReviewCount.setText(String.format(Locale.US, "%d đánh giá", reviewCount));
+        if (tvRating != null) tvRating.setText(String.format(Locale.US, "%.1f", averageRating));
         
+        bindReviewSectionTitle(tvReviewSectionTitle, averageRating, reviewCount);
+
+        if (tvSoldCount != null) tvSoldCount.setText(String.format(Locale.US, "Đã bán %d+", product.getBought()));
+
+        if (layoutReviewSummary != null) {
+            TextView tvAiSummary = layoutReviewSummary.findViewById(R.id.tvAiSummaryText);
+            if (tvAiSummary != null && state.reviewSummary != null && state.reviewSummary.getAiSummary() != null) {
+                tvAiSummary.setText(state.reviewSummary.getAiSummary());
+                View cardAi = layoutReviewSummary.findViewById(R.id.cardAiSummary);
+                if (cardAi != null) cardAi.setVisibility(View.VISIBLE);
+            } else if (tvAiSummary != null) {
+                View cardAi = layoutReviewSummary.findViewById(R.id.cardAiSummary);
+                if (cardAi != null) cardAi.setVisibility(View.GONE);
+            }
+        }
+
         if (tvDesc != null) {
             tvDesc.setText(product.getShortDescription() != null ? product.getShortDescription() : product.getSubcategory());
         }
@@ -433,6 +489,16 @@ public class ProductDetailFragment extends Fragment {
         }
 
         if (tvPrice != null) tvPrice.setText(formatPrice(product.getPriceValue()));
+        
+        if (reviewPreviewAdapter != null) {
+            if (state.reviewPreviewList != null && !state.reviewPreviewList.isEmpty()) {
+                rvReviewPreview.setVisibility(View.VISIBLE);
+                reviewPreviewAdapter.submitList(state.reviewPreviewList);
+            } else {
+                rvReviewPreview.setVisibility(View.GONE);
+            }
+        }
+
         if (tvComparePrice != null) {
             if (product.getCompareAtPrice() != null && product.getCompareAtPrice() > product.getPriceValue()) {
                 tvComparePrice.setVisibility(View.VISIBLE);
@@ -446,17 +512,17 @@ public class ProductDetailFragment extends Fragment {
         if (imageAdapter != null) imageAdapter.setMediaList(state.mediaList);
         if (thumbnailAdapter != null) thumbnailAdapter.setMediaList(state.mediaList);
         if (vpGallery != null) updateGalleryCounter(vpGallery.getCurrentItem());
-        
+
         if (relatedAdapter != null) relatedAdapter.setProducts(state.relatedProducts);
         if (recentlyViewedAdapter != null) recentlyViewedAdapter.setProducts(state.recentlyViewed);
-        
+
         if (cgBadges != null) {
             cgBadges.removeAllViews();
             if (product.isBestSeller()) addBadgeChip("Best Seller");
             if (product.hasAr()) addBadgeChip("AR Try-on");
             if (state.inventory != null && "low_stock".equals(state.inventory.getStatus())) addBadgeChip("Low Stock");
         }
-        
+
         if (layoutRecentlyViewed != null) {
             if (state.recentlyViewed == null || state.recentlyViewed.isEmpty()) {
                 layoutRecentlyViewed.setVisibility(View.GONE);
@@ -464,7 +530,7 @@ public class ProductDetailFragment extends Fragment {
                 layoutRecentlyViewed.setVisibility(View.VISIBLE);
             }
         }
-        
+
         if (state.skinMatch != null && layoutSkinMatch != null) {
             layoutSkinMatch.setVisibility(View.VISIBLE);
             TextView tvScore = layoutSkinMatch.findViewById(R.id.tvSkinMatchScore);
@@ -486,7 +552,7 @@ public class ProductDetailFragment extends Fragment {
                 if (btnBuyNow != null) btnBuyNow.setEnabled(true);
             }
         }
-        
+
         View btnWishlist = getView() != null ? getView().findViewById(R.id.btnWishlist) : null;
         if (btnWishlist != null) btnWishlist.setSelected(state.isWishlisted);
     }
@@ -577,5 +643,46 @@ public class ProductDetailFragment extends Fragment {
 
     private String formatPrice(double price) {
         return String.format(Locale.US, "%,.0fđ", price).replace(",", ".");
+    }
+
+    private String formatAverageRating(double rating) {
+        return String.format(Locale.US, "%.1f", Math.max(0, rating));
+    }
+
+    private String formatReviewCount(int count) {
+        if (count >= 1_000_000) {
+            return String.format(Locale.US, "%.1fM", count / 1_000_000f).replace(".0M", "M");
+        }
+        if (count >= 1000) {
+            return String.format(Locale.US, "%.1fK", count / 1000f).replace(".0K", "K");
+        }
+        return String.valueOf(Math.max(0, count));
+    }
+
+    private void bindReviewSectionTitle(TextView titleView, double averageRating, int reviewCount) {
+        if (titleView == null) return;
+
+        String ratingText = formatAverageRating(averageRating);
+        String countText = formatReviewCount(reviewCount);
+
+        String fullText = ratingText + "  Đánh giá sản phẩm (" + countText + ")";
+        SpannableString spannable = new SpannableString(fullText);
+
+        Drawable starDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_16);
+        if (starDrawable != null) {
+            int size = (int) (14 * getResources().getDisplayMetrics().density);
+            starDrawable.setBounds(0, 0, size, size);
+            DrawableCompat.setTint(starDrawable.mutate(), ContextCompat.getColor(requireContext(), R.color.button));
+
+            int starIndex = ratingText.length() + 1;
+            spannable.setSpan(
+                    new ImageSpan(starDrawable, ImageSpan.ALIGN_BASELINE),
+                    starIndex,
+                    starIndex + 1,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+        }
+
+        titleView.setText(spannable);
     }
 }

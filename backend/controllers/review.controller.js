@@ -123,26 +123,45 @@ const getMyReviewDetail = async (req, res) => {
 const getReviewsByProductId = async (req, res) => {
   try {
     const { productId } = req.params;
+    const { rating, hasMedia } = req.query;
+
     if (!validateObjectId(productId)) return res.status(400).json({ success: false, message: "Invalid product ID" });
-    const reviews = await Review.find({ productId, reviewStatus: "visible" })
+
+    const filter = { productId, reviewStatus: "visible" };
+    if (rating) filter.rating = Number(rating);
+
+    if (hasMedia === "true") {
+      const mediaReviews = await ReviewMedia.find().select("reviewId").lean();
+      const mediaReviewIds = [...new Set(mediaReviews.map(m => String(m.reviewId)))];
+      filter._id = { $in: mediaReviewIds };
+    }
+
+    const reviews = await Review.find(filter)
       .populate("customer_id", CUST)
       .populate("variantId", "variantName")
       .sort({ createdAt: -1 })
       .limit(100)
       .lean();
 
+    // Attach media and isLikedByMe if user is logged in
+    const accountId = req.user?.account_id || req.user?.accountId;
+    let customerId = null;
+    if (accountId) {
+      const customer = await Customer.findOne({ account_id: accountId }).select("_id").lean();
+      customerId = customer?._id;
+    }
+
     const reviewIds = reviews.map(r => r._id);
-    const allMedia = await ReviewMedia.find({ reviewId: { $in: reviewIds } }).lean();
+    const allMedia = await ReviewMedia.find({ reviewId: { $in: reviewIds } }).sort({ sortOrder: 1 }).lean();
+    const allVotes = customerId ? await ReviewVote.find({ reviewId: { $in: reviewIds }, customer_id: customerId, voteType: "helpful" }).lean() : [];
 
-    const formatted = reviews.map(r => ({
-      ...r,
-      media: allMedia.filter(m => String(m.reviewId) === String(r._id)).map(m => ({
-        mediaType: m.mediaType,
-        mediaUrl: m.mediaUrl
-      }))
-    }));
+    const reviewsWithExtras = reviews.map(r => {
+      const reviewMedia = allMedia.filter(m => String(m.reviewId) === String(r._id));
+      const isLikedByMe = allVotes.some(v => String(v.reviewId) === String(r._id));
+      return { ...r, media: reviewMedia, isLikedByMe };
+    });
 
-    res.status(200).json({ success: true, message: "Get reviews by product successfully", count: formatted.length, data: formatted });
+    res.status(200).json({ success: true, message: "Get reviews by product successfully", count: reviewsWithExtras.length, data: reviewsWithExtras });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 };
 

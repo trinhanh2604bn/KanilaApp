@@ -81,8 +81,7 @@ public class OrderTabContentFragment extends Fragment {
                     ReviewOrderFragment fragment = ReviewOrderFragment.newInstance(order.getId());
                     FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
                 } else if ("Mua lại".equals(action)) {
-                    OrderDetailFragment fragment = OrderDetailFragment.newInstance(order.getId(), order.getOrderNumber());
-                    FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+                    viewModel.reorderOrder(order.getId());
                 } else if ("Trả hàng/Hoàn tiền".equals(action)) {
                     ReturnRefundFragment fragment = ReturnRefundFragment.newInstance(order.getId(), null);
                     FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
@@ -106,6 +105,15 @@ public class OrderTabContentFragment extends Fragment {
             
             if (state.orders != null) {
                 adapter.setOrders(state.orders);
+            }
+
+            if (state.reorderSuccess) {
+                // Chuyển sang giỏ hàng
+                if (getActivity() instanceof com.example.frontend.MainActivity) {
+                    ((com.example.frontend.MainActivity) getActivity()).navigateToCart();
+                } else {
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.commerce.CartFragment());
+                }
             }
             
             if (state.error != null) {

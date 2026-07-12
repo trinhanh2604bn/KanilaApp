@@ -180,7 +180,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             tvGrandTotal.setText(formatPrice(order.getGrandTotalAmount()));
 
             // Action Button & Disclaimer
-            setupActionArea(order.getOrderStatus());
+            setupActionArea(context, order.getOrderStatus());
 
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
@@ -196,12 +196,12 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
             btnReturn.setOnClickListener(v -> {
                 if (listener != null) {
-                    listener.onActionClick(order, "Trả hàng/Hoàn tiền");
+                    listener.onActionClick(order, btnReturn.getText().toString());
                 }
             });
         }
 
-        private void setupActionArea(String status) {
+        private void setupActionArea(Context context, String status) {
             tvDisclaimer.setVisibility(View.GONE);
             btnAction.setEnabled(true);
             btnAction.setAlpha(1.0f);
@@ -227,10 +227,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
                 case "completed":
                     btnAction.setText("Đánh giá");
                     btnReturn.setVisibility(View.VISIBLE);
-                    btnReturn.setText("Trả hàng/Hoàn tiền");
+                    btnReturn.setText(context.getString(R.string.action_rebuy));
                     break;
                 case "cancelled":
-                    btnAction.setText("Mua lại");
+                    btnAction.setText(context.getString(R.string.action_rebuy));
                     break;
                 case "returned":
                     btnAction.setText("Xem chi tiết hoàn trả");

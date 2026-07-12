@@ -546,8 +546,6 @@ public class ProductDetailFragment extends Fragment {
             }
         }
 
-        if (state.skinMatch != null && layoutSkinMatch != null) {
-
         if (state.detailedSkinMatch != null && layoutSkinMatch != null) {
             bindSkinMatchData(state.detailedSkinMatch);
         } else if (state.skinMatch != null && layoutSkinMatch != null) {

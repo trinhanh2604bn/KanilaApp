@@ -27,15 +27,10 @@ public class ProductDetailUiState {
     // Legacy simple data from product detail response
     public ProductDetailResponse.SkinMatchDto skinMatch = null;
     public ProductDetailResponse.ReviewSummaryDto reviewSummary = null;
-<<<<<<< HEAD
-    
     // New detailed data from specific endpoints
     public SkinMatchDto detailedSkinMatch = null;
     public ReviewInsightDto reviewInsight = null;
-
-=======
     public List<com.example.frontend.data.model.review.ReviewDto> reviewPreviewList = new ArrayList<>();
->>>>>>> origin/main
     public List<Product> relatedProducts = null;
     public List<Product> recentlyViewed = null;
 

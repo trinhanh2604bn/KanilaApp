@@ -93,14 +93,10 @@ public class ProductDetailViewModel extends AndroidViewModel {
                         ProductDetailUiState successState = ProductDetailUiState.success(result.data);
                         successState.recentlyViewed = updateRecentlyViewed(result.data.getProduct());
                         uiState.setValue(successState);
-<<<<<<< HEAD
-                        
-                        // Fetch detailed insights
+                        // Fetch detailed insights and reviews
                         loadSkinMatchScore(productId);
                         loadReviewInsights(productId);
-=======
                         loadReviewPreview(productId);
->>>>>>> origin/main
                     } else {
                         uiState.setValue(ProductDetailUiState.error("Không tìm thấy thông tin sản phẩm"));
                     }

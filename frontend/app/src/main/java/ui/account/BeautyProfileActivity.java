@@ -1,4 +1,4 @@
-package ui.account;
+cpackage ui.account;
 
 import android.os.Bundle;
 import android.view.View;

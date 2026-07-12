@@ -269,8 +269,6 @@ public class SkinMatchDetailBottomSheet extends BottomSheetDialogFragment {
             tvDetail.setText(parts[1].trim());
             tvDetail.setVisibility(View.VISIBLE);
         } else if (text.length() > 60) {
-            // If it's just a long string, maybe show it all in detail and keep a generic title?
-            // Or just show all in title but allow multiple lines (style already allows wrap_content)
             tvText.setText(text);
             tvDetail.setVisibility(View.GONE);
         } else {
@@ -284,6 +282,12 @@ public class SkinMatchDetailBottomSheet extends BottomSheetDialogFragment {
         } else {
             tvContribution.setVisibility(View.GONE);
         }
+
+        // Navigate to Kanila Beauty profile when clicking on a reason
+        itemView.setOnClickListener(v -> {
+            startActivity(new Intent(requireContext(), ui.account.BeautyProfileActivity.class));
+            dismiss();
+        });
 
         container.addView(itemView);
     }

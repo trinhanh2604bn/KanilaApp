@@ -313,23 +313,8 @@ public class HomeFragment extends Fragment {
 
     private void handleAddToCart(Product product) {
         if (product.getId() == null) return;
-
-        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
-        cartViewModel.addToCart(request);
-        
-        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
-            @Override
-            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
-                if (result == null) return;
-                if (result.status == NetworkResult.Status.SUCCESS) {
-                    Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                } else if (result.status == NetworkResult.Status.ERROR) {
-                    Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                }
-            }
-        });
+        com.example.frontend.feature.product.QuickAddHelper.quickAddToCart(
+            requireContext(), getChildFragmentManager(), getViewLifecycleOwner(), product, cartViewModel);
     }
 
     private void observeViewModel() {
@@ -340,6 +325,15 @@ public class HomeFragment extends Fragment {
             else {
                 showContent();
                 if (state.allProducts != null) allProductAdapter.setProducts(state.allProducts);
+            }
+        });
+
+        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            } else if (result.status == NetworkResult.Status.ERROR) {
+                Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
             }
         });
     }

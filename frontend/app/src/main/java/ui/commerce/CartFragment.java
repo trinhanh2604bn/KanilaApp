@@ -54,7 +54,6 @@ public class CartFragment extends Fragment {
     private CartViewModel viewModel;
     private WishlistViewModel wishlistViewModel;
     private CouponDto selectedVoucher;
-    private boolean useCoins = false;
     private boolean isUpdatingSelectAll = false;
 
     @Nullable
@@ -388,7 +387,8 @@ public class CartFragment extends Fragment {
             wishlistViewModel.loadWishlistStatus(productIds);
         }
 
-        updateSummary(cart);
+        // Tự tính toán lại summary dựa trên items để loại bỏ phí vận chuyển 30k từ server
+        updateSummaryLocal();
         updateSelectAllState();
     }
 
@@ -660,7 +660,6 @@ public class CartFragment extends Fragment {
                     CheckoutFragment checkoutFragment = new CheckoutFragment();
                     Bundle args = new Bundle();
                     args.putSerializable("selected_items", (java.io.Serializable) selectedItems);
-                    args.putDouble("coins_discount", useCoins ? 20000.0 : 0.0);
                     if (selectedVoucher != null) {
                         args.putSerializable("selected_voucher", selectedVoucher);
                     }
@@ -686,7 +685,7 @@ public class CartFragment extends Fragment {
         }
 
         if (tvDiscountValue != null) {
-            tvDiscountValue.setText("-" + formatPrice(cart.getDiscountAmount()) + ", miễn phí vận chuyển");
+            tvDiscountValue.setText("-" + formatPrice(cart.getDiscountAmount()));
         }
     }
 
@@ -700,12 +699,6 @@ public class CartFragment extends Fragment {
         }
 
         setSelectAllCheckedSilently(false);
-
-        if (ivUseCoinsCheck != null) {
-            ivUseCoinsCheck.setSelected(false);
-        }
-
-        useCoins = false;
     }
 
     private void updateSummaryLocal() {
@@ -731,8 +724,7 @@ public class CartFragment extends Fragment {
         }
         discount = Math.min(discount, subtotal);
 
-        double coins = useCoins ? 20000 : 0;
-        double total = subtotal - discount - coins;
+        double total = subtotal - discount;
         if (total < 0) total = 0;
 
         if (tvTotalValue != null) {
@@ -741,13 +733,10 @@ public class CartFragment extends Fragment {
 
         if (tvDiscountValue != null) {
             String text = "-" + formatPrice(discount);
-            if (useCoins) {
-                text += " - " + formatPrice(coins) + " xu";
-            }
             if (selectedVoucher != null) {
                 text += " (" + selectedVoucher.getCouponCode() + ")";
             }
-            tvDiscountValue.setText(text + ", miễn phí vận chuyển");
+            tvDiscountValue.setText(text);
         }
     }
 

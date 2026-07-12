@@ -171,12 +171,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateHomeVisibility() {
-        boolean hasFragments = getSupportFragmentManager().getBackStackEntryCount() > 0;
+        int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+        boolean hasFragments = backStackCount > 0;
+
         if (layoutHomeScroll != null) {
             layoutHomeScroll.setVisibility(hasFragments ? View.GONE : View.VISIBLE);
         }
         if (mainFragmentContainer != null) {
             mainFragmentContainer.setVisibility(hasFragments ? View.VISIBLE : View.GONE);
+        }
+
+        View bottomNav = findViewById(R.id.layoutBottomNavigation);
+        if (bottomNav != null) {
+            if (!hasFragments) {
+                bottomNav.setVisibility(View.VISIBLE);
+            } else {
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
+                if (currentFragment instanceof com.example.frontend.feature.product.ProductDetailFragment) {
+                    bottomNav.setVisibility(View.GONE);
+                } else {
+                    bottomNav.setVisibility(View.VISIBLE);
+                }
+            }
         }
     }
 
@@ -354,6 +370,7 @@ public class MainActivity extends AppCompatActivity {
     private void observeViewModel() {
         if (viewModel == null) return;
         viewModel.getUiState().observe(this, state -> {
+            // ... (rest of logic)
             if (state == null) return;
 
             if (state.loading) {
@@ -375,6 +392,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                     wishlistViewModel.loadWishlistStatus(productIds);
                 }
+            }
+        });
+
+        cartViewModel.getCartResult().observe(this, result -> {
+            if (result == null) return;
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                Toast.makeText(MainActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            } else if (result.status == NetworkResult.Status.ERROR) {
+                Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -596,24 +622,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleAddToCart(com.example.frontend.model.Product product) {
         if (product.getId() == null) return;
-
-        // Use empty string instead of null for variant_id as some backends require it
-        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
-        cartViewModel.addToCart(request);
-
-        cartViewModel.getCartResult().observe(this, new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
-            @Override
-            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
-                if (result == null) return;
-                if (result.status == NetworkResult.Status.SUCCESS) {
-                    Toast.makeText(MainActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                } else if (result.status == NetworkResult.Status.ERROR) {
-                    Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                }
-            }
-        });
+        com.example.frontend.feature.product.QuickAddHelper.quickAddToCart(
+            this, getSupportFragmentManager(), this, product, cartViewModel);
     }
 
     private void smoothScrollTo(int position, long duration) {

@@ -2,6 +2,7 @@ const ReviewSummary = require("../models/reviewSummary.model");
 const validateObjectId = require("../utils/validateObjectId");
 const { parseStorefrontFacetFlag } = require("../utils/storefrontFacetScope");
 const { loadReviewSummariesStorefront } = require("../services/catalogStorefrontFacets.service");
+const { getAggregateReviewSummary } = require("../services/reviewSummary.service");
 
 const getAllReviewSummaries = async (req, res) => {
   try {
@@ -39,8 +40,7 @@ const getSummaryByProductId = async (req, res) => {
   try {
     const { productId } = req.params;
     if (!validateObjectId(productId)) return res.status(400).json({ success: false, message: "Invalid product ID" });
-    const summary = await ReviewSummary.findOne({ productId });
-    if (!summary) return res.status(404).json({ success: false, message: "Review summary not found for this product" });
+    const summary = await getAggregateReviewSummary(productId);
     res.status(200).json({ success: true, message: "Get summary by product successfully", data: summary });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 };

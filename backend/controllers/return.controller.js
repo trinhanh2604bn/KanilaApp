@@ -26,7 +26,8 @@ const getReturnById = async (req, res) => {
     const ret = await Return.findById(id)
       .populate("order_id", "order_number")
       .populate("requested_by_customer_id", "customer_code full_name")
-      .populate("approvedByAccountId", "email");
+      .populate("approvedByAccountId", "email")
+      .populate("media");
     if (!ret) return res.status(404).json({ success: false, message: "Return not found" });
     res.status(200).json({ success: true, message: "Get return successfully", data: ret });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
@@ -36,7 +37,7 @@ const getReturnsByOrderId = async (req, res) => {
   try {
     const orderId = resolveOrderIdParam(req);
     if (!validateObjectId(orderId)) return res.status(400).json({ success: false, message: "Invalid order ID" });
-    const returns = await Return.find({ order_id: orderId }).sort({ createdAt: -1 });
+    const returns = await Return.find({ order_id: orderId }).populate("media").sort({ createdAt: -1 });
     res.status(200).json({ success: true, message: "Get returns by order successfully", count: returns.length, data: returns });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 };

@@ -87,8 +87,11 @@ public class ProductDetailResponse {
         private double averageRating;
         @SerializedName("reviewCount")
         private int reviewCount;
+        @SerializedName("aiSummary")
+        private String aiSummary;
         public double getAverageRating() { return averageRating; }
         public int getReviewCount() { return reviewCount; }
+        public String getAiSummary() { return aiSummary; }
     }
 
     public static class SkinMatchDto implements Serializable {

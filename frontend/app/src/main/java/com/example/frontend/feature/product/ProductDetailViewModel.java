@@ -30,6 +30,7 @@ public class ProductDetailViewModel extends AndroidViewModel {
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
     private final WishlistRepository wishlistRepository;
+    private final com.example.frontend.data.repository.ReviewRepository reviewRepository;
     private final com.example.frontend.data.repository.CheckoutRepository checkoutRepository;
     private final MutableLiveData<ProductDetailUiState> uiState = new MutableLiveData<>(new ProductDetailUiState());
     private final MutableLiveData<NetworkResult<CartDto>> addToCartResult = new MutableLiveData<>();
@@ -43,6 +44,7 @@ public class ProductDetailViewModel extends AndroidViewModel {
         this.productRepository = new ProductRepository(application);
         this.cartRepository = new CartRepository(application);
         this.wishlistRepository = new WishlistRepository(application);
+        this.reviewRepository = new com.example.frontend.data.repository.ReviewRepository(application);
         this.checkoutRepository = new com.example.frontend.data.repository.CheckoutRepository(application);
         this.sharedPreferences = application.getSharedPreferences("kanila_prefs", Context.MODE_PRIVATE);
         loadRecentlyViewedFromPrefs();
@@ -91,10 +93,14 @@ public class ProductDetailViewModel extends AndroidViewModel {
                         ProductDetailUiState successState = ProductDetailUiState.success(result.data);
                         successState.recentlyViewed = updateRecentlyViewed(result.data.getProduct());
                         uiState.setValue(successState);
+<<<<<<< HEAD
                         
                         // Fetch detailed insights
                         loadSkinMatchScore(productId);
                         loadReviewInsights(productId);
+=======
+                        loadReviewPreview(productId);
+>>>>>>> origin/main
                     } else {
                         uiState.setValue(ProductDetailUiState.error("Không tìm thấy thông tin sản phẩm"));
                     }
@@ -165,16 +171,40 @@ public class ProductDetailViewModel extends AndroidViewModel {
     public void toggleWishlist() {
         ProductDetailUiState current = uiState.getValue();
         if (current == null || current.product == null) return;
-        
+
         boolean wasWishlisted = current.isWishlisted;
         // Optimistic update
         current.isWishlisted = !wasWishlisted;
         uiState.setValue(current);
-        
+
         if (wasWishlisted) {
             wishlistRepository.removeFromWishlist(current.product.getId(), new MutableLiveData<>());
         } else {
             wishlistRepository.addToWishlist(current.product.getId(), new MutableLiveData<>());
         }
+    }
+
+    public void loadReviewPreview(String productId) {
+        MutableLiveData<NetworkResult<List<com.example.frontend.data.model.review.ReviewDto>>> result = new MutableLiveData<>();
+        reviewRepository.getRandomReviewPreview(productId, 2, result);
+        result.observeForever(networkResult -> {
+            if (networkResult.status == NetworkResult.Status.SUCCESS) {
+                ProductDetailUiState currentState = uiState.getValue();
+                if (currentState != null) {
+                    currentState.reviewPreviewList = networkResult.data;
+                    uiState.setValue(currentState);
+                }
+            }
+        });
+    }
+
+    public void toggleReviewLike(com.example.frontend.data.model.review.ReviewDto review) {
+        reviewRepository.toggleReviewVote(review.getId(), new MutableLiveData<>());
+        // Local update for immediate UI response
+        boolean newLiked = !review.isLikedByMe();
+        int newCount = review.getHelpfulCount() + (newLiked ? 1 : -1);
+        review.setLikedByMe(newLiked);
+        review.setHelpfulCount(newCount);
+        uiState.setValue(uiState.getValue());
     }
 }

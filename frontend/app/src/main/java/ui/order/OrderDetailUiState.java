@@ -10,28 +10,34 @@ public class OrderDetailUiState {
     public final List<Product> recommendations;
     public final String error;
     public final boolean cancelSuccess;
+    public final boolean reorderSuccess;
 
-    public OrderDetailUiState(boolean loading, OrderDetailDto order, List<Product> recommendations, String error, boolean cancelSuccess) {
+    public OrderDetailUiState(boolean loading, OrderDetailDto order, List<Product> recommendations, String error, boolean cancelSuccess, boolean reorderSuccess) {
         this.loading = loading;
         this.order = order;
         this.recommendations = recommendations;
         this.error = error;
         this.cancelSuccess = cancelSuccess;
+        this.reorderSuccess = reorderSuccess;
     }
 
     public static OrderDetailUiState loading() {
-        return new OrderDetailUiState(true, null, null, null, false);
+        return new OrderDetailUiState(true, null, null, null, false, false);
     }
 
     public static OrderDetailUiState success(OrderDetailDto order, List<Product> recommendations) {
-        return new OrderDetailUiState(false, order, recommendations, null, false);
+        return new OrderDetailUiState(false, order, recommendations, null, false, false);
     }
 
     public static OrderDetailUiState error(String message) {
-        return new OrderDetailUiState(false, null, null, message, false);
+        return new OrderDetailUiState(false, null, null, message, false, false);
     }
 
     public static OrderDetailUiState cancelSuccess() {
-        return new OrderDetailUiState(false, null, null, null, true);
+        return new OrderDetailUiState(false, null, null, null, true, false);
+    }
+
+    public static OrderDetailUiState reorderSuccess() {
+        return new OrderDetailUiState(false, null, null, null, false, true);
     }
 }

@@ -59,8 +59,7 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/layoutSectionsContainer"
@@ -380,13 +379,11 @@
                     android:id="@+id/rvRecommendedProducts"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="-16dp"
-                    android:clipToPadding="false"
-                    android:paddingHorizontal="16dp"
-                    android:paddingBottom="12dp"
-                    android:orientation="horizontal"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/item_product_card" />
+                    android:layout_marginTop="8dp"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"
+                    tools:listitem="@layout/item_recommendation_product" />
 
             </LinearLayout>
 

@@ -247,11 +247,7 @@ public class BeautyProfileOverviewFragment extends Fragment {
             }
         });
 
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        productAdapter.setItemWidth((int) (screenWidth * 0.45));
-
         if (rvRecommendedProducts != null) {
-            rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
             rvRecommendedProducts.setAdapter(productAdapter);
         }
     }

@@ -157,7 +157,7 @@ function buildMissingInfoMessage(missingField, userMessage) {
     skin_concerns:
       "Bạn đang gặp vấn đề gì về da mà muốn cải thiện? " +
       "Ví dụ: Mụn, Thâm, Xỉn màu, Khô ráp, Lão hóa...",
-    budget_range:
+    budget:
       "Bạn thường chi bao nhiêu cho một sản phẩm chăm sóc da? " +
       "Ví dụ: Dưới 200k / 200k-500k / Trên 500k",
   };
@@ -238,7 +238,34 @@ module.exports = {
   buildIngredientMessage,
   // Phase 8: Makeup Commerce
   buildMakeupProductContextMessage,
+  // AI Skin Analysis
+  buildSkinAnalysisPrompt,
 };
+
+function buildSkinAnalysisPrompt(profile, products) {
+  const profileDetails = JSON.stringify({
+    skin_type: profile.skin_type || profile.skin_types?.[0],
+    skin_concerns: profile.skin_concerns || profile.concerns,
+    sensitivity_level: profile.sensitivity_level,
+    beauty_goals: profile.beauty_goals || profile.routine_goal,
+    avoid_ingredients: profile.avoid_ingredients
+  }, null, 2);
+
+  const productList = products.map(p => p.name || p.productName).join(", ");
+
+  return `Bạn là chuyên gia da liễu KANILA. Dựa vào hồ sơ làn da sau:
+${profileDetails}
+
+Và các sản phẩm gợi ý: ${productList}
+
+Hãy phân tích ngắn gọn tình trạng da hiện tại (analysis_text), đánh giá điểm sức khỏe làn da từ 1-100 (health_score) dựa trên mức độ nghiêm trọng của vấn đề da, và gợi ý từ 3-5 thành phần mỹ phẩm lý tưởng (ideal_ingredients) cho người dùng này.
+Yêu cầu định dạng trả về bắt buộc phải là JSON hợp lệ, không kèm theo Markdown block (không dùng \`\`\`json) hay ký tự giải thích dư thừa:
+{
+  "health_score": 85,
+  "analysis_text": "Da bạn thuộc loại... cần chú ý...",
+  "ideal_ingredients": ["Niacinamide", "BHA"]
+}`;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Phase 8: Makeup Commerce context builder

@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CustomerBeautyProfile",
+  "type": "object",
+  "properties": {
+    "skin_type": { "type": ["string", "null"] },
+    "sensitivity_level": { "type": ["string", "null"] },
+    "skin_color": { "type": ["string", "null"] },
+    "skin_undertone": { "type": ["string", "null"] },
+    "foundation_finish": { "type": ["string", "null"] },
+    "budget": { "type": ["string", "null"] },
+    "fragrance_preference": { "type": ["string", "null"] },
+    "skin_concerns": { "type": "array", "items": { "type": "string" } },
+    "lipstick_colors": { "type": "array", "items": { "type": "string" } },
+    "makeup_styles": { "type": "array", "items": { "type": "string" } },
+    "avoid_ingredients": { "type": "array", "items": { "type": "string" } },
+    "beauty_goals": { "type": "array", "items": { "type": "string" } },
+    "preferred_ingredients": { "type": "array", "items": { "type": "string" } },
+    "preferred_brands": { "type": "array", "items": { "type": "string" } },
+    "disliked_brands": { "type": "array", "items": { "type": "string" } },
+    "preferred_categories": { "type": "array", "items": { "type": "string" } },
+    "texture_preference": { "type": "array", "items": { "type": "string" } },
+    "purchase_intent": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

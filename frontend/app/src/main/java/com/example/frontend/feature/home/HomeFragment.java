@@ -54,7 +54,6 @@ public class HomeFragment extends Fragment {
     private View layoutSearchBar;
     private android.widget.ImageButton btnNotification, btnCart, btnWishlist;
     private RecyclerView rvHomeShortcuts;
-    private RecyclerView rvRecommendedProducts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
     
@@ -67,7 +66,6 @@ public class HomeFragment extends Fragment {
 
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
-    private HomeProductAdapter recommendedProductAdapter;
     private HomeProductAdapter allProductAdapter;
     private HomeViewModel viewModel;
     private WishlistViewModel wishlistViewModel;
@@ -166,7 +164,6 @@ public class HomeFragment extends Fragment {
         btnCart = view.findViewById(R.id.btnCart);
         btnWishlist = view.findViewById(R.id.btnWishlist);
         rvHomeShortcuts = view.findViewById(R.id.rvHomeShortcuts);
-        rvRecommendedProducts = view.findViewById(R.id.rvRecommendedProducts);
         rvAllProducts = view.findViewById(R.id.rvAllProducts);
         layoutHomeStateContainer = view.findViewById(R.id.layoutHomeStateContainer);
         viewHomeLoading = view.findViewById(R.id.viewHomeLoading);
@@ -188,10 +185,6 @@ public class HomeFragment extends Fragment {
         tvChallengeProgress = view.findViewById(R.id.tvChallengeProgress);
         tvChallengeParticipants = view.findViewById(R.id.tvChallengeParticipants);
         tvChallengeReward = view.findViewById(R.id.tvChallengeReward);
-
-        view.findViewById(R.id.btnViewAllRecommended).setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Gợi ý cho bạn", Toast.LENGTH_SHORT).show();
-        });
     }
 
     private void setupHomeShortcuts() {
@@ -268,23 +261,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupProductLists() {
-        recommendedProductAdapter = new HomeProductAdapter();
-        recommendedProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
-            @Override
-            public void onProductClick(Product product) {
-                // Navigate to Product Detail if needed
-                Toast.makeText(requireContext(), "Sản phẩm: " + product.getName(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAddToCartClick(Product product) {
-                handleAddToCart(product);
-            }
-        });
-        rvRecommendedProducts.setLayoutManager(new GridLayoutManager(requireContext(), 2));
-        rvRecommendedProducts.setAdapter(recommendedProductAdapter);
-        rvRecommendedProducts.setNestedScrollingEnabled(false);
-
         allProductAdapter = new HomeProductAdapter();
         allProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
             @Override
@@ -348,7 +324,6 @@ public class HomeFragment extends Fragment {
             else if (state.error != null) showError(state.error);
             else {
                 showContent();
-                if (state.recommendedProducts != null) recommendedProductAdapter.setProducts(state.recommendedProducts);
                 if (state.allProducts != null) allProductAdapter.setProducts(state.allProducts);
             }
         });

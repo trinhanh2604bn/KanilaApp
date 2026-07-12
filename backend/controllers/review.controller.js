@@ -8,6 +8,7 @@ const OrderItem = require("../models/orderItem.model");
 const Order = require("../models/order.model");
 const validateObjectId = require("../utils/validateObjectId");
 const { pickCustomerId } = require("../utils/pickCustomerRef");
+const reviewEventService = require("../services/reviewAi/reviewEvent.service");
 
 const CUST = "customer_code full_name avatar_url";
 
@@ -25,6 +26,9 @@ const recalcReviewSummary = async (productId) => {
     { reviewCount, averageRating, rating1Count: ratingCounts[1], rating2Count: ratingCounts[2], rating3Count: ratingCounts[3], rating4Count: ratingCounts[4], rating5Count: ratingCounts[5] },
     { upsert: true, new: true }
   );
+
+  // Trigger AI Summary Stale marking
+  await reviewEventService.markProductReviewAiSummaryStale(productId);
 };
 
 const getCustomerFromAuth = async (req) => {

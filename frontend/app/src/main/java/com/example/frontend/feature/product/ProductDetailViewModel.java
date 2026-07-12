@@ -6,6 +6,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.frontend.data.model.product.ProductDetailResponse;
+import com.example.frontend.data.model.product.SkinMatchDto;
+import com.example.frontend.data.model.product.ReviewInsightDto;
 import com.example.frontend.data.model.cart.AddToCartRequest;
 import com.example.frontend.data.model.cart.CartDto;
 import com.example.frontend.data.remote.NetworkResult;
@@ -91,6 +93,9 @@ public class ProductDetailViewModel extends AndroidViewModel {
                         ProductDetailUiState successState = ProductDetailUiState.success(result.data);
                         successState.recentlyViewed = updateRecentlyViewed(result.data.getProduct());
                         uiState.setValue(successState);
+                        // Fetch detailed insights and reviews
+                        loadSkinMatchScore(productId);
+                        loadReviewInsights(productId);
                         loadReviewPreview(productId);
                     } else {
                         uiState.setValue(ProductDetailUiState.error("Không tìm thấy thông tin sản phẩm"));
@@ -110,6 +115,30 @@ public class ProductDetailViewModel extends AndroidViewModel {
                     errorState.noInternet = true;
                     uiState.setValue(errorState);
                     break;
+            }
+        });
+    }
+
+    private void loadSkinMatchScore(String productId) {
+        productRepository.getSkinMatchScore(productId).observeForever(result -> {
+            if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+                ProductDetailUiState current = uiState.getValue();
+                if (current != null) {
+                    current.detailedSkinMatch = result.data;
+                    uiState.setValue(current);
+                }
+            }
+        });
+    }
+
+    private void loadReviewInsights(String productId) {
+        productRepository.getReviewInsights(productId).observeForever(result -> {
+            if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+                ProductDetailUiState current = uiState.getValue();
+                if (current != null) {
+                    current.reviewInsight = result.data;
+                    uiState.setValue(current);
+                }
             }
         });
     }

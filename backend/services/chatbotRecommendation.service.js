@@ -19,6 +19,11 @@
 
 const { recommendForProfile, getBehaviorSignals } = require("./recommendation.service");
 const { getCustomerContext }                       = require("./chatbotCustomerContext.service");
+const {
+  generateSnapshotByAccountId,
+  getSkinProfileByCustomerId,
+  CHATBOT_RECOMMENDATION_TYPE,
+} = require("./recommendationSnapshot.service");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Slot / combo definitions
@@ -88,7 +93,7 @@ function customerContextToProfile(customerContext) {
   return {
     is_new_profile: true,
     skin_types: cp.skin_type && cp.skin_type !== "unknown" ? [cp.skin_type] : [],
-    skin_tone: "",
+    skin_color: "",
     concerns: cp.skin_concerns || [],
     sensitivity_level: null,
     beauty_goals: [],
@@ -97,8 +102,8 @@ function customerContextToProfile(customerContext) {
     preferred_brands: (cp.preferred_brands || []).map(String),
     disliked_brands: [],
     texture_preference: [],
-    finish_preference: [],
-    budget_range: cp.budget_max ? `under_${cp.budget_max}` : null,
+    foundation_finish: [],
+    budget: cp.budget_max ? `under_${cp.budget_max}` : null,
     favorite_brands: [],
   };
 }
@@ -135,29 +140,33 @@ function formatRecommendationItem(item) {
 /**
  * Get a profile-scored product list for the AI chatbot context.
  *
- * Flow:
- *   1. Load customer context (authenticated only).
+ * Flow for authenticated customers:
+ *   1. Load customer context (CustomerBeautyProfile → CustomerPreference fallback).
  *   2. Convert to recommendation profile.
- *   3. Run recommendForProfile() — full scoring engine with ProductBeautyProfile.
+ *   3. Try snapshot cache (recommendation_type: "chatbot_context") via snapshotService.
+ *      - If snapshot exists and is valid: hydrate products from snapshot items.
+ *      - If no valid snapshot: run live recommendForProfile() and cache it.
  *   4. Apply optional budget + category filters from parsed message constraints.
  *   5. Return formatted products.
  *
- * Falls back gracefully: if context fails or profile is empty, runs a generic
- * recommendForProfile() so guest users still get results.
+ * Flow for guest users (no customerId):
+ *   - Always runs live scoring using message constraints only.
+ *
+ * Gemini NEVER selects or prices products — it only explains the scored results.
  *
  * @param {string|ObjectId|null} customerId
- * @param {object} constraints – parsed from message:
- *   { skinType, concern, category, budgetMax }
+ * @param {object} constraints – parsed from message: { skinType, concern, category, budgetMax }
  * @param {number} limit – max products to return (default 6)
- * @returns {Promise<{ products: object[], customer_context_used: boolean }>}
+ * @returns {Promise<{ products: object[], customer_context_used: boolean, from_snapshot: boolean }>}
  */
 async function getRecommendationContext(customerId, constraints = {}, limit = 6) {
   let customerContext = null;
   let profile = _buildGuestProfile(constraints);
   let behavior = _emptyBehavior();
   let customer_context_used = false;
+  let from_snapshot = false;
 
-  // ── Authenticated: load customer profile ────────────────────────────────
+  // ── Authenticated: load customer profile ──────────────────────────────────
   if (customerId) {
     try {
       customerContext = await getCustomerContext(customerId);
@@ -167,8 +176,8 @@ async function getRecommendationContext(customerId, constraints = {}, limit = 6)
         if (constraints.skinType && !profile.skin_types.length) {
           profile.skin_types = [constraints.skinType];
         }
-        if (constraints.budgetMax && !profile.budget_range) {
-          profile.budget_range = `under_${constraints.budgetMax}`;
+        if (constraints.budgetMax && !profile.budget) {
+          profile.budget = `under_${constraints.budgetMax}`;
         }
         customer_context_used = true;
       } else if (customerContext && (constraints.skinType || constraints.concern)) {
@@ -183,20 +192,111 @@ async function getRecommendationContext(customerId, constraints = {}, limit = 6)
     }
   }
 
-  // ── Run full scoring engine ─────────────────────────────────────────────
+  // ── Try snapshot cache (authenticated customers only, no category filter) ─────
+  // Snapshots are useful when no category constraint is narrowing the result set.
+  // When a category is specified, always run live scoring so the category filter applies.
   let rawItems = [];
-  try {
-    rawItems = await recommendForProfile(profile, {
-      category: constraints.category || "",
-      limit:    limit * 3, // over-fetch to allow budget filtering
-      behavior,
-    });
-  } catch (err) {
-    console.error("[chatbotRecommendation] recommendForProfile error:", err.message);
-    return { products: [], customer_context_used: false };
+  if (customerId && customer_context_used && !constraints.category) {
+    try {
+      // getSkinProfileByCustomerId() is keyed on customer _id (ObjectId).
+      // customerId here is the customer _id from the chatbot context.
+      const chatbotSnapshotProfile = await getSkinProfileByCustomerId(customerId);
+      // We can reuse generateSnapshotByAccountId only with accountId, but chatbot
+      // has customerId. Build snapshot items directly via recommendForProfile and
+      // store with CHATBOT_RECOMMENDATION_TYPE to avoid polluting homepage cache.
+      // Use CustomerRecommendationSnapshot directly.
+      const CustomerRecommendationSnapshot = require("../models/customerRecommendationSnapshot.model");
+      const { computeProfileHash } = require("./recommendationSnapshot.service");
+      const profileHash = computeProfileHash(chatbotSnapshotProfile);
+      const now = new Date();
+
+      const existingSnapshot = await CustomerRecommendationSnapshot.findOne({
+        customer_id: customerId,
+        recommendation_type: CHATBOT_RECOMMENDATION_TYPE,
+      }).lean();
+
+      const snapshotValid =
+        existingSnapshot &&
+        existingSnapshot.profile_hash === profileHash &&
+        !existingSnapshot.invalidated_at &&
+        (!existingSnapshot.expires_at || existingSnapshot.expires_at > now);
+
+      if (snapshotValid && Array.isArray(existingSnapshot.items) && existingSnapshot.items.length > 0) {
+        // Cache hit — hydrate products from snapshot items
+        rawItems = existingSnapshot.items.map((snapIt) => ({
+          productId: String(snapIt.product_id),
+          score: snapIt.score || 0,
+          reasons: snapIt.reasons || [],
+          reason_codes: snapIt.reason_codes || [],
+          badges: snapIt.badges || [],
+          score_breakdown: snapIt.score_breakdown || {},
+          // product field is hydrated below by formatRecommendationItem via product lookup
+          product: { _id: snapIt.product_id },
+        }));
+        from_snapshot = true;
+      } else {
+        // Cache miss — run live scoring and persist chatbot snapshot
+        rawItems = await recommendForProfile(profile, {
+          category: "",
+          limit: limit * 3,
+          behavior,
+        });
+
+        // Persist as chatbot_context snapshot (TTL: 24h)
+        if (rawItems.length > 0) {
+          try {
+            const mongoose = require("mongoose");
+            const snapshotItems = rawItems.map((it) => ({
+              product_id: new mongoose.Types.ObjectId(it.productId),
+              score: Number(it.score || 0),
+              reasons: Array.isArray(it.reasons) ? it.reasons.slice(0, 3) : [],
+              reason_codes: Array.isArray(it.reason_codes) ? it.reason_codes : [],
+              badges: Array.isArray(it.badges) ? it.badges : [],
+              score_breakdown: it.score_breakdown || {},
+            }));
+            const productIds = rawItems.map((it) => new mongoose.Types.ObjectId(it.productId));
+            const ttlHours = 24;
+            const expiresAt = new Date(now.getTime() + ttlHours * 60 * 60 * 1000);
+            await CustomerRecommendationSnapshot.findOneAndUpdate(
+              { customer_id: customerId, recommendation_type: CHATBOT_RECOMMENDATION_TYPE },
+              {
+                customer_id: customerId,
+                recommendation_type: CHATBOT_RECOMMENDATION_TYPE,
+                profile_hash: profileHash,
+                product_ids: productIds,
+                items: snapshotItems,
+                algorithm_version: rawItems[0]?.algorithm_version || "rule_v2",
+                generated_at: now,
+                expires_at: expiresAt,
+                invalidated_at: null,
+              },
+              { upsert: true, new: true }
+            );
+          } catch (snapErr) {
+            console.warn("[chatbotRecommendation] Failed to persist chatbot snapshot:", snapErr.message);
+          }
+        }
+      }
+    } catch (snapErr) {
+      console.warn("[chatbotRecommendation] Snapshot lookup failed, falling back to live scoring:", snapErr.message);
+    }
   }
 
-  // ── Budget filter ────────────────────────────────────────────────────────
+  // ── Run full scoring engine (guest or category-filtered path) ─────────────
+  if (rawItems.length === 0) {
+    try {
+      rawItems = await recommendForProfile(profile, {
+        category: constraints.category || "",
+        limit:    limit * 3, // over-fetch to allow budget filtering
+        behavior,
+      });
+    } catch (err) {
+      console.error("[chatbotRecommendation] recommendForProfile error:", err.message);
+      return { products: [], customer_context_used: false, from_snapshot: false };
+    }
+  }
+
+  // ── Budget filter ──────────────────────────────────────────────────
   const budgetMax =
     constraints.budgetMax ||
     (customerContext?.customer_profile?.budget_max) ||
@@ -206,9 +306,12 @@ async function getRecommendationContext(customerId, constraints = {}, limit = 6)
     ? rawItems.filter((item) => Number(item.product?.price || 0) <= budgetMax)
     : rawItems;
 
-  // ── Format and return ────────────────────────────────────────────────────
+  // ── Format and return ───────────────────────────────────────────────────
+  // If we hit the snapshot, items only have a stub product field.
+  // formatRecommendationItem handles missing product gracefully; the caller
+  // (chatbot) uses product_id for any further hydration it needs.
   const products = filtered.slice(0, limit).map(formatRecommendationItem);
-  return { products, customer_context_used };
+  return { products, customer_context_used, from_snapshot };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -288,17 +391,17 @@ function _buildGuestProfile(constraints) {
   return {
     is_new_profile: false,
     skin_types:         constraints.skinType ? [constraints.skinType] : [],
-    skin_tone:          "",
+    skin_color: "",
     concerns:           constraints.concern  ? [constraints.concern]  : [],
-    sensitivity_level:  null,
+    sensitivity_level: "unknown",
     beauty_goals:       [],
     preferred_ingredients: [],
     avoid_ingredients:  [],
     preferred_brands:   [],
     disliked_brands:    [],
     texture_preference: [],
-    finish_preference:  [],
-    budget_range:       constraints.budgetMax ? `under_${constraints.budgetMax}` : null,
+    foundation_finish:  [],
+    budget: constraints.budgetMax ? `under_${constraints.budgetMax}` : null,
     favorite_brands:    [],
   };
 }

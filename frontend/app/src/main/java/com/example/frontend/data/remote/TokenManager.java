@@ -9,6 +9,7 @@ public class TokenManager {
     private static final String KEY_REFRESH_TOKEN = "refresh_token";
     private static final String KEY_GUEST_SESSION_ID = "guest_session_id";
     private static final String KEY_CHATBOT_SESSION_ID = "chatbot_session_id";
+    private static final String KEY_CUSTOMER_ID = "customer_id";
     private static final String KEY_IS_KOC = "is_koc";
 
     private static TokenManager instance;
@@ -56,6 +57,19 @@ public class TokenManager {
         return accessToken != null && !accessToken.trim().isEmpty();
     }
 
+    public void saveCustomerId(String customerId) {
+        if (customerId == null || customerId.trim().isEmpty()) return;
+        prefs.edit().putString(KEY_CUSTOMER_ID, customerId).apply();
+    }
+
+    public String getCustomerId() {
+        return prefs.getString(KEY_CUSTOMER_ID, "me");
+    }
+
+    public void clearCustomerId() {
+        prefs.edit().remove(KEY_CUSTOMER_ID).apply();
+    }
+
     public void saveGuestSession(String guestSessionId) {
         if (guestSessionId == null || guestSessionId.trim().isEmpty()) return;
 
@@ -91,6 +105,7 @@ public class TokenManager {
                 .remove(KEY_REFRESH_TOKEN)
                 .remove(KEY_GUEST_SESSION_ID)
                 .remove(KEY_CHATBOT_SESSION_ID)
+                .remove(KEY_CUSTOMER_ID)
                 .apply();
     }
 

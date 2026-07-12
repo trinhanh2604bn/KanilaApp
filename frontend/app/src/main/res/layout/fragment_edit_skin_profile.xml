@@ -79,31 +79,13 @@
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/containerSkinType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-                <include android:id="@+id/cardSkinOily" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardSkinDry" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardSkinCombination" layout="@layout/item_edit_grid_selection" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutMoreSkinType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardSkinNormal" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardSkinSensitive" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardSkinUnknown" layout="@layout/item_edit_grid_selection" />
-                </LinearLayout>
-            </LinearLayout>
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp" />
 
             <TextView
                 android:id="@+id/tvSeeMoreSkinType"
@@ -114,7 +96,8 @@
                 android:text="@string/action_see_more"
                 android:textColor="@color/button"
                 android:textSize="11sp"
-                android:fontFamily="@font/nunito_semibold" />
+                android:fontFamily="@font/nunito_semibold"
+                android:visibility="gone" />
 
             <!-- Section 2: Tình trạng da -->
             <TextView
@@ -126,47 +109,13 @@
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/containerSkinCondition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-                <include android:id="@+id/cardConditionAcne" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardConditionDarkSpots" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardConditionMelasma" layout="@layout/item_edit_grid_selection" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutMoreCondition"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardConditionDullness" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardConditionLargePores" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardConditionBlackheads" layout="@layout/item_edit_grid_selection" />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardConditionRedness" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardConditionDehydrated" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardConditionWrinkles" layout="@layout/item_edit_grid_selection" />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardConditionUneven" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardConditionDamaged" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardConditionSun" layout="@layout/item_edit_grid_selection" />
-                </LinearLayout>
-            </LinearLayout>
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp" />
 
             <TextView
                 android:id="@+id/tvSeeMoreCondition"
@@ -177,7 +126,8 @@
                 android:text="@string/action_see_more"
                 android:textColor="@color/button"
                 android:textSize="11sp"
-                android:fontFamily="@font/nunito_semibold" />
+                android:fontFamily="@font/nunito_semibold"
+                android:visibility="gone" />
 
             <!-- Section 3: Mức độ nhạy cảm -->
             <TextView
@@ -189,30 +139,13 @@
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/containerSensitivity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-                <include android:id="@+id/cardSensitivityLow" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardSensitivityMedium" layout="@layout/item_edit_grid_selection" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutMoreSensitivity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardSensitivityHigh" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardSensitivityReactive" layout="@layout/item_edit_grid_selection" />
-                    <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
-                </LinearLayout>
-            </LinearLayout>
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp" />
 
             <TextView
                 android:id="@+id/tvSeeMoreSensitivity"
@@ -223,7 +156,8 @@
                 android:text="@string/action_see_more"
                 android:textColor="@color/button"
                 android:textSize="11sp"
-                android:fontFamily="@font/nunito_semibold" />
+                android:fontFamily="@font/nunito_semibold"
+                android:visibility="gone" />
 
             <!-- Section 4: Màu da -->
             <TextView
@@ -235,31 +169,13 @@
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/containerSkinColor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-                <include android:id="@+id/cardColorFair" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardColorLight" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardColorMedium" layout="@layout/item_edit_grid_selection" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutMoreColor"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardColorTan" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardColorDeep" layout="@layout/item_edit_grid_selection" />
-                    <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
-                </LinearLayout>
-            </LinearLayout>
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp" />
 
             <TextView
                 android:id="@+id/tvSeeMoreColor"
@@ -270,7 +186,8 @@
                 android:text="@string/action_see_more"
                 android:textColor="@color/button"
                 android:textSize="11sp"
-                android:fontFamily="@font/nunito_semibold" />
+                android:fontFamily="@font/nunito_semibold"
+                android:visibility="gone" />
 
             <!-- Section 5: Sắc độ da -->
             <TextView
@@ -282,31 +199,13 @@
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/containerSkinUndertone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-                <include android:id="@+id/cardUndertoneCool" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardUndertoneWarm" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardUndertoneNeutral" layout="@layout/item_edit_grid_selection" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutMoreUndertone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardUndertoneOlive" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardUndertoneUnknown" layout="@layout/item_edit_grid_selection" />
-                    <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
-                </LinearLayout>
-            </LinearLayout>
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp" />
 
             <TextView
                 android:id="@+id/tvSeeMoreUndertone"
@@ -317,7 +216,8 @@
                 android:text="@string/action_see_more"
                 android:textColor="@color/button"
                 android:textSize="11sp"
-                android:fontFamily="@font/nunito_semibold" />
+                android:fontFamily="@font/nunito_semibold"
+                android:visibility="gone" />
 
             <!-- Section 6: Hiệu ứng nền -->
             <TextView
@@ -329,31 +229,13 @@
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/containerFoundationFinish"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-                <include android:id="@+id/cardFinishNatural" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardFinishBright" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardFinishWarm" layout="@layout/item_edit_grid_selection" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutMoreFinish"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardFinishPinkish" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardFinishMatte" layout="@layout/item_edit_grid_selection" />
-                    <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
-                </LinearLayout>
-            </LinearLayout>
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp" />
 
             <TextView
                 android:id="@+id/tvSeeMoreFinish"
@@ -364,7 +246,8 @@
                 android:text="@string/action_see_more"
                 android:textColor="@color/button"
                 android:textSize="11sp"
-                android:fontFamily="@font/nunito_semibold" />
+                android:fontFamily="@font/nunito_semibold"
+                android:visibility="gone" />
 
             <!-- Section 7: Màu son -->
             <TextView
@@ -376,39 +259,13 @@
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/containerLipstickColors"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-                <include android:id="@+id/cardLipstickNude" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardLipstickPink" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardLipstickCoral" layout="@layout/item_edit_grid_selection" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutMoreLipstick"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardLipstickRed" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardLipstickBrown" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardLipstickMlbb" layout="@layout/item_edit_grid_selection" />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardLipstickBold" layout="@layout/item_edit_grid_selection" />
-                    <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
-                    <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
-                </LinearLayout>
-            </LinearLayout>
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp" />
 
             <TextView
                 android:id="@+id/tvSeeMoreLipstick"
@@ -419,7 +276,8 @@
                 android:text="@string/action_see_more"
                 android:textColor="@color/button"
                 android:textSize="11sp"
-                android:fontFamily="@font/nunito_semibold" />
+                android:fontFamily="@font/nunito_semibold"
+                android:visibility="gone" />
 
             <!-- Section 8: Phong cách trang điểm -->
             <TextView
@@ -431,31 +289,13 @@
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/containerMakeupStyles"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-                <include android:id="@+id/cardMakeupNatural" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardMakeupKorean" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardMakeupGlam" layout="@layout/item_edit_grid_selection" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutMoreMakeup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardMakeupOffice" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardMakeupParty" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardMakeupDaily" layout="@layout/item_edit_grid_selection" />
-                </LinearLayout>
-            </LinearLayout>
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp" />
 
             <TextView
                 android:id="@+id/tvSeeMoreMakeup"
@@ -466,7 +306,8 @@
                 android:text="@string/action_see_more"
                 android:textColor="@color/button"
                 android:textSize="11sp"
-                android:fontFamily="@font/nunito_semibold" />
+                android:fontFamily="@font/nunito_semibold"
+                android:visibility="gone" />
 
             <!-- Section 9: Ngân sách -->
             <TextView
@@ -478,15 +319,13 @@
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/containerBudget"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-                <include android:id="@+id/cardBudgetUnder300" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardBudget300_500" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardBudgetOver500" layout="@layout/item_edit_grid_selection" />
-            </LinearLayout>
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp" />
 
             <!-- Section 10: Thành phần cần tránh -->
             <TextView
@@ -498,47 +337,13 @@
                 android:textColor="@color/accent_dark"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/containerAvoidIngredients"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-                <include android:id="@+id/cardAvoidFragrance" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardAvoidAlcohol" layout="@layout/item_edit_grid_selection" />
-                <include android:id="@+id/cardAvoidEssentialOil" layout="@layout/item_edit_grid_selection" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutMoreAvoid"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardAvoidParaben" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardAvoidMineralOil" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardAvoidSilicone" layout="@layout/item_edit_grid_selection" />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardAvoidSulfate" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardAvoidLanolin" layout="@layout/item_edit_grid_selection" />
-                    <include android:id="@+id/cardAvoidRetinoid" layout="@layout/item_edit_grid_selection" />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include android:id="@+id/cardAvoidHighAcid" layout="@layout/item_edit_grid_selection" />
-                    <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
-                    <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
-                </LinearLayout>
-            </LinearLayout>
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp" />
 
             <TextView
                 android:id="@+id/tvSeeMoreAvoid"
@@ -549,7 +354,8 @@
                 android:text="@string/action_see_more"
                 android:textColor="@color/button"
                 android:textSize="11sp"
-                android:fontFamily="@font/nunito_semibold" />
+                android:fontFamily="@font/nunito_semibold"
+                android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveProfile"

@@ -122,4 +122,39 @@ const getDashboardSummary = async (req, res) => {
   }
 };
 
-module.exports = { getDashboardSummary };
+const getDebugRuntime = async (req, res) => {
+  // Ensure only admins can access this
+  if (req.user?.account_type !== "admin") {
+    return res.status(403).json({ success: false, message: "Forbidden" });
+  }
+
+  const mongoose = require("mongoose");
+  const isConnected = mongoose.connection.readyState === 1;
+  let diagnostics = {
+    database: isConnected ? "connected" : "disconnected",
+    dbName: isConnected ? mongoose.connection.name : null,
+    productCount: 0,
+    brandCount: 0,
+    categoryCount: 0,
+    error: null,
+    memoryUsage: process.memoryUsage(),
+    uptime: process.uptime()
+  };
+
+  if (isConnected) {
+    try {
+      diagnostics.productCount = await mongoose.connection.db.collection("products").countDocuments();
+      diagnostics.brandCount = await mongoose.connection.db.collection("brands").countDocuments();
+      diagnostics.categoryCount = await mongoose.connection.db.collection("categories").countDocuments();
+    } catch (e) {
+      diagnostics.error = e.message;
+    }
+  }
+
+  res.status(200).json({
+    success: true,
+    data: diagnostics
+  });
+};
+
+module.exports = { getDashboardSummary, getDebugRuntime };

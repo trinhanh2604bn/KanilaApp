@@ -3,6 +3,8 @@ package com.example.frontend.feature.product;
 import com.example.frontend.data.model.product.ProductDetailResponse;
 import com.example.frontend.data.model.product.ProductVariantDto;
 import com.example.frontend.data.model.product.ProductMediaDto;
+import com.example.frontend.data.model.product.SkinMatchDto;
+import com.example.frontend.data.model.product.ReviewInsightDto;
 import com.example.frontend.model.Product;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +23,13 @@ public class ProductDetailUiState {
 
     public ProductDetailResponse.InventoryDto inventory = null;
     public boolean isWishlisted = false;
+    
+    // Legacy simple data from product detail response
     public ProductDetailResponse.SkinMatchDto skinMatch = null;
     public ProductDetailResponse.ReviewSummaryDto reviewSummary = null;
+    // New detailed data from specific endpoints
+    public SkinMatchDto detailedSkinMatch = null;
+    public ReviewInsightDto reviewInsight = null;
     public List<com.example.frontend.data.model.review.ReviewDto> reviewPreviewList = new ArrayList<>();
     public List<Product> relatedProducts = null;
     public List<Product> recentlyViewed = null;

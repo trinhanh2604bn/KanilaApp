@@ -27,7 +27,6 @@ public class HomeViewModel extends AndroidViewModel {
         
         // Khởi tạo trạng thái ban đầu với dữ liệu Mock để tránh màn hình trắng
         HomeUiState initialState = new HomeUiState();
-        initialState.recommendedProducts = getMockProducts("Gợi ý", "s1");
         initialState.allProducts = getMockProducts("Tất cả", "p1");
         uiState.setValue(initialState);
     }
@@ -43,22 +42,6 @@ public class HomeViewModel extends AndroidViewModel {
         current.error = null;
         uiState.setValue(current);
 
-        final boolean[] recommendedDone = {false};
-        final boolean[] allProductsDone = {false};
-
-        // Load recommended products
-        MutableLiveData<NetworkResult<List<Product>>> recommendedResult = new MutableLiveData<>();
-        recommendedResult.observeForever(new Observer<NetworkResult<List<Product>>>() {
-            @Override
-            public void onChanged(NetworkResult<List<Product>> result) {
-                if (result == null) return;
-                if (result.status != NetworkResult.Status.LOADING) {
-                    handleRecommendedResult(result, recommendedDone, allProductsDone);
-                    recommendedResult.removeObserver(this);
-                }
-            }
-        });
-
         // Load all products
         MutableLiveData<NetworkResult<List<Product>>> allProductsResult = new MutableLiveData<>();
         allProductsResult.observeForever(new Observer<NetworkResult<List<Product>>>() {
@@ -66,18 +49,13 @@ public class HomeViewModel extends AndroidViewModel {
             public void onChanged(NetworkResult<List<Product>> result) {
                 if (result == null) return;
                 if (result.status != NetworkResult.Status.LOADING) {
-                    handleAllProductsResult(result, recommendedDone, allProductsDone);
+                    handleAllProductsResult(result);
                     allProductsResult.removeObserver(this);
                 }
             }
         });
 
         try {
-            if (tokenManager.isLoggedIn()) {
-                homeRepository.getHomepageRecommendations(recommendedResult);
-            } else {
-                homeRepository.getProducts("popular", recommendedResult);
-            }
             homeRepository.getProducts(null, allProductsResult);
         } catch (Exception e) {
             // Nếu có lỗi hệ thống (như GSON crash), vẫn giữ dữ liệu Mock
@@ -89,27 +67,7 @@ public class HomeViewModel extends AndroidViewModel {
         }
     }
 
-    private void handleRecommendedResult(NetworkResult<List<Product>> result, boolean[] recommendedDone, boolean[] allProductsDone) {
-        HomeUiState state = uiState.getValue();
-        if (state == null) state = new HomeUiState();
-
-        if (result.status == NetworkResult.Status.SUCCESS || result.status == NetworkResult.Status.EMPTY) {
-            if (result.data != null && !result.data.isEmpty()) {
-                state.recommendedProducts = result.data;
-            }
-            recommendedDone[0] = true;
-            checkLoadingState(state, recommendedDone[0], allProductsDone[0]);
-        } else if (result.status == NetworkResult.Status.ERROR) {
-            // Lỗi API thì vẫn giữ dữ liệu mock cũ, chỉ tắt loading
-            recommendedDone[0] = true;
-            checkLoadingState(state, recommendedDone[0], allProductsDone[0]);
-        } else if (result.status == NetworkResult.Status.UNAUTHORIZED) {
-            recommendedDone[0] = true;
-            checkLoadingState(state, recommendedDone[0], allProductsDone[0]);
-        }
-    }
-
-    private void handleAllProductsResult(NetworkResult<List<Product>> result, boolean[] recommendedDone, boolean[] allProductsDone) {
+    private void handleAllProductsResult(NetworkResult<List<Product>> result) {
         HomeUiState state = uiState.getValue();
         if (state == null) state = new HomeUiState();
 
@@ -117,18 +75,11 @@ public class HomeViewModel extends AndroidViewModel {
             if (result.data != null && !result.data.isEmpty()) {
                 state.allProducts = result.data;
             }
-            allProductsDone[0] = true;
-            checkLoadingState(state, recommendedDone[0], allProductsDone[0]);
-        } else if (result.status == NetworkResult.Status.ERROR) {
-            allProductsDone[0] = true;
-            checkLoadingState(state, recommendedDone[0], allProductsDone[0]);
-        }
-    }
-
-    private void checkLoadingState(HomeUiState state, boolean recommendedDone, boolean allProductsDone) {
-        if (recommendedDone && allProductsDone) {
             state.loading = false;
             state.error = null;
+            uiState.setValue(state);
+        } else if (result.status == NetworkResult.Status.ERROR) {
+            state.loading = false;
             uiState.setValue(state);
         }
     }

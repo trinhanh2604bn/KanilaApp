@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
     private View layoutSearchBar;
     private ImageButton btnNotification, btnCart, btnWishlist;
     private RecyclerView rvHomeShortcuts;
-    private RecyclerView rvRecommendedProducts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
     private View ivChatbot;
@@ -81,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
 
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
-    private HomeProductAdapter recommendedProductAdapter;
     private HomeProductAdapter allProductAdapter;
     private HomeViewModel viewModel;
     private com.example.frontend.feature.wishlist.WishlistViewModel wishlistViewModel;
@@ -209,7 +207,6 @@ public class MainActivity extends AppCompatActivity {
         btnCart = findViewById(R.id.btnCart);
         btnWishlist = findViewById(R.id.btnWishlist);
         rvHomeShortcuts = findViewById(R.id.rvHomeShortcuts);
-        rvRecommendedProducts = findViewById(R.id.rvRecommendedProducts);
         rvAllProducts = findViewById(R.id.rvAllProducts);
         layoutHomeStateContainer = findViewById(R.id.layoutHomeStateContainer);
         viewHomeLoading = findViewById(R.id.viewHomeLoading);
@@ -237,12 +234,6 @@ public class MainActivity extends AppCompatActivity {
         layoutSearchExpandedBar = findViewById(R.id.layoutSearchExpandedBar);
         edtExpandedSearchQuery = findViewById(R.id.edtExpandedSearchQuery);
         btnExpandedSearchBack = findViewById(R.id.btnExpandedSearchBack);
-
-        if (findViewById(R.id.btnViewAllRecommended) != null) {
-            findViewById(R.id.btnViewAllRecommended).setOnClickListener(v -> {
-                Toast.makeText(this, "See All Recommended", Toast.LENGTH_SHORT).show();
-            });
-        }
     }
 
     private void setupSearchBehavior() {
@@ -334,47 +325,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupProductLists() {
-        recommendedProductAdapter = new HomeProductAdapter();
-
-        recommendedProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
-            @Override
-            public void onProductClick(com.example.frontend.model.Product product) {
-                loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()));
-            }
-
-            @Override
-            public void onAddToCartClick(com.example.frontend.model.Product product) {
-                handleAddToCart(product);
-            }
-        });
-
-        recommendedProductAdapter.setOnWishlistToggleListener((product, wasWishlisted) -> {
-            if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
-                wishlistViewModel.toggleWishlist(product.getId(), wasWishlisted);
-            } else {
-                product.setFavorite(wasWishlisted); // rollback UI
-                recommendedProductAdapter.notifyDataSetChanged();
-
-                Bundle extras = new Bundle();
-                extras.putString("productId", product.getId());
-                extras.putBoolean("wasWishlisted", wasWishlisted);
-
-                com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
-                        com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
-                        "Home",
-                        0,
-                        extras
-                );
-                com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
-            }
-        });
-
-        if (rvRecommendedProducts != null) {
-            rvRecommendedProducts.setLayoutManager(new GridLayoutManager(this, 2));
-            rvRecommendedProducts.setAdapter(recommendedProductAdapter);
-            rvRecommendedProducts.setNestedScrollingEnabled(false);
-        }
-
         // All Products (Vertical Grid)
         allProductAdapter = new HomeProductAdapter();
         allProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
@@ -430,10 +380,6 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 showContent();
                 List<com.example.frontend.model.Product> allProductsToUpdate = new java.util.ArrayList<>();
-                if (state.recommendedProducts != null) {
-                    recommendedProductAdapter.setProducts(state.recommendedProducts);
-                    allProductsToUpdate.addAll(state.recommendedProducts);
-                }
                 if (state.allProducts != null) {
                     allProductAdapter.setProducts(state.allProducts);
                     allProductsToUpdate.addAll(state.allProducts);
@@ -476,13 +422,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateProductFavoriteStates(java.util.Map<String, Boolean> statusMap) {
-        if (recommendedProductAdapter.getProducts() != null) {
-            for (com.example.frontend.model.Product p : recommendedProductAdapter.getProducts()) {
-                Boolean isFav = statusMap.get(p.getId());
-                if (isFav != null) p.setFavorite(isFav);
-            }
-            recommendedProductAdapter.notifyDataSetChanged();
-        }
         if (allProductAdapter.getProducts() != null) {
             for (com.example.frontend.model.Product p : allProductAdapter.getProducts()) {
                 Boolean isFav = statusMap.get(p.getId());
@@ -506,13 +445,11 @@ public class MainActivity extends AppCompatActivity {
         if (layoutHomeStateContainer != null) layoutHomeStateContainer.setVisibility(View.VISIBLE);
         if (viewHomeLoading != null) viewHomeLoading.setVisibility(View.VISIBLE);
         if (viewHomeError != null) viewHomeError.setVisibility(View.GONE);
-        if (findViewById(R.id.layoutHomeRecommendation) != null) findViewById(R.id.layoutHomeRecommendation).setVisibility(View.GONE);
         if (findViewById(R.id.layoutHomeCatalog) != null) findViewById(R.id.layoutHomeCatalog).setVisibility(View.GONE);
     }
 
     private void showContent() {
         if (layoutHomeStateContainer != null) layoutHomeStateContainer.setVisibility(View.GONE);
-        if (findViewById(R.id.layoutHomeRecommendation) != null) findViewById(R.id.layoutHomeRecommendation).setVisibility(View.VISIBLE);
         if (findViewById(R.id.layoutHomeCatalog) != null) findViewById(R.id.layoutHomeCatalog).setVisibility(View.VISIBLE);
     }
 
@@ -520,7 +457,6 @@ public class MainActivity extends AppCompatActivity {
         if (layoutHomeStateContainer != null) layoutHomeStateContainer.setVisibility(View.VISIBLE);
         if (viewHomeLoading != null) viewHomeLoading.setVisibility(View.GONE);
         if (viewHomeError != null) viewHomeError.setVisibility(View.VISIBLE);
-        if (findViewById(R.id.layoutHomeRecommendation) != null) findViewById(R.id.layoutHomeRecommendation).setVisibility(View.GONE);
         if (findViewById(R.id.layoutHomeCatalog) != null) findViewById(R.id.layoutHomeCatalog).setVisibility(View.GONE);
 
         if (viewHomeError != null) {

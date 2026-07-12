@@ -86,6 +86,8 @@ public class OrderTabContentFragment extends Fragment {
                 } else if ("Trả hàng/Hoàn tiền".equals(action)) {
                     ReturnRefundFragment fragment = ReturnRefundFragment.newInstance(order.getId(), null);
                     FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+                } else if ("Liên hệ shop".equalsIgnoreCase(action)) {
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.support.HelpCenterFragment());
                 }
             }
         });

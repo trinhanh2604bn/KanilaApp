@@ -223,8 +223,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
                     btnAction.setEnabled(false);
                     btnAction.setAlpha(0.5f);
                     tvDisclaimer.setVisibility(View.VISIBLE);
-                    btnReturn.setVisibility(View.VISIBLE);
-                    btnReturn.setText("Trả hàng/Hoàn tiền");
                     break;
                 case "completed":
                     btnAction.setText("Đánh giá");

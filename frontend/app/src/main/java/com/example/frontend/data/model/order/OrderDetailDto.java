@@ -82,6 +82,9 @@ public class OrderDetailDto {
     public ShipmentDto getShipment() { return shipment; }
 
     public static class OrderItemDetailDto {
+        @SerializedName("product_id")
+        private Object productIdObj;
+
         @SerializedName("product_name_snapshot")
         private String productName;
         @SerializedName("variant_name_snapshot")
@@ -101,6 +104,14 @@ public class OrderDetailDto {
             this.quantity = quantity;
             this.unitPrice = unitPrice;
             this.lineTotal = unitPrice * quantity;
+        }
+
+        public String getProductId() {
+            if (productIdObj instanceof String) return (String) productIdObj;
+            if (productIdObj instanceof com.google.gson.internal.LinkedTreeMap) {
+                return (String) ((com.google.gson.internal.LinkedTreeMap<?, ?>) productIdObj).get("_id");
+            }
+            return null;
         }
 
         public String getProductName() { return productName; }

@@ -49,6 +49,30 @@ public class OrderRepository {
         });
     }
 
+    public void reorderOrder(String orderId, MutableLiveData<NetworkResult<OrderSummaryDto>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.reorderMyOrder(orderId).enqueue(new Callback<ApiResponse<OrderSummaryDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<OrderSummaryDto>> call, Response<ApiResponse<OrderSummaryDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<OrderSummaryDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to reorder"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<OrderSummaryDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
     public void getOrderReviewItems(String orderId, MutableLiveData<NetworkResult<com.example.frontend.data.model.order.ReviewOrderItemsDto>> result) {
         result.setValue(NetworkResult.loading());
         apiService.getOrderReviewItems(orderId).enqueue(new Callback<ApiResponse<com.example.frontend.data.model.order.ReviewOrderItemsDto>>() {

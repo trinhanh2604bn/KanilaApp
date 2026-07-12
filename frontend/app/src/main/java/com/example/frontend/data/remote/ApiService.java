@@ -223,6 +223,9 @@ public interface ApiService {
     @GET("api/orders/me/{id}")
     Call<ApiResponse<com.example.frontend.data.model.order.OrderDetailDto>> getMyOrderDetail(@Path("id") String id);
 
+    @POST("api/orders/{id}/reorder")
+    Call<ApiResponse<com.example.frontend.data.model.order.OrderSummaryDto>> reorderMyOrder(@Path("id") String id);
+
     @GET("api/orders/me/{id}/review-items")
     Call<ApiResponse<com.example.frontend.data.model.order.ReviewOrderItemsDto>> getOrderReviewItems(@Path("id") String orderId);
 

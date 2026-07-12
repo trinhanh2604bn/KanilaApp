@@ -286,6 +286,9 @@ public interface ApiService {
     @POST("api/coupons/save/{couponId}")
     Call<ApiResponse<Object>> saveCoupon(@Path("couponId") String couponId);
 
+    @GET("api/returns/order/{orderId}")
+    Call<ApiResponse<List<com.example.frontend.data.model.returnrefund.ReturnDetailDto>>> getReturnsByOrderId(@Path("orderId") String orderId);
+
     @GET("api/accounts")
     Call<ApiResponse<List<Object>>> getAccounts();
     @GET("api/categories/root")

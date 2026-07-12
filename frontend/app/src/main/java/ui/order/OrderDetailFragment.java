@@ -382,9 +382,10 @@ public class OrderDetailFragment extends Fragment {
             case "returned":
                 btnActionSecondary.setText("Hủy yêu cầu");
                 btnActionSecondary.setOnClickListener(v -> viewModel.cancelReturnRequest(orderId));
-                btnActionPrimary.setText("Liên hệ Shop");
+                btnActionPrimary.setText("Chi tiết hoàn trả");
                 btnActionPrimary.setOnClickListener(v -> {
-                    FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.support.HelpCenterFragment());
+                    ReturnDetailFragment fragment = ReturnDetailFragment.newInstance(orderId, orderCode);
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
                 });
                 break;
         }

@@ -42,7 +42,10 @@ import java.util.List;
 import java.util.Map;
 
 import ui.common.FragmentNavigationHelper;
+import ui.account.AccountFragment;
 import ui.account.BeautyProfileOverviewFragment;
+import ui.account.KocRegistrationFragment;
+import ui.account.KocDashboardFragment;
 import ui.support.HelpCenterFragment;
 
 public class HomeFragment extends Fragment {
@@ -198,9 +201,22 @@ public class HomeFragment extends Fragment {
                 if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
                     navigateToFragment(new BeautyProfileOverviewFragment());
                 } else {
-                    // Logic yêu cầu: Click icon ngoài trang chủ thì hiện Popup CTA trước
-                    // Trong Popup CTA, nếu chưa đăng nhập mới hiện GuestPrompt từ dưới lên
                     navigateToFragment(new BeautyProfileOverviewFragment());
+                }
+            }
+            else if ("creator".equals(item.getId())) {
+                com.example.frontend.data.remote.TokenManager tm = com.example.frontend.data.remote.TokenManager.getInstance(requireContext());
+                if (tm.isLoggedIn()) {
+                    if (tm.isKoc()) {
+                        navigateToFragment(new KocDashboardFragment());
+                    } else {
+                        navigateToFragment(new KocRegistrationFragment());
+                    }
+                } else {
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(),
+                        new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT, 
+                            "CreatorShortcut", 0, null));
                 }
             }
             else if ("orders".equals(item.getId())) navigateToFragment(new com.example.frontend.feature.order.OrderListFragment());
@@ -211,12 +227,14 @@ public class HomeFragment extends Fragment {
 
         rvHomeShortcuts.setAdapter(shortcutAdapter);
         List<HomeShortcutItem> shortcuts = new ArrayList<>();
-        shortcuts.add(new HomeShortcutItem("orders", "Đơn hàng", R.drawable.ic_shortcut_order, "orders", "", false, false));
         shortcuts.add(new HomeShortcutItem("voucher", "Voucher", R.drawable.ic_shortcut_voucher, "voucher", "", false, false));
         shortcuts.add(new HomeShortcutItem("ar", "AR", R.drawable.ic_shortcut_ar, "ar_try_on", "", false, false));
         shortcuts.add(new HomeShortcutItem("kanila_beauty", "Kanila Beauty", R.drawable.ic_shortcut_kanila_beauty, "beauty", "", false, false));
+        shortcuts.add(new HomeShortcutItem("creator", "Creator", R.drawable.ic_shortcut_creator, "creator", "", false, false));
+        shortcuts.add(new HomeShortcutItem("royalty", "Royalty", R.drawable.ic_shortcut_royalty, "royalty", "", false, false));
         shortcuts.add(new HomeShortcutItem("support", "Trợ giúp", R.drawable.ic_shortcut_help, "support", "", false, false));
-        shortcuts.add(new HomeShortcutItem("policy", "Chính sách & Điều khoản", R.drawable.ic_shortcut_policy, "policy", "", false, false));
+        shortcuts.add(new HomeShortcutItem("orders", "Đơn hàng", R.drawable.ic_shortcut_order, "orders", "", false, false));
+        shortcuts.add(new HomeShortcutItem("policy", "Chính sách", R.drawable.ic_shortcut_policy, "policy", "", false, false));
         shortcutAdapter.setItems(shortcuts);
     }
 

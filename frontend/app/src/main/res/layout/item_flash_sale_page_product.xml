@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="1dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <!-- Left Image -->
+        <ImageView
+            android:id="@+id/ivFlashProductImage"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:scaleType="centerInside"
+            android:contentDescription="@string/product_image_desc"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_product" />
+
+        <!-- SALE Badge -->
+        <TextView
+            android:id="@+id/tvFlashProductBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_discount_badge"
+            android:fontFamily="@font/nunito_bold"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:text="@string/badge_sale"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            app:layout_constraintStart_toStartOf="@id/ivFlashProductImage"
+            app:layout_constraintTop_toTopOf="@id/ivFlashProductImage" />
+
+        <!-- Right Content -->
+        <TextView
+            android:id="@+id/tvFlashProductName"
+            style="@style/Text.Kanila.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/nunito_semibold"
+            android:maxLines="2"
+            android:textColor="@color/text_main"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivFlashProductImage"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Son Kem Lì Black Rouge Air Fit Velvet Tint Ver 8" />
+
+        <LinearLayout
+            android:id="@+id/layoutFlashRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="@id/tvFlashProductName"
+            app:layout_constraintTop_toBottomOf="@id/tvFlashProductName">
+
+            <RatingBar
+                android:id="@+id/ratingFlashProduct"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:progressTint="@color/button"
+                android:rating="4.5" />
+
+            <TextView
+                android:id="@+id/tvFlashProductReviewCount"
+                style="@style/Text.Kanila.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textColor="@color/text_secondary"
+                tools:text="(1.2k)" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutFlashPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="@id/tvFlashProductName"
+            app:layout_constraintTop_toBottomOf="@id/layoutFlashRating">
+
+            <TextView
+                android:id="@+id/tvFlashProductOriginalPrice"
+                style="@style/Text.Kanila.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                tools:text="298.000đ" />
+
+            <TextView
+                android:id="@+id/tvFlashProductDiscountPercent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_discount_badge"
+                android:fontFamily="@font/nunito_bold"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="1dp"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                tools:text="-42%" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvFlashProductPrice"
+            style="@style/Text.Kanila.H2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/button"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@id/tvFlashProductName"
+            app:layout_constraintTop_toBottomOf="@id/layoutFlashPrice"
+            tools:text="155.000đ" />
+
+        <TextView
+            android:id="@+id/tvFlashProductSoldBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_discount_badge"
+            android:backgroundTint="#FFEAF1"
+            android:fontFamily="@font/nunito_bold"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:text="@string/badge_trending"
+            android:textColor="@color/button"
+            android:textSize="10sp"
+            app:layout_constraintStart_toStartOf="@id/tvFlashProductName"
+            app:layout_constraintTop_toBottomOf="@id/tvFlashProductPrice" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFlashBuyNow"
+            style="@style/Widget.Kanila.Button.Primary"
+            android:layout_width="110dp"
+            android:layout_height="40dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="@string/action_buy_now"
+            android:textSize="12sp"
+            app:cornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

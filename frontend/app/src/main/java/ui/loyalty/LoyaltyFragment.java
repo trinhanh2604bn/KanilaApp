@@ -15,13 +15,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
 import com.example.frontend.data.remote.TokenManager;
+import java.util.Locale;
 
 public class LoyaltyFragment extends Fragment {
 
     private LoyaltyViewModel viewModel;
     private LoyaltyVoucherAdapter adapter;
-    private View layoutLoading, layoutError, scrollLoyalty;
-    private TextView tvTierName, tvPointsBalance;
+    private View layoutLoading, layoutError, scrollLoyalty, layoutTierBanner;
+    private TextView tvTierName, tvPointsBalance, tvOrderProgress, tvSpentProgress, tvOrderTarget, tvSpentTarget;
+    private android.widget.ProgressBar progressOrders, progressSpent;
 
     @Nullable
     @Override
@@ -46,8 +48,17 @@ public class LoyaltyFragment extends Fragment {
         layoutLoading = view.findViewById(R.id.layoutLoading);
         layoutError = view.findViewById(R.id.layoutError);
         scrollLoyalty = view.findViewById(R.id.scrollLoyalty);
+        layoutTierBanner = view.findViewById(R.id.layoutTierBanner);
         tvTierName = view.findViewById(R.id.tvTierName);
         tvPointsBalance = view.findViewById(R.id.tvPointsBalance);
+        
+        tvOrderProgress = view.findViewById(R.id.tvOrderProgress);
+        tvSpentProgress = view.findViewById(R.id.tvSpentProgress);
+        tvOrderTarget = view.findViewById(R.id.tvOrderTarget);
+        tvSpentTarget = view.findViewById(R.id.tvSpentTarget);
+        progressOrders = view.findViewById(R.id.progressOrders);
+        progressSpent = view.findViewById(R.id.progressSpent);
+
         TextView tvUpdateInfo = view.findViewById(R.id.tvUpdateInfo);
 
         // Header
@@ -125,13 +136,44 @@ public class LoyaltyFragment extends Fragment {
             scrollLoyalty.setVisibility(state.error == null ? View.VISIBLE : View.GONE);
 
             if (state.loyalty != null) {
-                tvTierName.setText(state.loyalty.getTierName());
+                // Rules: Bronze (0/0), Silver (3/1M), Gold (20/5M), Diamond (75/15M)
+                int orders = state.loyalty.getOrderCount();
+                double spent = state.loyalty.getSpentAmount();
+                
+                String tierName;
+                int bannerBg;
+                
+                if (orders >= 75 && spent >= 15000000) {
+                    tierName = "Kim Cương";
+                    bannerBg = R.drawable.bg_banner_diamond;
+                } else if (orders >= 20 && spent >= 5000000) {
+                    tierName = "Vàng";
+                    bannerBg = R.drawable.bg_banner_gold;
+                } else if (orders >= 3 && spent >= 1000000) {
+                    tierName = "Bạc";
+                    bannerBg = R.drawable.bg_banner_silver;
+                } else {
+                    tierName = "Đồng";
+                    bannerBg = R.drawable.bg_banner_bronze;
+                }
+
+                tvTierName.setText(tierName);
+                if (layoutTierBanner != null) {
+                    layoutTierBanner.setBackgroundResource(bannerBg);
+                }
                 tvPointsBalance.setText(getString(R.string.loyalty_points_balance, String.valueOf(state.loyalty.getPointsBalance())));
+                
+                // Progress stats
+                if (tvOrderProgress != null) tvOrderProgress.setText(String.valueOf(orders));
+                if (tvSpentProgress != null) tvSpentProgress.setText(formatPrice(spent));
+                
+                // Calculate Progress Bar (based on next tier)
+                updateProgressBars(tierName, orders, spent);
                 
                 // Update menu row title with real tier name
                 View rowTier = view.findViewById(R.id.menuTierPerks);
                 if (rowTier != null) {
-                    ((TextView) rowTier.findViewById(R.id.tvMenuTitle)).setText(getString(R.string.loyalty_exclusive_tier, state.loyalty.getTierName()));
+                    ((TextView) rowTier.findViewById(R.id.tvMenuTitle)).setText(getString(R.string.loyalty_exclusive_tier, tierName));
                 }
             }
 
@@ -150,5 +192,48 @@ public class LoyaltyFragment extends Fragment {
                 if (btnRetry != null) btnRetry.setOnClickListener(v -> viewModel.loadAll());
             }
         });
+    }
+
+    private void updateProgressBars(String currentTier, int orders, double spent) {
+        if (progressOrders == null || progressSpent == null) return;
+        
+        int nextOrderTarget;
+        double nextSpentTarget;
+        
+        // Milestones for NEXT tier based on CURRENT tier
+        switch (currentTier) {
+            case "Bạc":
+                nextOrderTarget = 20; // Goal is Gold
+                nextSpentTarget = 5000000;
+                break;
+            case "Vàng":
+                nextOrderTarget = 75; // Goal is Diamond
+                nextSpentTarget = 15000000;
+                break;
+            case "Kim Cương":
+                nextOrderTarget = 75; // Maxed
+                nextSpentTarget = 15000000;
+                break;
+            case "Đồng":
+            default:
+                nextOrderTarget = 3; // Goal is Silver
+                nextSpentTarget = 1000000;
+                break;
+        }
+        
+        if (tvOrderTarget != null) tvOrderTarget.setText("/" + nextOrderTarget);
+        if (tvSpentTarget != null) tvSpentTarget.setText("/" + formatPrice(nextSpentTarget));
+
+        progressOrders.setMax(nextOrderTarget);
+        progressOrders.setProgress(Math.min(orders, nextOrderTarget));
+        
+        progressSpent.setMax(100);
+        int spentPercent = (int) ((spent / nextSpentTarget) * 100);
+        progressSpent.setProgress(Math.min(spentPercent, 100));
+    }
+
+    private String formatPrice(double price) {
+        return java.text.NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(price)
+                .replace("₫", "đ").replace(",00", "").trim();
     }
 }

@@ -88,6 +88,13 @@ public class AccountFragment extends Fragment {
         tvOrderCount = view.findViewById(R.id.tvOrderCount);
         tvVoucherCount = view.findViewById(R.id.tvVoucherCount);
         tvSavedCount = view.findViewById(R.id.tvSavedCount);
+
+        View btnCart = view.findViewById(R.id.btnToolbarCart);
+        if (btnCart != null) {
+            btnCart.setOnClickListener(v -> {
+                FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.commerce.CartFragment());
+            });
+        }
         
         view.findViewById(R.id.btnEdit).setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
@@ -110,12 +117,26 @@ public class AccountFragment extends Fragment {
             requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.SAVE_BEAUTY_PROFILE);
         });
 
+        View menuAddress = view.findViewById(R.id.menuAddress);
+        if (menuAddress != null) {
+            menuAddress.setOnClickListener(v -> {
+                requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ADDRESS_BOOK);
+            });
+        }
+
         view.findViewById(R.id.btnAccountOrders).setOnClickListener(v -> {
             requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ORDER_LIST);
         });
 
         view.findViewById(R.id.btnAccountVouchers).setOnClickListener(v -> {
             requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_VOUCHER_WALLET);
+        });
+
+        view.findViewById(R.id.btnAccountPoints).setOnClickListener(v -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main, new PointsRewardFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
 
         view.findViewById(R.id.btnAccountSaved).setOnClickListener(v -> {

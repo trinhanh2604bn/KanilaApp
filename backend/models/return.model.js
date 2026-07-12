@@ -7,6 +7,7 @@ const returnSchema = new mongoose.Schema(
     returnNumber: { type: String, required: true, unique: true, uppercase: true, trim: true },
     returnReason: { type: String, default: "" },
     returnStatus: { type: String, enum: ["requested", "approved", "received", "completed", "rejected"], default: "requested" },
+    return_shipping_method: { type: String, default: "" },
     requested_by_customer_id: { type: mongoose.Schema.Types.ObjectId, ref: "Customer", default: null },
     approvedByAccountId: { type: mongoose.Schema.Types.ObjectId, ref: "Account", default: null },
     requestedAt: { type: Date, default: Date.now },

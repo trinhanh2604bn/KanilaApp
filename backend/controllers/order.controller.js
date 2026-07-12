@@ -14,6 +14,8 @@ const CartItem = require("../models/cartItem.model");
 const Product = require("../models/product.model");
 const ProductVariant = require("../models/productVariant.model");
 const ReturnRequest = require("../models/return.model");
+const ReturnMedia = require("../models/returnMedia.model");
+const Refund = require("../models/refund.model");
 const Review = require("../models/review.model");
 const validateObjectId = require("../utils/validateObjectId");
 const { pickCustomerId } = require("../utils/pickCustomerRef");
@@ -1552,6 +1554,187 @@ const patchOrder = async (req, res) => {
   }
 };
 
+const submitReturnRefund = async (req, res) => {
+  try {
+    const { id: orderId } = req.params;
+    const {
+      orderItemId,
+      reason,
+      description,
+      evidenceMedia,
+      returnShippingMethod,
+      refundMethod,
+      refundAccountId
+    } = req.body;
+
+    if (!validateObjectId(orderId)) {
+      return res.status(400).json({ success: false, message: "Invalid order ID" });
+    }
+
+    const customer = await resolveAuthCustomer(req);
+    if (!customer) {
+      return res.status(403).json({ success: false, message: "Authenticated account required" });
+    }
+
+    const order = await Order.findOne({ _id: orderId, customer_id: customer._id });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    // Basic validation
+    if (!reason || !returnShippingMethod || !refundMethod) {
+      return res.status(400).json({ success: false, message: "Reason, shipping method and refund method are required" });
+    }
+
+    // Create Return Request
+    const ret = await ReturnRequest.create({
+      order_id: orderId,
+      returnNumber: await generateReturnNumber(),
+      returnReason: reason,
+      returnStatus: "requested",
+      return_shipping_method: returnShippingMethod,
+      requested_by_customer_id: customer._id,
+      note: description || "",
+      requestedAt: new Date(),
+    });
+
+    // Save Evidence Media
+    if (evidenceMedia && Array.isArray(evidenceMedia)) {
+      const mediaDocs = evidenceMedia.map(m => ({
+        return_request_id: ret._id,
+        media_type: m.mediaType || "image",
+        media_url: m.mediaUrl
+      }));
+      await ReturnMedia.insertMany(mediaDocs);
+    }
+
+    // Create Refund Request (Initial)
+    const orderTotal = await OrderTotal.findOne({ order_id: orderId });
+    const refundAmount = orderTotal ? orderTotal.grand_total_amount : 0;
+
+    await Refund.create({
+      order_id: orderId,
+      refundReason: reason,
+      refundStatus: "requested",
+      requestedAmount: refundAmount,
+      requestedByAccountId: req.user?.account_id || req.user?.accountId || null,
+      requestedAt: new Date(),
+      note: `Refund via ${refundMethod}. Account: ${refundAccountId || "N/A"}`
+    });
+
+    // Update order status
+    const oldOrderStatus = order.order_status;
+    order.order_status = "returned";
+    order.fulfillment_status = "return_requested";
+    await order.save();
+
+    // Update order item status if orderItemId is provided
+    if (orderItemId && validateObjectId(orderItemId)) {
+        const orderItem = await OrderItem.findById(orderItemId);
+        if (orderItem) {
+            const ReturnItem = require("../models/returnItem.model");
+            await ReturnItem.create({
+                returnId: ret._id,
+                orderItemId: orderItem._id,
+                variantId: orderItem.variant_id,
+                requestedQty: orderItem.quantity
+            });
+        }
+    }
+
+    // Add status history
+    await OrderStatusHistory.create({
+      order_id: orderId,
+      old_order_status: oldOrderStatus,
+      new_order_status: "returned",
+      old_payment_status: order.payment_status,
+      new_payment_status: order.payment_status,
+      old_fulfillment_status: "delivered",
+      new_fulfillment_status: "return_requested",
+      changed_by_account_id: req.user?.account_id || req.user?.accountId || null,
+      change_reason: "Return and refund requested by customer",
+      changed_at: new Date(),
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Return and refund request submitted successfully",
+      data: {
+        returnId: String(ret._id),
+        returnNumber: ret.returnNumber,
+        status: ret.returnStatus
+      }
+    });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const cancelReturnRequest = async (req, res) => {
+  try {
+    const { id: orderId } = req.params;
+
+    if (!validateObjectId(orderId)) {
+      return res.status(400).json({ success: false, message: "Invalid order ID" });
+    }
+
+    const customer = await resolveAuthCustomer(req);
+    if (!customer) {
+      return res.status(403).json({ success: false, message: "Authenticated account required" });
+    }
+
+    const order = await Order.findOne({ _id: orderId, customer_id: customer._id });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    if (order.order_status !== "returned") {
+      return res.status(400).json({ success: false, message: "Only returned orders can have their request cancelled" });
+    }
+
+    const oldOrderStatus = order.order_status;
+    const oldFulfillmentStatus = order.fulfillment_status;
+
+    // Revert status to completed/delivered
+    order.order_status = "completed";
+    order.fulfillment_status = "delivered";
+    await order.save();
+
+    // Mark Return Request as rejected/cancelled
+    await ReturnRequest.findOneAndUpdate(
+      { order_id: orderId, returnStatus: "requested" },
+      { returnStatus: "rejected", note: (order.note || "") + "\nCancelled by customer" }
+    );
+
+    // Add status history
+    await OrderStatusHistory.create({
+      order_id: orderId,
+      old_order_status: oldOrderStatus,
+      new_order_status: "completed",
+      old_payment_status: order.payment_status,
+      new_payment_status: order.payment_status,
+      old_fulfillment_status: oldFulfillmentStatus,
+      new_fulfillment_status: "delivered",
+      changed_by_account_id: req.user?.account_id || req.user?.accountId || null,
+      change_reason: "Return request cancelled by customer",
+      changed_at: new Date(),
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Return request cancelled and order reverted to completed",
+      data: {
+        orderId: String(order._id),
+        order_status: order.order_status
+      }
+    });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getAllOrders,
   getOrderById,
@@ -1573,4 +1756,6 @@ module.exports = {
   deleteOrder,
   createMockCheckoutOrder,
   getOrderByCode,
+  submitReturnRefund,
+  cancelReturnRequest,
 };

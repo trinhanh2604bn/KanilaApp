@@ -48,6 +48,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ui.account.AccountFragment;
+import ui.account.KocRegistrationFragment;
+import ui.account.KocDashboardFragment;
 import com.example.frontend.ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
 import ui.commerce.CheckoutFragment;
@@ -554,6 +556,20 @@ public class MainActivity extends AppCompatActivity {
                 loadFragment(new ui.loyalty.LoyaltyFragment());
             } else if ("voucher".equals(id)) {
                 loadFragment(new com.example.frontend.feature.voucher.VoucherListFragment());
+            } else if ("creator".equals(id)) {
+                if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                    // Kiểm tra trạng thái KOC đã lưu trong SharedPreferences
+                    if (com.example.frontend.data.remote.TokenManager.getInstance(this).isKoc()) {
+                        loadFragment(new KocDashboardFragment());
+                    } else {
+                        loadFragment(new KocRegistrationFragment());
+                    }
+                } else {
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this,
+                        new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT, 
+                            "CreatorShortcut", 0, null));
+                }
             } else {
                 Toast.makeText(this, "Tính năng " + item.getTitle() + " đang phát triển", Toast.LENGTH_SHORT).show();
             }

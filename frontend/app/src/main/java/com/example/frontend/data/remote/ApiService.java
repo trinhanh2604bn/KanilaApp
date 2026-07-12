@@ -18,6 +18,8 @@ import com.example.frontend.data.model.address.AddressDto;
 import com.example.frontend.data.model.coupon.CouponDto;
 import com.example.frontend.data.model.product.ProductVariantDto;
 import com.example.frontend.data.model.product.ProductMediaDto;
+import com.example.frontend.data.model.product.SkinMatchDto;
+import com.example.frontend.data.model.product.ReviewInsightDto;
 import com.example.frontend.data.model.wishlist.BulkDeleteRequest;
 import com.example.frontend.data.model.wishlist.WishlistActionRequest;
 import com.example.frontend.data.model.wishlist.WishlistActionResponse;
@@ -79,6 +81,12 @@ public interface ApiService {
 
     @GET("api/product-variants/product/{productId}")
     Call<ApiResponse<List<ProductVariantDto>>> getProductVariants(@Path("productId") String productId);
+
+    @GET("api/products/{productId}/skin-match/me")
+    Call<ApiResponse<SkinMatchDto>> getSkinMatchScore(@Path("productId") String productId);
+
+    @GET("api/products/{productId}/review-insights")
+    Call<ApiResponse<ReviewInsightDto>> getReviewInsights(@Path("productId") String productId);
 
     @GET("api/products/{id}/similar")
     Call<ApiResponse<PaginatedData<Product>>> getSimilarProducts(@Path("id") String id, @Query("limit") Integer limit);

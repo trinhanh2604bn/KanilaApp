@@ -29,8 +29,6 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.frontend.R;
 import com.example.frontend.feature.community.reels.ReelsFeedFragment;
 import com.example.frontend.feature.search.SearchActivity;
-import com.example.frontend.feature.recommendation.RecommendationViewModel;
-import com.example.frontend.feature.recommendation.RecommendationProductAdapter;
 import com.example.frontend.feature.wishlist.WishlistViewModel;
 import com.example.frontend.feature.cart.CartViewModel;
 import com.example.frontend.data.model.cart.AddToCartRequest;
@@ -53,10 +51,8 @@ public class HomeFragment extends Fragment {
     private View layoutSearchBar;
     private android.widget.ImageButton btnNotification, btnCart, btnWishlist;
     private RecyclerView rvHomeShortcuts;
-    private RecyclerView rvRecommendedProducts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
-    private View viewRecommendationLoading, viewRecommendationEmpty, viewRecommendationGuest, viewRecommendationError;
     
     private View layoutKanilaReelsCard, layoutReelThumbOne, layoutReelThumbTwo, layoutReelThumbThree;
     private ImageView ivReelThumbOne, ivReelThumbTwo, ivReelThumbThree;
@@ -67,10 +63,8 @@ public class HomeFragment extends Fragment {
 
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
-    private RecommendationProductAdapter recommendationProductAdapter;
     private HomeProductAdapter allProductAdapter;
     private HomeViewModel viewModel;
-    private RecommendationViewModel recommendationViewModel;
     private WishlistViewModel wishlistViewModel;
     private CartViewModel cartViewModel;
 
@@ -88,7 +82,6 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
-        recommendationViewModel = new ViewModelProvider(requireActivity()).get(RecommendationViewModel.class);
         wishlistViewModel = new ViewModelProvider(requireActivity()).get(WishlistViewModel.class);
         cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
 
@@ -106,7 +99,6 @@ public class HomeFragment extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (isAdded()) {
                 viewModel.loadHomeData();
-                recommendationViewModel.fetchHomepageRecommendations();
                 checkAuthStatus();
             }
         }, 500);
@@ -169,29 +161,10 @@ public class HomeFragment extends Fragment {
         btnCart = view.findViewById(R.id.btnCart);
         btnWishlist = view.findViewById(R.id.btnWishlist);
         rvHomeShortcuts = view.findViewById(R.id.rvHomeShortcuts);
-        rvRecommendedProducts = view.findViewById(R.id.rvRecommendedProducts);
         rvAllProducts = view.findViewById(R.id.rvAllProducts);
         layoutHomeStateContainer = view.findViewById(R.id.layoutHomeStateContainer);
         viewHomeLoading = view.findViewById(R.id.viewHomeLoading);
         viewHomeError = view.findViewById(R.id.viewHomeError);
-
-        viewRecommendationLoading = view.findViewById(R.id.viewRecommendationLoading);
-        viewRecommendationEmpty = view.findViewById(R.id.viewRecommendationEmpty);
-        viewRecommendationGuest = view.findViewById(R.id.viewRecommendationGuest);
-        viewRecommendationError = view.findViewById(R.id.viewRecommendationError);
-
-        if (viewRecommendationGuest != null) {
-            viewRecommendationGuest.findViewById(R.id.btnRecommendationLogin).setOnClickListener(v -> {
-                com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(),
-                    new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT, "HomeRecommendation", 0, null));
-            });
-        }
-
-        if (viewRecommendationEmpty != null) {
-            viewRecommendationEmpty.findViewById(R.id.btnRecommendationProfile).setOnClickListener(v -> {
-                navigateToFragment(new BeautyProfileOverviewFragment());
-            });
-        }
 
         layoutKanilaReelsCard = view.findViewById(R.id.layoutKanilaReelsCard);
         layoutReelThumbOne = view.findViewById(R.id.layoutReelThumbOne);
@@ -209,10 +182,6 @@ public class HomeFragment extends Fragment {
         tvChallengeProgress = view.findViewById(R.id.tvChallengeProgress);
         tvChallengeParticipants = view.findViewById(R.id.tvChallengeParticipants);
         tvChallengeReward = view.findViewById(R.id.tvChallengeReward);
-
-        view.findViewById(R.id.btnViewAllRecommended).setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Gợi ý cho bạn", Toast.LENGTH_SHORT).show();
-        });
     }
 
     private void setupHomeShortcuts() {
@@ -274,24 +243,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupProductLists() {
-        recommendationProductAdapter = new RecommendationProductAdapter();
-        recommendationProductAdapter.setOnProductClickListener(new RecommendationProductAdapter.OnProductClickListener() {
-            @Override
-            public void onProductClick(Product product) {
-                if (product.getId() != null) {
-                    navigateToFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()));
-                }
-            }
-
-            @Override
-            public void onAddToCartClick(Product product) {
-                handleAddToCart(product);
-            }
-        });
-        rvRecommendedProducts.setLayoutManager(new GridLayoutManager(requireContext(), 2));
-        rvRecommendedProducts.setAdapter(recommendationProductAdapter);
-        rvRecommendedProducts.setNestedScrollingEnabled(false);
-
         allProductAdapter = new HomeProductAdapter();
         allProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
             @Override
@@ -373,73 +324,6 @@ public class HomeFragment extends Fragment {
                 if (state.allProducts != null) allProductAdapter.setProducts(state.allProducts);
             }
         });
-
-        recommendationViewModel.getHomepageRecommendations().observe(getViewLifecycleOwner(), result -> {
-            if (result == null) return;
-            switch (result.status) {
-                case LOADING:
-                    showRecommendationState(viewRecommendationLoading);
-                    break;
-                case SUCCESS:
-                    showRecommendationState(rvRecommendedProducts);
-                    if (result.data != null && result.data.getProducts() != null) {
-                        recommendationProductAdapter.setItems(result.data.getProducts());
-                    }
-                    break;
-                case EMPTY:
-                    showRecommendationState(viewRecommendationEmpty);
-                    break;
-                case GUEST:
-                    showRecommendationState(viewRecommendationGuest);
-                    break;
-                case UNAUTHORIZED:
-                    // Token expired
-                    Toast.makeText(requireContext(), R.string.auth_token_expired_msg, Toast.LENGTH_SHORT).show();
-                    showRecommendationState(viewRecommendationGuest);
-                    break;
-                case ERROR:
-                    showRecommendationState(viewRecommendationError);
-                    break;
-            }
-        });
-
-        recommendationViewModel.getBeautyProfile().observe(getViewLifecycleOwner(), result -> {
-            if (result != null && result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS && result.data != null) {
-                updateRecommendationSummary(result.data);
-            }
-        });
-    }
-
-    private void updateRecommendationSummary(com.example.frontend.data.model.beauty.CustomerBeautyProfileDto profile) {
-        TextView tvSubtitle = getView() != null ? getView().findViewById(R.id.tvRecommendationSubtitle) : null;
-        if (tvSubtitle == null) return;
-
-        StringBuilder sb = new StringBuilder("Dựa trên ");
-        if (profile.getSkinType() != null && !profile.getSkinType().isEmpty()) {
-            sb.append("tình trạng ").append(profile.getSkinType());
-        } else {
-            sb.append("loại da của bạn");
-        }
-
-        if (profile.getSkinConcerns() != null && !profile.getSkinConcerns().isEmpty()) {
-            sb.append(" và mục tiêu cải thiện ").append(String.join(", ", profile.getSkinConcerns()));
-        }
-
-        if (profile.getAvoidIngredients() != null && !profile.getAvoidIngredients().isEmpty()) {
-            sb.append(", Kanila đề xuất các sản phẩm không chứa ").append(String.join(", ", profile.getAvoidIngredients()));
-        } else {
-            sb.append(", Kanila dành riêng cho bạn:");
-        }
-
-        tvSubtitle.setText(sb.toString());
-    }
-
-    private void showRecommendationState(View visibleView) {
-        rvRecommendedProducts.setVisibility(visibleView == rvRecommendedProducts ? View.VISIBLE : View.GONE);
-        if (viewRecommendationLoading != null) viewRecommendationLoading.setVisibility(visibleView == viewRecommendationLoading ? View.VISIBLE : View.GONE);
-        if (viewRecommendationEmpty != null) viewRecommendationEmpty.setVisibility(visibleView == viewRecommendationEmpty ? View.VISIBLE : View.GONE);
-        if (viewRecommendationGuest != null) viewRecommendationGuest.setVisibility(visibleView == viewRecommendationGuest ? View.VISIBLE : View.GONE);
-        if (viewRecommendationError != null) viewRecommendationError.setVisibility(visibleView == viewRecommendationError ? View.VISIBLE : View.GONE);
     }
 
     private void showLoading() {

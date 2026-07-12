@@ -1006,4 +1006,9 @@
     <string name="recommendation_empty_desc">Hoàn thành Beauty Profile để nhận gợi ý phù hợp hơn.</string>
     <string name="recommendation_error_msg">Không thể tải gợi ý lúc này. Vui lòng thử lại.</string>
     <string name="auth_token_expired_msg">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</string>
+    <string name="skin_match_reason">Lý do phù hợp</string>
+    <string name="skin_match_analysis">Skin Match Analysis</string>
+    <string name="skin_match_matched_traits">Đặc điểm da khớp với sản phẩm</string>
+    <string name="skin_match_detailed_reasons">Lý giải chi tiết độ phù hợp</string>
+    <string name="skin_match_ai_note">Kết quả này được tính toán dựa trên thuật toán AI độc quyền của Kanila Beauty kết hợp với hồ sơ cá nhân của bạn.</string>
 </resources>

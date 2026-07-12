@@ -165,16 +165,31 @@ public class ProductDetailFragment extends Fragment {
         if (layoutSkinMatch != null) {
             layoutSkinMatch.setOnClickListener(v -> {
                 ProductDetailUiState state = viewModel.getUiState().getValue();
-                if (state != null && state.skinMatch != null) {
-                    SkinMatchScoreFragment fragment = SkinMatchScoreFragment.newInstance(
-                            state.skinMatch.getScore(),
-                            state.skinMatch.getLevel(),
-                            state.skinMatch.getProfileChips()
-                    );
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_fragment_container, fragment)
-                            .addToBackStack(null)
-                            .commit();
+                if (state == null) return;
+
+                if (state.detailedSkinMatch != null) {
+                    switch (state.detailedSkinMatch.getStatus()) {
+                        case READY:
+                        case PROFILE_INCOMPLETE:
+                        case CAUTION:
+                            SkinMatchDetailBottomSheet bottomSheet = SkinMatchDetailBottomSheet.newInstance(state.detailedSkinMatch);
+                            bottomSheet.show(getChildFragmentManager(), "SkinMatchDetail");
+                            break;
+                        case PROFILE_REQUIRED:
+                            startActivity(new android.content.Intent(getContext(), ui.account.BeautyProfileActivity.class));
+                            break;
+                        default:
+                            // If status is something else but visible, maybe show what we have
+                            SkinMatchDetailBottomSheet defaultSheet = SkinMatchDetailBottomSheet.newInstance(state.detailedSkinMatch);
+                            defaultSheet.show(getChildFragmentManager(), "SkinMatchDetail");
+                            break;
+                    }
+                } else if (state.skinMatch != null) {
+                    // Legacy fallback
+                    SkinMatchDetailBottomSheet bottomSheet = SkinMatchDetailBottomSheet.newInstance(state.skinMatch);
+                    bottomSheet.show(getChildFragmentManager(), "SkinMatchDetail");
+                } else {
+                    Toast.makeText(getContext(), "Đang cập nhật dữ liệu phân tích da...", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -437,14 +452,21 @@ public class ProductDetailFragment extends Fragment {
             }
         }
         
-        if (state.skinMatch != null && layoutSkinMatch != null) {
+        if (state.detailedSkinMatch != null && layoutSkinMatch != null) {
+            bindSkinMatchData(state.detailedSkinMatch);
+        } else if (state.skinMatch != null && layoutSkinMatch != null) {
+            // Fallback to legacy data
             layoutSkinMatch.setVisibility(View.VISIBLE);
             TextView tvScore = layoutSkinMatch.findViewById(R.id.tvSkinMatchScore);
             if (tvScore != null) tvScore.setText(String.format(Locale.US, "%d%%", state.skinMatch.getScore()));
-            View ivIcon = layoutSkinMatch.findViewById(R.id.ivSkinMatchIcon);
-            if (ivIcon != null) ivIcon.setVisibility(View.VISIBLE);
+            TextView tvSubtitle = layoutSkinMatch.findViewById(R.id.tvSkinMatchSubtitle);
+            if (tvSubtitle != null) tvSubtitle.setText("Phù hợp với làn da của bạn");
         } else if (layoutSkinMatch != null) {
             layoutSkinMatch.setVisibility(View.GONE);
+        }
+
+        if (state.reviewInsight != null && layoutReviewSummary != null) {
+            bindReviewInsightData(state.reviewInsight);
         }
 
         if (state.inventory != null && layoutOutOfStock != null) {
@@ -461,6 +483,117 @@ public class ProductDetailFragment extends Fragment {
         
         View btnWishlist = getView() != null ? getView().findViewById(R.id.btnWishlist) : null;
         if (btnWishlist != null) btnWishlist.setSelected(state.isWishlisted);
+    }
+
+    private void bindSkinMatchData(com.example.frontend.data.model.product.SkinMatchDto data) {
+        if (layoutSkinMatch == null) return;
+
+        TextView tvTitle = layoutSkinMatch.findViewById(R.id.tvSkinMatchTitle);
+        TextView tvSubtitle = layoutSkinMatch.findViewById(R.id.tvSkinMatchSubtitle);
+        TextView tvScore = layoutSkinMatch.findViewById(R.id.tvSkinMatchScore);
+        View layoutScoreCircle = layoutSkinMatch.findViewById(R.id.layoutScoreCircle);
+        View ivIcon = layoutSkinMatch.findViewById(R.id.ivSkinMatchIcon);
+
+        switch (data.getStatus()) {
+            case READY:
+                layoutSkinMatch.setVisibility(View.VISIBLE);
+                if (tvScore != null) tvScore.setText(String.format(Locale.US, "%d%%", data.getScore()));
+                if (tvSubtitle != null) {
+                    if (data.getMatchExplanation() != null && !data.getMatchExplanation().isEmpty()) {
+                        tvSubtitle.setText(data.getMatchExplanation());
+                    } else if (data.getMatchLevel() != null) {
+                        switch (data.getMatchLevel()) {
+                            case EXCELLENT_MATCH: tvSubtitle.setText("Phù hợp tuyệt vời với làn da của bạn"); break;
+                            case GOOD_MATCH: tvSubtitle.setText("Sản phẩm tốt cho làn da của bạn"); break;
+                            case MODERATE_MATCH: tvSubtitle.setText("Phù hợp ở mức trung bình"); break;
+                            case CAUTION: tvSubtitle.setText("Cần lưu ý khi sử dụng"); break;
+                            default: tvSubtitle.setText("Phù hợp với làn da của bạn"); break;
+                        }
+                    } else {
+                        tvSubtitle.setText("Phù hợp với làn da của bạn");
+                    }
+                }
+                
+                // Color mapping
+                int colorRes = R.color.button;
+                if (data.getMatchLevel() != null) {
+                    switch (data.getMatchLevel()) {
+                        case EXCELLENT_MATCH:
+                        case GOOD_MATCH:
+                            colorRes = R.color.success;
+                            break;
+                        case MODERATE_MATCH:
+                            colorRes = R.color.status_pending_text;
+                            break;
+                        case CAUTION:
+                            colorRes = R.color.error;
+                            break;
+                    }
+                }
+                if (tvScore != null) tvScore.setTextColor(ContextCompat.getColor(getContext(), colorRes));
+                if (layoutScoreCircle != null) layoutScoreCircle.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ContextCompat.getColor(getContext(), colorRes)));
+                break;
+
+            case PROFILE_REQUIRED:
+                layoutSkinMatch.setVisibility(View.VISIBLE);
+                if (tvScore != null) tvScore.setText("?");
+                if (tvSubtitle != null) {
+                    if (data.getMatchExplanation() != null && !data.getMatchExplanation().isEmpty()) {
+                        tvSubtitle.setText(data.getMatchExplanation());
+                    } else {
+                        tvSubtitle.setText("Hoàn thiện hồ sơ để xem độ phù hợp");
+                    }
+                }
+                break;
+
+            case PROFILE_INCOMPLETE:
+                layoutSkinMatch.setVisibility(View.VISIBLE);
+                if (tvScore != null) tvScore.setText(data.getScore() != null ? String.format(Locale.US, "%d%%", data.getScore()) : "?");
+                if (tvSubtitle != null) {
+                    if (data.getMatchExplanation() != null && !data.getMatchExplanation().isEmpty()) {
+                        tvSubtitle.setText(data.getMatchExplanation());
+                    } else {
+                        tvSubtitle.setText("Cập nhật thêm thông tin da của bạn");
+                    }
+                }
+                break;
+
+            case INSUFFICIENT_PRODUCT_DATA:
+            case TEMPORARILY_UNAVAILABLE:
+            default:
+                layoutSkinMatch.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    private void bindReviewInsightData(com.example.frontend.data.model.product.ReviewInsightDto data) {
+        if (layoutReviewSummary == null) return;
+
+        View cardAiSummary = layoutReviewSummary.findViewById(R.id.cardAiSummary);
+        TextView tvAiSummaryText = layoutReviewSummary.findViewById(R.id.tvAiSummaryText);
+
+        if (cardAiSummary == null || tvAiSummaryText == null) return;
+
+        switch (data.getStatus()) {
+            case READY:
+            case STALE:
+                cardAiSummary.setVisibility(View.VISIBLE);
+                tvAiSummaryText.setText(data.getShortSummary());
+                break;
+
+            case PENDING:
+            case GENERATING:
+                cardAiSummary.setVisibility(View.VISIBLE);
+                tvAiSummaryText.setText("Đang tổng hợp đánh giá bằng AI...");
+                break;
+
+            case INSUFFICIENT_REVIEWS:
+            case FAILED:
+            case DISABLED:
+            default:
+                cardAiSummary.setVisibility(View.GONE);
+                break;
+        }
     }
 
     private void handleAddToCart(Product product) {

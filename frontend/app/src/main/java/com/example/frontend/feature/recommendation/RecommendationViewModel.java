@@ -45,7 +45,14 @@ public class RecommendationViewModel extends AndroidViewModel {
             fetchMyBeautyProfile();
         } else {
             homepageRecommendations.setValue(NetworkResult.guest());
+            beautyProfile.setValue(null);
         }
+    }
+
+    public void clearData() {
+        homepageRecommendations.setValue(null);
+        myRecommendations.setValue(null);
+        beautyProfile.setValue(null);
     }
 
     public void fetchMyRecommendations() {

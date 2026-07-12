@@ -4,6 +4,7 @@ import com.example.frontend.model.Brand;
 import com.example.frontend.model.Category;
 import com.example.frontend.model.Product;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 import java.util.List;
 
 public class ProductDetailResponse {
@@ -90,16 +91,32 @@ public class ProductDetailResponse {
         public int getReviewCount() { return reviewCount; }
     }
 
-    public static class SkinMatchDto {
+    public static class SkinMatchDto implements Serializable {
         @SerializedName("score")
         private int score;
         @SerializedName("level")
         private String level;
+        @SerializedName(value = "match_explanation", alternate = {"explanation", "matchExplanation"})
+        private String matchExplanation;
         @SerializedName("profileChips")
         private List<String> profileChips;
+        @SerializedName("reasons")
+        private List<com.example.frontend.data.model.product.SkinMatchDto.Reason> reasons;
+        @SerializedName("cautions")
+        private List<com.example.frontend.data.model.product.SkinMatchDto.Caution> cautions;
+        @SerializedName("hard_conflicts")
+        private List<com.example.frontend.data.model.product.SkinMatchDto.HardConflict> hardConflicts;
+        @SerializedName("confidence_score")
+        private Integer confidenceScore;
+
         public int getScore() { return score; }
         public String getLevel() { return level; }
+        public String getMatchExplanation() { return matchExplanation; }
         public List<String> getProfileChips() { return profileChips; }
+        public List<com.example.frontend.data.model.product.SkinMatchDto.Reason> getReasons() { return reasons; }
+        public List<com.example.frontend.data.model.product.SkinMatchDto.Caution> getCautions() { return cautions; }
+        public List<com.example.frontend.data.model.product.SkinMatchDto.HardConflict> getHardConflicts() { return hardConflicts; }
+        public Integer getConfidenceScore() { return confidenceScore; }
     }
 
     public static class RelatedProductsData {

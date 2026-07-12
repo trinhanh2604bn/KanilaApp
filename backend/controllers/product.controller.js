@@ -11,6 +11,10 @@ const {
   isProductDetailCoreQuery,
   attachProductDetailCoreMedia,
 } = require("../utils/productDetailCoreFields");
+const Customer = require("../models/customer.model");
+const CustomerBeautyProfile = require("../models/customerBeautyProfile.model");
+const skinMatchCacheService = require("../services/skinMatch/skinMatchCache.service");
+const reviewAiSummaryService = require("../services/reviewAi/reviewAiSummary.service");
 
 /** Attach `{ email }` from Account without `.populate()` (avoids strictPopulate when paths/cache disagree). */
 async function attachAuditAccountEmails(data, productDoc) {
@@ -414,6 +418,59 @@ const patchProduct = async (req, res) => {
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 };
 
+// GET /api/products/:id/skin-match/me
+const getSkinMatchForProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!validateObjectId(id)) return res.status(400).json({ success: false, message: "Invalid product ID" });
+
+    const accountId = req.user?.account_id || req.user?.accountId;
+    if (!accountId) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+    const customer = await Customer.findOne({ account_id: accountId }).lean();
+    if (!customer) return res.status(404).json({ success: false, message: "Customer not found" });
+
+    const beautyProfile = await CustomerBeautyProfile.findOne({ customer_id: customer._id }).lean();
+    if (!beautyProfile) {
+      return res.status(200).json({
+        success: true,
+        message: "Profile required for skin match",
+        data: { status: "PROFILE_REQUIRED" }
+      });
+    }
+
+    const matchData = await skinMatchCacheService.getOrComputeMatch(customer, beautyProfile, id);
+
+    res.status(200).json({
+      success: true,
+      message: "Get skin match successfully",
+      data: matchData
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// GET /api/products/:id/review-insights
+const getReviewInsightsForProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!validateObjectId(id)) return res.status(400).json({ success: false, message: "Invalid product ID" });
+
+    const insights = await reviewAiSummaryService.getReviewInsights(id, {
+      segmentType: "ALL"
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Get review insights successfully",
+      data: insights
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
@@ -423,4 +480,6 @@ module.exports = {
   updateProduct,
   patchProduct,
   deleteProduct,
+  getSkinMatchForProduct,
+  getReviewInsightsForProduct,
 };

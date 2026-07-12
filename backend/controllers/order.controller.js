@@ -410,6 +410,10 @@ const reorderMyOrder = async (req, res) => {
     }
 
     const cart = await ensureActiveCartForCustomer(customer._id);
+
+    // Bỏ chọn tất cả sản phẩm đang có trong giỏ hàng trước khi Mua lại
+    await CartItem.updateMany({ cart_id: cart._id }, { $set: { selected: false } });
+
     let added = 0;
     const skipped = [];
 

@@ -19,4 +19,13 @@ const returnSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+returnSchema.virtual("media", {
+  ref: "ReturnMedia",
+  localField: "_id",
+  foreignField: "return_request_id",
+});
+
+returnSchema.set("toJSON", { virtuals: true });
+returnSchema.set("toObject", { virtuals: true });
+
 module.exports = mongoose.model("Return", returnSchema);

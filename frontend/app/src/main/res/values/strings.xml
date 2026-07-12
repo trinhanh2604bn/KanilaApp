@@ -75,6 +75,7 @@
     <string name="category_cheeks">Cheeks</string>
     <string name="category_gift">Gift</string>
     <string name="category_new">New</string>
+    <string name="category_new_arrival">New Arrival</string>
     <string name="category_hot">Hot</string>
     <string name="category_brushes">Mini &amp; Travel</string>
     <string name="category_ar">AR</string>
@@ -996,6 +997,67 @@
     <string name="challenge_more_posts_format">+%d bài tiến trình khác</string>
     <string name="challenge_day_label_format">Ngày %d</string>
     <string name="challenge_rules_title">Quy tắc thử thách</string>
+
+    <string name="filter_concerns">Nhu cầu</string>
+    <string name="concern_long_wear">Lâu trôi</string>
+    <string name="concern_smooth_finish">Mịn da</string>
+    <string name="concern_photo_ready">Ăn ảnh</string>
+    <string name="filter_sensitive_only">Phù hợp da nhạy cảm</string>
+    <string name="filter_best_seller_only">Bán chạy</string>
+
+    <string name="ing_glycerin">Glycerin</string>
+    <string name="ing_tocopherol">Tocopherol</string>
+    <string name="ing_mica">Mica</string>
+
+    <!-- Order Success -->
+
+
+
+    <string name="order_success_title">Đặt hàng thành công</string>
+    <string name="order_success_desc">Cảm ơn bạn đã mua sắm tại Kanila!\nChúng tôi sẽ xử lý đơn hàng của bạn ngay.</string>
+    <string name="order_success_code">Mã đơn hàng</string>
+    <string name="order_success_payment">Phương thức thanh toán</string>
+    <string name="order_success_delivery">Thời gian giao dự kiến</string>
+    <string name="order_success_amount">Số tiền đã thanh toán</string>
+    <string name="order_success_reward">Bạn nhận được %d điểm Kanila</string>
+    <string name="order_success_track">Theo dõi đơn hàng</string>
+    <string name="order_success_continue">Tiếp tục mua sắm</string>
+
+    <!-- Review Write -->
+    <string name="review_write_title">Viết đánh giá</string>
+    <string name="review_write_rating_title">Đánh giá của bạn</string>
+    <string name="review_write_rating_hint">Chọn mức độ hài lòng</string>
+    <string name="review_write_tags_title">Chọn nhanh (chọn nhiều)</string>
+    <string name="review_write_content_title">Cảm nhận của bạn</string>
+    <string name="review_write_content_hint">Chia sẻ trải nghiệm của bạn về sản phẩm này...</string>
+    <string name="review_write_media_title">Thêm ảnh / video (tối đa 5)</string>
+    <string name="review_write_media_reward">Đánh giá có ảnh/video sẽ nhận thêm điểm</string>
+    <string name="review_write_skin_type_title">Loại da của bạn</string>
+    <string name="review_write_submit">Gửi đánh giá</string>
+    <string name="review_write_success">Cảm ơn bạn đã đánh giá!</string>
+    <string name="review_write_rating_required">Vui lòng chọn số sao đánh giá</string>
+    <string name="review_write_char_counter_format">%1$d/1000</string>
+
+    <!-- Flash Sale & Voucher -->
+    <string name="flash_sale_title">Flash Sale</string>
+    <string name="flash_sale_countdown_label">Kết thúc sau</string>
+    <string name="voucher_title">Kho voucher</string>
+    <string name="voucher_save">Lưu</string>
+    <string name="voucher_claim">Săn ít</string>
+
+    <!-- Mock Flash Sale Countdown -->
+    <string name="mock_flash_hour">02</string>
+    <string name="mock_flash_minute">45</string>
+    <string name="mock_flash_second">32</string>
+    <string name="symbol_colon">:</string>
+    <string name="badge_sale">SALE</string>
+    <string name="badge_trending">ĐANG BÁN CHẠY</string>
+    <string name="action_buy_now">Mua ngay</string>
+    <string name="flash_sale_page_title">FLASH SALE</string>
+    <string name="flash_sale_status_ongoing">Đang diễn ra</string>
+    <string name="flash_sale_status_tomorrow">Ngày mai</string>
+    <string name="flash_sale_ends_in">KẾT THÚC TRONG</string>
+    <string name="flash_sale_starts_in">BẮT ĐẦU SAU</string>
 
     <!-- Recommendation Feature -->
     <string name="recommendation_title">Sản phẩm phù hợp với bạn</string>

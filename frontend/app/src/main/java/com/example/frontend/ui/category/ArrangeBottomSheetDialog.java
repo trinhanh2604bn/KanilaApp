@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import androidx.core.content.ContextCompat;
 
 import com.example.frontend.R;
@@ -18,11 +17,21 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 public class ArrangeBottomSheetDialog extends BottomSheetDialogFragment {
 
     public enum SortOption {
-        BEST_MATCH,
-        BEST_SELLER,
-        PRICE_LOW_TO_HIGH,
-        PRICE_HIGH_TO_LOW,
-        NEWEST
+        BEST_MATCH("best_match"),
+        BEST_SELLER("best_seller"),
+        PRICE_LOW_TO_HIGH("price_asc"),
+        PRICE_HIGH_TO_LOW("price_desc"),
+        NEWEST("newest");
+
+        private final String backendSortKey;
+
+        SortOption(String backendSortKey) {
+            this.backendSortKey = backendSortKey;
+        }
+
+        public String getBackendSortKey() {
+            return backendSortKey;
+        }
     }
 
     private OnSortOptionSelectedListener listener;
@@ -40,7 +49,9 @@ public class ArrangeBottomSheetDialog extends BottomSheetDialogFragment {
     }
 
     public void setSelectedOption(SortOption option) {
-        this.selectedOption = option;
+        if (option != null) {
+            this.selectedOption = option;
+        }
     }
 
     @Nullable
@@ -55,7 +66,7 @@ public class ArrangeBottomSheetDialog extends BottomSheetDialogFragment {
 
         initViews(view);
         setupListeners(view);
-        updateSelection(selectedOption);
+        updateRadioButtons();
     }
 
     private void initViews(View root) {
@@ -75,11 +86,11 @@ public class ArrangeBottomSheetDialog extends BottomSheetDialogFragment {
     private void setupListeners(View root) {
         root.findViewById(R.id.btnCloseArrange).setOnClickListener(v -> dismiss());
 
-        root.findViewById(R.id.layoutSortBestMatch).setOnClickListener(v -> updateSelection(SortOption.BEST_MATCH));
-        root.findViewById(R.id.layoutSortBestSeller).setOnClickListener(v -> updateSelection(SortOption.BEST_SELLER));
-        root.findViewById(R.id.layoutSortPriceLowToHigh).setOnClickListener(v -> updateSelection(SortOption.PRICE_LOW_TO_HIGH));
-        root.findViewById(R.id.layoutSortPriceHighToLow).setOnClickListener(v -> updateSelection(SortOption.PRICE_HIGH_TO_LOW));
-        root.findViewById(R.id.layoutSortNewest).setOnClickListener(v -> updateSelection(SortOption.NEWEST));
+        root.findViewById(R.id.layoutSortBestMatch).setOnClickListener(v -> selectOption(SortOption.BEST_MATCH));
+        root.findViewById(R.id.layoutSortBestSeller).setOnClickListener(v -> selectOption(SortOption.BEST_SELLER));
+        root.findViewById(R.id.layoutSortPriceLowToHigh).setOnClickListener(v -> selectOption(SortOption.PRICE_LOW_TO_HIGH));
+        root.findViewById(R.id.layoutSortPriceHighToLow).setOnClickListener(v -> selectOption(SortOption.PRICE_HIGH_TO_LOW));
+        root.findViewById(R.id.layoutSortNewest).setOnClickListener(v -> selectOption(SortOption.NEWEST));
 
         root.findViewById(R.id.btnApplyArrange).setOnClickListener(v -> {
             if (listener != null) {
@@ -89,24 +100,27 @@ public class ArrangeBottomSheetDialog extends BottomSheetDialogFragment {
         });
     }
 
-    private void updateSelection(SortOption option) {
+    private void selectOption(SortOption option) {
         this.selectedOption = option;
+        updateRadioButtons();
+    }
 
-        rbSortBestMatch.setChecked(option == SortOption.BEST_MATCH);
-        rbSortBestSeller.setChecked(option == SortOption.BEST_SELLER);
-        rbSortPriceLowToHigh.setChecked(option == SortOption.PRICE_LOW_TO_HIGH);
-        rbSortPriceHighToLow.setChecked(option == SortOption.PRICE_HIGH_TO_LOW);
-        rbSortNewest.setChecked(option == SortOption.NEWEST);
+    private void updateRadioButtons() {
+        rbSortBestMatch.setChecked(selectedOption == SortOption.BEST_MATCH);
+        rbSortBestSeller.setChecked(selectedOption == SortOption.BEST_SELLER);
+        rbSortPriceLowToHigh.setChecked(selectedOption == SortOption.PRICE_LOW_TO_HIGH);
+        rbSortPriceHighToLow.setChecked(selectedOption == SortOption.PRICE_HIGH_TO_LOW);
+        rbSortNewest.setChecked(selectedOption == SortOption.NEWEST);
 
         if (getContext() == null) return;
 
         int accentColor = ContextCompat.getColor(getContext(), R.color.accent_dark);
         int mainTextColor = ContextCompat.getColor(getContext(), R.color.text_main);
 
-        tvSortBestMatchTitle.setTextColor(option == SortOption.BEST_MATCH ? accentColor : mainTextColor);
-        tvSortBestSellerTitle.setTextColor(option == SortOption.BEST_SELLER ? accentColor : mainTextColor);
-        tvSortPriceLowToHighTitle.setTextColor(option == SortOption.PRICE_LOW_TO_HIGH ? accentColor : mainTextColor);
-        tvSortPriceHighToLowTitle.setTextColor(option == SortOption.PRICE_HIGH_TO_LOW ? accentColor : mainTextColor);
-        tvSortNewestTitle.setTextColor(option == SortOption.NEWEST ? accentColor : mainTextColor);
+        tvSortBestMatchTitle.setTextColor(selectedOption == SortOption.BEST_MATCH ? accentColor : mainTextColor);
+        tvSortBestSellerTitle.setTextColor(selectedOption == SortOption.BEST_SELLER ? accentColor : mainTextColor);
+        tvSortPriceLowToHighTitle.setTextColor(selectedOption == SortOption.PRICE_LOW_TO_HIGH ? accentColor : mainTextColor);
+        tvSortPriceHighToLowTitle.setTextColor(selectedOption == SortOption.PRICE_HIGH_TO_LOW ? accentColor : mainTextColor);
+        tvSortNewestTitle.setTextColor(selectedOption == SortOption.NEWEST ? accentColor : mainTextColor);
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.frontend.data.remote.ApiClient;
+
 import com.example.frontend.data.remote.ApiResponse;
 import com.example.frontend.data.remote.ApiService;
 import com.example.frontend.data.remote.NetworkResult;
@@ -15,6 +16,7 @@ import com.example.frontend.data.model.product.SkinMatchDto;
 import com.example.frontend.data.model.product.ReviewInsightDto;
 import com.example.frontend.data.model.common.PaginatedData;
 import java.util.List;
+import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -217,5 +219,113 @@ public class ProductRepository {
                 result.setValue(NetworkResult.error(t.getMessage()));
             }
         });
+    }
+
+    public LiveData<NetworkResult<List<Product>>> getProductsByCategoryId(
+            String categoryId,
+            boolean includeChildren
+    ) {
+        MutableLiveData<NetworkResult<List<Product>>> result = new MutableLiveData<>();
+
+        apiService.getProductsByCategory(
+                1,
+                50,
+                "card",
+                categoryId,
+                includeChildren
+        ).enqueue(new Callback<ApiResponse<List<Product>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<Product>>> call,
+                                   Response<ApiResponse<List<Product>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Product> products = response.body().getData();
+
+                    if (products == null || products.isEmpty()) {
+                        result.setValue(NetworkResult.empty());
+                    } else {
+                        result.setValue(NetworkResult.success(products));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Không thể tải sản phẩm"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<List<Product>>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<NetworkResult<List<Product>>> getProductsByCollection(String collection) {
+        MutableLiveData<NetworkResult<List<Product>>> result = new MutableLiveData<>();
+
+        apiService.getProductsByCollection(
+                1,
+                50,
+                "card",
+                collection
+        ).enqueue(new Callback<ApiResponse<List<Product>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<Product>>> call,
+                                   Response<ApiResponse<List<Product>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Product> products = response.body().getData();
+
+                    if (products == null || products.isEmpty()) {
+                        result.setValue(NetworkResult.empty());
+                    } else {
+                        result.setValue(NetworkResult.success(products));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Không thể tải sản phẩm"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<List<Product>>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<NetworkResult<List<Product>>> getProductsByQuery(Map<String, String> query) {
+        MutableLiveData<NetworkResult<List<Product>>> result = new MutableLiveData<>();
+        result.setValue(NetworkResult.loading());
+
+        apiService.getProductsByQuery(query).enqueue(new Callback<ApiResponse<List<Product>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<Product>>> call,
+                                   Response<ApiResponse<List<Product>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<List<Product>> apiResponse = response.body();
+
+                    if (apiResponse.isSuccess()) {
+                        List<Product> products = apiResponse.getData();
+
+                        if (products == null || products.isEmpty()) {
+                            result.setValue(NetworkResult.empty());
+                        } else {
+                            result.setValue(NetworkResult.success(products));
+                        }
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Không thể tải sản phẩm"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<List<Product>>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+
+        return result;
     }
 }

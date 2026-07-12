@@ -279,6 +279,216 @@
 
             </LinearLayout>
 
+            <!-- 5. Section “Flash Sale” -->
+            <LinearLayout
+                android:id="@+id/layoutFlashSaleSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_l"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/layoutFlashSaleHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        android:src="@drawable/ic_hot"
+                        app:tint="@color/button"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:id="@+id/tvFlashSaleTitle"
+                        style="@style/Text.Kanila.H3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_s"
+                        android:layout_weight="1"
+                        android:text="@string/flash_sale_title" />
+
+                    <TextView
+                        android:id="@+id/tvSeeAllFlashSale"
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:text="@string/action_see_all"
+                        android:textColor="@color/text_tertiary" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutFlashSaleCountdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_s"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvFlashSaleCountdownLabel"
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/flash_sale_countdown_label"
+                        android:textColor="@color/text_secondary" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_s"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvFlashHour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_discount_badge"
+                            android:fontFamily="@font/nunito_bold"
+                            android:paddingHorizontal="4dp"
+                            android:paddingVertical="2dp"
+                            android:text="@string/mock_flash_hour"
+                            android:textColor="@color/white"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="2dp"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="@string/symbol_colon"
+                            android:textColor="@color/button" />
+
+                        <TextView
+                            android:id="@+id/tvFlashMinute"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_discount_badge"
+                            android:fontFamily="@font/nunito_bold"
+                            android:paddingHorizontal="4dp"
+                            android:paddingVertical="2dp"
+                            android:text="@string/mock_flash_minute"
+                            android:textColor="@color/white"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="2dp"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="@string/symbol_colon"
+                            android:textColor="@color/button" />
+
+                        <TextView
+                            android:id="@+id/tvFlashSecond"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_discount_badge"
+                            android:fontFamily="@font/nunito_bold"
+                            android:paddingHorizontal="4dp"
+                            android:paddingVertical="2dp"
+                            android:text="@string/mock_flash_second"
+                            android:textColor="@color/white"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvFlashSaleProducts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_s"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never"
+                    android:orientation="horizontal"
+                    tools:listitem="@layout/item_product_card" />
+            </LinearLayout>
+
+            <!-- 6. Section “Kho voucher” -->
+            <LinearLayout
+                android:id="@+id/layoutVoucherSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_l"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/layoutVoucherHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        android:src="@drawable/ic_coupon"
+                        app:tint="@color/button"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:id="@+id/tvVoucherTitle"
+                        style="@style/Text.Kanila.H3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_s"
+                        android:layout_weight="1"
+                        android:text="@string/voucher_title" />
+
+                    <TextView
+                        android:id="@+id/tvSeeAllVoucher"
+                        style="@style/Text.Kanila.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:text="@string/action_see_all"
+                        android:textColor="@color/text_tertiary" />
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:id="@+id/hsvVoucherList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/layoutVoucherList"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <include
+                            layout="@layout/item_voucher_compact"
+                            android:layout_width="260dp"
+                            android:layout_height="120dp"
+                            android:layout_marginEnd="6dp" />
+
+                        <include
+                            layout="@layout/item_voucher_compact"
+                            android:layout_width="260dp"
+                            android:layout_height="120dp"
+                            android:layout_marginEnd="6dp" />
+
+                        <include
+                            layout="@layout/item_voucher_compact"
+                            android:layout_width="260dp"
+                            android:layout_height="120dp" />
+
+                    </LinearLayout>
+                </HorizontalScrollView>
+            </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

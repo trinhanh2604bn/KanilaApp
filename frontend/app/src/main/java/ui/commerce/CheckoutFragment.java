@@ -282,7 +282,7 @@ public class CheckoutFragment extends Fragment {
 
                 // Find default address
                 for (AddressDto address : result.data) {
-                    if (address.isDefaultShipping()) {
+                    if (address != null && address.isDefaultShipping()) {
                         android.util.Log.d("CheckoutFragment", "Setting default shipping address: " + address.getRecipientName());
                         viewModel.setSelectedAddress(address);
                         break;
@@ -291,8 +291,17 @@ public class CheckoutFragment extends Fragment {
 
                 // If no default, pick first
                 if (viewModel.getSelectedAddress().getValue() == null && !result.data.isEmpty()) {
-                    android.util.Log.d("CheckoutFragment", "No default address found, picking first: " + result.data.get(0).getRecipientName());
-                    viewModel.setSelectedAddress(result.data.get(0));
+                    AddressDto first = null;
+                    for (AddressDto a : result.data) {
+                        if (a != null) {
+                            first = a;
+                            break;
+                        }
+                    }
+                    if (first != null) {
+                        android.util.Log.d("CheckoutFragment", "No default address found, picking first: " + first.getRecipientName());
+                        viewModel.setSelectedAddress(first);
+                    }
                 }
             }
         });
@@ -306,14 +315,14 @@ public class CheckoutFragment extends Fragment {
             String currentMethod = session != null ? session.getShippingMethod() : null;
             android.util.Log.d("CheckoutFragment", "Shipping methods received. Current method in session: '" + currentMethod + "'");
 
-            if (session != null && (currentMethod == null || currentMethod.trim().isEmpty())) {
+            if (session != null && (currentMethod == null || currentMethod.trim().isEmpty() || currentMethod.equalsIgnoreCase("null"))) {
                 android.util.Log.d("CheckoutFragment", "Shipping method is empty, finding default...");
                 // Find default shipping method from Database
                 ShippingMethodDto defaultMethod = null;
                 
                 // Priority 1: Check is_default flag
                 for (ShippingMethodDto method : result.data) {
-                    if (method.isDefault()) {
+                    if (method != null && method.isDefault()) {
                         defaultMethod = method;
                         break;
                     }
@@ -322,7 +331,7 @@ public class CheckoutFragment extends Fragment {
                 // Priority 2: Check for "Tiêu chuẩn" name if no default flag
                 if (defaultMethod == null) {
                     for (ShippingMethodDto method : result.data) {
-                        if (method.getName() != null && method.getName().toLowerCase().contains("tiêu chuẩn")) {
+                        if (method != null && method.getName() != null && method.getName().toLowerCase().contains("tiêu chuẩn")) {
                             defaultMethod = method;
                             break;
                         }
@@ -331,7 +340,12 @@ public class CheckoutFragment extends Fragment {
                 
                 // Priority 3: Just pick the first one
                 if (defaultMethod == null && !result.data.isEmpty()) {
-                    defaultMethod = result.data.get(0);
+                    for (ShippingMethodDto m : result.data) {
+                        if (m != null) {
+                            defaultMethod = m;
+                            break;
+                        }
+                    }
                 }
 
                 if (defaultMethod != null) {
@@ -369,6 +383,10 @@ public class CheckoutFragment extends Fragment {
 
                 session.setShippingAddress(checkoutAddress);
                 setupAddress(checkoutAddress);
+                
+                // Cập nhật lại session vào ViewModel để các phần khác (như Shipping) 
+                // khi load lại dữ liệu từ Server không bị ghi đè mất địa chỉ
+                viewModel.updateCheckoutSession(session);
             }
         });
 
@@ -379,9 +397,29 @@ public class CheckoutFragment extends Fragment {
                     // Show loading
                     break;
                 case SUCCESS:
-                    Toast.makeText(getContext(), "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
                     if (getActivity() != null) {
-                        getActivity().getSupportFragmentManager().popBackStack();
+                        CheckoutSessionDto session = viewModel.getCheckoutSession().getValue() != null ?
+                                viewModel.getCheckoutSession().getValue().data : null;
+                        com.example.frontend.data.model.order.OrderDto order = result.data;
+
+                        String paymentMethod = session != null ? session.getPaymentMethod() : "Thanh toán khi nhận hàng (COD)";
+                        String deliveryTime = (session != null && session.getEstimatedDelivery() != null) ? session.getEstimatedDelivery() : "Dự kiến 2-3 ngày";
+                        double total = order != null ? order.getTotalAmount() : (session != null ? session.getTotalAmount() : 0);
+                        int points = (int) (total / 5000);
+
+                        OrderSuccessFragment successFragment = OrderSuccessFragment.newInstance(
+                                order != null ? order.getOrderNumber() : "KNL" + System.currentTimeMillis() / 1000,
+                                paymentMethod,
+                                deliveryTime,
+                                total,
+                                points
+                        );
+
+                        // Use FragmentManager to clear backstack of checkout flow if possible, or just replace
+                        // To keep it simple and consistent with requirement "Integrate with existing navigation"
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.main_fragment_container, successFragment)
+                                .commit();
                     }
                     break;
                 case ERROR:
@@ -404,17 +442,35 @@ public class CheckoutFragment extends Fragment {
         if (session == null) return;
         android.util.Log.d("CheckoutFragment", "Binding checkout data. Shipping: " + session.getShippingMethod() + ", Fee: " + session.getShippingAmount());
 
-        // 1. Address
-        setupAddress(session.getShippingAddress());
+        // 1. Address - Ưu tiên hiển thị địa chỉ đã chọn nếu session từ server trả về null
+        CheckoutSessionDto.CheckoutAddressDto displayAddress = session.getShippingAddress();
+        if (displayAddress == null && viewModel.getSelectedAddress().getValue() != null) {
+            AddressDto selected = viewModel.getSelectedAddress().getValue();
+            displayAddress = new CheckoutSessionDto.CheckoutAddressDto();
+            displayAddress.setFullName(selected.getRecipientName());
+            displayAddress.setPhone(selected.getPhone());
+            
+            StringBuilder sb = new StringBuilder();
+            appendIfNotEmpty(sb, selected.getAddressLine1());
+            appendIfNotEmpty(sb, selected.getAddressLine2());
+            appendIfNotEmpty(sb, selected.getWard());
+            appendIfNotEmpty(sb, selected.getDistrict());
+            appendIfNotEmpty(sb, selected.getCity());
+            displayAddress.setAddressLine(sb.toString());
+            
+            // Cập nhật ngược lại vào session để đồng bộ
+            session.setShippingAddress(displayAddress);
+        }
+        setupAddress(displayAddress);
 
         // 2. Shipping
-        setupShipping(session.getShippingMethod(), session.getShippingAmount(), session.getEstimatedDelivery());
+        setupShipping(session.getShippingMethod(), safeDouble(session.getShippingAmount()), session.getEstimatedDelivery());
 
         // 3. Payment
         setupPayment(session.getPaymentMethod());
 
         // 4. Voucher
-        setupVoucher(session.getDiscountAmount());
+        setupVoucher(safeDouble(session.getDiscountAmount()));
 
         // 5. Items
         bindItems(session.getItems());
@@ -422,14 +478,26 @@ public class CheckoutFragment extends Fragment {
         // 6. Summary
         TextView tvSubtotalLabel = getView().findViewById(R.id.tvCheckoutPriceSubtotalLabel);
         if (tvSubtotalLabel != null && session.getItems() != null) {
-            tvSubtotalLabel.setText("Tạm tính (" + session.getItems().size() + " sản phẩm)");
+            int selectedCount = 0;
+            for (CheckoutSessionDto.CheckoutItemDto item : session.getItems()) {
+                if (item.isSelected()) {
+                    selectedCount++;
+                }
+            }
+            tvSubtotalLabel.setText("Tạm tính (" + selectedCount + " sản phẩm)");
         }
 
-        tvSubtotal.setText(formatPrice(session.getSubtotalAmount()));
-        tvShipping.setText(formatPrice(session.getShippingAmount()));
-        tvDiscount.setText("-" + formatPrice(session.getDiscountAmount()));
-        tvPoints.setText("-" + formatPrice(session.getPointsAmount()));
-        tvTotal.setText(formatPrice(session.getTotalAmount()));
+        tvSubtotal.setText(formatPrice(safeDouble(session.getSubtotalAmount())));
+        tvShipping.setText(formatPrice(safeDouble(session.getShippingAmount())));
+        tvDiscount.setText("-" + formatPrice(safeDouble(session.getDiscountAmount())));
+        tvPoints.setText("-" + formatPrice(safeDouble(session.getPointsAmount())));
+        
+        double total = safeDouble(session.getTotalAmount());
+        if (total <= 0) {
+            total = safeDouble(session.getSubtotalAmount()) + safeDouble(session.getShippingAmount()) 
+                    - safeDouble(session.getDiscountAmount()) - safeDouble(session.getPointsAmount());
+        }
+        tvTotal.setText(formatPrice(Math.max(0, total)));
 
 
 
@@ -556,6 +624,9 @@ public class CheckoutFragment extends Fragment {
 
         for (int i = 0; i < items.size(); i++) {
             CheckoutSessionDto.CheckoutItemDto item = items.get(i);
+            
+            // Only show selected items
+            if (!item.isSelected()) continue;
 
             View itemView = getLayoutInflater().inflate(R.layout.item_cart_selected, layoutCheckoutItemsList, false);
             TextView tvName = itemView.findViewById(R.id.tvSelectedCartProductName);
@@ -657,6 +728,10 @@ public class CheckoutFragment extends Fragment {
         }
 
         return display.isEmpty() ? "Mặc định" : display;
+    }
+
+    private double safeDouble(Double value) {
+        return value != null ? value : 0.0;
     }
 
     private String formatPrice(double price) {

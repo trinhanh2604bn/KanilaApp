@@ -35,6 +35,12 @@ public class OrderDetailDto {
     @SerializedName("shipment")
     private ShipmentDto shipment;
 
+    @SerializedName(value = "shipping_method_name", alternate = {"shipping_method", "shipping_method_label", "service_name", "shipping_option"})
+    private String shippingMethodName;
+
+    @SerializedName(value = "estimated_delivery", alternate = {"delivery_estimate", "estimated_delivery_date"})
+    private String estimatedDelivery;
+
     public OrderDetailDto() {}
 
     // Constructor for mocking
@@ -80,12 +86,16 @@ public class OrderDetailDto {
     public List<OrderAddressDto> getAddresses() { return addresses; }
     public OrderTotalDto getTotal() { return total; }
     public ShipmentDto getShipment() { return shipment; }
+    public String getShippingMethodName() { return shippingMethodName; }
+    public String getEstimatedDelivery() { return estimatedDelivery; }
 
     public static class OrderItemDetailDto {
         @SerializedName("product_name_snapshot")
         private String productName;
         @SerializedName("variant_name_snapshot")
         private String variantName;
+        @SerializedName(value = "image_url_snapshot", alternate = {"imageUrl", "image_url"})
+        private String imageUrl;
         @SerializedName("quantity")
         private int quantity;
         @SerializedName("unit_final_price_amount")
@@ -103,6 +113,7 @@ public class OrderDetailDto {
 
         public String getProductName() { return productName; }
         public String getVariantName() { return variantName; }
+        public String getImageUrl() { return imageUrl; }
         public int getQuantity() { return quantity; }
         public double getUnitPrice() { return unitPrice; }
         public double getLineTotal() { return lineTotal; }
@@ -169,9 +180,12 @@ public class OrderDetailDto {
         private String status;
         @SerializedName("carrierCode")
         private String carrierCode;
+        @SerializedName(value = "serviceName", alternate = {"service_name", "shipping_method_name", "method_name"})
+        private String serviceName;
 
         public String getTrackingNumber() { return trackingNumber; }
         public String getStatus() { return status; }
         public String getCarrierCode() { return carrierCode; }
+        public String getServiceName() { return serviceName; }
     }
 }

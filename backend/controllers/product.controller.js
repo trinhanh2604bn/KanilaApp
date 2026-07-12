@@ -38,6 +38,7 @@ async function attachAuditAccountEmails(data, productDoc) {
 // - Without `page` query: legacy full list (same shape as Phase 1; no server-side filters).
 // - With `page`: paginated + optional filters categoryId, brandId (comma-sep), minPrice, maxPrice, minRating, sort.
 const getAllProducts = async (req, res) => {
+  console.log("[products] req.query =", req.query);
   try {
     const pag = parsePaginationParams(req.query);
     const listingProfile = String(req.query.fields || "").toLowerCase().trim() === "card" ? "card" : "full";
@@ -60,11 +61,95 @@ const getAllProducts = async (req, res) => {
 
     // Storefront listing should not return inactive products.
     // (Existing Angular catalog historically filtered out inactive on the client.)
-    const { filter, sort } = buildMongoFilterFromQuery(req.query, { storefrontOnly: true });
+    const queryForHelper = { ...req.query };
+
+    delete queryForHelper.categoryId;
+    delete queryForHelper.includeChildren;
+    delete queryForHelper.collection;
+
+    const { filter, sort } = buildMongoFilterFromQuery(queryForHelper, {
+      storefrontOnly: true,
+    });
+
+    console.log("[products] filter after helper =", JSON.stringify(filter, null, 2));
+
+    let finalSort = sort;
+
+    const requestedSort = String(req.query.sort || "")
+      .trim()
+      .toLowerCase();
+
+    const collection = String(req.query.collection || "")
+      .trim()
+      .toLowerCase();
+
+    if (!requestedSort && collection === "hot") {
+      finalSort = {
+        bought: -1,
+        createdAt: -1,
+      };
+    }
+
+    if (!requestedSort && collection === "new-arrival") {
+      finalSort = {
+        createdAt: -1,
+      };
+    }
+
+    if (req.query.categoryId) {
+      const selectedCategoryId = String(req.query.categoryId).trim();
+
+      if (!validateObjectId(selectedCategoryId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid categoryId",
+        });
+      }
+
+      let categoryIds = [
+        new mongoose.Types.ObjectId(selectedCategoryId),
+      ];
+
+      if (String(req.query.includeChildren) === "true") {
+        const children = await Category.find({
+          parentCategoryId: new mongoose.Types.ObjectId(selectedCategoryId),
+          isActive: true,
+          categoryStatus: "active",
+        })
+          .select("_id categoryName categoryCode")
+          .sort({ displayOrder: 1, createdAt: -1 })
+          .lean();
+
+        categoryIds = [
+          ...categoryIds,
+          ...children.map((child) => child._id),
+        ];
+      }
+
+      filter.categoryId = {
+        $in: categoryIds,
+      };
+
+      console.log("[products] selectedCategoryId =", selectedCategoryId);
+      console.log("[products] includeChildren =", req.query.includeChildren);
+      console.log("[products] final categoryIds =", categoryIds.map(String));
+    }
+
+    console.log("[products] final filter =", JSON.stringify(filter, null, 2));
+    console.log("[products] requestedSort =", requestedSort);
+    console.log("[products] finalSort =", JSON.stringify(finalSort, null, 2));
     const skip = (pag.page - 1) * pag.limit;
+    console.log("[products] requestedSort =", requestedSort);
+    console.log("[products] finalSort =", JSON.stringify(finalSort, null, 2));
     const [total, data] = await Promise.all([
       Product.countDocuments(filter),
-      queryListingProducts({ filter, sort, skip, limit: pag.limit, listingProfile }),
+      queryListingProducts({
+        filter,
+        sort: finalSort,
+        skip,
+        limit: pag.limit,
+        listingProfile,
+      }),
     ]);
     const totalPages = Math.max(1, Math.ceil(total / pag.limit));
 
@@ -305,7 +390,7 @@ const updateProduct = async (req, res) => {
 
     // Apply updates from req.body
     Object.assign(product, req.body);
-    
+
     // Explicitly handle empty slug in body to trigger generation in pre-save
     if (req.body.slug === "") {
       product.slug = undefined;
@@ -373,10 +458,10 @@ const getSimilarProducts = async (req, res) => {
       ],
       productStatus: "active"
     })
-    .limit(limit)
-    .populate("brandId", "brandName")
-    .populate("categoryId", "categoryName")
-    .lean();
+      .limit(limit)
+      .populate("brandId", "brandName")
+      .populate("categoryId", "categoryName")
+      .lean();
 
     res.status(200).json({
       success: true,

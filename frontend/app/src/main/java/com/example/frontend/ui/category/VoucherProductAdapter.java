@@ -1,9 +1,8 @@
-package ui.category;
+package com.example.frontend.ui.category;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -14,73 +13,40 @@ import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.model.Product;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
+public class VoucherProductAdapter extends RecyclerView.Adapter<VoucherProductAdapter.ViewHolder> {
     private List<Product> products = new ArrayList<>();
     private OnProductClickListener listener;
-    private OnWishlistClickListener wishlistListener;
-    private OnSimilarClickListener similarClickListener;
-    private boolean isSelectionMode = false;
-    private boolean showSimilarAction = false;
-    private final Set<String> selectedProductIds = new HashSet<>();
+    private final boolean isHorizontal;
 
     public interface OnProductClickListener {
         void onProductClick(Product product);
         void onAddToCartClick(Product product);
     }
 
-    public interface OnWishlistClickListener {
-        void onWishlistClick(Product product, int position);
-    }
-
-    public interface OnSimilarClickListener {
-        void onSimilarClick(Product product);
+    public VoucherProductAdapter(boolean isHorizontal) {
+        this.isHorizontal = isHorizontal;
     }
 
     public void setOnProductClickListener(OnProductClickListener listener) {
         this.listener = listener;
     }
 
-    public void setOnWishlistClickListener(OnWishlistClickListener listener) {
-        this.wishlistListener = listener;
-    }
-
-    public void setOnSimilarClickListener(OnSimilarClickListener listener) {
-        this.similarClickListener = listener;
-    }
-
-    public void setShowSimilarAction(boolean showSimilarAction) {
-        this.showSimilarAction = showSimilarAction;
-    }
-
-    public void setProducts(List<Product> products) {
+    public void submitList(List<Product> products) {
         this.products = products;
         notifyDataSetChanged();
-    }
-
-    public void setSelectionMode(boolean selectionMode) {
-        isSelectionMode = selectionMode;
-        if (!selectionMode) {
-            selectedProductIds.clear();
-        }
-        notifyDataSetChanged();
-    }
-
-    public boolean isSelectionMode() {
-        return isSelectionMode;
-    }
-
-    public Set<String> getSelectedProductIds() {
-        return selectedProductIds;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product_card, parent, false);
+        if (isHorizontal) {
+            ViewGroup.LayoutParams params = view.getLayoutParams();
+            params.width = (int) (parent.getContext().getResources().getDisplayMetrics().density * 160);
+            view.setLayoutParams(params);
+        }
         return new ViewHolder(view);
     }
 
@@ -94,31 +60,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         
         if (holder.btnWishlist != null) {
             holder.btnWishlist.setSelected(product.isFavorite());
-            holder.btnWishlist.setVisibility(isSelectionMode ? View.GONE : View.VISIBLE);
-        }
-
-        if (holder.tvFindSimilar != null) {
-            holder.tvFindSimilar.setVisibility(showSimilarAction && !isSelectionMode ? View.VISIBLE : View.GONE);
-            holder.tvFindSimilar.setOnClickListener(v -> {
-                if (similarClickListener != null) {
-                    similarClickListener.onSimilarClick(product);
-                }
-            });
-        }
-
-        if (holder.cbSelect != null) {
-            holder.cbSelect.setVisibility(isSelectionMode ? View.VISIBLE : View.GONE);
-            holder.cbSelect.setChecked(selectedProductIds.contains(product.getId()));
-            holder.cbSelect.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    selectedProductIds.add(product.getId());
-                } else {
-                    selectedProductIds.remove(product.getId());
-                }
-                if (listener instanceof OnSelectionChangeListener) {
-                    ((OnSelectionChangeListener) listener).onSelectionChanged(selectedProductIds.size());
-                }
-            });
         }
 
         try {
@@ -147,26 +88,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         }
 
         holder.itemView.setOnClickListener(v -> {
-            if (isSelectionMode) {
-                if (holder.cbSelect != null) {
-                    holder.cbSelect.setChecked(!holder.cbSelect.isChecked());
-                }
-            } else if (listener != null) {
+            if (listener != null) {
                 listener.onProductClick(product);
             }
         });
-
-        if (holder.btnWishlist != null) {
-            holder.btnWishlist.setOnClickListener(v -> {
-                if (wishlistListener != null) {
-                    wishlistListener.onWishlistClick(product, position);
-                } else {
-                    boolean newState = !product.isFavorite();
-                    product.setFavorite(newState);
-                    v.setSelected(newState);
-                }
-            });
-        }
 
         if (holder.btnAddToCart != null) {
             holder.btnAddToCart.setOnClickListener(v -> {
@@ -182,18 +107,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         return products.size();
     }
 
-    public interface OnSelectionChangeListener {
-        void onSelectionChanged(int count);
-    }
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView ivImage;
         public TextView tvName, tvBrand, tvPrice, tvReviewCount, tvBadge;
         public RatingBar ratingBar;
         public View layoutBadge;
         public ImageButton btnAddToCart, btnWishlist;
-        public CheckBox cbSelect;
-        public TextView tvFindSimilar;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -207,8 +126,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             layoutBadge = itemView.findViewById(R.id.layoutProductStatusBadge);
             btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
             btnWishlist = itemView.findViewById(R.id.btnWishlist);
-            cbSelect = itemView.findViewById(R.id.cbSelect);
-            tvFindSimilar = itemView.findViewById(R.id.tvFindSimilar);
         }
     }
 }

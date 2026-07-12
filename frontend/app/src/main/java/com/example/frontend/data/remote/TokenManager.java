@@ -10,6 +10,7 @@ public class TokenManager {
     private static final String KEY_GUEST_SESSION_ID = "guest_session_id";
     private static final String KEY_CHATBOT_SESSION_ID = "chatbot_session_id";
     private static final String KEY_CUSTOMER_ID = "customer_id";
+    private static final String KEY_IS_KOC = "is_koc";
 
     private static TokenManager instance;
     private final SharedPreferences prefs;
@@ -118,5 +119,13 @@ public class TokenManager {
 
     public void clearChatbotSession() {
         prefs.edit().remove(KEY_CHATBOT_SESSION_ID).apply();
+    }
+
+    public void saveKocStatus(boolean isKoc) {
+        prefs.edit().putBoolean(KEY_IS_KOC, isKoc).apply();
+    }
+
+    public boolean isKoc() {
+        return prefs.getBoolean(KEY_IS_KOC, false);
     }
 }

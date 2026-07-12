@@ -1,18 +1,15 @@
 package ui.commerce;
 
-import android.text.TextUtils;
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.frontend.R;
 import com.example.frontend.data.model.address.AddressDto;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +18,7 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
     private List<AddressDto> addressList = new ArrayList<>();
     private String selectedAddressId;
     private final OnAddressClickListener listener;
+    private boolean isSelectionMode = true;
 
     public interface OnAddressClickListener {
         void onAddressSelected(AddressDto address, int position);
@@ -32,15 +30,27 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
         this.listener = listener;
     }
 
+    public void setSelectionMode(boolean selectionMode) {
+        this.isSelectionMode = selectionMode;
+        notifyDataSetChanged();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     public void setAddresses(List<AddressDto> addresses) {
-        this.addressList = addresses != null ? addresses : new ArrayList<>();
+        this.addressList = new ArrayList<>();
+        if (addresses != null) {
+            // Sort: Default address first
+            List<AddressDto> sorted = new ArrayList<>(addresses);
+            sorted.sort((a, b) -> Boolean.compare(b.isDefaultShipping(), a.isDefaultShipping()));
+            this.addressList.addAll(sorted);
+        }
         notifyDataSetChanged();
     }
 
     public void setSelectedAddressId(String selectedAddressId) {
         this.selectedAddressId = selectedAddressId;
-        for (AddressDto address : addressList) {
-            address.setSelected(address.getId() != null && address.getId().equals(selectedAddressId));
+        for (AddressDto a : addressList) {
+            a.setSelected(a.getId() != null && a.getId().equals(selectedAddressId));
         }
         notifyDataSetChanged();
     }
@@ -62,7 +72,6 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
         
         holder.layoutDefaultTag.setVisibility(address.isDefaultShipping() ? View.VISIBLE : View.GONE);
         if (address.isDefaultShipping() && holder.tvDefaultText != null) {
-            // Set runtime text for default badge
             holder.tvDefaultText.setText("Mặc định");
         }
         
@@ -75,16 +84,27 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
             });
         }
         
-        boolean isSelected = address.isSelected();
-        holder.ivRadio.setSelected(isSelected);
-        holder.layoutRoot.setSelected(isSelected);
+        // Highlight logic: Pink background (selected) 
+        // - In selection mode (Checkout): depends on address.isSelected()
+        // - In management mode (Account): always highlight the default one
+        boolean isHighlighted = isSelectionMode ? address.isSelected() : address.isDefaultShipping();
+        holder.ivRadio.setSelected(isHighlighted);
+        holder.layoutRoot.setSelected(isHighlighted);
+        
+        holder.ivRadio.setVisibility(isSelectionMode ? View.VISIBLE : View.GONE);
 
         holder.layoutRoot.setOnClickListener(v -> {
-            handleSelection(address, position);
+            if (isSelectionMode) {
+                handleSelection(address, position);
+            } else if (listener != null) {
+                listener.onAddressSelected(address, position);
+            }
         });
 
         holder.ivRadio.setOnClickListener(v -> {
-            handleSelection(address, position);
+            if (isSelectionMode) {
+                handleSelection(address, position);
+            }
         });
 
         holder.btnEdit.setOnClickListener(v -> {
@@ -95,7 +115,10 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
     }
 
     private void handleSelection(AddressDto address, int position) {
-        if (selectedAddressId != null && selectedAddressId.equals(address.getId())) return;
+        if (selectedAddressId != null && selectedAddressId.equals(address.getId())) {
+            if (listener != null) listener.onAddressSelected(address, position);
+            return;
+        }
 
         int oldSelectedPosition = -1;
         for (int i = 0; i < addressList.size(); i++) {
@@ -108,12 +131,12 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
 
         selectedAddressId = address.getId();
         address.setSelected(true);
-        
+
         if (oldSelectedPosition != -1) {
             notifyItemChanged(oldSelectedPosition);
         }
         notifyItemChanged(position);
-        
+
         if (listener != null) {
             listener.onAddressSelected(address, position);
         }
@@ -124,18 +147,18 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
     }
 
     private String formatFullAddress(AddressDto address) {
-        List<String> parts = new ArrayList<>();
-        addIfNotEmpty(parts, address.getAddressLine1());
-        addIfNotEmpty(parts, address.getAddressLine2());
-        addIfNotEmpty(parts, address.getWard());
-        addIfNotEmpty(parts, address.getDistrict());
-        addIfNotEmpty(parts, address.getCity());
-        return TextUtils.join(", ", parts);
+        StringBuilder sb = new StringBuilder();
+        addIfNotEmpty(sb, address.getAddressLine1());
+        addIfNotEmpty(sb, address.getWard());
+        addIfNotEmpty(sb, address.getDistrict());
+        addIfNotEmpty(sb, address.getCity());
+        return sb.toString();
     }
 
-    private void addIfNotEmpty(List<String> parts, String value) {
-        if (value != null && !value.trim().isEmpty()) {
-            parts.add(value.trim());
+    private void addIfNotEmpty(StringBuilder sb, String text) {
+        if (text != null && !text.trim().isEmpty()) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(text.trim());
         }
     }
 
@@ -149,17 +172,17 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
         ImageView ivRadio, btnEdit;
         View layoutDefaultTag, layoutRoot;
 
-        ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
             layoutRoot = itemView.findViewById(R.id.layoutAddressItemRoot);
+            ivRadio = itemView.findViewById(R.id.ivAddressRadio);
             tvName = itemView.findViewById(R.id.tvAddressName);
             tvPhone = itemView.findViewById(R.id.tvAddressPhone);
             tvDetail = itemView.findViewById(R.id.tvAddressDetail);
-            ivRadio = itemView.findViewById(R.id.ivAddressRadio);
-            btnEdit = itemView.findViewById(R.id.btnAddressEdit);
             layoutDefaultTag = itemView.findViewById(R.id.layoutAddressDefaultTag);
             tvDefaultText = itemView.findViewById(R.id.tvAddressDefaultText);
             tvSetDefault = itemView.findViewById(R.id.tvSetDefault);
+            btnEdit = itemView.findViewById(R.id.btnAddressEdit);
         }
     }
 }

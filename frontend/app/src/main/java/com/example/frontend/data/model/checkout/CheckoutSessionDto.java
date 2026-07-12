@@ -83,26 +83,38 @@ public class CheckoutSessionDto {
     public void setEstimatedDelivery(String estimatedDelivery) { this.estimatedDelivery = estimatedDelivery; }
 
     public static class CheckoutItemDto {
-        @SerializedName("id")
+        @SerializedName("_id")
         private String id;
-        @SerializedName("product_id")
+
+        @SerializedName(value = "product_id", alternate = {"productId"})
         private String productId;
-        @SerializedName("variant_id")
+
+        @SerializedName(value = "variant_id", alternate = {"variantId"})
         private String variantId;
-        @SerializedName("product_name")
+
+        @SerializedName(value = "product_name", alternate = {"productName", "product_name_snapshot"})
         private String productName;
-        @SerializedName("variant_name")
+
+        @SerializedName(value = "variant_name", alternate = {"variantLabel", "variant_name_snapshot"})
         private String variantName;
-        @SerializedName("brand_name")
+
+        @SerializedName(value = "brand_name", alternate = {"brandName", "brand_name_snapshot"})
         private String brandName;
+
         @SerializedName("quantity")
         private int quantity;
-        @SerializedName("price")
+
+        @SerializedName(value = "price", alternate = {"finalUnitPrice", "final_unit_price_amount", "unitPrice"})
         private double price;
-        @SerializedName("image_url")
+
+        @SerializedName(value = "image_url", alternate = {"imageUrl", "image_url_snapshot"})
         private String imageUrl;
-        @SerializedName("stock_status")
+
+        @SerializedName(value = "stock_status", alternate = {"stockStatus"})
         private String stockStatus;
+
+        @SerializedName("selected")
+        private boolean selected = true;
 
         public String getId() { return id; }
         public String getProductId() { return productId; }
@@ -114,6 +126,7 @@ public class CheckoutSessionDto {
         public double getPrice() { return price; }
         public String getImageUrl() { return imageUrl; }
         public String getStockStatus() { return stockStatus; }
+        public boolean isSelected() { return selected; }
 
         public void setId(String id) { this.id = id; }
         public void setProductId(String productId) { this.productId = productId; }
@@ -125,6 +138,7 @@ public class CheckoutSessionDto {
         public void setPrice(double price) { this.price = price; }
         public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
         public void setStockStatus(String stockStatus) { this.stockStatus = stockStatus; }
+        public void setSelected(boolean selected) { this.selected = selected; }
     }
 
     public static class CheckoutAddressDto {

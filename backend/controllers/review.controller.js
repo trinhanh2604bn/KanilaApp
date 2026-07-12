@@ -155,7 +155,7 @@ const submitReviewFromOrderItem = async (req, res) => {
     const customer = await getCustomerFromAuth(req);
     if (!customer) return res.status(401).json({ success: false, message: "Unauthorized" });
 
-    const { orderItemId, rating, reviewTitle, reviewContent, mediaUrls } = req.body ?? {};
+    const { orderItemId, rating, reviewTitle, reviewContent, reviewTags, skinTypes, mediaUrls } = req.body ?? {};
 
     if (!orderItemId || !validateObjectId(orderItemId)) return res.status(400).json({ success: false, message: "Valid orderItemId is required" });
     if (!rating || !Number.isFinite(Number(rating))) return res.status(400).json({ success: false, message: "Rating is required" });
@@ -182,6 +182,8 @@ const submitReviewFromOrderItem = async (req, res) => {
       rating: Number(rating),
       reviewTitle: reviewTitle ?? "",
       reviewContent: reviewContent ?? "",
+      reviewTags: Array.isArray(reviewTags) ? reviewTags : [],
+      skinTypes: Array.isArray(skinTypes) ? skinTypes : [],
       verifiedPurchaseFlag: true,
       reviewStatus: "visible",
     };
@@ -244,7 +246,7 @@ const submitReviewDirect = async (req, res) => {
     const customer = await getCustomerFromAuth(req);
     if (!customer) return res.status(401).json({ success: false, message: "Vui lòng đăng nhập để viết đánh giá." });
 
-    const { productId, variantId, rating, reviewTitle, reviewContent, mediaUrls } = req.body ?? {};
+    const { productId, variantId, rating, reviewTitle, reviewContent, reviewTags, skinTypes, mediaUrls } = req.body ?? {};
 
     if (!productId || !validateObjectId(productId)) return res.status(400).json({ success: false, message: "productId is required" });
     if (!rating || !Number.isFinite(Number(rating))) return res.status(400).json({ success: false, message: "Rating is required" });
@@ -263,6 +265,8 @@ const submitReviewDirect = async (req, res) => {
       rating: Math.max(1, Math.min(5, Number(rating))),
       reviewTitle: reviewTitle ?? "",
       reviewContent: reviewContent ?? "",
+      reviewTags: Array.isArray(reviewTags) ? reviewTags : [],
+      skinTypes: Array.isArray(skinTypes) ? skinTypes : [],
       verifiedPurchaseFlag: false,
       reviewStatus: "visible",
     };

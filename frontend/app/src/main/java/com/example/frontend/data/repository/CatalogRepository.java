@@ -29,18 +29,47 @@ public class CatalogRepository {
 
         apiService.getBrands().enqueue(new Callback<ApiResponse<List<Brand>>>() {
             @Override
-            public void onResponse(Call<ApiResponse<List<Brand>>> call, Response<ApiResponse<List<Brand>>> response) {
+            public void onResponse(Call<ApiResponse<List<Brand>>> call,
+                                   Response<ApiResponse<List<Brand>>> response) {
+
+                android.util.Log.d("CatalogRepository", "getBrands code = " + response.code());
+                android.util.Log.d("CatalogRepository", "getBrands body null = " + (response.body() == null));
+
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<List<Brand>> apiResponse = response.body();
+
                     if (apiResponse.isSuccess()) {
                         List<Brand> data = apiResponse.getData();
+
+                        android.util.Log.d(
+                                "CatalogRepository",
+                                "brand count = " + apiResponse.getCount()
+                                        + ", data size = " + (data == null ? "null" : data.size())
+                        );
+
                         if (data != null && !data.isEmpty()) {
                             List<Brand> activeBrands = new ArrayList<>();
+
                             for (Brand b : data) {
-                                if (b.isActive() && "active".equals(b.getBrandStatus())) {
+                                if (b == null) continue;
+
+                                String status = b.getBrandStatus();
+
+                                boolean isStatusActive =
+                                        status == null
+                                                || status.trim().isEmpty()
+                                                || "active".equalsIgnoreCase(status.trim());
+
+                                if (b.isActive() && isStatusActive) {
                                     activeBrands.add(b);
                                 }
                             }
+
+                            android.util.Log.d(
+                                    "CatalogRepository",
+                                    "activeBrands size = " + activeBrands.size()
+                            );
+
                             if (!activeBrands.isEmpty()) {
                                 result.setValue(NetworkResult.success(activeBrands));
                             } else {
@@ -59,6 +88,7 @@ public class CatalogRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<List<Brand>>> call, Throwable t) {
+                android.util.Log.e("CatalogRepository", "getBrands failed", t);
                 result.setValue(NetworkResult.error(t.getMessage()));
             }
         });

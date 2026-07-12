@@ -72,8 +72,8 @@ public class ReviewHubFragment extends Fragment {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            if (position == 0) return new ReviewOverviewFragment();
-            return new ReviewListFragment();
+            if (position == 0) return ReviewOverviewFragment.newInstance(productId);
+            return ReviewListFragment.newInstance(productId);
         }
 
         @Override

@@ -10,6 +10,15 @@ const reviewSummarySchema = new mongoose.Schema(
     rating3Count: { type: Number, default: 0 },
     rating4Count: { type: Number, default: 0 },
     rating5Count: { type: Number, default: 0 },
+    aiSummary: { type: String, default: null },
+    keywords: { type: [String], default: [] },
+    keywordStats: [
+      {
+        label: { type: String },
+        count: { type: Number },
+        _id: false,
+      },
+    ],
   },
   { timestamps: true, collection: "review_summary" }
 );

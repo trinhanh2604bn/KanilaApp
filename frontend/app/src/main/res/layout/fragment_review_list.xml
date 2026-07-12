@@ -22,6 +22,7 @@
             app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
+                android:id="@+id/chipReviewAll"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -29,18 +30,42 @@
                 android:checked="true" />
 
             <com.google.android.material.chip.Chip
+                android:id="@+id/chipReviewFiveStar"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="5 ★" />
 
             <com.google.android.material.chip.Chip
+                android:id="@+id/chipReviewFourStar"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="4 ★" />
 
             <com.google.android.material.chip.Chip
+                android:id="@+id/chipReviewThreeStar"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3 ★" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipReviewTwoStar"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2 ★" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipReviewOneStar"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1 ★" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipReviewHasMedia"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -55,6 +80,15 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scrollFilters" />
+
+    <include
+        android:id="@+id/layoutEmpty"
+        layout="@layout/view_search_no_result"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/scrollFilters" />
 

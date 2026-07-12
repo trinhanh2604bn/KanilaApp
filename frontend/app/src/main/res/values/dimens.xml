@@ -115,4 +115,7 @@
     <dimen name="reward_card_height">110dp</dimen>
     <dimen name="reward_icon_size">40dp</dimen>
     <dimen name="reward_streak_dot_size">32dp</dimen>
+
+    <!-- Product Card -->
+    <dimen name="product_card_width_horizontal">160dp</dimen>
 </resources>

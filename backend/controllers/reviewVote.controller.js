@@ -68,16 +68,13 @@ const deleteReviewVote = async (req, res) => {
 };
 
 // POST /api/reviews/:reviewId/vote
-// Requires auth: server derives customer_id from JWT.
+// Toggle like behavior: if exists delete and decrement helpfulCount, if not create and increment.
 const voteOnReview = async (req, res) => {
   try {
     const { reviewId } = req.params;
-    const { voteType } = req.body;
+    const voteType = req.body.voteType || "helpful"; // Default to helpful if not provided, treated as "like"
 
     if (!validateObjectId(reviewId)) return res.status(400).json({ success: false, message: "Invalid reviewId" });
-    if (!voteType || !["helpful", "not_helpful"].includes(voteType)) {
-      return res.status(400).json({ success: false, message: "Invalid voteType" });
-    }
 
     const accountId = req.user?.account_id || req.user?.accountId;
     if (!accountId) return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -90,32 +87,31 @@ const voteOnReview = async (req, res) => {
 
     const existingVote = await ReviewVote.findOne({ reviewId, customer_id: customer._id });
 
-    // helpfulCount only changes when switching between helpful <-> not_helpful.
-    if (!existingVote) {
-      const created = await ReviewVote.create({ reviewId, customer_id: customer._id, voteType });
-      if (voteType === "helpful") await Review.findByIdAndUpdate(reviewId, { $inc: { helpfulCount: 1 } });
+    if (existingVote) {
+      // Toggle off: delete vote and decrement helpfulCount
+      await ReviewVote.findByIdAndDelete(existingVote._id);
 
-      const updated = await Review.findById(reviewId);
-      return res.status(201).json({ success: true, message: "Vote recorded", data: { reviewId, helpfulCount: updated.helpfulCount, vote: created } });
-    }
+      const newHelpfulCount = Math.max(0, (review.helpfulCount || 0) - 1);
+      await Review.findByIdAndUpdate(reviewId, { helpfulCount: newHelpfulCount });
 
-    if (existingVote.voteType === voteType) {
       return res.status(200).json({
         success: true,
-        message: "Vote already recorded",
-        data: { reviewId, helpfulCount: review.helpfulCount, vote: existingVote },
+        message: "Vote removed",
+        data: { reviewId, liked: false, helpfulCount: newHelpfulCount }
+      });
+    } else {
+      // Toggle on: create vote and increment helpfulCount
+      await ReviewVote.create({ reviewId, customer_id: customer._id, voteType: "helpful" });
+
+      const newHelpfulCount = (review.helpfulCount || 0) + 1;
+      await Review.findByIdAndUpdate(reviewId, { helpfulCount: newHelpfulCount });
+
+      return res.status(201).json({
+        success: true,
+        message: "Vote recorded",
+        data: { reviewId, liked: true, helpfulCount: newHelpfulCount }
       });
     }
-
-    // Switch vote type: helpful -> not_helpful or not_helpful -> helpful
-    const delta = existingVote.voteType === "helpful" && voteType === "not_helpful" ? -1 : existingVote.voteType === "not_helpful" && voteType === "helpful" ? 1 : 0;
-    if (delta !== 0) await Review.findByIdAndUpdate(reviewId, { $inc: { helpfulCount: delta } });
-
-    existingVote.voteType = voteType;
-    await existingVote.save();
-
-    const updated = await Review.findById(reviewId);
-    return res.status(200).json({ success: true, message: "Vote updated", data: { reviewId, helpfulCount: updated.helpfulCount, vote: existingVote } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

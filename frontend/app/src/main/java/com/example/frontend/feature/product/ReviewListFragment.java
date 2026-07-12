@@ -5,31 +5,50 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.frontend.R;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.product.adapter.ReviewAdapter;
 import com.google.android.material.chip.ChipGroup;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import ui.common.FragmentNavigationHelper;
+import ui.order.MyReviewAdapter;
+import ui.order.MyReviewsViewModel;
+import ui.order.ReviewDetailFragment;
+
 public class ReviewListFragment extends Fragment {
+
     private static final String TAG = "ReviewList";
     private static final String ARG_PRODUCT_ID = "product_id";
-    
+
     private String productId;
-    private ReviewViewModel viewModel;
-    private ReviewAdapter reviewAdapter;
+    
+    // ViewModels for different modes
+    private ReviewViewModel productViewModel;
+    private MyReviewsViewModel myReviewsViewModel;
+    
+    // Adapters for different modes
+    private ReviewAdapter reviewAdapter; // for Product Reviews
+    private MyReviewAdapter myReviewAdapter; // for My Reviews
+    
     private ChipGroup cgReviewFilters;
     private RecyclerView rvReviews;
     private View layoutEmpty;
+    private View scrollFilters;
+    private TextView tvMyReviewsTitle;
     private String currentFilter = "all";
 
     public static ReviewListFragment newInstance(String productId) {
@@ -58,16 +77,12 @@ public class ReviewListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
-        
         initViews(view);
-        setupFilterChips();
-        observeViewModel();
-        
+
         if (productId != null) {
-            loadReviews("all");
+            setupProductReviews(view);
         } else {
-            Toast.makeText(getContext(), "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
+            setupMyReviews(view);
         }
     }
 
@@ -75,13 +90,10 @@ public class ReviewListFragment extends Fragment {
         cgReviewFilters = view.findViewById(R.id.cgReviewFilters);
         rvReviews = view.findViewById(R.id.rvReviews);
         layoutEmpty = view.findViewById(R.id.layoutEmpty);
-        
+        scrollFilters = view.findViewById(R.id.scrollFilters);
+        tvMyReviewsTitle = view.findViewById(R.id.tvMyReviewsTitle);
+
         rvReviews.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
-        reviewAdapter = new ReviewAdapter();
-        reviewAdapter.setOnReviewLikeListener(review -> {
-            viewModel.toggleReviewVote(review.getId());
-        });
-        rvReviews.setAdapter(reviewAdapter);
 
         if (layoutEmpty != null) {
             View btnAction = layoutEmpty.findViewById(R.id.btnEmptyAction);
@@ -94,6 +106,37 @@ public class ReviewListFragment extends Fragment {
                 });
             }
         }
+    }
+
+    private void setupProductReviews(View view) {
+        if (tvMyReviewsTitle != null) tvMyReviewsTitle.setVisibility(View.GONE);
+        if (scrollFilters != null) scrollFilters.setVisibility(View.VISIBLE);
+
+        reviewAdapter = new ReviewAdapter();
+        reviewAdapter.setOnReviewLikeListener(review -> {
+            if (productViewModel != null) {
+                productViewModel.toggleReviewVote(review.getId());
+            }
+        });
+        rvReviews.setAdapter(reviewAdapter);
+
+        productViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
+        setupFilterChips();
+        observeProductViewModel();
+        loadProductReviews("all");
+    }
+
+    private void setupMyReviews(View view) {
+        if (tvMyReviewsTitle != null) tvMyReviewsTitle.setVisibility(View.VISIBLE);
+        if (scrollFilters != null) scrollFilters.setVisibility(View.GONE);
+
+        myReviewAdapter = new MyReviewAdapter(review -> 
+            FragmentNavigationHelper.replaceFragment(requireActivity(), ReviewDetailFragment.newInstance(review.getReviewId())));
+        rvReviews.setAdapter(myReviewAdapter);
+
+        myReviewsViewModel = new ViewModelProvider(this).get(MyReviewsViewModel.class);
+        observeMyReviewsViewModel();
+        myReviewsViewModel.loadMyReviews();
     }
 
     private void setupFilterChips() {
@@ -119,11 +162,11 @@ public class ReviewListFragment extends Fragment {
                     currentFilter = "all";
                 }
             }
-            loadReviews(currentFilter);
+            loadProductReviews(currentFilter);
         });
     }
 
-    private void loadReviews(String filterType) {
+    private void loadProductReviews(String filterType) {
         if (productId == null || productId.trim().isEmpty()) return;
 
         Map<String, String> query = new HashMap<>();
@@ -157,30 +200,32 @@ public class ReviewListFragment extends Fragment {
             View header = layoutEmpty.findViewById(R.id.layoutEmptyHeader);
             if (header != null) header.setVisibility(View.GONE);
 
-            android.widget.TextView tvTitle = layoutEmpty.findViewById(R.id.tvEmptyTitle);
-            android.widget.TextView tvDesc = layoutEmpty.findViewById(R.id.tvEmptyDescription);
-            android.widget.Button btnAction = layoutEmpty.findViewById(R.id.btnEmptyAction);
+            TextView tvTitle = layoutEmpty.findViewById(R.id.tvEmptyTitle);
+            TextView tvDesc = layoutEmpty.findViewById(R.id.tvEmptyDescription);
+            View btnAction = layoutEmpty.findViewById(R.id.btnEmptyAction);
 
             if (tvTitle != null) tvTitle.setText("Chưa có đánh giá");
             if (tvDesc != null) tvDesc.setText(getString(emptyTextRes));
             if (btnAction != null) {
-                btnAction.setText("Xem tất cả đánh giá");
                 btnAction.setVisibility("all".equals(filterType) ? View.GONE : View.VISIBLE);
+                if (btnAction instanceof TextView) {
+                    ((TextView) btnAction).setText("Xem tất cả đánh giá");
+                }
             }
         }
 
         Log.d(TAG, "load reviews productId = " + productId + ", query = " + query);
-        viewModel.loadReviews(productId, query);
+        if (productViewModel != null) {
+            productViewModel.loadReviews(productId, query);
+        }
     }
 
-    private void observeViewModel() {
-        viewModel.getReviewsResult().observe(getViewLifecycleOwner(), result -> {
+    private void observeProductViewModel() {
+        if (productViewModel == null) return;
+        
+        productViewModel.getReviewsResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
-            
-            Log.d(TAG, "status = " + result.status 
-                    + ", size = " + (result.data == null ? "null" : result.data.size()) 
-                    + ", message = " + result.message);
-            
+
             switch (result.status) {
                 case SUCCESS:
                     boolean isEmpty = result.data == null || result.data.isEmpty();
@@ -191,7 +236,7 @@ public class ReviewListFragment extends Fragment {
                 case ERROR:
                     if (layoutEmpty != null) {
                         layoutEmpty.setVisibility(View.VISIBLE);
-                        android.widget.TextView tvDesc = layoutEmpty.findViewById(R.id.tvEmptyDescription);
+                        TextView tvDesc = layoutEmpty.findViewById(R.id.tvEmptyDescription);
                         if (tvDesc != null) tvDesc.setText(result.message != null ? result.message : "Không tải được đánh giá");
                     }
                     if (rvReviews != null) rvReviews.setVisibility(View.GONE);
@@ -200,13 +245,36 @@ public class ReviewListFragment extends Fragment {
             }
         });
 
-        viewModel.getVoteResult().observe(getViewLifecycleOwner(), result -> {
+        productViewModel.getVoteResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             if (result.status == NetworkResult.Status.SUCCESS && result.data != null) {
-                // Refresh reviews to get updated like status and count
-                loadReviews(currentFilter);
+                loadProductReviews(currentFilter);
             } else if (result.status == NetworkResult.Status.ERROR) {
                 Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void observeMyReviewsViewModel() {
+        if (myReviewsViewModel == null) return;
+        
+        myReviewsViewModel.getMyReviews().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case LOADING:
+                    // handle loading if needed
+                    break;
+                case SUCCESS:
+                    if (result.data != null) {
+                        myReviewAdapter.setReviews(result.data);
+                        boolean isEmpty = result.data.isEmpty();
+                        if (layoutEmpty != null) layoutEmpty.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+                        if (rvReviews != null) rvReviews.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+                    }
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    break;
             }
         });
     }

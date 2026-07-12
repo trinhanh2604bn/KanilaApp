@@ -198,6 +198,15 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
     }
 
     private void observeViewModel() {
+        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            if (result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS) {
+                Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            } else if (result.status == com.example.frontend.data.remote.NetworkResult.Status.ERROR) {
+                Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         viewModel.getWishlistResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             switch (result.status) {
@@ -255,22 +264,7 @@ public class WishlistFragment extends Fragment implements ProductAdapter.OnSelec
 
     private void handleAddToCart(Product product) {
         if (product.getId() == null) return;
-
-        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
-        cartViewModel.addToCart(request);
-
-        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<com.example.frontend.data.remote.NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
-            @Override
-            public void onChanged(com.example.frontend.data.remote.NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
-                if (result == null) return;
-                if (result.status == com.example.frontend.data.remote.NetworkResult.Status.SUCCESS) {
-                    Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                } else if (result.status == com.example.frontend.data.remote.NetworkResult.Status.ERROR) {
-                    Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                }
-            }
-        });
+        com.example.frontend.feature.product.QuickAddHelper.quickAddToCart(
+            requireContext(), getChildFragmentManager(), getViewLifecycleOwner(), product, cartViewModel);
     }
 }

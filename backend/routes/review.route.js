@@ -12,6 +12,7 @@ const {
   submitReviewFromOrderItem,
   submitReviewDirect,
   getMyReviews,
+  getMyReviewDetail,
   patchMyReview,
   deleteMyReview,
   getReviewableItems,
@@ -28,6 +29,7 @@ router.post("/:reviewId/vote", authMiddleware, voteOnReview);
 
 // Authenticated review flows
 router.get("/me", authMiddleware, getMyReviews);
+router.get("/me/:id", authMiddleware, getMyReviewDetail);
 router.get("/write-eligibility/:orderItemId", authMiddleware, getReviewWriteEligibility);
 router.get("/reviewable-items/:productId", authMiddleware, getReviewableItems);
 router.post("/submit", authMiddleware, submitReviewFromOrderItem);

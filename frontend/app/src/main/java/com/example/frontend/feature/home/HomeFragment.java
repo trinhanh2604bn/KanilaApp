@@ -42,7 +42,10 @@ import java.util.List;
 import java.util.Map;
 
 import ui.common.FragmentNavigationHelper;
+import ui.account.AccountFragment;
 import ui.account.BeautyProfileOverviewFragment;
+import ui.account.KocRegistrationFragment;
+import ui.account.KocDashboardFragment;
 import ui.support.HelpCenterFragment;
 
 public class HomeFragment extends Fragment {
@@ -198,9 +201,22 @@ public class HomeFragment extends Fragment {
                 if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
                     navigateToFragment(new BeautyProfileOverviewFragment());
                 } else {
-                    // Logic yêu cầu: Click icon ngoài trang chủ thì hiện Popup CTA trước
-                    // Trong Popup CTA, nếu chưa đăng nhập mới hiện GuestPrompt từ dưới lên
                     navigateToFragment(new BeautyProfileOverviewFragment());
+                }
+            }
+            else if ("creator".equals(item.getId())) {
+                com.example.frontend.data.remote.TokenManager tm = com.example.frontend.data.remote.TokenManager.getInstance(requireContext());
+                if (tm.isLoggedIn()) {
+                    if (tm.isKoc()) {
+                        navigateToFragment(new KocDashboardFragment());
+                    } else {
+                        navigateToFragment(new KocRegistrationFragment());
+                    }
+                } else {
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(),
+                        new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT, 
+                            "CreatorShortcut", 0, null));
                 }
             }
             else if ("orders".equals(item.getId())) navigateToFragment(new com.example.frontend.feature.order.OrderListFragment());
@@ -211,12 +227,14 @@ public class HomeFragment extends Fragment {
 
         rvHomeShortcuts.setAdapter(shortcutAdapter);
         List<HomeShortcutItem> shortcuts = new ArrayList<>();
-        shortcuts.add(new HomeShortcutItem("orders", "Đơn hàng", R.drawable.ic_shortcut_order, "orders", "", false, false));
         shortcuts.add(new HomeShortcutItem("voucher", "Voucher", R.drawable.ic_shortcut_voucher, "voucher", "", false, false));
         shortcuts.add(new HomeShortcutItem("ar", "AR", R.drawable.ic_shortcut_ar, "ar_try_on", "", false, false));
         shortcuts.add(new HomeShortcutItem("kanila_beauty", "Kanila Beauty", R.drawable.ic_shortcut_kanila_beauty, "beauty", "", false, false));
+        shortcuts.add(new HomeShortcutItem("creator", "Creator", R.drawable.ic_shortcut_creator, "creator", "", false, false));
+        shortcuts.add(new HomeShortcutItem("royalty", "Royalty", R.drawable.ic_shortcut_royalty, "royalty", "", false, false));
         shortcuts.add(new HomeShortcutItem("support", "Trợ giúp", R.drawable.ic_shortcut_help, "support", "", false, false));
-        shortcuts.add(new HomeShortcutItem("policy", "Chính sách & Điều khoản", R.drawable.ic_shortcut_policy, "policy", "", false, false));
+        shortcuts.add(new HomeShortcutItem("orders", "Đơn hàng", R.drawable.ic_shortcut_order, "orders", "", false, false));
+        shortcuts.add(new HomeShortcutItem("policy", "Chính sách", R.drawable.ic_shortcut_policy, "policy", "", false, false));
         shortcutAdapter.setItems(shortcuts);
     }
 
@@ -319,23 +337,8 @@ public class HomeFragment extends Fragment {
 
     private void handleAddToCart(Product product) {
         if (product.getId() == null) return;
-
-        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
-        cartViewModel.addToCart(request);
-        
-        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
-            @Override
-            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
-                if (result == null) return;
-                if (result.status == NetworkResult.Status.SUCCESS) {
-                    Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                } else if (result.status == NetworkResult.Status.ERROR) {
-                    Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                }
-            }
-        });
+        com.example.frontend.feature.product.QuickAddHelper.quickAddToCart(
+            requireContext(), getChildFragmentManager(), getViewLifecycleOwner(), product, cartViewModel);
     }
 
     private void observeViewModel() {
@@ -347,6 +350,15 @@ public class HomeFragment extends Fragment {
                 showContent();
                 if (state.recommendedProducts != null) recommendedProductAdapter.setProducts(state.recommendedProducts);
                 if (state.allProducts != null) allProductAdapter.setProducts(state.allProducts);
+            }
+        });
+
+        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            } else if (result.status == NetworkResult.Status.ERROR) {
+                Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
             }
         });
     }

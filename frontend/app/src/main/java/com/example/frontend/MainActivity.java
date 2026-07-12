@@ -48,6 +48,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ui.account.AccountFragment;
+import ui.account.KocRegistrationFragment;
+import ui.account.KocDashboardFragment;
 import com.example.frontend.ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
 import ui.commerce.CheckoutFragment;
@@ -418,6 +420,7 @@ public class MainActivity extends AppCompatActivity {
     private void observeViewModel() {
         if (viewModel == null) return;
         viewModel.getUiState().observe(this, state -> {
+            // ... (rest of logic)
             if (state == null) return;
 
             if (state.loading) {
@@ -443,6 +446,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                     wishlistViewModel.loadWishlistStatus(productIds);
                 }
+            }
+        });
+
+        cartViewModel.getCartResult().observe(this, result -> {
+            if (result == null) return;
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                Toast.makeText(MainActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            } else if (result.status == NetworkResult.Status.ERROR) {
+                Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -570,6 +582,20 @@ public class MainActivity extends AppCompatActivity {
                 loadFragment(new ui.loyalty.LoyaltyFragment());
             } else if ("voucher".equals(id)) {
                 loadFragment(new com.example.frontend.feature.voucher.VoucherListFragment());
+            } else if ("creator".equals(id)) {
+                if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                    // Kiểm tra trạng thái KOC đã lưu trong SharedPreferences
+                    if (com.example.frontend.data.remote.TokenManager.getInstance(this).isKoc()) {
+                        loadFragment(new KocDashboardFragment());
+                    } else {
+                        loadFragment(new KocRegistrationFragment());
+                    }
+                } else {
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this,
+                        new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT, 
+                            "CreatorShortcut", 0, null));
+                }
             } else {
                 Toast.makeText(this, "Tính năng " + item.getTitle() + " đang phát triển", Toast.LENGTH_SHORT).show();
             }
@@ -660,24 +686,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleAddToCart(com.example.frontend.model.Product product) {
         if (product.getId() == null) return;
-
-        // Use empty string instead of null for variant_id as some backends require it
-        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
-        cartViewModel.addToCart(request);
-
-        cartViewModel.getCartResult().observe(this, new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
-            @Override
-            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
-                if (result == null) return;
-                if (result.status == NetworkResult.Status.SUCCESS) {
-                    Toast.makeText(MainActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                } else if (result.status == NetworkResult.Status.ERROR) {
-                    Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                }
-            }
-        });
+        com.example.frontend.feature.product.QuickAddHelper.quickAddToCart(
+            this, getSupportFragmentManager(), this, product, cartViewModel);
     }
 
     private void smoothScrollTo(int position, long duration) {

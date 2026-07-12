@@ -169,7 +169,7 @@
                     android:layout_marginEnd="8dp"
                     android:minWidth="100dp"
                     android:paddingHorizontal="16dp"
-                    android:text="Trả hàng/Hoàn tiền"
+                    android:text="@string/action_rebuy"
                     android:textSize="12sp"
                     android:visibility="gone"
                     tools:visibility="visible" />

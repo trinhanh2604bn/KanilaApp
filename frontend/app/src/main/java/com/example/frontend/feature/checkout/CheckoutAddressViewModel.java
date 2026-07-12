@@ -15,6 +15,7 @@ public class CheckoutAddressViewModel extends AndroidViewModel {
     private final MutableLiveData<NetworkResult<List<AddressDto>>> addressResult = new MutableLiveData<>();
     private final MutableLiveData<AddressDto> selectedAddress = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<AddressDto>> saveResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<AddressDto>> setDefaultResult = new MutableLiveData<>();
 
     public CheckoutAddressViewModel(@NonNull Application application) {
         super(application);
@@ -31,6 +32,10 @@ public class CheckoutAddressViewModel extends AndroidViewModel {
 
     public LiveData<NetworkResult<AddressDto>> getSaveResult() {
         return saveResult;
+    }
+
+    public LiveData<NetworkResult<AddressDto>> getSetDefaultResult() {
+        return setDefaultResult;
     }
 
     public void loadCustomerAddresses() {
@@ -50,10 +55,14 @@ public class CheckoutAddressViewModel extends AndroidViewModel {
     }
 
     public void setDefaultAddress(String id) {
-        repository.setDefaultAddress(id, saveResult);
+        repository.setDefaultAddress(id, setDefaultResult);
     }
 
     public void clearSaveResult() {
         saveResult.setValue(null);
+    }
+
+    public void clearSetDefaultResult() {
+        setDefaultResult.setValue(null);
     }
 }

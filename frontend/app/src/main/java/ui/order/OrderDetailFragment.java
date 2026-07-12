@@ -154,6 +154,10 @@ public class OrderDetailFragment extends Fragment {
             ImageView ivIcon = menuContact.findViewById(R.id.ivMenuIcon);
             if (tvTitle != null) tvTitle.setText(R.string.order_detail_contact_shop);
             if (ivIcon != null) ivIcon.setImageResource(R.drawable.ic_support);
+            
+            menuContact.setOnClickListener(v -> {
+                FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.support.HelpCenterFragment());
+            });
         }
     }
 
@@ -199,8 +203,24 @@ public class OrderDetailFragment extends Fragment {
             }
 
             if (state.cancelSuccess) {
-                Toast.makeText(getContext(), getString(R.string.order_detail_cancel_success), Toast.LENGTH_SHORT).show();
-                getParentFragmentManager().popBackStack();
+                Toast.makeText(getContext(), "Hủy yêu cầu thành công", Toast.LENGTH_SHORT).show();
+                
+                // Quay về danh sách đơn hàng, tab "Đã giao"
+                OrderListFragment listFragment = OrderListFragment.newInstance("completed");
+                if (getActivity() instanceof com.example.frontend.MainActivity) {
+                    ((com.example.frontend.MainActivity) getActivity()).loadFragment(listFragment);
+                } else {
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), listFragment);
+                }
+            }
+
+            if (state.reorderSuccess) {
+                // Chuyển sang giỏ hàng
+                if (getActivity() instanceof com.example.frontend.MainActivity) {
+                    ((com.example.frontend.MainActivity) getActivity()).navigateToCart();
+                } else {
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.commerce.CartFragment());
+                }
             }
         });
     }
@@ -331,6 +351,14 @@ public class OrderDetailFragment extends Fragment {
             .placeholder(R.drawable.ic_product)
             .error(R.drawable.ic_product)
             .into(ivProduct);
+
+        itemView.setOnClickListener(v -> {
+            String pid = item.getProductId();
+            if (pid != null) {
+                FragmentNavigationHelper.replaceFragment(requireActivity(), 
+                    com.example.frontend.feature.product.ProductDetailFragment.newInstance(pid));
+            }
+        });
     }
 
     private void setupActions(String status) {
@@ -350,14 +378,25 @@ public class OrderDetailFragment extends Fragment {
                 btnActionSecondary.setText("Hủy đơn hàng");
                 btnActionSecondary.setOnClickListener(v -> showCancelDialog());
                 btnActionPrimary.setText("Liên hệ Shop");
+                btnActionPrimary.setOnClickListener(v -> {
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.support.HelpCenterFragment());
+                });
                 break;
             case "processing":
                 btnActionSecondary.setText("Trả hàng/Hoàn tiền");
+                btnActionSecondary.setOnClickListener(v -> {
+                    ReturnRefundFragment fragment = ReturnRefundFragment.newInstance(orderId, null);
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+                });
                 btnActionPrimary.setText("Đã nhận hàng");
                 btnActionPrimary.setEnabled(false);
                 break;
             case "completed":
                 btnActionSecondary.setText(R.string.order_detail_return_refund);
+                btnActionSecondary.setOnClickListener(v -> {
+                    ReturnRefundFragment fragment = ReturnRefundFragment.newInstance(orderId, null);
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+                });
                 btnActionPrimary.setText("Đánh giá");
                 btnActionPrimary.setOnClickListener(v -> {
                     ReviewOrderFragment fragment = ReviewOrderFragment.newInstance(orderId);
@@ -366,11 +405,17 @@ public class OrderDetailFragment extends Fragment {
                 break;
             case "cancelled":
                 btnActionPrimary.setVisibility(View.GONE);
-                btnActionSecondary.setVisibility(View.GONE);
-            case "returned":
                 btnActionSecondary.setText("Mua lại");
-                btnActionPrimary.setText("Xem chi tiết");
-                if ("returned".equals(status)) btnActionSecondary.setVisibility(View.GONE);
+                btnActionSecondary.setOnClickListener(v -> viewModel.reorderOrder(orderId));
+                break;
+            case "returned":
+                btnActionSecondary.setText("Hủy yêu cầu");
+                btnActionSecondary.setOnClickListener(v -> viewModel.cancelReturnRequest(orderId));
+                btnActionPrimary.setText("Chi tiết hoàn trả");
+                btnActionPrimary.setOnClickListener(v -> {
+                    ReturnDetailFragment fragment = ReturnDetailFragment.newInstance(orderId, orderCode);
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+                });
                 break;
         }
     }

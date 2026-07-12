@@ -20,6 +20,7 @@ import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.checkout.CheckoutAddressViewModel;
 import com.example.frontend.feature.checkout.CheckoutViewModel;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,13 +80,7 @@ public class CheckoutAddressFragment extends Fragment {
             adapter = new CheckoutAddressAdapter(new CheckoutAddressAdapter.OnAddressClickListener() {
                 @Override
                 public void onAddressSelected(AddressDto address, int position) {
-                    viewModel.selectAddress(address);
-                    checkoutViewModel.setSelectedAddress(address);
-                    
-                    // Return to checkout after selection
-                    if (getActivity() != null) {
-                        getActivity().getSupportFragmentManager().popBackStack();
-                    }
+                    showAddressConfirmationDialog(address);
                 }
 
                 @Override
@@ -248,5 +243,49 @@ public class CheckoutAddressFragment extends Fragment {
         first.setSelected(true);
         viewModel.selectAddress(first);
         checkoutViewModel.setSelectedAddress(first);
+    }
+
+    private void showAddressConfirmationDialog(AddressDto address) {
+        if (getContext() == null) return;
+
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_confirm_address, null);
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        // Bind data
+        TextView tvMessage = dialogView.findViewById(R.id.tvDialogMessage);
+        if (tvMessage != null) {
+            tvMessage.setText("Bạn có muốn đổi địa chỉ giao hàng thành:\n" + address.getRecipientName() + " - " + address.getPhone() + "?");
+        }
+
+        View btnCancel = dialogView.findViewById(R.id.btnDialogCancel);
+        if (btnCancel != null) {
+            btnCancel.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        View btnConfirm = dialogView.findViewById(R.id.btnDialogConfirm);
+        if (btnConfirm != null) {
+            btnConfirm.setOnClickListener(v -> {
+                viewModel.selectAddress(address);
+                checkoutViewModel.setSelectedAddress(address);
+                dialog.dismiss();
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }
+            });
+        }
+
+        View btnClose = dialogView.findViewById(R.id.btnClose);
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        dialog.show();
     }
 }

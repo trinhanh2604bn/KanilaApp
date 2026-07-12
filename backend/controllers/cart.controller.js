@@ -459,6 +459,10 @@ const addItemToMyCart = async (req, res) => {
     }
 
     const cart = await ensureActiveCartForCustomer(customer._id);
+
+    // Unselect all existing items before adding/updating the new item
+    await CartItem.updateMany({ cart_id: cart._id }, { $set: { selected: false } });
+
     const lineKey = buildLineKey(product._id, variant._id);
     const existing = await CartItem.findOne({
       cart_id: cart._id,
@@ -575,6 +579,10 @@ const addItemToGuestCart = async (req, res) => {
     }
 
     const cart = await ensureActiveCartForGuest(guestSessionId);
+
+    // Unselect all existing items before adding/updating the new item
+    await CartItem.updateMany({ cart_id: cart._id }, { $set: { selected: false } });
+
     const lineKey = buildLineKey(product._id, variant._id);
     const existing = await CartItem.findOne({
       cart_id: cart._id,

@@ -16,17 +16,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
 import com.example.frontend.data.model.address.AddressDto;
+import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.checkout.CheckoutAddressViewModel;
 import com.example.frontend.feature.checkout.CheckoutViewModel;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CheckoutAddressFragment extends Fragment {
-
-    public static final String ARG_IS_SELECTION_MODE = "is_selection_mode";
-    private boolean isSelectionMode = true;
 
     private RecyclerView rvAddressList;
     private CheckoutAddressAdapter adapter;
@@ -45,10 +44,6 @@ public class CheckoutAddressFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (getArguments() != null) {
-            isSelectionMode = getArguments().getBoolean(ARG_IS_SELECTION_MODE, true);
-        }
-
         viewModel = new ViewModelProvider(requireActivity()).get(CheckoutAddressViewModel.class);
         checkoutViewModel = new ViewModelProvider(requireActivity()).get(CheckoutViewModel.class);
 
@@ -65,9 +60,7 @@ public class CheckoutAddressFragment extends Fragment {
         if (header == null) return;
 
         TextView tvTitle = header.findViewById(R.id.tvTopBarTitle);
-        if (tvTitle != null) {
-            tvTitle.setText(isSelectionMode ? R.string.checkout_address_title : R.string.address_book_title);
-        }
+        if (tvTitle != null) tvTitle.setText(R.string.checkout_address_title);
 
         View btnBack = header.findViewById(R.id.btnTopBarBack);
         if (btnBack != null) {
@@ -87,23 +80,22 @@ public class CheckoutAddressFragment extends Fragment {
             adapter = new CheckoutAddressAdapter(new CheckoutAddressAdapter.OnAddressClickListener() {
                 @Override
                 public void onAddressSelected(AddressDto address, int position) {
-                    if (isSelectionMode) {
-                        viewModel.selectAddress(address);
-                        checkoutViewModel.setSelectedAddress(address);
-                        
-                        // Return to checkout after selection
-                        if (getActivity() != null) {
-                            getActivity().getSupportFragmentManager().popBackStack();
-                        }
-                    } else {
-                        // In management mode, clicking an item opens edit
-                        openEditAddress(address);
-                    }
+                    showAddressConfirmationDialog(address);
                 }
 
                 @Override
                 public void onAddressEdit(AddressDto address, int position) {
-                    openEditAddress(address);
+                    if (getActivity() != null) {
+                        CheckoutAddressAddFragment editFragment = new CheckoutAddressAddFragment();
+                        Bundle args = new Bundle();
+                        args.putString("address_id", address.getId());
+                        editFragment.setArguments(args);
+                        
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.main, editFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    }
                 }
 
                 @Override
@@ -111,22 +103,7 @@ public class CheckoutAddressFragment extends Fragment {
                     viewModel.setDefaultAddress(address.getId());
                 }
             });
-            adapter.setSelectionMode(isSelectionMode);
             rvAddressList.setAdapter(adapter);
-        }
-    }
-
-    private void openEditAddress(AddressDto address) {
-        if (getActivity() != null) {
-            CheckoutAddressAddFragment editFragment = new CheckoutAddressAddFragment();
-            Bundle args = new Bundle();
-            args.putString("address_id", address.getId());
-            editFragment.setArguments(args);
-            
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, editFragment)
-                    .addToBackStack(null)
-                    .commit();
         }
     }
 
@@ -151,32 +128,28 @@ public class CheckoutAddressFragment extends Fragment {
     }
 
     private void observeViewModel() {
-        viewModel.getSaveResult().observe(getViewLifecycleOwner(), result -> {
+        viewModel.getSetDefaultResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             switch (result.status) {
                 case LOADING:
                     break;
                 case SUCCESS:
                     Toast.makeText(getContext(), "Đã thiết lập địa chỉ mặc định", Toast.LENGTH_SHORT).show();
-                    
-                    // Safe update current selected address in CheckoutViewModel if it matches
-                    AddressDto newDefault = result.data;
-                    AddressDto currentSelected = checkoutViewModel.getSelectedAddress().getValue();
-                    
-                    if (newDefault != null && currentSelected != null) {
-                        String newId = newDefault.getId();
-                        String currentId = currentSelected.getId();
-                        if (newId != null && newId.equals(currentId)) {
-                            checkoutViewModel.setSelectedAddress(newDefault);
-                        }
-                    }
-                    
-                    viewModel.loadCustomerAddresses(); // Refresh list to apply sorting
-                    viewModel.clearSaveResult();
+                    viewModel.loadCustomerAddresses(); // Refresh list
+                    viewModel.clearSetDefaultResult();
                     break;
                 case ERROR:
                     Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    viewModel.clearSetDefaultResult();
                     break;
+            }
+        });
+
+        viewModel.getSaveResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                // Just refresh list when an address is saved/updated elsewhere
+                viewModel.loadCustomerAddresses();
             }
         });
 
@@ -190,13 +163,10 @@ public class CheckoutAddressFragment extends Fragment {
                     if (result.data != null) {
                         handleInitialSelection(result.data);
                         adapter.setAddresses(result.data);
-                        
-                        // Apply selection UI state only in selection mode
-                        if (isSelectionMode) {
-                            AddressDto selected = checkoutViewModel.getSelectedAddress().getValue();
-                            if (selected != null) {
-                                adapter.setSelectedAddressId(selected.getId());
-                            }
+                        // Make sure to apply selection UI state
+                        AddressDto selected = checkoutViewModel.getSelectedAddress().getValue();
+                        if (selected != null) {
+                            adapter.setSelectedAddressId(selected.getId());
                         }
                     }
                     break;
@@ -273,5 +243,49 @@ public class CheckoutAddressFragment extends Fragment {
         first.setSelected(true);
         viewModel.selectAddress(first);
         checkoutViewModel.setSelectedAddress(first);
+    }
+
+    private void showAddressConfirmationDialog(AddressDto address) {
+        if (getContext() == null) return;
+
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_confirm_address, null);
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        // Bind data
+        TextView tvMessage = dialogView.findViewById(R.id.tvDialogMessage);
+        if (tvMessage != null) {
+            tvMessage.setText("Bạn có muốn đổi địa chỉ giao hàng thành:\n" + address.getRecipientName() + " - " + address.getPhone() + "?");
+        }
+
+        View btnCancel = dialogView.findViewById(R.id.btnDialogCancel);
+        if (btnCancel != null) {
+            btnCancel.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        View btnConfirm = dialogView.findViewById(R.id.btnDialogConfirm);
+        if (btnConfirm != null) {
+            btnConfirm.setOnClickListener(v -> {
+                viewModel.selectAddress(address);
+                checkoutViewModel.setSelectedAddress(address);
+                dialog.dismiss();
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }
+            });
+        }
+
+        View btnClose = dialogView.findViewById(R.id.btnClose);
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        dialog.show();
     }
 }

@@ -119,9 +119,8 @@ public class CheckoutViewModel extends AndroidViewModel {
                 // Update total
                 double subtotal = session.getSubtotalAmount() != null ? session.getSubtotalAmount() : 0.0;
                 double discount = session.getDiscountAmount() != null ? session.getDiscountAmount() : 0.0;
-                double points = session.getPointsAmount() != null ? session.getPointsAmount() : 0.0;
 
-                double total = subtotal + method.getShippingFee() - discount - points;
+                double total = subtotal + method.getShippingFee() - discount;
                 session.setTotalAmount(Math.max(0, total));
                 android.util.Log.d("CheckoutViewModel", "Mock session updated. New total: " + session.getTotalAmount());
 
@@ -265,9 +264,8 @@ public class CheckoutViewModel extends AndroidViewModel {
                 
                 double shipping = session.getShippingAmount() != null ? session.getShippingAmount() : 0.0;
                 double discount = session.getDiscountAmount() != null ? session.getDiscountAmount() : 0.0;
-                double points = session.getPointsAmount() != null ? session.getPointsAmount() : 0.0;
                 
-                double total = subtotal + shipping - discount - points;
+                double total = subtotal + shipping - discount;
                 session.setTotalAmount(Math.max(0, total));
                 
                 checkoutSession.setValue(NetworkResult.success(session));
@@ -300,7 +298,7 @@ public class CheckoutViewModel extends AndroidViewModel {
         }
     }
 
-    public void setMockDataFromCart(List<CartItemDto> selectedItems, double coinsDiscount, com.example.frontend.data.model.coupon.CouponDto selectedVoucher) {
+    public void setMockDataFromCart(List<CartItemDto> selectedItems, com.example.frontend.data.model.coupon.CouponDto selectedVoucher) {
         if (!USE_MOCK_CHECKOUT) return;
 
         // Try to get existing session to preserve shipping/address selection
@@ -369,13 +367,12 @@ public class CheckoutViewModel extends AndroidViewModel {
             discount = 0;
         }
 
-        double points = coinsDiscount;
         session.setDiscountAmount(discount);
-        session.setPointsAmount(points);
+        session.setPointsAmount(0.0);
         
         // 4. Calculate Total
         double shippingFee = session.getShippingAmount() != null ? session.getShippingAmount() : 0.0;
-        double total = subtotal + shippingFee - discount - points;
+        double total = subtotal + shippingFee - discount;
         if (total < 0) total = 0;
         session.setTotalAmount(total);
 

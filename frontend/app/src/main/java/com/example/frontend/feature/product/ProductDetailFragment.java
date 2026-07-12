@@ -26,6 +26,8 @@ import com.example.frontend.feature.product.adapter.ThumbnailAdapter;
 import com.example.frontend.feature.product.adapter.RecentlyViewedAdapter;
 import com.example.frontend.feature.home.HomeProductAdapter;
 import com.example.frontend.feature.product.adapter.ReviewMediaAdapter;
+import com.example.frontend.data.model.cart.CartItemDto;
+import com.example.frontend.data.model.checkout.CheckoutSessionDto;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import java.util.Locale;
@@ -363,8 +365,34 @@ public class ProductDetailFragment extends Fragment {
             if (result == null) return;
             switch (result.status) {
                 case SUCCESS:
-                    // Navigate to Checkout
-                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CheckoutFragment());
+                    // Navigate to Checkout with selected items from session
+                    if (result.data != null && result.data.getItems() != null) {
+                        ArrayList<CartItemDto> selectedItems = new ArrayList<>();
+                        for (CheckoutSessionDto.CheckoutItemDto checkoutItem : result.data.getItems()) {
+                            CartItemDto cartItem = CartItemDto.createMock(
+                                checkoutItem.getId(),
+                                checkoutItem.getProductName(),
+                                checkoutItem.getVariantName(),
+                                checkoutItem.getPrice(),
+                                checkoutItem.getQuantity(),
+                                true,
+                                checkoutItem.getImageUrl()
+                            );
+                            cartItem.setProductId(checkoutItem.getProductId());
+                            cartItem.setVariantId(checkoutItem.getVariantId());
+                            cartItem.setBrandNameSnapshot(checkoutItem.getBrandName());
+                            selectedItems.add(cartItem);
+                        }
+                        
+                        ui.commerce.CheckoutFragment checkoutFragment = new ui.commerce.CheckoutFragment();
+                        Bundle args = new Bundle();
+                        args.putSerializable("selected_items", selectedItems);
+                        checkoutFragment.setArguments(args);
+                        
+                        ui.common.FragmentNavigationHelper.loadFragment(getActivity(), checkoutFragment);
+                    } else {
+                        ui.common.FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CheckoutFragment());
+                    }
                     break;
                 case ERROR:
                     Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
@@ -484,7 +512,33 @@ public class ProductDetailFragment extends Fragment {
         bottomSheet.setListener((variant, selectedMode, selectedQuantity) -> {
             String variantId = variant != null ? variant.getId() : null;
             if (selectedMode == VariantSelectorBottomSheet.ActionMode.BUY_NOW) {
-                viewModel.buyNow(productId, variantId, selectedQuantity);
+                // Mock "Buy Now" by constructing CartItemDto locally and navigating to Checkout
+                Product product = state.product;
+                if (product != null) {
+                    CartItemDto cartItem = CartItemDto.createMock(
+                        "buy_now_" + System.currentTimeMillis(),
+                        product.getName(),
+                        variant != null ? variant.getVariantName() : "Mặc định",
+                        variant != null && variant.getPrice() != null ? variant.getPrice() : product.getPriceValue(),
+                        selectedQuantity,
+                        true,
+                        variant != null && variant.getImageUrl() != null && !variant.getImageUrl().isEmpty() ? 
+                            variant.getImageUrl() : (state.mediaList != null && !state.mediaList.isEmpty() ? state.mediaList.get(0).getUrl() : "")
+                    );
+                    cartItem.setProductId(productId);
+                    cartItem.setVariantId(variantId);
+                    cartItem.setBrandNameSnapshot(product.getBrand());
+
+                    ArrayList<CartItemDto> selectedItems = new ArrayList<>();
+                    selectedItems.add(cartItem);
+
+                    ui.commerce.CheckoutFragment checkoutFragment = new ui.commerce.CheckoutFragment();
+                    Bundle args = new Bundle();
+                    args.putSerializable("selected_items", selectedItems);
+                    checkoutFragment.setArguments(args);
+                    
+                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), checkoutFragment);
+                }
             } else {
                 viewModel.addToCart(productId, variantId, selectedQuantity);
             }

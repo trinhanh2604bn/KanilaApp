@@ -61,13 +61,12 @@ public class CheckoutFragment extends Fragment {
         if (getArguments() != null) {
             java.util.List<com.example.frontend.data.model.cart.CartItemDto> selectedItems =
                     (java.util.List<com.example.frontend.data.model.cart.CartItemDto>) getArguments().getSerializable("selected_items");
-            double coinsDiscount = getArguments().getDouble("coins_discount", 0);
             com.example.frontend.data.model.coupon.CouponDto selectedVoucher =
                     (com.example.frontend.data.model.coupon.CouponDto) getArguments().getSerializable("selected_voucher");
 
             if (selectedItems != null && !selectedItems.isEmpty()) {
                 android.util.Log.d("CheckoutFragment", "Setting mock data from cart arguments. Item count: " + selectedItems.size());
-                viewModel.setMockDataFromCart(selectedItems, coinsDiscount, selectedVoucher);
+                viewModel.setMockDataFromCart(selectedItems, selectedVoucher);
             }
         }
 
@@ -490,12 +489,17 @@ public class CheckoutFragment extends Fragment {
         tvSubtotal.setText(formatPrice(safeDouble(session.getSubtotalAmount())));
         tvShipping.setText(formatPrice(safeDouble(session.getShippingAmount())));
         tvDiscount.setText("-" + formatPrice(safeDouble(session.getDiscountAmount())));
-        tvPoints.setText("-" + formatPrice(safeDouble(session.getPointsAmount())));
+        
+        // Hide Points/Coins since Kanila doesn't use them
+        if (tvPoints != null) {
+            View pointsParent = (View) tvPoints.getParent();
+            if (pointsParent != null) pointsParent.setVisibility(View.GONE);
+        }
         
         double total = safeDouble(session.getTotalAmount());
         if (total <= 0) {
             total = safeDouble(session.getSubtotalAmount()) + safeDouble(session.getShippingAmount()) 
-                    - safeDouble(session.getDiscountAmount()) - safeDouble(session.getPointsAmount());
+                    - safeDouble(session.getDiscountAmount());
         }
         tvTotal.setText(formatPrice(Math.max(0, total)));
 

@@ -20,6 +20,7 @@ const orderItemSchema = new mongoose.Schema(
     line_discount_amount: { type: Number, default: 0 },
     line_total_amount: { type: Number, required: true, min: 0 },
     currency_code: { type: String, default: "VND", trim: true },
+    review_status: { type: String, enum: ["pending_review", "reviewed"], default: "pending_review" },
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },

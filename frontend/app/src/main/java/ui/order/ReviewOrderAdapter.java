@@ -107,19 +107,23 @@ public class ReviewOrderAdapter extends RecyclerView.Adapter<ReviewOrderAdapter.
                     .into(ivProductImage);
 
             if ("reviewed".equals(item.getReviewStatus())) {
-                btnReviewNow.setEnabled(false);
+                btnReviewNow.setEnabled(true);
                 if (btnReviewNow instanceof TextView) {
                     ((TextView) btnReviewNow).setText("Đã đánh giá");
+                    ((TextView) btnReviewNow).setTextColor(itemView.getContext().getColor(R.color.text_tertiary));
+                    btnReviewNow.setBackgroundResource(R.drawable.bg_status_pending);
                 }
             } else {
                 btnReviewNow.setEnabled(true);
                 if (btnReviewNow instanceof TextView) {
                     ((TextView) btnReviewNow).setText("Đánh giá ngay");
+                    ((TextView) btnReviewNow).setTextColor(itemView.getContext().getColor(R.color.button));
+                    btnReviewNow.setBackgroundResource(R.drawable.bg_kanila_button_ghost);
                 }
-                btnReviewNow.setOnClickListener(v -> {
-                    if (listener != null) listener.onReviewClick(item);
-                });
             }
+            btnReviewNow.setOnClickListener(v -> {
+                if (listener != null) listener.onReviewClick(item);
+            });
         }
     }
 }

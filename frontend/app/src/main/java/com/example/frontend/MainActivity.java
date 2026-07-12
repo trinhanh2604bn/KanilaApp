@@ -404,6 +404,7 @@ public class MainActivity extends AppCompatActivity {
     private void observeViewModel() {
         if (viewModel == null) return;
         viewModel.getUiState().observe(this, state -> {
+            // ... (rest of logic)
             if (state == null) return;
 
             if (state.loading) {
@@ -429,6 +430,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                     wishlistViewModel.loadWishlistStatus(productIds);
                 }
+            }
+        });
+
+        cartViewModel.getCartResult().observe(this, result -> {
+            if (result == null) return;
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                Toast.makeText(MainActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            } else if (result.status == NetworkResult.Status.ERROR) {
+                Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -660,24 +670,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleAddToCart(com.example.frontend.model.Product product) {
         if (product.getId() == null) return;
-
-        // Use empty string instead of null for variant_id as some backends require it
-        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
-        cartViewModel.addToCart(request);
-
-        cartViewModel.getCartResult().observe(this, new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
-            @Override
-            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
-                if (result == null) return;
-                if (result.status == NetworkResult.Status.SUCCESS) {
-                    Toast.makeText(MainActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                } else if (result.status == NetworkResult.Status.ERROR) {
-                    Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                }
-            }
-        });
+        com.example.frontend.feature.product.QuickAddHelper.quickAddToCart(
+            this, getSupportFragmentManager(), this, product, cartViewModel);
     }
 
     private void smoothScrollTo(int position, long duration) {

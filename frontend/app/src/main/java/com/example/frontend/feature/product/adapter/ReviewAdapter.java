@@ -13,10 +13,15 @@ import com.example.frontend.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> {
-    private List<Object> reviews = new ArrayList<>(); // Use real Review DTO if available
+import com.example.frontend.data.model.review.ReviewDto;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-    public void setReviews(List<Object> reviews) {
+public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> {
+    private List<ReviewDto> reviews = new ArrayList<>();
+
+    public void setReviews(List<ReviewDto> reviews) {
         this.reviews = reviews != null ? reviews : new ArrayList<>();
         notifyDataSetChanged();
     }
@@ -30,14 +35,51 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // Placeholder binding
-        holder.tvUserName.setText("Kim Trân");
-        holder.tvContent.setText("Màu son lên chuẩn, chất son nhẹ môi, bám khá tốt và giúp gương mặt trông tươi tắn.");
-        holder.rbStars.setRating(5f);
+        ReviewDto review = reviews.get(position);
         
-        Glide.with(holder.ivAvatar.getContext())
-                .load(R.drawable.bg_avatar_circle)
-                .into(holder.ivAvatar);
+        if (review.getCustomer() != null) {
+            holder.tvUserName.setText(review.getCustomer().getFullName());
+            Glide.with(holder.ivAvatar.getContext())
+                    .load(review.getCustomer().getAvatarUrl())
+                    .placeholder(R.drawable.bg_avatar_circle)
+                    .error(R.drawable.bg_avatar_circle)
+                    .circleCrop()
+                    .into(holder.ivAvatar);
+        }
+
+        holder.tvContent.setText(review.getContent());
+        holder.rbStars.setRating(review.getRating());
+        
+        // Date
+        if (review.getCreatedAt() != null && review.getCreatedAt().contains("T")) {
+             holder.tvDate.setText(review.getCreatedAt().split("T")[0]);
+        } else {
+             holder.tvDate.setText(review.getCreatedAt());
+        }
+
+        // Verified purchase
+        holder.tvVerified.setVisibility(review.isVerifiedPurchase() ? View.VISIBLE : View.GONE);
+
+        // Media
+        if (review.getMedia() != null && !review.getMedia().isEmpty()) {
+            holder.rvMedia.setVisibility(View.VISIBLE);
+            ReviewMediaAdapter mediaAdapter = new ReviewMediaAdapter();
+            holder.rvMedia.setAdapter(mediaAdapter);
+            List<String> urls = new ArrayList<>();
+            for (com.example.frontend.data.model.review.MyReviewDto.ReviewMediaDto m : review.getMedia()) {
+                urls.add(m.getMediaUrl());
+            }
+            mediaAdapter.setMediaUrls(urls);
+        } else {
+            holder.rvMedia.setVisibility(View.GONE);
+        }
+
+        // Helpful count
+        holder.btnHelpful.setText(String.format(Locale.getDefault(), "Hữu ích (%d)", review.getHelpfulCount()));
+        
+        // Read only: disable click actions if they were interactive
+        holder.btnHelpful.setClickable(false);
+        holder.btnReply.setClickable(false);
     }
 
     @Override
@@ -46,9 +88,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvUserName, tvContent;
+        TextView tvUserName, tvContent, tvDate, tvVerified;
         RatingBar rbStars;
         ImageView ivAvatar;
+        RecyclerView rvMedia;
+        TextView btnHelpful, btnReply;
         
         ViewHolder(View view) {
             super(view);
@@ -56,6 +100,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             tvContent = view.findViewById(R.id.tvReviewContent);
             rbStars = view.findViewById(R.id.rbReviewStars);
             ivAvatar = view.findViewById(R.id.ivReviewAvatar);
+            tvDate = view.findViewById(R.id.tvReviewDate);
+            tvVerified = view.findViewById(R.id.tvVerifiedPurchase);
+            rvMedia = view.findViewById(R.id.rvReviewMedia);
+            btnHelpful = view.findViewById(R.id.btnHelpful);
+            btnReply = view.findViewById(R.id.btnReply);
         }
     }
 }

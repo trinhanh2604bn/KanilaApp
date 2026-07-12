@@ -146,8 +146,8 @@ public class CartViewModel extends AndroidViewModel {
                 subtotal += item.getFinalUnitPriceAmount() * item.getQuantity();
             }
         }
-        double discount = subtotal > 0 ? 100000 : 0;
-        double total = subtotal - discount;
+        double discount = 0;
+        double total = subtotal;
         mockCart = CartDto.createMockCart(items, subtotal, discount, total);
     }
 
@@ -217,9 +217,8 @@ public class CartViewModel extends AndroidViewModel {
             }
         }
         
-        // Mock discount if any items are selected
-        double discount = subtotal > 0 ? 100000 : 0;
-        double total = subtotal - discount;
+        double discount = 0;
+        double total = subtotal;
 
         return CartDto.createMockCart(items, subtotal, discount, total);
     }

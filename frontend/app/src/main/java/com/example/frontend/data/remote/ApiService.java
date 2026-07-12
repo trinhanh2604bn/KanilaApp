@@ -76,6 +76,9 @@ public interface ApiService {
     @GET("api/products/slug/{slug}")
     Call<ApiResponse<Product>> getProductBySlug(@Path("slug") String slug);
 
+    @GET("api/reviews/product/{productId}")
+    Call<ApiResponse<List<com.example.frontend.data.model.review.ReviewDto>>> getReviewsByProductId(@Path("productId") String productId);
+
     @GET("api/product-media/product/{productId}")
     Call<ApiResponse<List<ProductMediaDto>>> getProductMedia(@Path("productId") String productId);
 
@@ -220,6 +223,9 @@ public interface ApiService {
     @GET("api/orders/me/{id}")
     Call<ApiResponse<com.example.frontend.data.model.order.OrderDetailDto>> getMyOrderDetail(@Path("id") String id);
 
+    @POST("api/orders/{id}/reorder")
+    Call<ApiResponse<com.example.frontend.data.model.order.OrderSummaryDto>> reorderMyOrder(@Path("id") String id);
+
     @GET("api/orders/me/{id}/review-items")
     Call<ApiResponse<com.example.frontend.data.model.order.ReviewOrderItemsDto>> getOrderReviewItems(@Path("id") String orderId);
 
@@ -229,8 +235,20 @@ public interface ApiService {
     @POST("api/reviews/submit")
     Call<ApiResponse<Object>> submitReview(@Body com.example.frontend.data.model.review.SubmitReviewRequest request);
 
+    @GET("api/reviews/me")
+    Call<ApiResponse<List<com.example.frontend.data.model.review.MyReviewDto>>> getMyReviews();
+
+    @GET("api/reviews/me/{id}")
+    Call<ApiResponse<com.example.frontend.data.model.review.MyReviewDto>> getMyReviewDetail(@Path("id") String reviewId);
+
     @PATCH("api/orders/{id}/cancel")
     Call<ApiResponse<com.example.frontend.data.model.order.OrderSummaryDto>> cancelMyOrder(@Path("id") String id, @Body java.util.Map<String, String> body);
+
+    @POST("api/orders/{id}/return-refund")
+    Call<ApiResponse<Object>> submitReturnRefund(@Path("id") String orderId, @Body com.example.frontend.data.model.returnrefund.ReturnRefundRequestDto request);
+
+    @PATCH("api/orders/{id}/cancel-return")
+    Call<ApiResponse<Object>> cancelReturnRequest(@Path("id") String orderId);
 
     @GET("api/coupons/me")
     Call<ApiResponse<List<CouponDto>>> getMyCoupons();
@@ -267,6 +285,9 @@ public interface ApiService {
 
     @POST("api/coupons/save/{couponId}")
     Call<ApiResponse<Object>> saveCoupon(@Path("couponId") String couponId);
+
+    @GET("api/returns/order/{orderId}")
+    Call<ApiResponse<List<com.example.frontend.data.model.returnrefund.ReturnDetailDto>>> getReturnsByOrderId(@Path("orderId") String orderId);
 
     @GET("api/accounts")
     Call<ApiResponse<List<Object>>> getAccounts();

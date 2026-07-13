@@ -26,7 +26,7 @@ public class ReviewDto {
     private String content;
 
     @SerializedName("media")
-    private List<MediaInfo> media;
+    private List<ReviewMediaDto> media;
 
     @SerializedName("variantId")
     private VariantInfo variant;
@@ -42,6 +42,12 @@ public class ReviewDto {
 
     @SerializedName("isLikedByMe")
     private boolean isLikedByMe;
+
+    @SerializedName("comments")
+    private List<ReviewCommentDto> comments;
+
+    @SerializedName("commentCount")
+    private int commentCount;
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -64,8 +70,8 @@ public class ReviewDto {
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
 
-    public List<MediaInfo> getMedia() { return media; }
-    public void setMedia(List<MediaInfo> media) { this.media = media; }
+    public List<ReviewMediaDto> getMedia() { return media; }
+    public void setMedia(List<ReviewMediaDto> media) { this.media = media; }
 
     public VariantInfo getVariant() { return variant; }
     public void setVariant(VariantInfo variant) { this.variant = variant; }
@@ -82,6 +88,29 @@ public class ReviewDto {
     public boolean isLikedByMe() { return isLikedByMe; }
     public void setLikedByMe(boolean likedByMe) { isLikedByMe = likedByMe; }
 
+    public List<ReviewCommentDto> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<ReviewCommentDto> comments) {
+        this.comments = comments;
+    }
+
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public void addComment(ReviewCommentDto comment) {
+        if (comment == null) return;
+        if (comments == null) comments = new java.util.ArrayList<>();
+        comments.add(comment);
+        commentCount = Math.max(commentCount + 1, comments.size());
+    }
+
     public static class CustomerInfo {
         @SerializedName("full_name")
         private String fullName;
@@ -96,15 +125,6 @@ public class ReviewDto {
 
         public String getFullName() { return fullName; }
         public String getAvatarUrl() { return avatarUrl; }
-    }
-
-    public static class MediaInfo {
-        @SerializedName("mediaUrl")
-        private String mediaUrl;
-        @SerializedName("mediaType")
-        private String mediaType;
-        public String getMediaUrl() { return mediaUrl; }
-        public String getMediaType() { return mediaType; }
     }
 
     public static class VariantInfo {

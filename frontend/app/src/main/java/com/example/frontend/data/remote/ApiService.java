@@ -31,6 +31,8 @@ import com.example.frontend.feature.chatbot.data.request.ChatbotMessageRequest;
 import com.example.frontend.feature.chatbot.data.response.ChatbotMessageResponse;
 import java.util.List;
 import java.util.Map;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -41,6 +43,9 @@ import retrofit2.http.POST;
 import retrofit2.http.PATCH;
 import retrofit2.http.PUT;
 import retrofit2.http.DELETE;
+import retrofit2.http.Multipart;
+import retrofit2.http.Part;
+import retrofit2.http.PartMap;
 
 public interface ApiService {
     @POST("api/chatbot/message")
@@ -270,11 +275,29 @@ public interface ApiService {
             @Path("reviewId") String reviewId
     );
 
+    @POST("api/reviews/{reviewId}/comments")
+    Call<ApiResponse<com.example.frontend.data.model.review.ReviewCommentDto>> addReviewComment(
+            @Path("reviewId") String reviewId,
+            @Body Map<String, String> body
+    );
+
+    @GET("api/reviews/{reviewId}/comments")
+    Call<ApiResponse<List<com.example.frontend.data.model.review.ReviewCommentDto>>> getReviewComments(
+            @Path("reviewId") String reviewId
+    );
+
     @GET("api/review-summary/product/{productId}")
     Call<ApiResponse<com.example.frontend.data.model.review.ReviewSummaryDto>> getReviewSummaryByProductId(@Path("productId") String productId);
 
     @POST("api/reviews/submit")
     Call<ApiResponse<Object>> submitReview(@Body com.example.frontend.data.model.review.SubmitReviewRequest request);
+
+    @Multipart
+    @POST("api/reviews/submit")
+    Call<ApiResponse<Object>> submitReviewMultipart(
+            @PartMap Map<String, RequestBody> fields,
+            @Part List<MultipartBody.Part> medias
+    );
 
     @GET("api/reviews/me")
     Call<ApiResponse<List<com.example.frontend.data.model.review.MyReviewDto>>> getMyReviews();

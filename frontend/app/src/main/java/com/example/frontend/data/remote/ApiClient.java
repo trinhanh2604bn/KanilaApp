@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
     // Emulator: http://10.0.2.2:5000/
      //Physical Device: http://192.168.171.141:5000/ (e.g., http://192.168.1.5:5000/)
-    private static final String BASE_URL = "http://10.219.171.213:5000/";
+    private static final String BASE_URL = "http://10.0.98.147:5000/";
 
     private static Retrofit retrofit;
 

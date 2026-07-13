@@ -35,18 +35,31 @@ import com.google.android.material.chip.ChipGroup;
 import ui.community.MediaSourceBottomSheet;
 import ui.community.SelectedMediaAdapter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import android.content.ContentResolver;
+import android.webkit.MimeTypeMap;
+import com.google.gson.Gson;
 
 public class ReviewWriteFragment extends Fragment {
 
     private static final String ARG_ORDER_ITEM_ID = "order_item_id";
 
     private String orderItemId;
+    private String productId;
+    private String variantId;
     private ReviewWriteViewModel viewModel;
 
     private View layoutLoading, layoutProductPreview;
@@ -196,11 +209,65 @@ public class ReviewWriteFragment extends Fragment {
                 if (chip.isChecked()) selectedSkinTypes.add(chip.getText().toString());
             }
 
-            List<String> mediaUrls = new ArrayList<>();
-            for (Uri uri : selectedMediaUris) mediaUrls.add(uri.toString());
+            Map<String, RequestBody> fields = new HashMap<>();
+            fields.put("orderItemId", createPartFromString(orderItemId));
+            if (productId != null) fields.put("productId", createPartFromString(productId));
+            if (variantId != null) fields.put("variantId", createPartFromString(variantId));
+            fields.put("rating", createPartFromString(String.valueOf(rating)));
+            fields.put("reviewTitle", createPartFromString(""));
+            fields.put("reviewContent", createPartFromString(content));
+            
+            Gson gson = new Gson();
+            fields.put("reviewTags", createPartFromString(gson.toJson(tags)));
+            fields.put("skinTypes", createPartFromString(gson.toJson(selectedSkinTypes)));
 
-            viewModel.submitReview(orderItemId, rating, "", content, tags, selectedSkinTypes, mediaUrls);
+            List<MultipartBody.Part> medias = new ArrayList<>();
+            for (Uri uri : selectedMediaUris) {
+                File file = getFileFromUri(uri);
+                if (file != null) {
+                    String mimeType = requireContext().getContentResolver().getType(uri);
+                    if (mimeType == null) mimeType = "application/octet-stream";
+                    RequestBody requestFile = RequestBody.create(file, MediaType.parse(mimeType));
+                    MultipartBody.Part body = MultipartBody.Part.createFormData("medias", file.getName(), requestFile);
+                    medias.add(body);
+                }
+            }
+
+            viewModel.submitReviewMultipart(fields, medias);
         });
+    }
+
+    private RequestBody createPartFromString(String string) {
+        return RequestBody.create(MediaType.parse("text/plain"), string);
+    }
+
+    private File getFileFromUri(Uri uri) {
+        try {
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+            File tempFile = File.createTempFile("upload_" + timeStamp, getExtension(uri), requireContext().getCacheDir());
+            InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+            if (inputStream == null) return null;
+            OutputStream outputStream = new FileOutputStream(tempFile);
+            byte[] buffer = new byte[4096];
+            int read;
+            while ((read = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, read);
+            }
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
+            return tempFile;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String getExtension(Uri uri) {
+        ContentResolver contentResolver = requireContext().getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        String extension = mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+        return extension != null ? "." + extension : ".jpg";
     }
 
     private void observeViewModel() {
@@ -229,6 +296,8 @@ public class ReviewWriteFragment extends Fragment {
 
     private void bindProductPreview(ReviewEligibilityDto.ReviewPreview preview) {
         if (preview == null) return;
+        this.productId = preview.getProductId();
+        this.variantId = preview.getVariantId();
         ImageView ivImage = layoutProductPreview.findViewById(R.id.ivSelectedCartProductImage);
         TextView tvName = layoutProductPreview.findViewById(R.id.tvSelectedCartProductName);
         TextView tvVariant = layoutProductPreview.findViewById(R.id.tvSelectedCartVariant);

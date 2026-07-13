@@ -63,15 +63,4 @@ public class MyReviewDto {
         public String getVariantName() { return variantName; }
         public String getImageUrl() { return imageUrl; }
     }
-
-    public static class ReviewMediaDto {
-        @SerializedName("mediaType")
-        private String mediaType;
-
-        @SerializedName("mediaUrl")
-        private String mediaUrl;
-
-        public String getMediaType() { return mediaType; }
-        public String getMediaUrl() { return mediaUrl; }
-    }
 }

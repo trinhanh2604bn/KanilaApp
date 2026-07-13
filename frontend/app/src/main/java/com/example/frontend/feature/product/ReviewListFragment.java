@@ -117,8 +117,14 @@ public class ReviewListFragment extends Fragment {
 
         reviewAdapter = new ReviewAdapter();
         reviewAdapter.setOnReviewLikeListener(review -> {
-            if (productViewModel != null) {
-                productViewModel.toggleReviewVote(review.getId());
+            if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                if (productViewModel != null) {
+                    productViewModel.toggleReviewVote(review.getId());
+                }
+            } else {
+                com.example.frontend.feature.auth.GuestPromptBottomSheet.newInstance(
+                        com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION
+                ).show(getChildFragmentManager(), "GuestPromptBottomSheet");
             }
         });
         reviewAdapter.setOnReviewReplyListener(this::showReplyDialog);
@@ -285,7 +291,9 @@ public class ReviewListFragment extends Fragment {
 
     private void showReplyDialog(com.example.frontend.data.model.review.ReviewDto review) {
         if (!com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
-            Toast.makeText(getContext(), "Vui lòng đăng nhập để phản hồi", Toast.LENGTH_SHORT).show();
+            com.example.frontend.feature.auth.GuestPromptBottomSheet.newInstance(
+                    com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION
+            ).show(getChildFragmentManager(), "GuestPromptBottomSheet");
             return;
         }
 

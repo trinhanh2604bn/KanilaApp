@@ -349,8 +349,14 @@ public class ProductDetailFragment extends Fragment {
 
         reviewPreviewAdapter = new com.example.frontend.feature.product.adapter.ReviewAdapter();
         reviewPreviewAdapter.setOnReviewLikeListener(review -> {
-            if (reviewActionViewModel != null) {
-                reviewActionViewModel.toggleReviewVote(review.getId());
+            if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                if (reviewActionViewModel != null) {
+                    reviewActionViewModel.toggleReviewVote(review.getId());
+                }
+            } else {
+                com.example.frontend.feature.auth.GuestPromptBottomSheet.newInstance(
+                        com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION
+                ).show(getChildFragmentManager(), "GuestPromptBottomSheet");
             }
         });
         reviewPreviewAdapter.setOnReviewReplyListener(this::showReplyDialog);
@@ -898,7 +904,9 @@ public class ProductDetailFragment extends Fragment {
 
     private void showReplyDialog(com.example.frontend.data.model.review.ReviewDto review) {
         if (!com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
-            Toast.makeText(getContext(), "Vui lòng đăng nhập để phản hồi", Toast.LENGTH_SHORT).show();
+            com.example.frontend.feature.auth.GuestPromptBottomSheet.newInstance(
+                    com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION
+            ).show(getChildFragmentManager(), "GuestPromptBottomSheet");
             return;
         }
 

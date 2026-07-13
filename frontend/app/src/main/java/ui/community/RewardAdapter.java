@@ -34,9 +34,9 @@ public class RewardAdapter extends RecyclerView.Adapter<RewardAdapter.ViewHolder
         holder.tvPoints.setText(holder.itemView.getContext().getString(R.string.challenge_reward_points, "" + reward.getPointCost()));
         
         if (reward.getImageUrl() != null) {
-            Glide.with(holder.itemView.getContext()).load(reward.getImageUrl()).placeholder(R.drawable.ic_gift).into(holder.ivImage);
+            Glide.with(holder.itemView.getContext()).load(reward.getImageUrl()).placeholder(R.drawable.icon_gift).into(holder.ivImage);
         } else {
-            holder.ivImage.setImageResource(R.drawable.ic_gift);
+            holder.ivImage.setImageResource(R.drawable.icon_gift);
         }
 
         holder.itemView.setOnClickListener(v -> {

@@ -161,8 +161,14 @@ public class CommunityHomeFragment extends Fragment {
 
     private void setupNotifications() {
         layoutNotification.setOnClickListener(v -> {
-            CommunityNotificationBottomSheet bottomSheet = new CommunityNotificationBottomSheet();
-            bottomSheet.show(getChildFragmentManager(), "CommunityNotificationBottomSheet");
+            if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                CommunityNotificationBottomSheet bottomSheet = new CommunityNotificationBottomSheet();
+                bottomSheet.show(getChildFragmentManager(), "CommunityNotificationBottomSheet");
+            } else {
+                com.example.frontend.feature.auth.GuestPromptBottomSheet.newInstance(
+                        com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION
+                ).show(getChildFragmentManager(), "GuestPromptBottomSheet");
+            }
         });
     }
 

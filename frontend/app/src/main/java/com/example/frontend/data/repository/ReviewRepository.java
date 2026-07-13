@@ -13,8 +13,9 @@ import com.example.frontend.data.remote.ApiResponse;
 import com.example.frontend.data.remote.ApiService;
 import com.example.frontend.data.remote.NetworkResult;
 import java.util.List;
-import java.util.List;
 import java.util.Map;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -113,6 +114,26 @@ public class ReviewRepository {
         });
     }
 
+    public void submitReviewMultipart(Map<String, RequestBody> fields, List<MultipartBody.Part> medias, MutableLiveData<NetworkResult<Object>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.submitReviewMultipart(fields, medias).enqueue(new Callback<ApiResponse<Object>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Object>> call, Response<ApiResponse<Object>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    result.setValue(NetworkResult.success(response.body().getData()));
+                } else {
+                    String errorMsg = response.body() != null ? response.body().getMessage() : "Failed to submit review";
+                    result.setValue(NetworkResult.error(errorMsg));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Object>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
     public void toggleReviewVote(String reviewId, MutableLiveData<NetworkResult<com.example.frontend.data.model.review.ReviewVoteResponse>> result) {
         result.setValue(NetworkResult.loading());
         apiService.toggleReviewVote(reviewId).enqueue(new Callback<ApiResponse<com.example.frontend.data.model.review.ReviewVoteResponse>>() {
@@ -128,6 +149,28 @@ public class ReviewRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<com.example.frontend.data.model.review.ReviewVoteResponse>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
+
+    public void addReviewComment(String reviewId, String content, MutableLiveData<NetworkResult<com.example.frontend.data.model.review.ReviewCommentDto>> result) {
+        result.setValue(NetworkResult.loading());
+        java.util.Map<String, String> body = new java.util.HashMap<>();
+        body.put("commentContent", content);
+        apiService.addReviewComment(reviewId, body).enqueue(new Callback<ApiResponse<com.example.frontend.data.model.review.ReviewCommentDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.example.frontend.data.model.review.ReviewCommentDto>> call, Response<ApiResponse<com.example.frontend.data.model.review.ReviewCommentDto>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    result.setValue(NetworkResult.success(response.body().getData()));
+                } else {
+                    String errorMsg = response.body() != null ? response.body().getMessage() : "Failed to add comment";
+                    result.setValue(NetworkResult.error(errorMsg));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<com.example.frontend.data.model.review.ReviewCommentDto>> call, Throwable t) {
                 result.setValue(NetworkResult.error(t.getMessage()));
             }
         });

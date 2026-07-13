@@ -1,22 +1,28 @@
 package com.example.frontend.feature.product.adapter;
 
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import com.bumptech.glide.Glide;
 import com.example.frontend.R;
+import com.example.frontend.data.model.review.ReviewCommentDto;
 import com.example.frontend.data.model.review.ReviewDto;
+import com.example.frontend.data.model.review.ReviewMediaDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +32,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     private List<ReviewDto> reviews = new ArrayList<>();
     private OnReviewLikeListener likeListener;
     private OnReviewClickListener clickListener;
+    private OnReviewReplyListener replyListener;
 
     public interface OnReviewLikeListener {
         void onLikeClick(ReviewDto review);
@@ -33,6 +40,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
     public interface OnReviewClickListener {
         void onReviewClick(ReviewDto review);
+    }
+
+    public interface OnReviewReplyListener {
+        void onReplyClick(ReviewDto review);
     }
 
     public void setOnReviewLikeListener(OnReviewLikeListener listener) {
@@ -43,6 +54,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         this.clickListener = listener;
     }
 
+    public void setOnReviewReplyListener(OnReviewReplyListener listener) {
+        this.replyListener = listener;
+    }
+
     public void setReviews(List<ReviewDto> reviews) {
         this.reviews = reviews != null ? reviews : new ArrayList<>();
         notifyDataSetChanged();
@@ -50,6 +65,31 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
     public void submitList(List<ReviewDto> reviews) {
         setReviews(reviews);
+    }
+
+    public void updateReviewVoteState(String reviewId, boolean liked, int helpfulCount) {
+        if (reviewId == null) return;
+        for (int i = 0; i < reviews.size(); i++) {
+            ReviewDto item = reviews.get(i);
+            if (item != null && reviewId.equals(item.getId())) {
+                item.setLikedByMe(liked);
+                item.setHelpfulCount(Math.max(0, helpfulCount));
+                notifyItemChanged(i);
+                return;
+            }
+        }
+    }
+
+    public void addCommentToReview(ReviewCommentDto comment) {
+        if (comment == null || comment.getReviewId() == null) return;
+        for (int i = 0; i < reviews.size(); i++) {
+            ReviewDto item = reviews.get(i);
+            if (item != null && comment.getReviewId().equals(item.getId())) {
+                item.addComment(comment);
+                notifyItemChanged(i);
+                return;
+            }
+        }
     }
 
     @NonNull
@@ -71,12 +111,17 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
         if (review.getCustomer() != null) {
             holder.tvUserName.setText(review.getCustomer().getFullName());
-            Glide.with(holder.ivAvatar.getContext())
-                    .load(review.getCustomer().getAvatarUrl())
-                    .placeholder(R.drawable.bg_avatar_circle)
-                    .error(R.drawable.bg_avatar_circle)
-                    .circleCrop()
-                    .into(holder.ivAvatar);
+            String avatarUrl = review.getCustomer().getAvatarUrl();
+            if (avatarUrl != null && !avatarUrl.trim().isEmpty()) {
+                Glide.with(holder.ivAvatar.getContext())
+                        .load(avatarUrl)
+                        .placeholder(R.drawable.bg_avatar_circle)
+                        .error(R.drawable.bg_avatar_circle)
+                        .circleCrop()
+                        .into(holder.ivAvatar);
+            } else {
+                holder.ivAvatar.setImageResource(R.drawable.bg_avatar_circle);
+            }
         } else {
             holder.tvUserName.setText("Người dùng");
             holder.ivAvatar.setImageResource(R.drawable.bg_avatar_circle);
@@ -102,23 +147,14 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             holder.tvVerified.setVisibility(review.isVerifiedPurchase() ? View.VISIBLE : View.GONE);
         }
 
-        // Helpful count
-        if (holder.btnHelpful != null) {
-            holder.btnHelpful.setText(String.format(Locale.getDefault(), "Yêu thích (%d)", review.getHelpfulCount()));
-            int colorRes = review.isLikedByMe() ? R.color.button : R.color.text_tertiary;
-            int color = ContextCompat.getColor(holder.itemView.getContext(), colorRes);
-            holder.btnHelpful.setTextColor(color);
+        // Helpful count & Like state
+        bindLikeButton(holder, review);
 
-            Drawable[] drawables = holder.btnHelpful.getCompoundDrawablesRelative();
-            if (drawables[0] != null) {
-                Drawable wrapped = DrawableCompat.wrap(drawables[0].mutate());
-                DrawableCompat.setTint(wrapped, color);
-                holder.btnHelpful.setCompoundDrawablesRelativeWithIntrinsicBounds(wrapped, drawables[1], drawables[2], drawables[3]);
-            }
-
-            holder.btnHelpful.setOnClickListener(v -> {
-                if (likeListener != null) {
-                    likeListener.onLikeClick(review);
+        // Reply button
+        if (holder.btnReply != null) {
+            holder.btnReply.setOnClickListener(v -> {
+                if (replyListener != null) {
+                    replyListener.onReplyClick(review);
                 }
             });
         }
@@ -128,15 +164,122 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             if (review.getMedia() != null && !review.getMedia().isEmpty()) {
                 holder.rvMedia.setVisibility(View.VISIBLE);
                 ReviewMediaAdapter mediaAdapter = new ReviewMediaAdapter();
-                List<String> mediaUrls = new ArrayList<>();
-                for (ReviewDto.MediaInfo media : review.getMedia()) {
-                    mediaUrls.add(media.getMediaUrl());
+                List<ReviewMediaDto> validMedia = new ArrayList<>();
+                for (ReviewMediaDto media : review.getMedia()) {
+                    String url = media.getMediaUrl();
+                    if (url != null && url.startsWith("content://")) {
+                        Log.e("ReviewMedia", "Invalid backend mediaUrl. Must be HTTP/HTTPS: " + url);
+                        continue;
+                    }
+                    validMedia.add(media);
                 }
-                mediaAdapter.setMediaUrls(mediaUrls);
+                mediaAdapter.submitList(validMedia);
                 holder.rvMedia.setAdapter(mediaAdapter);
             } else {
                 holder.rvMedia.setVisibility(View.GONE);
             }
+        }
+
+        // Comments
+        bindComments(holder, review);
+    }
+
+    private void bindLikeButton(ViewHolder holder, ReviewDto review) {
+        if (holder.btnHelpful == null || review == null) return;
+
+        int count = Math.max(0, review.getHelpfulCount());
+        boolean liked = review.isLikedByMe();
+
+        holder.btnHelpful.setText(
+                String.format(Locale.getDefault(), "Yêu thích (%d)", count)
+        );
+
+        int color = ContextCompat.getColor(
+                holder.itemView.getContext(),
+                liked ? R.color.button : R.color.text_tertiary
+        );
+
+        holder.btnHelpful.setTextColor(color);
+        holder.btnHelpful.setSelected(liked);
+
+        // Sử dụng icon phù hợp với trạng thái
+        int iconRes = liked ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline;
+        Drawable heart = ContextCompat.getDrawable(holder.itemView.getContext(), iconRes);
+
+        if (heart != null) {
+            heart = DrawableCompat.wrap(heart.mutate());
+            DrawableCompat.setTint(heart, color);
+            holder.btnHelpful.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    heart,
+                    null,
+                    null,
+                    null
+            );
+            // Đảm bảo tint list của TextView cũng được cập nhật đồng bộ
+            TextViewCompat.setCompoundDrawableTintList(
+                    holder.btnHelpful,
+                    ColorStateList.valueOf(color)
+            );
+        }
+
+        holder.btnHelpful.setOnClickListener(v -> {
+            if (likeListener != null) {
+                likeListener.onLikeClick(review);
+            }
+        });
+    }
+
+    private void bindComments(ViewHolder holder, ReviewDto review) {
+        if (holder.layoutComments == null) return;
+
+        holder.layoutComments.removeAllViews();
+        List<ReviewCommentDto> comments = review.getComments();
+
+        if (comments == null || comments.isEmpty()) {
+            holder.layoutComments.setVisibility(View.GONE);
+            return;
+        }
+
+        holder.layoutComments.setVisibility(View.VISIBLE);
+        int maxToShow = Math.min(comments.size(), 3);
+
+        for (int i = 0; i < maxToShow; i++) {
+            ReviewCommentDto comment = comments.get(i);
+            if (comment == null) continue;
+
+            LinearLayout row = new LinearLayout(holder.itemView.getContext());
+            row.setOrientation(LinearLayout.VERTICAL);
+            row.setPadding(12, 8, 12, 8);
+            row.setBackgroundResource(R.drawable.bg_create_post_input);
+
+            TextView name = new TextView(holder.itemView.getContext());
+            name.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.text_main));
+            name.setTextSize(13);
+            name.setTypeface(name.getTypeface(), android.graphics.Typeface.BOLD);
+
+            String fullName = "Người dùng";
+            if (comment.getCustomer() != null
+                    && comment.getCustomer().getFullName() != null
+                    && !comment.getCustomer().getFullName().trim().isEmpty()) {
+                fullName = comment.getCustomer().getFullName();
+            }
+            name.setText(fullName);
+
+            TextView content = new TextView(holder.itemView.getContext());
+            content.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.text_secondary));
+            content.setTextSize(13);
+            content.setText(comment.getCommentContent() != null ? comment.getCommentContent() : "");
+
+            row.addView(name);
+            row.addView(content);
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(0, i == 0 ? 0 : 8, 0, 0);
+
+            holder.layoutComments.addView(row, params);
         }
     }
 
@@ -150,6 +293,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         RatingBar rbStars;
         ImageView ivAvatar;
         RecyclerView rvMedia;
+        LinearLayout layoutComments;
 
         ViewHolder(View view) {
             super(view);
@@ -162,6 +306,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             btnHelpful = view.findViewById(R.id.btnHelpful);
             btnReply = view.findViewById(R.id.btnReply);
             rvMedia = view.findViewById(R.id.rvReviewMedia);
+            layoutComments = view.findViewById(R.id.layoutReviewComments);
 
             if (rvMedia != null) {
                 rvMedia.setLayoutManager(new LinearLayoutManager(view.getContext(), RecyclerView.HORIZONTAL, false));

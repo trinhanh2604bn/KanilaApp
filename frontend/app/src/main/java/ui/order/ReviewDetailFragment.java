@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.data.model.review.MyReviewDto;
+import com.example.frontend.data.model.review.ReviewMediaDto;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.product.adapter.ReviewMediaAdapter;
 import java.util.ArrayList;
@@ -138,12 +139,8 @@ public class ReviewDetailFragment extends Fragment {
                 .into(ivProductImage);
 
         if (data.getMedia() != null && !data.getMedia().isEmpty()) {
-            List<String> urls = new ArrayList<>();
-            for (MyReviewDto.ReviewMediaDto m : data.getMedia()) {
-                urls.add(m.getMediaUrl());
-            }
-            mediaAdapter.setMediaUrls(urls);
-            tvMediaCount.setText(String.format(Locale.getDefault(), "%d ảnh", urls.size()));
+            mediaAdapter.submitList(data.getMedia());
+            tvMediaCount.setText(String.format(Locale.getDefault(), "%d ảnh", data.getMedia().size()));
             tvMediaCount.setVisibility(View.VISIBLE);
             rvMedia.setVisibility(View.VISIBLE);
         } else {

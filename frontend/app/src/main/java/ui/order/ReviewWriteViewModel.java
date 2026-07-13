@@ -10,6 +10,9 @@ import com.example.frontend.data.model.review.SubmitReviewRequest;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.data.repository.ReviewRepository;
 import java.util.List;
+import java.util.Map;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class ReviewWriteViewModel extends AndroidViewModel {
     private final ReviewRepository repository;
@@ -36,5 +39,9 @@ public class ReviewWriteViewModel extends AndroidViewModel {
     public void submitReview(String orderItemId, int rating, String reviewTitle, String reviewContent, List<String> reviewTags, List<String> skinTypes, List<String> mediaUrls) {
         SubmitReviewRequest request = new SubmitReviewRequest(orderItemId, rating, reviewTitle, reviewContent, reviewTags, skinTypes, mediaUrls);
         repository.submitReview(request, submitResult);
+    }
+
+    public void submitReviewMultipart(Map<String, RequestBody> fields, List<MultipartBody.Part> medias) {
+        repository.submitReviewMultipart(fields, medias, submitResult);
     }
 }

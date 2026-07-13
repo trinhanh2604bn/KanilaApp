@@ -19,6 +19,9 @@ import com.example.frontend.R;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.product.adapter.ReviewAdapter;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import android.widget.EditText;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -114,10 +117,17 @@ public class ReviewListFragment extends Fragment {
 
         reviewAdapter = new ReviewAdapter();
         reviewAdapter.setOnReviewLikeListener(review -> {
-            if (productViewModel != null) {
-                productViewModel.toggleReviewVote(review.getId());
+            if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                if (productViewModel != null) {
+                    productViewModel.toggleReviewVote(review.getId());
+                }
+            } else {
+                com.example.frontend.feature.auth.GuestPromptBottomSheet.newInstance(
+                        com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION
+                ).show(getChildFragmentManager(), "GuestPromptBottomSheet");
             }
         });
+        reviewAdapter.setOnReviewReplyListener(this::showReplyDialog);
         rvReviews.setAdapter(reviewAdapter);
 
         productViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
@@ -247,12 +257,72 @@ public class ReviewListFragment extends Fragment {
 
         productViewModel.getVoteResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
-            if (result.status == NetworkResult.Status.SUCCESS && result.data != null) {
-                loadProductReviews(currentFilter);
-            } else if (result.status == NetworkResult.Status.ERROR) {
-                Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+            switch (result.status) {
+                case SUCCESS:
+                    if (result.data != null && reviewAdapter != null) {
+                        reviewAdapter.updateReviewVoteState(
+                                result.data.getReviewId(),
+                                result.data.isLiked(),
+                                result.data.getHelpfulCount()
+                        );
+                    }
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message != null ? result.message : "Không thể cập nhật yêu thích", Toast.LENGTH_SHORT).show();
+                    break;
             }
         });
+
+        productViewModel.getCommentResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case SUCCESS:
+                    Toast.makeText(getContext(), "Đã gửi phản hồi", Toast.LENGTH_SHORT).show();
+                    if (result.data != null && reviewAdapter != null) {
+                        reviewAdapter.addCommentToReview(result.data);
+                    }
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message != null ? result.message : "Không thể gửi phản hồi", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
+    }
+
+    private void showReplyDialog(com.example.frontend.data.model.review.ReviewDto review) {
+        if (!com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+            com.example.frontend.feature.auth.GuestPromptBottomSheet.newInstance(
+                    com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION
+            ).show(getChildFragmentManager(), "GuestPromptBottomSheet");
+            return;
+        }
+
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        View view = getLayoutInflater().inflate(R.layout.layout_comment_input, null);
+        
+        EditText edtComment = view.findViewById(R.id.edtCommentContent);
+        View btnSend = view.findViewById(R.id.btnSendComment);
+        TextView tvTitle = view.findViewById(R.id.tvCommentTitle);
+
+        if (tvTitle != null) {
+            String userName = review.getCustomer() != null ? review.getCustomer().getFullName() : "người dùng";
+            tvTitle.setText(getString(R.string.reply_hint_format, userName));
+        }
+
+        btnSend.setOnClickListener(v -> {
+            String content = edtComment.getText().toString().trim();
+            if (content.isEmpty()) {
+                Toast.makeText(getContext(), "Vui lòng nhập nội dung", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (productViewModel != null) {
+                productViewModel.addReviewComment(review.getId(), content);
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setContentView(view);
+        dialog.show();
     }
 
     private void observeMyReviewsViewModel() {

@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const optionalAuth = (req, res, next) => {
+const optionalAuthMiddleware = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -9,7 +9,10 @@ const optionalAuth = (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET || "access_secret"
+    );
 
     // Normalize JWT payload
     if (!decoded.account_id && decoded.accountId) {
@@ -22,9 +25,9 @@ const optionalAuth = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    // If token is invalid, just proceed as guest
+    // On error (expired or invalid token), we just proceed as guest
     next();
   }
 };
 
-module.exports = optionalAuth;
+module.exports = optionalAuthMiddleware;

@@ -43,7 +43,18 @@ public class CommunityNotificationBottomSheet extends BottomSheetDialogFragment 
         });
         rvNotifications.setAdapter(adapter);
 
-        btnMarkAllRead.setOnClickListener(v -> viewModel.markAllNotificationsAsRead());
+        btnMarkAllRead.setOnClickListener(v -> {
+            viewModel.markAllNotificationsAsRead();
+            
+            // Navigate to NotificationCenterFragment with COMMUNITY filter
+            dismiss();
+            if (getActivity() != null) {
+                ui.common.FragmentNavigationHelper.loadFragment(
+                        getActivity(), 
+                        ui.notification.NotificationCenterFragment.newInstance(ui.notification.NotificationType.COMMUNITY)
+                );
+            }
+        });
     }
 
     private void setupViewModel() {

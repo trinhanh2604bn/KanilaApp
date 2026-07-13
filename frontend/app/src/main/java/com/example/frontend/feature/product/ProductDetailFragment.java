@@ -26,6 +26,7 @@ import com.example.frontend.feature.product.adapter.ThumbnailAdapter;
 import com.example.frontend.feature.product.adapter.RecentlyViewedAdapter;
 import com.example.frontend.feature.home.HomeProductAdapter;
 import com.example.frontend.feature.product.adapter.ReviewMediaAdapter;
+import com.example.frontend.data.model.review.ReviewMediaDto;
 import com.example.frontend.data.model.cart.CartItemDto;
 import com.example.frontend.data.model.checkout.CheckoutSessionDto;
 import com.google.android.material.chip.Chip;
@@ -37,6 +38,7 @@ import android.text.style.ImageSpan;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import android.util.Log;
 
@@ -45,6 +47,7 @@ public class ProductDetailFragment extends Fragment {
     private static final String ARG_PRODUCT_ID = "product_id";
 
     private ProductDetailViewModel viewModel;
+    private ReviewViewModel reviewActionViewModel;
     private String productId;
 
     private TextView tvName, tvBrand, tvPrice, tvComparePrice, tvGalleryCounter, tvRating, tvReviewCount, tvSoldCount, tvDesc, tvSelectedVariantName;
@@ -89,10 +92,12 @@ public class ProductDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ProductDetailViewModel.class);
+        reviewActionViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
 
         initViews(view);
         setupAdapters(view);
         observeViewModel();
+        observeReviewActionViewModel();
 
         if (productId != null) {
             viewModel.loadProductDetails(productId);
@@ -343,7 +348,18 @@ public class ProductDetailFragment extends Fragment {
         }
 
         reviewPreviewAdapter = new com.example.frontend.feature.product.adapter.ReviewAdapter();
-        reviewPreviewAdapter.setOnReviewLikeListener(review -> viewModel.toggleReviewLike(review));
+        reviewPreviewAdapter.setOnReviewLikeListener(review -> {
+            if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                if (reviewActionViewModel != null) {
+                    reviewActionViewModel.toggleReviewVote(review.getId());
+                }
+            } else {
+                com.example.frontend.feature.auth.GuestPromptBottomSheet.newInstance(
+                        com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION
+                ).show(getChildFragmentManager(), "GuestPromptBottomSheet");
+            }
+        });
+        reviewPreviewAdapter.setOnReviewReplyListener(this::showReplyDialog);
         reviewPreviewAdapter.setOnReviewClickListener(review -> {
             ReviewHubFragment fragment = ReviewHubFragment.newInstance(productId);
             ui.common.FragmentNavigationHelper.loadFragment(getActivity(), fragment);
@@ -475,13 +491,47 @@ public class ProductDetailFragment extends Fragment {
 
         if (layoutReviewSummary != null) {
             TextView tvAiSummary = layoutReviewSummary.findViewById(R.id.tvAiSummaryText);
-            if (tvAiSummary != null && state.reviewSummary != null && state.reviewSummary.getAiSummary() != null) {
+            View cardAi = layoutReviewSummary.findViewById(R.id.cardAiSummary);
+            if (tvAiSummary != null && state.reviewSummary != null && state.reviewSummary.getAiSummary() != null && !state.reviewSummary.getAiSummary().isEmpty()) {
                 tvAiSummary.setText(state.reviewSummary.getAiSummary());
-                View cardAi = layoutReviewSummary.findViewById(R.id.cardAiSummary);
                 if (cardAi != null) cardAi.setVisibility(View.VISIBLE);
             } else if (tvAiSummary != null) {
-                View cardAi = layoutReviewSummary.findViewById(R.id.cardAiSummary);
                 if (cardAi != null) cardAi.setVisibility(View.GONE);
+            }
+
+            RecyclerView rvReviewMedia = layoutReviewSummary.findViewById(R.id.rvReviewMediaPreview);
+            if (rvReviewMedia != null) {
+                List<ReviewMediaDto> mediaPreview = null;
+                if (state.reviewSummary != null) {
+                    mediaPreview = state.reviewSummary.getReviewMediaPreview();
+                }
+                
+                if ((mediaPreview == null || mediaPreview.isEmpty()) && state.reviewMediaPreview != null) {
+                    mediaPreview = state.reviewMediaPreview;
+                }
+
+                if (mediaPreview == null || mediaPreview.isEmpty()) {
+                    rvReviewMedia.setVisibility(View.GONE);
+                } else {
+                    List<ReviewMediaDto> validMedia = new ArrayList<>();
+                    for (ReviewMediaDto media : mediaPreview) {
+                        if (media == null) continue;
+                        String url = media.getMediaUrl();
+                        if (url == null || url.trim().isEmpty()) continue;
+                        if (url.startsWith("content://") || url.startsWith("file://")) {
+                            Log.e(TAG, "Invalid review media URL from backend: " + url);
+                            continue;
+                        }
+                        validMedia.add(media);
+                    }
+
+                    if (validMedia.isEmpty()) {
+                        rvReviewMedia.setVisibility(View.GONE);
+                    } else {
+                        rvReviewMedia.setVisibility(View.VISIBLE);
+                        reviewMediaAdapter.submitList(validMedia);
+                    }
+                }
             }
         }
 
@@ -557,10 +607,6 @@ public class ProductDetailFragment extends Fragment {
             if (tvSubtitle != null) tvSubtitle.setText("Phù hợp với làn da của bạn");
         } else if (layoutSkinMatch != null) {
             layoutSkinMatch.setVisibility(View.GONE);
-        }
-
-        if (state.reviewInsight != null && layoutReviewSummary != null) {
-            bindReviewInsightData(state.reviewInsight);
         }
 
         if (state.inventory != null && layoutOutOfStock != null) {
@@ -817,5 +863,78 @@ public class ProductDetailFragment extends Fragment {
         }
 
         titleView.setText(spannable);
+    }
+
+    private void observeReviewActionViewModel() {
+        if (reviewActionViewModel == null) return;
+
+        reviewActionViewModel.getVoteResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case SUCCESS:
+                    if (result.data != null && reviewPreviewAdapter != null) {
+                        reviewPreviewAdapter.updateReviewVoteState(
+                                result.data.getReviewId(),
+                                result.data.isLiked(),
+                                result.data.getHelpfulCount()
+                        );
+                    }
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message != null ? result.message : "Không thể cập nhật yêu thích", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
+
+        reviewActionViewModel.getCommentResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case SUCCESS:
+                    Toast.makeText(getContext(), "Đã gửi phản hồi", Toast.LENGTH_SHORT).show();
+                    if (result.data != null && reviewPreviewAdapter != null) {
+                        reviewPreviewAdapter.addCommentToReview(result.data);
+                    }
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message != null ? result.message : "Không thể gửi phản hồi", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
+    }
+
+    private void showReplyDialog(com.example.frontend.data.model.review.ReviewDto review) {
+        if (!com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+            com.example.frontend.feature.auth.GuestPromptBottomSheet.newInstance(
+                    com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION
+            ).show(getChildFragmentManager(), "GuestPromptBottomSheet");
+            return;
+        }
+
+        com.google.android.material.bottomsheet.BottomSheetDialog dialog = new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext());
+        View view = getLayoutInflater().inflate(R.layout.layout_comment_input, null);
+
+        android.widget.EditText edtComment = view.findViewById(R.id.edtCommentContent);
+        View btnSend = view.findViewById(R.id.btnSendComment);
+        TextView tvTitle = view.findViewById(R.id.tvCommentTitle);
+
+        if (tvTitle != null) {
+            String userName = review.getCustomer() != null ? review.getCustomer().getFullName() : "người dùng";
+            tvTitle.setText(getString(R.string.reply_hint_format, userName));
+        }
+
+        btnSend.setOnClickListener(v -> {
+            String content = edtComment.getText().toString().trim();
+            if (content.isEmpty()) {
+                Toast.makeText(getContext(), "Vui lòng nhập nội dung", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (reviewActionViewModel != null) {
+                reviewActionViewModel.addReviewComment(review.getId(), content);
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setContentView(view);
+        dialog.show();
     }
 }

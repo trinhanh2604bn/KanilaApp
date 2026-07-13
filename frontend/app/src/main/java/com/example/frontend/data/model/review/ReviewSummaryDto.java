@@ -20,6 +20,9 @@ public class ReviewSummaryDto {
     @SerializedName("keywords")
     private List<String> keywords;
 
+    @SerializedName("reviewMediaPreview")
+    private List<ReviewMediaDto> reviewMediaPreview;
+
     public double getAverageRating() {
         return averageRating;
     }
@@ -38,5 +41,9 @@ public class ReviewSummaryDto {
 
     public List<String> getKeywords() {
         return keywords;
+    }
+
+    public List<ReviewMediaDto> getReviewMediaPreview() {
+        return reviewMediaPreview;
     }
 }

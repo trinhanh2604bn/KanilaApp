@@ -5,6 +5,7 @@ import com.example.frontend.data.model.product.ProductVariantDto;
 import com.example.frontend.data.model.product.ProductMediaDto;
 import com.example.frontend.data.model.product.SkinMatchDto;
 import com.example.frontend.data.model.product.ReviewInsightDto;
+import com.example.frontend.data.model.review.ReviewMediaDto;
 import com.example.frontend.model.Product;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class ProductDetailUiState {
     // Legacy simple data from product detail response
     public ProductDetailResponse.SkinMatchDto skinMatch = null;
     public ProductDetailResponse.ReviewSummaryDto reviewSummary = null;
+    public List<ReviewMediaDto> reviewMediaPreview = null;
     // New detailed data from specific endpoints
     public SkinMatchDto detailedSkinMatch = null;
     public ReviewInsightDto reviewInsight = null;
@@ -98,6 +100,7 @@ public class ProductDetailUiState {
         state.isWishlisted = data.isWishlisted();
         state.skinMatch = data.getSkinMatch();
         state.reviewSummary = data.getReviewSummary();
+        state.reviewMediaPreview = data.getReviewMediaPreview();
         state.relatedProducts = data.getRelatedProducts() != null
                 ? data.getRelatedProducts().getItems()
                 : new ArrayList<>();

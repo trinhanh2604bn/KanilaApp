@@ -1,5 +1,6 @@
 package com.example.frontend.data.model.product;
 
+import com.example.frontend.data.model.review.ReviewMediaDto;
 import com.example.frontend.model.Brand;
 import com.example.frontend.model.Category;
 import com.example.frontend.model.Product;
@@ -38,6 +39,9 @@ public class ProductDetailResponse {
     @SerializedName("reviewSummary")
     private ReviewSummaryDto reviewSummary;
 
+    @SerializedName("reviewMediaPreview")
+    private List<ReviewMediaDto> reviewMediaPreview;
+
     @SerializedName("isWishlisted")
     private boolean isWishlisted;
 
@@ -58,6 +62,7 @@ public class ProductDetailResponse {
     public InventoryDto getInventory() { return inventory; }
     public PriceDto getPrice() { return price; }
     public ReviewSummaryDto getReviewSummary() { return reviewSummary; }
+    public List<ReviewMediaDto> getReviewMediaPreview() { return reviewMediaPreview; }
     public boolean isWishlisted() { return isWishlisted; }
     public SkinMatchDto getSkinMatch() { return skinMatch; }
     public RelatedProductsData getRelatedProducts() { return relatedProducts; }
@@ -89,9 +94,12 @@ public class ProductDetailResponse {
         private int reviewCount;
         @SerializedName("aiSummary")
         private String aiSummary;
+        @SerializedName("reviewMediaPreview")
+        private List<ReviewMediaDto> reviewMediaPreview;
         public double getAverageRating() { return averageRating; }
         public int getReviewCount() { return reviewCount; }
         public String getAiSummary() { return aiSummary; }
+        public List<ReviewMediaDto> getReviewMediaPreview() { return reviewMediaPreview; }
     }
 
     public static class SkinMatchDto implements Serializable {

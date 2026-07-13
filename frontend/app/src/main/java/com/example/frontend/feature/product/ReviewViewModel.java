@@ -17,6 +17,7 @@ public class ReviewViewModel extends AndroidViewModel {
     private final MutableLiveData<NetworkResult<List<ReviewDto>>> reviewsResult = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<ReviewSummaryDto>> summaryResult = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<com.example.frontend.data.model.review.ReviewVoteResponse>> voteResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<com.example.frontend.data.model.review.ReviewCommentDto>> commentResult = new MutableLiveData<>();
 
     public ReviewViewModel(@NonNull Application application) {
         super(application);
@@ -35,6 +36,10 @@ public class ReviewViewModel extends AndroidViewModel {
         return voteResult;
     }
 
+    public LiveData<NetworkResult<com.example.frontend.data.model.review.ReviewCommentDto>> getCommentResult() {
+        return commentResult;
+    }
+
     public void loadReviews(String productId, Map<String, String> query) {
         repository.getReviewsByProductId(productId, query, reviewsResult);
     }
@@ -45,5 +50,9 @@ public class ReviewViewModel extends AndroidViewModel {
 
     public void toggleReviewVote(String reviewId) {
         repository.toggleReviewVote(reviewId, voteResult);
+    }
+
+    public void addReviewComment(String reviewId, String content) {
+        repository.addReviewComment(reviewId, content, commentResult);
     }
 }

@@ -4,6 +4,7 @@ const Customer = require("../models/customer.model");
 const Product = require("../models/product.model");
 const ReviewMedia = require("../models/reviewMedia.model");
 const ReviewVote = require("../models/reviewVote.model");
+const ReviewComment = require("../models/reviewComment.model");
 const OrderItem = require("../models/orderItem.model");
 const Order = require("../models/order.model");
 const validateObjectId = require("../utils/validateObjectId");
@@ -11,6 +12,20 @@ const { pickCustomerId } = require("../utils/pickCustomerRef");
 const reviewEventService = require("../services/reviewAi/reviewEvent.service");
 
 const CUST = "customer_code full_name avatar_url";
+
+function parseJsonArray(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (err) {
+    return String(value)
+      .split(",")
+      .map(v => v.trim())
+      .filter(Boolean);
+  }
+}
 
 // Helper: recalculate review summary for a product (visible reviews only)
 const recalcReviewSummary = async (productId) => {
@@ -158,11 +173,19 @@ const getReviewsByProductId = async (req, res) => {
     const reviewIds = reviews.map(r => r._id);
     const allMedia = await ReviewMedia.find({ reviewId: { $in: reviewIds } }).sort({ sortOrder: 1 }).lean();
     const allVotes = customerId ? await ReviewVote.find({ reviewId: { $in: reviewIds }, customer_id: customerId, voteType: "helpful" }).lean() : [];
+    const allComments = await ReviewComment.find({ reviewId: { $in: reviewIds }, commentStatus: "visible" }).populate("customer_id", CUST).sort({ createdAt: 1 }).lean();
 
     const reviewsWithExtras = reviews.map(r => {
       const reviewMedia = allMedia.filter(m => String(m.reviewId) === String(r._id));
       const isLikedByMe = allVotes.some(v => String(v.reviewId) === String(r._id));
-      return { ...r, media: reviewMedia, isLikedByMe };
+      const reviewComments = allComments.filter(c => String(c.reviewId) === String(r._id));
+      return {
+        ...r,
+        media: reviewMedia,
+        isLikedByMe,
+        comments: reviewComments.slice(-3),
+        commentCount: reviewComments.length
+      };
     });
 
     res.status(200).json({ success: true, message: "Get reviews by product successfully", count: reviewsWithExtras.length, data: reviewsWithExtras });
@@ -256,10 +279,16 @@ const submitReviewFromOrderItem = async (req, res) => {
     const customer = await getCustomerFromAuth(req);
     if (!customer) return res.status(401).json({ success: false, message: "Unauthorized" });
 
-    const { orderItemId, rating, reviewTitle, reviewContent, reviewTags, skinTypes, mediaUrls } = req.body ?? {};
+    const orderItemId = String(req.body.orderItemId || "").trim();
+    const rating = Number(req.body.rating);
+    const reviewTitle = String(req.body.reviewTitle || "").trim();
+    const reviewContent = String(req.body.reviewContent || "").trim();
+
+    const reviewTags = parseJsonArray(req.body.reviewTags);
+    const skinTypes = parseJsonArray(req.body.skinTypes);
 
     if (!orderItemId || !validateObjectId(orderItemId)) return res.status(400).json({ success: false, message: "Valid orderItemId is required" });
-    if (!rating || !Number.isFinite(Number(rating))) return res.status(400).json({ success: false, message: "Rating is required" });
+    if (isNaN(rating)) return res.status(400).json({ success: false, message: "Rating is required" });
 
     const orderItem = await OrderItem.findById(orderItemId).populate("order_id", "order_status payment_status customer_id").populate("variant_id", "_id").populate("product_id", "_id");
     if (!orderItem) return res.status(404).json({ success: false, message: "Order item not found" });
@@ -275,44 +304,65 @@ const submitReviewFromOrderItem = async (req, res) => {
     const existing = await Review.findOne({ orderItemId: orderItem._id, customer_id: customer._id });
     if (existing) return res.status(409).json({ success: false, message: "You have already submitted a review for this item" });
 
+    const productId = orderItem.product_id?._id ?? orderItem.product_id;
+    const variantId = orderItem.variant_id?._id ?? orderItem.variant_id;
+
     const payload = {
       customer_id: customer._id,
       orderItemId: orderItem._id,
-      productId: orderItem.product_id?._id ?? orderItem.product_id,
-      variantId: orderItem.variant_id?._id ?? orderItem.variant_id,
-      rating: Number(rating),
-      reviewTitle: reviewTitle ?? "",
-      reviewContent: reviewContent ?? "",
-      reviewTags: Array.isArray(reviewTags) ? reviewTags : [],
-      skinTypes: Array.isArray(skinTypes) ? skinTypes : [],
+      productId,
+      variantId,
+      rating: Math.max(1, Math.min(5, rating)),
+      reviewTitle,
+      reviewContent,
+      reviewTags,
+      skinTypes,
       verifiedPurchaseFlag: true,
       reviewStatus: "visible",
     };
 
     const created = await Review.create(payload);
 
-    // Update order item review status
-    await OrderItem.findByIdAndUpdate(orderItem._id, { review_status: "reviewed" });
-
-    const mediaList = Array.isArray(mediaUrls) ? mediaUrls.filter(Boolean).slice(0, 8) : [];
-    if (mediaList.length) {
-      await ReviewMedia.insertMany(
-        mediaList.map((mediaUrl, idx) => ({
-          reviewId: created._id,
-          mediaType: "image",
-          mediaUrl: String(mediaUrl),
-          sortOrder: idx,
-        }))
-      );
+    // Handle files from multer
+    const files = req.files || [];
+    if (files.length > 0) {
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      const mediaDocs = files.map((file, idx) => ({
+        reviewId: created._id,
+        mediaType: file.mimetype.startsWith("video/") ? "video" : "image",
+        mediaUrl: `${baseUrl}/uploads/reviews/${file.filename}`,
+        sortOrder: idx,
+      }));
+      await ReviewMedia.insertMany(mediaDocs);
+    } else {
+      // Fallback to mediaUrls if provided in body (for backward compatibility or direct URL submission)
+      const mediaUrls = parseJsonArray(req.body.mediaUrls);
+      const mediaList = mediaUrls.filter(Boolean).slice(0, 8);
+      if (mediaList.length) {
+        await ReviewMedia.insertMany(
+          mediaList.map((mediaUrl, idx) => ({
+            reviewId: created._id,
+            mediaType: "image",
+            mediaUrl: String(mediaUrl),
+            sortOrder: idx,
+          }))
+        );
+      }
     }
 
     // summary only counts approved reviews
     await recalcReviewSummary(created.productId);
 
+    // Fetch review with media to return
+    const media = await ReviewMedia.find({ reviewId: created._id }).sort({ sortOrder: 1 }).lean();
+
     res.status(201).json({
       success: true,
       message: "Review submitted successfully",
-      data: created,
+      data: {
+        ...created.toObject(),
+        media
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -380,10 +430,17 @@ const submitReviewDirect = async (req, res) => {
     const customer = await getCustomerFromAuth(req);
     if (!customer) return res.status(401).json({ success: false, message: "Vui lòng đăng nhập để viết đánh giá." });
 
-    const { productId, variantId, rating, reviewTitle, reviewContent, reviewTags, skinTypes, mediaUrls } = req.body ?? {};
+    const productId = String(req.body.productId || "").trim();
+    const variantId = String(req.body.variantId || "").trim();
+    const rating = Number(req.body.rating);
+    const reviewTitle = String(req.body.reviewTitle || "").trim();
+    const reviewContent = String(req.body.reviewContent || "").trim();
+
+    const reviewTags = parseJsonArray(req.body.reviewTags);
+    const skinTypes = parseJsonArray(req.body.skinTypes);
 
     if (!productId || !validateObjectId(productId)) return res.status(400).json({ success: false, message: "productId is required" });
-    if (!rating || !Number.isFinite(Number(rating))) return res.status(400).json({ success: false, message: "Rating is required" });
+    if (isNaN(rating)) return res.status(400).json({ success: false, message: "Rating is required" });
 
     const productExists = await Product.findById(productId);
     if (!productExists) return res.status(404).json({ success: false, message: "Product not found" });
@@ -396,38 +453,56 @@ const submitReviewDirect = async (req, res) => {
       customer_id: customer._id,
       productId,
       variantId: variantId && validateObjectId(variantId) ? variantId : undefined,
-      rating: Math.max(1, Math.min(5, Number(rating))),
-      reviewTitle: reviewTitle ?? "",
-      reviewContent: reviewContent ?? "",
-      reviewTags: Array.isArray(reviewTags) ? reviewTags : [],
-      skinTypes: Array.isArray(skinTypes) ? skinTypes : [],
+      rating: Math.max(1, Math.min(5, rating)),
+      reviewTitle,
+      reviewContent,
+      reviewTags,
+      skinTypes,
       verifiedPurchaseFlag: false,
       reviewStatus: "visible",
     };
 
     const created = await Review.create(payload);
 
-    // Update order item review status
-    await OrderItem.findByIdAndUpdate(orderItem._id, { review_status: "reviewed" });
-
-    const mediaList = Array.isArray(mediaUrls) ? mediaUrls.filter(Boolean).slice(0, 8) : [];
-    if (mediaList.length) {
-      await ReviewMedia.insertMany(
-        mediaList.map((mediaUrl, idx) => ({
-          reviewId: created._id,
-          mediaType: "image",
-          mediaUrl: String(mediaUrl),
-          sortOrder: idx,
-        }))
-      );
+    // Handle files from multer
+    const files = req.files || [];
+    if (files.length > 0) {
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      const mediaDocs = files.map((file, idx) => ({
+        reviewId: created._id,
+        mediaType: file.mimetype.startsWith("video/") ? "video" : "image",
+        mediaUrl: `${baseUrl}/uploads/reviews/${file.filename}`,
+        sortOrder: idx,
+      }));
+      await ReviewMedia.insertMany(mediaDocs);
+    } else {
+      // Fallback to mediaUrls
+      const mediaUrls = parseJsonArray(req.body.mediaUrls);
+      const mediaList = mediaUrls.filter(Boolean).slice(0, 8);
+      if (mediaList.length) {
+        await ReviewMedia.insertMany(
+          mediaList.map((mediaUrl, idx) => ({
+            reviewId: created._id,
+            mediaType: "image",
+            mediaUrl: String(mediaUrl),
+            sortOrder: idx,
+          }))
+        );
+      }
     }
 
     await recalcReviewSummary(productId);
 
+    // Fetch review with media to return
+    const media = await ReviewMedia.find({ reviewId: created._id }).sort({ sortOrder: 1 }).lean();
+
     res.status(201).json({
       success: true,
       message: "Review submitted successfully",
-      data: created,
+      data: {
+        ...created.toObject(),
+        media
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

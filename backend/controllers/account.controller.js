@@ -394,36 +394,42 @@ const patchMyProfile = async (req, res) => {
   try {
     const { account, customer } = await resolveAuthAccountAndCustomer(req);
     if (!account || !customer) return res.status(404).json({ success: false, message: "Account profile not found" });
+
     const updatesCustomer = {};
     const updatesAccount = {};
+
     if (req.body.fullName !== undefined) updatesCustomer.full_name = String(req.body.fullName || "").trim();
     if (req.body.gender !== undefined) updatesCustomer.gender = String(req.body.gender || "").trim();
     if (req.body.birthday !== undefined) updatesCustomer.date_of_birth = req.body.birthday || null;
     if (req.body.avatarUrl !== undefined) updatesCustomer.avatar_url = String(req.body.avatarUrl || "").trim();
+
     if (req.body.phone !== undefined) {
       const normalized = normalizeAccountPhone(req.body.phone);
-      // Check phone uniqueness only when a non-empty phone is provided
       if (normalized) {
         const phoneError = validatePhone(normalized);
-        if (phoneError) {
-          return res.status(400).json({ success: false, message: phoneError });
-        }
+        if (phoneError) return res.status(400).json({ success: false, message: phoneError });
         const phoneTaken = await Account.findOne({ phone: normalized, _id: { $ne: account._id } });
-        if (phoneTaken) {
-          return res.status(409).json({
-            success: false,
-            message:
-              "This phone number is already linked to another account. " +
-              "Please use another number or contact support if this number belongs to you.",
-          });
-        }
+        if (phoneTaken) return res.status(409).json({ success: false, message: "Số điện thoại đã được sử dụng bởi tài khoản khác." });
       }
       updatesAccount.phone = normalized;
     }
+
+    if (req.body.email !== undefined) {
+      const emailTrimmed = String(req.body.email || "").trim().toLowerCase();
+      if (emailTrimmed) {
+        const emailErr = validateEmail(emailTrimmed);
+        if (emailErr) return res.status(400).json({ success: false, message: emailErr });
+        const emailTaken = await Account.findOne({ email: emailTrimmed, _id: { $ne: account._id } });
+        if (emailTaken) return res.status(409).json({ success: false, message: "Email đã được sử dụng bởi tài khoản khác." });
+      }
+      updatesAccount.email = emailTrimmed || null;
+    }
+
     await Promise.all([
       Object.keys(updatesCustomer).length ? Customer.findByIdAndUpdate(customer._id, updatesCustomer, { new: true }) : null,
       Object.keys(updatesAccount).length ? Account.findByIdAndUpdate(account._id, updatesAccount, { new: true }) : null,
     ]);
+
     return res.status(200).json({ success: true, message: "Profile updated successfully" });
   } catch (error) {
     const dupErr = handleDuplicateKeyError(error);

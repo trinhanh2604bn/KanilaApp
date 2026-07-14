@@ -202,7 +202,7 @@ public interface ApiService {
     @PATCH("api/accounts/addresses/{id}")
     Call<ApiResponse<AddressDto>> updateAddress(@Path("id") String id, @Body Object addressData);
 
-    @PATCH("api/accounts/addresses/{id}/default")
+    @PATCH("api/accounts/addresses/{id}/default ")
     Call<ApiResponse<AddressDto>> setDefaultAddress(@Path("id") String id);
 
     @DELETE("api/accounts/addresses/{id}")

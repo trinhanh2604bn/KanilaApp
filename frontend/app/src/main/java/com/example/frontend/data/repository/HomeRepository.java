@@ -53,37 +53,4 @@ public class HomeRepository {
             }
         });
     }
-
-    public void getHomepageRecommendations(MutableLiveData<NetworkResult<List<Product>>> result) {
-        result.setValue(NetworkResult.loading());
-        apiService.getHomepageRecommendations().enqueue(new Callback<ApiResponse<List<Product>>>() {
-            @Override
-            public void onResponse(Call<ApiResponse<List<Product>>> call, Response<ApiResponse<List<Product>>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<List<Product>> apiResponse = response.body();
-                    if (apiResponse.isSuccess()) {
-                        List<Product> items = apiResponse.getData();
-                        if (items == null || items.isEmpty()) {
-                            result.setValue(NetworkResult.empty());
-                        } else {
-                            result.setValue(NetworkResult.success(items));
-                        }
-                    } else {
-                        String errorMsg = apiResponse.getError() != null ? apiResponse.getError() : apiResponse.getMessage();
-                        result.setValue(NetworkResult.error(errorMsg != null ? errorMsg : "Unknown error"));
-                    }
-                } else if (response.code() == 401) {
-                    result.setValue(NetworkResult.unauthorized());
-                } else {
-                    result.setValue(NetworkResult.error("Error: " + response.code()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ApiResponse<List<Product>>> call, Throwable t) {
-                String message = t.getLocalizedMessage() != null ? t.getLocalizedMessage() : "Network error";
-                result.setValue(NetworkResult.error(message));
-            }
-        });
-    }
 }

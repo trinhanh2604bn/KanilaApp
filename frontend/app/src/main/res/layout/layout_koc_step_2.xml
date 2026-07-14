@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/nunito_bold"
+        android:text="Kết nối mạng xã hội"
+        android:textColor="@color/text_main"
+        android:textSize="20sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/nunito_regular"
+        android:text="Chọn nền tảng bạn hoạt động mạnh nhất."
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/nunito_semibold"
+        android:text="Nền tảng chính"
+        android:textColor="@color/text_main" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:scrollbars="none">
+        <RadioGroup
+            android:id="@+id/rgPlatform"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <!-- TikTok -->
+            <RadioButton
+                android:id="@+id/rbTikTok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/selector_filter_card_bg"
+                android:button="@null"
+                android:checked="true"
+                android:fontFamily="@font/nunito_semibold"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="10dp"
+                android:text="TikTok"
+                android:textColor="@color/text_main" />
+            <!-- Instagram -->
+            <RadioButton
+                android:id="@+id/rbInstagram"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/selector_filter_card_bg"
+                android:button="@null"
+                android:fontFamily="@font/nunito_semibold"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="10dp"
+                android:text="Instagram"
+                android:textColor="@color/text_main" />
+             <!-- Facebook -->
+            <RadioButton
+                android:id="@+id/rbFacebook"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_filter_card_bg"
+                android:button="@null"
+                android:fontFamily="@font/nunito_semibold"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="10dp"
+                android:text="Facebook"
+                android:textColor="@color/text_main" />
+        </RadioGroup>
+    </HorizontalScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/nunito_semibold"
+        android:text="Link trang cá nhân"
+        android:textColor="@color/text_main" />
+
+    <EditText
+        android:id="@+id/etSocialLink"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_kanila_input_default"
+        android:hint="https://tiktok.com/@username"
+        android:inputType="textUri"
+        android:paddingHorizontal="16dp"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/nunito_semibold"
+        android:text="Số lượng người theo dõi"
+        android:textColor="@color/text_main" />
+
+    <EditText
+        android:id="@+id/etFollowers"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_kanila_input_default"
+        android:hint="Ví dụ: 10000"
+        android:inputType="number"
+        android:paddingHorizontal="16dp"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/nunito_semibold"
+        android:text="Lĩnh vực nội dung"
+        android:textColor="@color/text_main" />
+
+    <Spinner
+        android:id="@+id/spinnerCategory"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_kanila_input_default"
+        android:paddingHorizontal="16dp" />
+
+</LinearLayout>

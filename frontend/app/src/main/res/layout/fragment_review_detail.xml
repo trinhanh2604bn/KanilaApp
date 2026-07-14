@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main">
+
+    <include
+        android:id="@+id/layoutHeader"
+        layout="@layout/view_app_top_bar"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutHeader">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp">
+
+            <!-- Product & Date Row -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivProductImage"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearanceOverlay="@style/RoundedProductImage"
+                    tools:src="@drawable/ic_product" />
+
+                <TextView
+                    android:id="@+id/tvProductName"
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    app:layout_constraintEnd_toStartOf="@id/tvReviewDate"
+                    app:layout_constraintStart_toEndOf="@id/ivProductImage"
+                    app:layout_constraintTop_toTopOf="@id/ivProductImage"
+                    tools:text="Kanila Glow Serum" />
+
+                <TextView
+                    android:id="@+id/tvVariantName"
+                    style="@style/Text.Kanila.BodyMedium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_tertiary"
+                    app:layout_constraintEnd_toEndOf="@id/tvProductName"
+                    app:layout_constraintStart_toStartOf="@id/tvProductName"
+                    app:layout_constraintTop_toBottomOf="@id/tvProductName"
+                    tools:text="Tinh chất sáng da" />
+
+                <TextView
+                    android:id="@+id/tvReviewDate"
+                    style="@style/Text.Kanila.Micro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_tertiary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/ivProductImage"
+                    tools:text="16/05/2025" />
+
+                <TextView
+                    android:id="@+id/tvPointsReward"
+                    style="@style/Text.Kanila.Micro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_reward_pill"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="2dp"
+                    android:text="+20 điểm"
+                    android:textColor="@color/button"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvReviewDate" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Rating Stars -->
+            <RatingBar
+                android:id="@+id/rbRating"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:numStars="5"
+                android:progressTint="@color/button"
+                android:isIndicator="true"
+                tools:rating="5" />
+
+            <!-- Content Area -->
+            <TextView
+                android:id="@+id/tvReviewContent"
+                style="@style/Text.Kanila.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_create_post_input"
+                android:padding="16dp"
+                android:minHeight="120dp"
+                tools:text="Sau 2 tuần sử dụng, da mình sáng và đều màu hơn thấy rõ, các vết thâm mụn nhanh hết." />
+
+            <!-- Media Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="end|center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_image"
+                    app:tint="@color/text_tertiary"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:id="@+id/tvMediaCount"
+                    style="@style/Text.Kanila.Micro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textColor="@color/text_tertiary"
+                    tools:text="3 ảnh" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvMedia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_thumbnail" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="24dp"
+                android:background="#F5F5F5" />
+
+            <!-- Thank You / Reward Card -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_reward_tip_banner"
+                android:padding="16dp">
+
+                <ImageView
+                    android:id="@+id/ivGiftIcon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_gift"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/button" />
+
+                <TextView
+                    android:id="@+id/tvThankTitle"
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Cảm ơn bạn!"
+                    android:textColor="@color/button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/ivGiftIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvThankContent"
+                    style="@style/Text.Kanila.Micro"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Đánh giá của bạn giúp cộng đồng làm đẹp thông thái hơn và giúp Kanila Beauty hoàn thiện sản phẩm tốt hơn."
+                    android:textColor="@color/button"
+                    app:layout_constraintEnd_toStartOf="@id/ivHeart"
+                    app:layout_constraintStart_toStartOf="@id/tvThankTitle"
+                    app:layout_constraintTop_toBottomOf="@id/tvThankTitle" />
+
+                <ImageView
+                    android:id="@+id/ivHeart"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_heart"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:tint="@color/button" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/layoutLoading"
+        layout="@layout/view_loading_state"
+        android:visibility="gone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

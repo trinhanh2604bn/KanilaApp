@@ -26,9 +26,19 @@ import com.example.frontend.data.model.category.CategoryDto;
 import com.example.frontend.data.repository.CategoryRepository;
 import com.bumptech.glide.Glide;
 import com.example.frontend.data.repository.CatalogRepository;
+import com.example.frontend.data.repository.ProductRepository;
+import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.data.model.cart.AddToCartRequest;
+import com.example.frontend.feature.product.ProductDetailFragment;
 import com.example.frontend.model.Brand;
+import com.example.frontend.model.Product;
 import com.example.frontend.data.remote.NetworkResult;
 import android.util.Log;
+
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +52,10 @@ public class ProductCategoryFragment extends Fragment {
     private final List<View> indicators = new ArrayList<>();
     private CategoryRepository categoryRepository;
     private CatalogRepository catalogRepository;
+    private ProductRepository productRepository;
+    private CartViewModel cartViewModel;
+    private RecyclerView rvFlashSaleProducts;
+    private FlashSaleProductAdapter flashSaleAdapter;
 
     private final Map<String, Integer> categoryCardMap = new HashMap<String, Integer>() {{
         put("FACE", R.id.cardCategoryFace);
@@ -82,6 +96,8 @@ public class ProductCategoryFragment extends Fragment {
 
         categoryRepository = new CategoryRepository(requireContext());
         catalogRepository = new CatalogRepository(requireContext());
+        productRepository = new ProductRepository(requireContext());
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
 
         setupTopBar(view);
         setupHeroSlider(view);
@@ -89,11 +105,33 @@ public class ProductCategoryFragment extends Fragment {
         loadRootCategories(view);
         setupSpecialCollectionCards(view);
         loadFeaturedBrands(view);
+        setupFlashSaleProducts(view);
+        loadFlashSaleProducts();
 
         TextView tvSeeAllBrands = view.findViewById(R.id.tvSeeAllBrands);
         if (tvSeeAllBrands != null) {
             tvSeeAllBrands.setOnClickListener(v -> {
                 ui.common.FragmentNavigationHelper.replaceFragment(getActivity(), new BrandPageFragment());
+            });
+        }
+
+        TextView tvSeeAllFlashSale = view.findViewById(R.id.tvSeeAllFlashSale);
+        if (tvSeeAllFlashSale != null) {
+            tvSeeAllFlashSale.setOnClickListener(v -> {
+                ui.common.FragmentNavigationHelper.replaceFragment(
+                        getActivity(),
+                        new FlashSaleFragment()
+                );
+            });
+        }
+
+        TextView tvSeeAllVoucher = view.findViewById(R.id.tvSeeAllVoucher);
+        if (tvSeeAllVoucher != null) {
+            tvSeeAllVoucher.setOnClickListener(v -> {
+                ui.common.FragmentNavigationHelper.replaceFragment(
+                        getActivity(),
+                        new VoucherCenterFragment()
+                );
             });
         }
     }
@@ -380,6 +418,94 @@ public class ProductCategoryFragment extends Fragment {
                 getActivity(),
                 ProductListingFragment.newBrandInstance(brand.getId(), brand.getBrandName())
             );
+        });
+    }
+
+    private void setupFlashSaleProducts(View root) {
+        rvFlashSaleProducts = root.findViewById(R.id.rvFlashSaleProducts);
+        if (rvFlashSaleProducts == null) return;
+
+        flashSaleAdapter = new FlashSaleProductAdapter();
+        flashSaleAdapter.setOnFlashSaleProductClickListener(new FlashSaleProductAdapter.OnFlashSaleProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                if (product == null || product.getId() == null) return;
+
+                ProductDetailFragment fragment = ProductDetailFragment.newInstance(product.getId());
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                handleAddToCart(product);
+            }
+        });
+
+        rvFlashSaleProducts.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        rvFlashSaleProducts.setAdapter(flashSaleAdapter);
+    }
+
+    private void loadFlashSaleProducts() {
+        Map<String, String> query = new HashMap<>();
+        query.put("page", "1");
+        query.put("limit", "10");
+        query.put("fields", "card");
+        query.put("saleOnly", "true");
+        query.put("sort", "hot_deal");
+
+        Log.d("ProductCategory", "Flash sale query = " + query.toString());
+
+        productRepository.getProductsByQuery(query)
+                .observe(getViewLifecycleOwner(), result -> {
+                    if (result == null) return;
+
+                    switch (result.status) {
+                        case SUCCESS:
+                            if (result.data != null) {
+                                flashSaleAdapter.submitList(result.data);
+                            } else {
+                                flashSaleAdapter.submitList(new ArrayList<>());
+                            }
+                            break;
+
+                        case EMPTY:
+                            flashSaleAdapter.submitList(new ArrayList<>());
+                            break;
+
+                        case ERROR:
+                        case NO_INTERNET:
+                            Toast.makeText(
+                                    getContext(),
+                                    result.message != null ? result.message : "Không tải được Flash Sale",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                            flashSaleAdapter.submitList(new ArrayList<>());
+                            break;
+                    }
+                });
+    }
+
+    private void handleAddToCart(Product product) {
+        if (product == null || product.getId() == null) return;
+
+        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
+        cartViewModel.addToCart(request);
+
+        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
+            @Override
+            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
+                if (result == null) return;
+                if (result.status == NetworkResult.Status.SUCCESS) {
+                    Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                } else if (result.status == NetworkResult.Status.ERROR) {
+                    Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+                    cartViewModel.getCartResult().removeObserver(this);
+                }
+            }
         });
     }
 

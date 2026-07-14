@@ -6,6 +6,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.frontend.data.model.product.ProductDetailResponse;
+import com.example.frontend.data.model.product.SkinMatchDto;
+import com.example.frontend.data.model.product.ReviewInsightDto;
 import com.example.frontend.data.model.cart.AddToCartRequest;
 import com.example.frontend.data.model.cart.CartDto;
 import com.example.frontend.data.remote.NetworkResult;
@@ -28,6 +30,7 @@ public class ProductDetailViewModel extends AndroidViewModel {
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
     private final WishlistRepository wishlistRepository;
+    private final com.example.frontend.data.repository.ReviewRepository reviewRepository;
     private final com.example.frontend.data.repository.CheckoutRepository checkoutRepository;
     private final MutableLiveData<ProductDetailUiState> uiState = new MutableLiveData<>(new ProductDetailUiState());
     private final MutableLiveData<NetworkResult<CartDto>> addToCartResult = new MutableLiveData<>();
@@ -41,6 +44,7 @@ public class ProductDetailViewModel extends AndroidViewModel {
         this.productRepository = new ProductRepository(application);
         this.cartRepository = new CartRepository(application);
         this.wishlistRepository = new WishlistRepository(application);
+        this.reviewRepository = new com.example.frontend.data.repository.ReviewRepository(application);
         this.checkoutRepository = new com.example.frontend.data.repository.CheckoutRepository(application);
         this.sharedPreferences = application.getSharedPreferences("kanila_prefs", Context.MODE_PRIVATE);
         loadRecentlyViewedFromPrefs();
@@ -89,6 +93,10 @@ public class ProductDetailViewModel extends AndroidViewModel {
                         ProductDetailUiState successState = ProductDetailUiState.success(result.data);
                         successState.recentlyViewed = updateRecentlyViewed(result.data.getProduct());
                         uiState.setValue(successState);
+                        // Fetch detailed insights and reviews
+                        loadSkinMatchScore(productId);
+                        loadReviewInsights(productId);
+                        loadReviewPreview(productId);
                     } else {
                         uiState.setValue(ProductDetailUiState.error("Không tìm thấy thông tin sản phẩm"));
                     }
@@ -107,6 +115,30 @@ public class ProductDetailViewModel extends AndroidViewModel {
                     errorState.noInternet = true;
                     uiState.setValue(errorState);
                     break;
+            }
+        });
+    }
+
+    private void loadSkinMatchScore(String productId) {
+        productRepository.getSkinMatchScore(productId).observeForever(result -> {
+            if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+                ProductDetailUiState current = uiState.getValue();
+                if (current != null) {
+                    current.detailedSkinMatch = result.data;
+                    uiState.setValue(current);
+                }
+            }
+        });
+    }
+
+    private void loadReviewInsights(String productId) {
+        productRepository.getReviewInsights(productId).observeForever(result -> {
+            if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+                ProductDetailUiState current = uiState.getValue();
+                if (current != null) {
+                    current.reviewInsight = result.data;
+                    uiState.setValue(current);
+                }
             }
         });
     }
@@ -135,16 +167,40 @@ public class ProductDetailViewModel extends AndroidViewModel {
     public void toggleWishlist() {
         ProductDetailUiState current = uiState.getValue();
         if (current == null || current.product == null) return;
-        
+
         boolean wasWishlisted = current.isWishlisted;
         // Optimistic update
         current.isWishlisted = !wasWishlisted;
         uiState.setValue(current);
-        
+
         if (wasWishlisted) {
             wishlistRepository.removeFromWishlist(current.product.getId(), new MutableLiveData<>());
         } else {
             wishlistRepository.addToWishlist(current.product.getId(), new MutableLiveData<>());
         }
+    }
+
+    public void loadReviewPreview(String productId) {
+        MutableLiveData<NetworkResult<List<com.example.frontend.data.model.review.ReviewDto>>> result = new MutableLiveData<>();
+        reviewRepository.getRandomReviewPreview(productId, 2, result);
+        result.observeForever(networkResult -> {
+            if (networkResult.status == NetworkResult.Status.SUCCESS) {
+                ProductDetailUiState currentState = uiState.getValue();
+                if (currentState != null) {
+                    currentState.reviewPreviewList = networkResult.data;
+                    uiState.setValue(currentState);
+                }
+            }
+        });
+    }
+
+    public void toggleReviewLike(com.example.frontend.data.model.review.ReviewDto review) {
+        reviewRepository.toggleReviewVote(review.getId(), new MutableLiveData<>());
+        // Local update for immediate UI response
+        boolean newLiked = !review.isLikedByMe();
+        int newCount = review.getHelpfulCount() + (newLiked ? 1 : -1);
+        review.setLikedByMe(newLiked);
+        review.setHelpfulCount(newCount);
+        uiState.setValue(uiState.getValue());
     }
 }

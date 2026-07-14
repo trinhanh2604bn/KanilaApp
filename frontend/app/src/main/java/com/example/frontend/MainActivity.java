@@ -48,6 +48,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ui.account.AccountFragment;
+import ui.account.KocRegistrationFragment;
+import ui.account.KocDashboardFragment;
 import com.example.frontend.ui.category.ProductCategoryFragment;
 import ui.commerce.CartFragment;
 import ui.commerce.CheckoutFragment;
@@ -60,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
     private View layoutSearchBar;
     private ImageButton btnNotification, btnCart, btnWishlist;
     private RecyclerView rvHomeShortcuts;
-    private RecyclerView rvRecommendedProducts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
     private View ivChatbot;
@@ -79,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
 
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
-    private HomeProductAdapter recommendedProductAdapter;
     private HomeProductAdapter allProductAdapter;
     private HomeViewModel viewModel;
     private com.example.frontend.feature.wishlist.WishlistViewModel wishlistViewModel;
@@ -171,12 +171,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateHomeVisibility() {
-        boolean hasFragments = getSupportFragmentManager().getBackStackEntryCount() > 0;
+        int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+        boolean hasFragments = backStackCount > 0;
+
         if (layoutHomeScroll != null) {
             layoutHomeScroll.setVisibility(hasFragments ? View.GONE : View.VISIBLE);
         }
         if (mainFragmentContainer != null) {
             mainFragmentContainer.setVisibility(hasFragments ? View.VISIBLE : View.GONE);
+        }
+
+        View bottomNav = findViewById(R.id.layoutBottomNavigation);
+        if (bottomNav != null) {
+            if (!hasFragments) {
+                bottomNav.setVisibility(View.VISIBLE);
+            } else {
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
+                if (currentFragment instanceof com.example.frontend.feature.product.ProductDetailFragment) {
+                    bottomNav.setVisibility(View.GONE);
+                } else {
+                    bottomNav.setVisibility(View.VISIBLE);
+                }
+            }
         }
     }
 
@@ -191,7 +207,6 @@ public class MainActivity extends AppCompatActivity {
         btnCart = findViewById(R.id.btnCart);
         btnWishlist = findViewById(R.id.btnWishlist);
         rvHomeShortcuts = findViewById(R.id.rvHomeShortcuts);
-        rvRecommendedProducts = findViewById(R.id.rvRecommendedProducts);
         rvAllProducts = findViewById(R.id.rvAllProducts);
         layoutHomeStateContainer = findViewById(R.id.layoutHomeStateContainer);
         viewHomeLoading = findViewById(R.id.viewHomeLoading);
@@ -219,12 +234,6 @@ public class MainActivity extends AppCompatActivity {
         layoutSearchExpandedBar = findViewById(R.id.layoutSearchExpandedBar);
         edtExpandedSearchQuery = findViewById(R.id.edtExpandedSearchQuery);
         btnExpandedSearchBack = findViewById(R.id.btnExpandedSearchBack);
-
-        if (findViewById(R.id.btnViewAllRecommended) != null) {
-            findViewById(R.id.btnViewAllRecommended).setOnClickListener(v -> {
-                Toast.makeText(this, "See All Recommended", Toast.LENGTH_SHORT).show();
-            });
-        }
     }
 
     private void setupSearchBehavior() {
@@ -316,47 +325,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupProductLists() {
-        recommendedProductAdapter = new HomeProductAdapter();
-
-        recommendedProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
-            @Override
-            public void onProductClick(com.example.frontend.model.Product product) {
-                loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()));
-            }
-
-            @Override
-            public void onAddToCartClick(com.example.frontend.model.Product product) {
-                handleAddToCart(product);
-            }
-        });
-
-        recommendedProductAdapter.setOnWishlistToggleListener((product, wasWishlisted) -> {
-            if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
-                wishlistViewModel.toggleWishlist(product.getId(), wasWishlisted);
-            } else {
-                product.setFavorite(wasWishlisted); // rollback UI
-                recommendedProductAdapter.notifyDataSetChanged();
-
-                Bundle extras = new Bundle();
-                extras.putString("productId", product.getId());
-                extras.putBoolean("wasWishlisted", wasWishlisted);
-
-                com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
-                        com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
-                        "Home",
-                        0,
-                        extras
-                );
-                com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, action);
-            }
-        });
-
-        if (rvRecommendedProducts != null) {
-            rvRecommendedProducts.setLayoutManager(new GridLayoutManager(this, 2));
-            rvRecommendedProducts.setAdapter(recommendedProductAdapter);
-            rvRecommendedProducts.setNestedScrollingEnabled(false);
-        }
-
         // All Products (Vertical Grid)
         allProductAdapter = new HomeProductAdapter();
         allProductAdapter.setOnProductClickListener(new HomeProductAdapter.OnProductClickListener() {
@@ -402,6 +370,7 @@ public class MainActivity extends AppCompatActivity {
     private void observeViewModel() {
         if (viewModel == null) return;
         viewModel.getUiState().observe(this, state -> {
+            // ... (rest of logic)
             if (state == null) return;
 
             if (state.loading) {
@@ -411,10 +380,6 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 showContent();
                 List<com.example.frontend.model.Product> allProductsToUpdate = new java.util.ArrayList<>();
-                if (state.recommendedProducts != null) {
-                    recommendedProductAdapter.setProducts(state.recommendedProducts);
-                    allProductsToUpdate.addAll(state.recommendedProducts);
-                }
                 if (state.allProducts != null) {
                     allProductAdapter.setProducts(state.allProducts);
                     allProductsToUpdate.addAll(state.allProducts);
@@ -427,6 +392,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                     wishlistViewModel.loadWishlistStatus(productIds);
                 }
+            }
+        });
+
+        cartViewModel.getCartResult().observe(this, result -> {
+            if (result == null) return;
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                Toast.makeText(MainActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            } else if (result.status == NetworkResult.Status.ERROR) {
+                Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -448,13 +422,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateProductFavoriteStates(java.util.Map<String, Boolean> statusMap) {
-        if (recommendedProductAdapter.getProducts() != null) {
-            for (com.example.frontend.model.Product p : recommendedProductAdapter.getProducts()) {
-                Boolean isFav = statusMap.get(p.getId());
-                if (isFav != null) p.setFavorite(isFav);
-            }
-            recommendedProductAdapter.notifyDataSetChanged();
-        }
         if (allProductAdapter.getProducts() != null) {
             for (com.example.frontend.model.Product p : allProductAdapter.getProducts()) {
                 Boolean isFav = statusMap.get(p.getId());
@@ -478,13 +445,11 @@ public class MainActivity extends AppCompatActivity {
         if (layoutHomeStateContainer != null) layoutHomeStateContainer.setVisibility(View.VISIBLE);
         if (viewHomeLoading != null) viewHomeLoading.setVisibility(View.VISIBLE);
         if (viewHomeError != null) viewHomeError.setVisibility(View.GONE);
-        if (findViewById(R.id.layoutHomeRecommendation) != null) findViewById(R.id.layoutHomeRecommendation).setVisibility(View.GONE);
         if (findViewById(R.id.layoutHomeCatalog) != null) findViewById(R.id.layoutHomeCatalog).setVisibility(View.GONE);
     }
 
     private void showContent() {
         if (layoutHomeStateContainer != null) layoutHomeStateContainer.setVisibility(View.GONE);
-        if (findViewById(R.id.layoutHomeRecommendation) != null) findViewById(R.id.layoutHomeRecommendation).setVisibility(View.VISIBLE);
         if (findViewById(R.id.layoutHomeCatalog) != null) findViewById(R.id.layoutHomeCatalog).setVisibility(View.VISIBLE);
     }
 
@@ -492,7 +457,6 @@ public class MainActivity extends AppCompatActivity {
         if (layoutHomeStateContainer != null) layoutHomeStateContainer.setVisibility(View.VISIBLE);
         if (viewHomeLoading != null) viewHomeLoading.setVisibility(View.GONE);
         if (viewHomeError != null) viewHomeError.setVisibility(View.VISIBLE);
-        if (findViewById(R.id.layoutHomeRecommendation) != null) findViewById(R.id.layoutHomeRecommendation).setVisibility(View.GONE);
         if (findViewById(R.id.layoutHomeCatalog) != null) findViewById(R.id.layoutHomeCatalog).setVisibility(View.GONE);
 
         if (viewHomeError != null) {
@@ -554,6 +518,20 @@ public class MainActivity extends AppCompatActivity {
                 loadFragment(new ui.loyalty.LoyaltyFragment());
             } else if ("voucher".equals(id)) {
                 loadFragment(new com.example.frontend.feature.voucher.VoucherListFragment());
+            } else if ("creator".equals(id)) {
+                if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                    // Kiểm tra trạng thái KOC đã lưu trong SharedPreferences
+                    if (com.example.frontend.data.remote.TokenManager.getInstance(this).isKoc()) {
+                        loadFragment(new KocDashboardFragment());
+                    } else {
+                        loadFragment(new KocRegistrationFragment());
+                    }
+                } else {
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this,
+                        new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT, 
+                            "CreatorShortcut", 0, null));
+                }
             } else {
                 Toast.makeText(this, "Tính năng " + item.getTitle() + " đang phát triển", Toast.LENGTH_SHORT).show();
             }
@@ -644,24 +622,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleAddToCart(com.example.frontend.model.Product product) {
         if (product.getId() == null) return;
-
-        // Use empty string instead of null for variant_id as some backends require it
-        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
-        cartViewModel.addToCart(request);
-
-        cartViewModel.getCartResult().observe(this, new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
-            @Override
-            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
-                if (result == null) return;
-                if (result.status == NetworkResult.Status.SUCCESS) {
-                    Toast.makeText(MainActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                } else if (result.status == NetworkResult.Status.ERROR) {
-                    Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                }
-            }
-        });
+        com.example.frontend.feature.product.QuickAddHelper.quickAddToCart(
+            this, getSupportFragmentManager(), this, product, cartViewModel);
     }
 
     private void smoothScrollTo(int position, long duration) {

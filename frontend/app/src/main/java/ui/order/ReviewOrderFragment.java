@@ -20,6 +20,8 @@ import com.example.frontend.data.model.order.ReviewOrderItemsDto;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.product.ReviewHubFragment;
 import ui.common.FragmentNavigationHelper;
+import ui.order.ReviewDetailFragment;
+import ui.order.ReviewWriteFragment;
 
 public class ReviewOrderFragment extends Fragment {
 
@@ -105,8 +107,17 @@ public class ReviewOrderFragment extends Fragment {
         RecyclerView rv = view.findViewById(R.id.rvReviewProducts);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new ReviewOrderAdapter(item -> {
-            // Navigate to Review Creation screen
-            FragmentNavigationHelper.replaceFragment(requireActivity(), ReviewWriteFragment.newInstance(item.getOrderItemId()));
+            if ("reviewed".equals(item.getReviewStatus())) {
+                // Navigate to Review Detail screen
+                if (item.getReviewId() != null) {
+                    FragmentNavigationHelper.replaceFragment(requireActivity(), ReviewDetailFragment.newInstance(item.getReviewId()));
+                } else {
+                    Toast.makeText(getContext(), "Review ID not found", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                // Navigate to Review Creation screen
+                FragmentNavigationHelper.replaceFragment(requireActivity(), ReviewWriteFragment.newInstance(item.getOrderItemId()));
+            }
         });
         rv.setAdapter(adapter);
     }

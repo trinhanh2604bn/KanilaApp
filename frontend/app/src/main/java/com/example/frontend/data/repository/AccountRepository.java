@@ -6,6 +6,7 @@ import com.example.frontend.data.remote.ApiClient;
 import com.example.frontend.data.remote.ApiResponse;
 import com.example.frontend.data.remote.ApiService;
 import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.data.remote.TokenManager;
 import com.example.frontend.data.model.account.ProfileHubDto;
 import com.example.frontend.data.model.address.AddressDto;
 import java.util.List;
@@ -15,9 +16,11 @@ import retrofit2.Response;
 
 public class AccountRepository {
     private final ApiService apiService;
+    private final TokenManager tokenManager;
 
     public AccountRepository(Context context) {
         this.apiService = ApiClient.getClient(context).create(ApiService.class);
+        this.tokenManager = TokenManager.getInstance(context);
     }
 
     public void getProfileHub(MutableLiveData<NetworkResult<ProfileHubDto>> result) {
@@ -28,7 +31,13 @@ public class AccountRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<ProfileHubDto> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
-                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                        ProfileHubDto data = apiResponse.getData();
+                        // Persist customerId so Fragments can use the real ID instead of "me"
+                        if (data != null && data.getProfile() != null
+                                && data.getProfile().getCustomerId() != null) {
+                            tokenManager.saveCustomerId(data.getProfile().getCustomerId());
+                        }
+                        result.setValue(NetworkResult.success(data));
                     } else {
                         result.setValue(NetworkResult.error(apiResponse.getMessage()));
                     }

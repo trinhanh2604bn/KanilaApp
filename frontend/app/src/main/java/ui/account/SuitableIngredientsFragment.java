@@ -5,12 +5,12 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,8 +19,13 @@ import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.frontend.R;
+import com.example.frontend.data.model.beauty.CustomerBeautyProfileDto;
+import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.feature.beauty.BeautyProfileViewModel;
+import com.example.frontend.feature.beauty.UpdateBeautyProfileRequest;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -46,6 +51,7 @@ public class SuitableIngredientsFragment extends Fragment {
 
     private MaterialButton btnSaveBottom;
     private boolean isDirty = false;
+    private BeautyProfileViewModel viewModel;
 
     private MaterialCardView cardSmartInsight;
     private View layoutSmartInsightIcon;
@@ -59,11 +65,66 @@ public class SuitableIngredientsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(BeautyProfileViewModel.class);
 
         setupViews(view);
         setupEvents(view);
-        updateAllIngredientStates();
-        updateSensitiveTreatmentState(switchSensitiveTreatment != null && switchSensitiveTreatment.isChecked());
+        observeViewModel();
+        
+        if (viewModel.getProfileResult().getValue() == null) {
+            viewModel.loadProfile(com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).getCustomerId());
+        } else {
+            loadCurrentData();
+        }
+    }
+
+    private void observeViewModel() {
+        viewModel.getProfileResult().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.status == NetworkResult.Status.SUCCESS) {
+                loadCurrentData();
+            }
+        });
+
+        viewModel.getSaveResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            
+            if (result.status == NetworkResult.Status.SUCCESS) {
+                showSaveSuccessPopup();
+                viewModel.resetSaveResult();
+            } else if (result.status == NetworkResult.Status.ERROR) {
+                Toast.makeText(getContext(), "Lỗi: " + result.message, Toast.LENGTH_LONG).show();
+                updateSaveButtonsState(true);
+                viewModel.resetSaveResult();
+            }
+        });
+    }
+
+    private void loadCurrentData() {
+        NetworkResult<CustomerBeautyProfileDto> result = viewModel.getProfileResult().getValue();
+        if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+            CustomerBeautyProfileDto profile = result.data;
+            
+            // Sync Avoid Ingredients
+            List<String> avoidCodes = profile.getAvoidIngredients();
+            if (avoidCodes != null) {
+                for (IngredientItem item : avoidItems) {
+                    item.selected = avoidCodes.contains(item.code);
+                }
+            }
+
+            // Sync Preferred Ingredients (Priority)
+            List<String> preferredCodes = profile.getPreferredIngredients();
+            if (preferredCodes != null) {
+                for (IngredientItem item : priorityItems) {
+                    item.selected = preferredCodes.contains(item.code);
+                }
+            }
+            
+            isDirty = false;
+            updateSaveButtonsState(false);
+            updateAllIngredientStates();
+            updateSensitiveTreatmentState(switchSensitiveTreatment != null && switchSensitiveTreatment.isChecked());
+        }
     }
 
     private void setupViews(@NonNull View view) {
@@ -82,26 +143,26 @@ public class SuitableIngredientsFragment extends Fragment {
         ivSmartInsightIcon = view.findViewById(R.id.ivSmartInsightIcon);
         tvSmartInsightMessage = view.findViewById(R.id.tvSmartInsightMessage);
 
-        priorityItems.add(createIngredientItem(view, R.id.cardNiacinamide, R.id.iconNiacinamide, R.id.tvNiacinamide, R.id.tickNiacinamide, "Niacinamide", true));
-        priorityItems.add(createIngredientItem(view, R.id.cardCeramide, R.id.iconCeramide, R.id.tvCeramide, R.id.tickCeramide, "Ceramide", true));
-        priorityItems.add(createIngredientItem(view, R.id.cardHyaluronicAcid, R.id.iconHyaluronicAcid, R.id.tvHyaluronicAcid, R.id.tickHyaluronicAcid, "Hyaluronic Acid", true));
-        priorityItems.add(createIngredientItem(view, R.id.cardBha, R.id.iconBha, R.id.tvBha, R.id.tickBha, "BHA", false));
-        priorityItems.add(createIngredientItem(view, R.id.cardVitaminC, R.id.iconVitaminC, R.id.tvVitaminC, R.id.tickVitaminC, "Vitamin C", false));
-        priorityItems.add(createIngredientItem(view, R.id.cardPeptide, R.id.iconPeptide, R.id.tvPeptide, R.id.tickPeptide, "Peptide", false));
+        priorityItems.add(createIngredientItem(view, R.id.cardNiacinamide, R.id.iconNiacinamide, R.id.tvNiacinamide, R.id.tickNiacinamide, "Niacinamide", "NIACINAMIDE", false));
+        priorityItems.add(createIngredientItem(view, R.id.cardCeramide, R.id.iconCeramide, R.id.tvCeramide, R.id.tickCeramide, "Ceramide", "CERAMIDE", false));
+        priorityItems.add(createIngredientItem(view, R.id.cardHyaluronicAcid, R.id.iconHyaluronicAcid, R.id.tvHyaluronicAcid, R.id.tickHyaluronicAcid, "Hyaluronic Acid", "HYALURONIC_ACID", false));
+        priorityItems.add(createIngredientItem(view, R.id.cardBha, R.id.iconBha, R.id.tvBha, R.id.tickBha, "BHA", "BHA", false));
+        priorityItems.add(createIngredientItem(view, R.id.cardVitaminC, R.id.iconVitaminC, R.id.tvVitaminC, R.id.tickVitaminC, "Vitamin C", "VITAMIN_C", false));
+        priorityItems.add(createIngredientItem(view, R.id.cardPeptide, R.id.iconPeptide, R.id.tvPeptide, R.id.tickPeptide, "Peptide", "PEPTIDE", false));
 
-        avoidItems.add(createIngredientItem(view, R.id.cardAlcohol, R.id.iconAlcohol, R.id.tvAlcohol, R.id.tickAlcohol, "Cồn khô", true));
-        avoidItems.add(createIngredientItem(view, R.id.cardFragrance, R.id.iconFragrance, R.id.tvFragrance, R.id.tickFragrance, "Hương liệu", true));
-        avoidItems.add(createIngredientItem(view, R.id.cardParaben, R.id.iconParaben, R.id.tvParaben, R.id.tickParaben, "Paraben", false));
-        avoidItems.add(createIngredientItem(view, R.id.cardRetinol, R.id.iconRetinol, R.id.tvRetinol, R.id.tickRetinol, "Retinol", false));
-        avoidItems.add(createIngredientItem(view, R.id.cardEssentialOil, R.id.iconEssentialOil, R.id.tvEssentialOil, R.id.tickEssentialOil, "Tinh dầu", false));
+        avoidItems.add(createIngredientItem(view, R.id.cardAlcohol, R.id.iconAlcohol, R.id.tvAlcohol, R.id.tickAlcohol, "Cồn khô", "ALCOHOL", false));
+        avoidItems.add(createIngredientItem(view, R.id.cardFragrance, R.id.iconFragrance, R.id.tvFragrance, R.id.tickFragrance, "Hương liệu", "FRAGRANCE", false));
+        avoidItems.add(createIngredientItem(view, R.id.cardParaben, R.id.iconParaben, R.id.tvParaben, R.id.tickParaben, "Paraben", "PARABEN", false));
+        avoidItems.add(createIngredientItem(view, R.id.cardRetinol, R.id.iconRetinol, R.id.tvRetinol, R.id.tickRetinol, "Retinol", "RETINOID", false));
+        avoidItems.add(createIngredientItem(view, R.id.cardEssentialOil, R.id.iconEssentialOil, R.id.tvEssentialOil, R.id.tickEssentialOil, "Tinh dầu", "ESSENTIAL_OIL", false));
     }
 
-    private IngredientItem createIngredientItem(@NonNull View root, int cardId, int iconId, int labelId, int tickId, @NonNull String name, boolean selected) {
+    private IngredientItem createIngredientItem(@NonNull View root, int cardId, int iconId, int labelId, int tickId, @NonNull String name, @NonNull String code, boolean selected) {
         MaterialCardView card = root.findViewById(cardId);
         ImageView icon = root.findViewById(iconId);
         TextView label = root.findViewById(labelId);
         ImageView tick = root.findViewById(tickId);
-        return new IngredientItem(card, icon, label, tick, name, selected);
+        return new IngredientItem(card, icon, label, tick, name, code, selected);
     }
 
     private void setupEvents(@NonNull View view) {
@@ -154,10 +215,7 @@ public class SuitableIngredientsFragment extends Fragment {
     private void setupIngredientClickEvents(@NonNull List<IngredientItem> items) {
         for (IngredientItem item : items) {
             if (item.card == null) continue;
-            
-            // Đồng bộ hiệu ứng click giống các màn hình khác
             ViewUtils.applyClickAnimation(item.card);
-
             item.card.setOnClickListener(v -> {
                 item.selected = !item.selected;
                 updateIngredientView(item);
@@ -270,13 +328,11 @@ public class SuitableIngredientsFragment extends Fragment {
         int tertiaryText = ContextCompat.getColor(requireContext(), R.color.text_tertiary);
 
         if (isChecked) {
-            // Trạng thái ON: Rực rỡ và Kích hoạt
             layoutSensitiveTreatment.setCardBackgroundColor(softPinkBg);
             layoutSensitiveTreatment.setStrokeColor(pinkColor);
             switchSensitiveTreatment.setThumbTintList(ColorStateList.valueOf(pinkColor));
             switchSensitiveTreatment.setTrackTintList(ColorStateList.valueOf(ColorUtils.setAlphaComponent(pinkColor, 80)));
             
-            // TỰ ĐỘNG THIẾT LẬP: Chuyển các thành phần nhạy cảm vào danh sách Cần tránh
             boolean changed = false;
             for (IngredientItem item : avoidItems) {
                 if (item.name.equals("Cồn khô") || item.name.equals("Hương liệu") || item.name.equals("Retinol")) {
@@ -289,7 +345,6 @@ public class SuitableIngredientsFragment extends Fragment {
             }
             if (changed) updateSummary();
 
-            // Làm thẻ Insight "bừng sáng"
             if (cardSmartInsight != null) {
                 cardSmartInsight.setCardBackgroundColor(Color.parseColor("#FDF9FB"));
                 cardSmartInsight.setStrokeColor(Color.parseColor("#FFD6DE")); 
@@ -305,13 +360,11 @@ public class SuitableIngredientsFragment extends Fragment {
                 }
             }
         } else {
-            // Trạng thái OFF: Trầm lắng và Giải thích
             layoutSensitiveTreatment.setCardBackgroundColor(Color.WHITE);
             layoutSensitiveTreatment.setStrokeColor(grayBorder);
             switchSensitiveTreatment.setThumbTintList(ColorStateList.valueOf(grayBorder));
             switchSensitiveTreatment.setTrackTintList(ColorStateList.valueOf(ColorUtils.setAlphaComponent(grayBorder, 80)));
             
-            // Làm thẻ Insight mờ đi (Trạng thái chờ)
             if (cardSmartInsight != null) {
                 cardSmartInsight.setCardBackgroundColor(Color.parseColor("#F5F5F5"));
                 cardSmartInsight.setStrokeColor(grayBorder);
@@ -345,10 +398,29 @@ public class SuitableIngredientsFragment extends Fragment {
                 .setNegativeButton("Hủy", (d, which) -> d.dismiss())
                 .setPositiveButton("Lưu", (d, which) -> {
                     d.dismiss();
-                    showSaveSuccessPopup();
+                    performSave();
                 })
                 .show();
         ViewUtils.customizeDialogButtons(dialog);
+    }
+
+    private void performSave() {
+        UpdateBeautyProfileRequest request = new UpdateBeautyProfileRequest();
+
+        List<String> avoidCodes = new ArrayList<>();
+        for (IngredientItem item : avoidItems) {
+            if (item.selected) avoidCodes.add(item.code);
+        }
+        request.setAvoidIngredients(avoidCodes);
+
+        List<String> preferredCodes = new ArrayList<>();
+        for (IngredientItem item : priorityItems) {
+            if (item.selected) preferredCodes.add(item.code);
+        }
+        request.setPreferredIngredients(preferredCodes);
+
+        updateSaveButtonsState(false);
+        viewModel.updateProfile(com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).getCustomerId(), request);
     }
 
     private void showSaveSuccessPopup() {
@@ -366,10 +438,7 @@ public class SuitableIngredientsFragment extends Fragment {
 
         MaterialButton btnPopupOk = dialog.findViewById(R.id.btnPopupOk);
         if (btnPopupOk != null) {
-            btnPopupOk.setOnClickListener(v -> {
-                dialog.dismiss();
-                updateSaveButtonsState(false); // Làm mờ nút sau khi lưu thành công
-            });
+            btnPopupOk.setOnClickListener(v -> dialog.dismiss());
         }
         dialog.show();
 
@@ -394,14 +463,16 @@ public class SuitableIngredientsFragment extends Fragment {
         private final TextView label;
         private final ImageView tick;
         private final String name;
+        private final String code;
         private boolean selected;
 
-        private IngredientItem(MaterialCardView card, ImageView icon, TextView label, ImageView tick, String name, boolean selected) {
+        private IngredientItem(MaterialCardView card, ImageView icon, TextView label, ImageView tick, String name, String code, boolean selected) {
             this.card = card;
             this.icon = icon;
             this.label = label;
             this.tick = tick;
             this.name = name;
+            this.code = code;
             this.selected = selected;
         }
     }

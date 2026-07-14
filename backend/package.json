@@ -11,7 +11,7 @@
     "cleanup:customers": "node cleanup-invalid-customers.js",
     "seed:categories:makeup": "node scripts/seed-category-makeup-tree.js",
     "seed:brands": "node scripts/seed-brands.js",
-    "seed:beauty-references": "node scripts/seedBeautyReferences.js",
+    "seed:beauty-references": "node seed-beauty-references.js",
     "migrate:drop-product-code-unique-index": "node scripts/drop-product-code-unique-index.js"
   },
   "keywords": [],
@@ -25,9 +25,12 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.12.1",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^9.0.3"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "jest": "^30.4.2",
+    "nodemon": "^3.1.9",
+    "supertest": "^7.2.2"
   }
 }

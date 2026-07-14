@@ -1037,4 +1037,48 @@
     <string name="review_write_success">Cảm ơn bạn đã đánh giá!</string>
     <string name="review_write_rating_required">Vui lòng chọn số sao đánh giá</string>
     <string name="review_write_char_counter_format">%1$d/1000</string>
+
+    <string name="review_empty_all">Chưa có đánh giá nào</string>
+    <string name="review_empty_5_star">Chưa có đánh giá 5 sao</string>
+    <string name="review_empty_4_star">Chưa có đánh giá 4 sao</string>
+    <string name="review_empty_3_star">Chưa có đánh giá 3 sao</string>
+    <string name="review_empty_2_star">Chưa có đánh giá 2 sao</string>
+    <string name="review_empty_1_star">Chưa có đánh giá 1 sao</string>
+    <string name="review_empty_has_media">Chưa có đánh giá kèm hình ảnh/video</string>
+
+    <!-- Flash Sale & Voucher -->
+    <string name="flash_sale_title">Flash Sale</string>
+    <string name="flash_sale_countdown_label">Kết thúc sau</string>
+    <string name="voucher_title">Kho voucher</string>
+    <string name="voucher_save">Lưu</string>
+    <string name="voucher_claim">Săn ít</string>
+
+    <!-- Mock Flash Sale Countdown -->
+    <string name="mock_flash_hour">02</string>
+    <string name="mock_flash_minute">45</string>
+    <string name="mock_flash_second">32</string>
+    <string name="symbol_colon">:</string>
+    <string name="badge_sale">SALE</string>
+    <string name="badge_trending">ĐANG BÁN CHẠY</string>
+    <string name="action_buy_now">Mua ngay</string>
+    <string name="flash_sale_page_title">FLASH SALE</string>
+    <string name="flash_sale_status_ongoing">Đang diễn ra</string>
+    <string name="flash_sale_status_tomorrow">Ngày mai</string>
+    <string name="flash_sale_ends_in">KẾT THÚC TRONG</string>
+    <string name="flash_sale_starts_in">BẮT ĐẦU SAU</string>
+
+    <!-- Recommendation Feature -->
+    <string name="recommendation_title">Sản phẩm phù hợp với bạn</string>
+    <string name="recommendation_subtitle">Dựa trên hồ sơ làm đẹp và sở thích của bạn</string>
+    <string name="recommendation_guest_title">Khám phá gợi ý riêng cho bạn</string>
+    <string name="recommendation_guest_desc">Đăng nhập và hoàn thành Beauty Profile để nhận gợi ý phù hợp nhất.</string>
+    <string name="recommendation_empty_title">Chưa có gợi ý phù hợp</string>
+    <string name="recommendation_empty_desc">Hoàn thành Beauty Profile để nhận gợi ý phù hợp hơn.</string>
+    <string name="recommendation_error_msg">Không thể tải gợi ý lúc này. Vui lòng thử lại.</string>
+    <string name="auth_token_expired_msg">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</string>
+    <string name="skin_match_reason">Lý do phù hợp</string>
+    <string name="skin_match_analysis">Skin Match Analysis</string>
+    <string name="skin_match_matched_traits">Đặc điểm da khớp với sản phẩm</string>
+    <string name="skin_match_detailed_reasons">Lý giải chi tiết độ phù hợp</string>
+    <string name="skin_match_ai_note">Kết quả này được tính toán dựa trên thuật toán AI độc quyền của Kanila Beauty kết hợp với hồ sơ cá nhân của bạn.</string>
 </resources>

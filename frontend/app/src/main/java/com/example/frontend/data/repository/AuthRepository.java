@@ -24,6 +24,10 @@ public class AuthRepository {
         this.tokenManager = TokenManager.getInstance(context);
     }
 
+    public boolean isLoggedIn() {
+        return tokenManager.isLoggedIn();
+    }
+
     public void login(String channel, String identifier, String password, MutableLiveData<NetworkResult<AuthResponse>> result) {
         result.setValue(NetworkResult.loading());
         String guestSessionId = tokenManager.getGuestSession();

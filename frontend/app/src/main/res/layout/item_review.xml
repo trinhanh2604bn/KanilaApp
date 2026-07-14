@@ -93,6 +93,7 @@
             app:layout_constraintTop_toBottomOf="@id/tvReviewContent" />
 
         <LinearLayout
+            android:id="@+id/layoutReviewActions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -100,7 +101,7 @@
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@id/rvReviewMedia">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/btnHelpful"
                 style="@style/Text.Kanila.Caption"
                 android:layout_width="wrap_content"
@@ -108,13 +109,13 @@
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:drawableStart="@drawable/ic_poll"
+                android:drawableStart="@drawable/ic_heart_outline"
                 android:drawablePadding="4dp"
                 android:gravity="center_vertical"
-                android:text="Hữu ích (124)"
-                app:drawableTint="@color/text_tertiary" />
+                android:text="Yêu thích (0)"
+                android:textColor="@color/text_tertiary" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/btnReply"
                 style="@style/Text.Kanila.Caption"
                 android:layout_width="wrap_content"
@@ -130,6 +131,15 @@
                 app:drawableTint="@color/text_tertiary" />
 
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutReviewComments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/layoutReviewActions" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

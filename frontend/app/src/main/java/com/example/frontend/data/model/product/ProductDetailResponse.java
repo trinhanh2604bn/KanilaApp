@@ -1,9 +1,11 @@
 package com.example.frontend.data.model.product;
 
+import com.example.frontend.data.model.review.ReviewMediaDto;
 import com.example.frontend.model.Brand;
 import com.example.frontend.model.Category;
 import com.example.frontend.model.Product;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 import java.util.List;
 
 public class ProductDetailResponse {
@@ -37,6 +39,9 @@ public class ProductDetailResponse {
     @SerializedName("reviewSummary")
     private ReviewSummaryDto reviewSummary;
 
+    @SerializedName("reviewMediaPreview")
+    private List<ReviewMediaDto> reviewMediaPreview;
+
     @SerializedName("isWishlisted")
     private boolean isWishlisted;
 
@@ -57,6 +62,7 @@ public class ProductDetailResponse {
     public InventoryDto getInventory() { return inventory; }
     public PriceDto getPrice() { return price; }
     public ReviewSummaryDto getReviewSummary() { return reviewSummary; }
+    public List<ReviewMediaDto> getReviewMediaPreview() { return reviewMediaPreview; }
     public boolean isWishlisted() { return isWishlisted; }
     public SkinMatchDto getSkinMatch() { return skinMatch; }
     public RelatedProductsData getRelatedProducts() { return relatedProducts; }
@@ -86,20 +92,42 @@ public class ProductDetailResponse {
         private double averageRating;
         @SerializedName("reviewCount")
         private int reviewCount;
+        @SerializedName("aiSummary")
+        private String aiSummary;
+        @SerializedName("reviewMediaPreview")
+        private List<ReviewMediaDto> reviewMediaPreview;
         public double getAverageRating() { return averageRating; }
         public int getReviewCount() { return reviewCount; }
+        public String getAiSummary() { return aiSummary; }
+        public List<ReviewMediaDto> getReviewMediaPreview() { return reviewMediaPreview; }
     }
 
-    public static class SkinMatchDto {
+    public static class SkinMatchDto implements Serializable {
         @SerializedName("score")
         private int score;
         @SerializedName("level")
         private String level;
+        @SerializedName(value = "match_explanation", alternate = {"explanation", "matchExplanation"})
+        private String matchExplanation;
         @SerializedName("profileChips")
         private List<String> profileChips;
+        @SerializedName("reasons")
+        private List<com.example.frontend.data.model.product.SkinMatchDto.Reason> reasons;
+        @SerializedName("cautions")
+        private List<com.example.frontend.data.model.product.SkinMatchDto.Caution> cautions;
+        @SerializedName("hard_conflicts")
+        private List<com.example.frontend.data.model.product.SkinMatchDto.HardConflict> hardConflicts;
+        @SerializedName("confidence_score")
+        private Integer confidenceScore;
+
         public int getScore() { return score; }
         public String getLevel() { return level; }
+        public String getMatchExplanation() { return matchExplanation; }
         public List<String> getProfileChips() { return profileChips; }
+        public List<com.example.frontend.data.model.product.SkinMatchDto.Reason> getReasons() { return reasons; }
+        public List<com.example.frontend.data.model.product.SkinMatchDto.Caution> getCautions() { return cautions; }
+        public List<com.example.frontend.data.model.product.SkinMatchDto.HardConflict> getHardConflicts() { return hardConflicts; }
+        public Integer getConfidenceScore() { return confidenceScore; }
     }
 
     public static class RelatedProductsData {

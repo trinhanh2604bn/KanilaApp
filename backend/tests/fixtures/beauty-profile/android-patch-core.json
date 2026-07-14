@@ -1,0 +1,20 @@
+{
+  "skin_type": "oily",
+  "skin_concerns": ["acne", "dark_spots"],
+  "sensitivity_level": "low",
+  "skin_color": null,
+  "skin_undertone": null,
+  "foundation_finish": null,
+  "lipstick_colors": [],
+  "makeup_styles": [],
+  "budget": "under_200k",
+  "avoid_ingredients": ["fragrance"],
+  "beauty_goals": ["acne_care", "oil_control"],
+  "preferred_ingredients": ["niacinamide", "bha"],
+  "preferred_brands": [],
+  "disliked_brands": [],
+  "preferred_categories": [],
+  "texture_preference": [],
+  "fragrance_preference": null,
+  "purchase_intent": []
+}

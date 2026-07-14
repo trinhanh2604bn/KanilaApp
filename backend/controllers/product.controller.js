@@ -11,6 +11,10 @@ const {
   isProductDetailCoreQuery,
   attachProductDetailCoreMedia,
 } = require("../utils/productDetailCoreFields");
+const Customer = require("../models/customer.model");
+const CustomerBeautyProfile = require("../models/customerBeautyProfile.model");
+const skinMatchCacheService = require("../services/skinMatch/skinMatchCache.service");
+const reviewAiSummaryService = require("../services/reviewAi/reviewAiSummary.service");
 
 /** Attach `{ email }` from Account without `.populate()` (avoids strictPopulate when paths/cache disagree). */
 async function attachAuditAccountEmails(data, productDoc) {
@@ -57,96 +61,96 @@ const getAllProducts = async (req, res) => {
 
     // Storefront listing should not return inactive products.
     // (Existing Angular catalog historically filtered out inactive on the client.)
-const queryForHelper = { ...req.query };
+    const queryForHelper = { ...req.query };
 
-delete queryForHelper.categoryId;
-delete queryForHelper.includeChildren;
-delete queryForHelper.collection;
+    delete queryForHelper.categoryId;
+    delete queryForHelper.includeChildren;
+    delete queryForHelper.collection;
 
-const { filter, sort } = buildMongoFilterFromQuery(queryForHelper, {
-  storefrontOnly: true,
-});
-
-console.log("[products] filter after helper =", JSON.stringify(filter, null, 2));
-
-let finalSort = sort;
-
-const requestedSort = String(req.query.sort || "")
-  .trim()
-  .toLowerCase();
-
-const collection = String(req.query.collection || "")
-  .trim()
-  .toLowerCase();
-
-if (!requestedSort && collection === "hot") {
-  finalSort = {
-    bought: -1,
-    createdAt: -1,
-  };
-}
-
-if (!requestedSort && collection === "new-arrival") {
-  finalSort = {
-    createdAt: -1,
-  };
-}
-
-if (req.query.categoryId) {
-  const selectedCategoryId = String(req.query.categoryId).trim();
-
-  if (!validateObjectId(selectedCategoryId)) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid categoryId",
+    const { filter, sort } = buildMongoFilterFromQuery(queryForHelper, {
+      storefrontOnly: true,
     });
-  }
 
-  let categoryIds = [
-    new mongoose.Types.ObjectId(selectedCategoryId),
-  ];
+    console.log("[products] filter after helper =", JSON.stringify(filter, null, 2));
 
-  if (String(req.query.includeChildren) === "true") {
-    const children = await Category.find({
-      parentCategoryId: new mongoose.Types.ObjectId(selectedCategoryId),
-      isActive: true,
-      categoryStatus: "active",
-    })
-      .select("_id categoryName categoryCode")
-      .sort({ displayOrder: 1, createdAt: -1 })
-      .lean();
+    let finalSort = sort;
 
-    categoryIds = [
-      ...categoryIds,
-      ...children.map((child) => child._id),
-    ];
-  }
+    const requestedSort = String(req.query.sort || "")
+      .trim()
+      .toLowerCase();
 
-  filter.categoryId = {
-    $in: categoryIds,
-  };
+    const collection = String(req.query.collection || "")
+      .trim()
+      .toLowerCase();
 
-  console.log("[products] selectedCategoryId =", selectedCategoryId);
-  console.log("[products] includeChildren =", req.query.includeChildren);
-  console.log("[products] final categoryIds =", categoryIds.map(String));
-}
+    if (!requestedSort && collection === "hot") {
+      finalSort = {
+        bought: -1,
+        createdAt: -1,
+      };
+    }
 
-console.log("[products] final filter =", JSON.stringify(filter, null, 2));
-console.log("[products] requestedSort =", requestedSort);
-console.log("[products] finalSort =", JSON.stringify(finalSort, null, 2));
+    if (!requestedSort && collection === "new-arrival") {
+      finalSort = {
+        createdAt: -1,
+      };
+    }
+
+    if (req.query.categoryId) {
+      const selectedCategoryId = String(req.query.categoryId).trim();
+
+      if (!validateObjectId(selectedCategoryId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid categoryId",
+        });
+      }
+
+      let categoryIds = [
+        new mongoose.Types.ObjectId(selectedCategoryId),
+      ];
+
+      if (String(req.query.includeChildren) === "true") {
+        const children = await Category.find({
+          parentCategoryId: new mongoose.Types.ObjectId(selectedCategoryId),
+          isActive: true,
+          categoryStatus: "active",
+        })
+          .select("_id categoryName categoryCode")
+          .sort({ displayOrder: 1, createdAt: -1 })
+          .lean();
+
+        categoryIds = [
+          ...categoryIds,
+          ...children.map((child) => child._id),
+        ];
+      }
+
+      filter.categoryId = {
+        $in: categoryIds,
+      };
+
+      console.log("[products] selectedCategoryId =", selectedCategoryId);
+      console.log("[products] includeChildren =", req.query.includeChildren);
+      console.log("[products] final categoryIds =", categoryIds.map(String));
+    }
+
+    console.log("[products] final filter =", JSON.stringify(filter, null, 2));
+    console.log("[products] requestedSort =", requestedSort);
+    console.log("[products] finalSort =", JSON.stringify(finalSort, null, 2));
     const skip = (pag.page - 1) * pag.limit;
     console.log("[products] requestedSort =", requestedSort);
-console.log("[products] finalSort =", JSON.stringify(finalSort, null, 2));
+    console.log("[products] finalSort =", JSON.stringify(finalSort, null, 2));
     const [total, data] = await Promise.all([
-  Product.countDocuments(filter),
-  queryListingProducts({
-    filter,
-    sort: finalSort,
-    skip,
-    limit: pag.limit,
-    listingProfile,
-  }),
-]);
+      Product.countDocuments(filter),
+      queryListingProducts({
+        filter,
+        sort: finalSort,
+        skip,
+        limit: pag.limit,
+        listingProfile,
+      }),
+    ]);
     const totalPages = Math.max(1, Math.ceil(total / pag.limit));
 
     return res.status(200).json({
@@ -386,7 +390,7 @@ const updateProduct = async (req, res) => {
 
     // Apply updates from req.body
     Object.assign(product, req.body);
-    
+
     // Explicitly handle empty slug in body to trigger generation in pre-save
     if (req.body.slug === "") {
       product.slug = undefined;
@@ -454,10 +458,10 @@ const getSimilarProducts = async (req, res) => {
       ],
       productStatus: "active"
     })
-    .limit(limit)
-    .populate("brandId", "brandName")
-    .populate("categoryId", "categoryName")
-    .lean();
+      .limit(limit)
+      .populate("brandId", "brandName")
+      .populate("categoryId", "categoryName")
+      .lean();
 
     res.status(200).json({
       success: true,
@@ -499,6 +503,59 @@ const patchProduct = async (req, res) => {
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 };
 
+// GET /api/products/:id/skin-match/me
+const getSkinMatchForProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!validateObjectId(id)) return res.status(400).json({ success: false, message: "Invalid product ID" });
+
+    const accountId = req.user?.account_id || req.user?.accountId;
+    if (!accountId) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+    const customer = await Customer.findOne({ account_id: accountId }).lean();
+    if (!customer) return res.status(404).json({ success: false, message: "Customer not found" });
+
+    const beautyProfile = await CustomerBeautyProfile.findOne({ customer_id: customer._id }).lean();
+    if (!beautyProfile) {
+      return res.status(200).json({
+        success: true,
+        message: "Profile required for skin match",
+        data: { status: "PROFILE_REQUIRED" }
+      });
+    }
+
+    const matchData = await skinMatchCacheService.getOrComputeMatch(customer, beautyProfile, id);
+
+    res.status(200).json({
+      success: true,
+      message: "Get skin match successfully",
+      data: matchData
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// GET /api/products/:id/review-insights
+const getReviewInsightsForProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!validateObjectId(id)) return res.status(400).json({ success: false, message: "Invalid product ID" });
+
+    const insights = await reviewAiSummaryService.getReviewInsights(id, {
+      segmentType: "ALL"
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Get review insights successfully",
+      data: insights
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
@@ -508,4 +565,6 @@ module.exports = {
   updateProduct,
   patchProduct,
   deleteProduct,
+  getSkinMatchForProduct,
+  getReviewInsightsForProduct,
 };

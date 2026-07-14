@@ -9,4 +9,6 @@ const reviewVoteSchema = new mongoose.Schema(
   { timestamps: true, collection: "review_votes" }
 );
 
+reviewVoteSchema.index({ reviewId: 1, customer_id: 1, voteType: 1 }, { unique: true });
+
 module.exports = mongoose.model("ReviewVote", reviewVoteSchema);

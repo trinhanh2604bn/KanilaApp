@@ -6,7 +6,7 @@ const recommendationLogSchema = new mongoose.Schema(
     product_id: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true, index: true },
     context: {
       type: String,
-      enum: ["homepage", "profile_page", "category_page", "preview", "unknown"],
+      enum: ["homepage", "profile_page", "category_page", "preview", "chatbot", "unknown"],
       default: "unknown",
       index: true,
     },

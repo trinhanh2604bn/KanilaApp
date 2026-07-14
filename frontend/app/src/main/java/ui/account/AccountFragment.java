@@ -160,6 +160,13 @@ public class AccountFragment extends Fragment {
             });
         }
 
+        View menuMyReviews = view.findViewById(R.id.menuMyReviews);
+        if (menuMyReviews != null) {
+            menuMyReviews.setOnClickListener(v -> {
+                FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.product.ReviewListFragment());
+            });
+        }
+
         View menuSupportCenter = view.findViewById(R.id.menuSupportCenter);
         if (menuSupportCenter != null) {
             menuSupportCenter.setOnClickListener(v -> {
@@ -205,13 +212,6 @@ public class AccountFragment extends Fragment {
                         .replace(R.id.main, new ui.loyalty.LoyaltyFragment())
                         .addToBackStack(null)
                         .commit();
-                break;
-            case OPEN_ADDRESS_BOOK:
-                ui.commerce.CheckoutAddressFragment addressFragment = new ui.commerce.CheckoutAddressFragment();
-                Bundle args = new Bundle();
-                args.putBoolean(ui.commerce.CheckoutAddressFragment.ARG_IS_SELECTION_MODE, false);
-                addressFragment.setArguments(args);
-                FragmentNavigationHelper.replaceFragment(requireActivity(), addressFragment);
                 break;
         }
     }

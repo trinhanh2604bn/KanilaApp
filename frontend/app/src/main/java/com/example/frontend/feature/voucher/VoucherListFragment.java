@@ -102,6 +102,6 @@ public class VoucherListFragment extends Fragment {
         ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("Voucher Code", text);
         clipboard.setPrimaryClip(clip);
-        Toast.makeText(getContext(), "Đã sao chép mã: " + text, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Đã lưu '" + text + "' thành công", Toast.LENGTH_SHORT).show();
     }
 }

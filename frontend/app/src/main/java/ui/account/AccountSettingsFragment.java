@@ -155,10 +155,15 @@ public class AccountSettingsFragment extends Fragment {
         // 1. Clear token locally
         TokenManager.getInstance(requireContext()).clearToken();
 
-        // 2. Reset AuthViewModel state to avoid "Success" message from previous session
+        // 2. Reset ViewModels state to avoid "Success" message from previous session
         com.example.frontend.feature.auth.AuthViewModel authViewModel = 
                 new androidx.lifecycle.ViewModelProvider(requireActivity()).get(com.example.frontend.feature.auth.AuthViewModel.class);
         authViewModel.resetStates();
+        
+        com.example.frontend.feature.recommendation.RecommendationViewModel recommendationViewModel =
+                new androidx.lifecycle.ViewModelProvider(requireActivity()).get(com.example.frontend.feature.recommendation.RecommendationViewModel.class);
+        recommendationViewModel.clearData();
+
         com.example.frontend.core.auth.AuthRequiredManager.getInstance().clearPendingAction();
         
         // 3. Clear all Fragment BackStack to prevent going back to restricted screens

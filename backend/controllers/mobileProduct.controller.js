@@ -14,6 +14,7 @@ const Wishlist = require("../models/wishlist.model");
 const Customer = require("../models/customer.model");
 const CustomerBeautyProfile = require("../models/customerBeautyProfile.model");
 const validateObjectId = require("../utils/validateObjectId");
+const { getAggregateReviewSummary } = require("../services/reviewSummary.service");
 
 const getProductDetail = async (req, res) => {
   try {
@@ -62,7 +63,7 @@ const getProductDetail = async (req, res) => {
     ] = await Promise.all([
       ProductMedia.find({ productId: id }).sort({ isPrimary: -1, sortOrder: 1 }).lean(),
       ProductAttribute.find({ productId: id }).sort({ displayOrder: 1 }).lean(),
-      ReviewSummary.findOne({ productId: id }).lean(),
+      getAggregateReviewSummary(id),
       InventoryBalance.find({ variantId: { $in: variantIds } }).lean(),
       VariantMedia.find({ variantId: { $in: variantIds } }).lean()
     ]);
@@ -95,12 +96,6 @@ const getProductDetail = async (req, res) => {
             });
         }
     }
-
-    // Load review media preview (linked to reviews of this product)
-    const Review = require("../models/review.model");
-    const reviews = await Review.find({ productId: id, reviewStatus: "visible" }).select("_id").limit(10).lean();
-    const reviewIds = reviews.map(r => r._id);
-    const reviewMediaPreview = await ReviewMedia.find({ reviewId: { $in: reviewIds } }).limit(4).lean();
 
     // Wishlist status
     let isWishlisted = false;
@@ -155,8 +150,8 @@ const getProductDetail = async (req, res) => {
           compareAtPrice: product.compareAtPrice,
           currency: "VND"
         },
-        reviewSummary: reviewSummary || { averageRating: product.averageRating || 0, reviewCount: 0 },
-        reviewMediaPreview,
+        reviewSummary: reviewSummary,
+        reviewMediaPreview: reviewSummary.reviewMediaPreview,
         isWishlisted,
         skinMatch,
         relatedProducts: {

@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { getDashboardSummary } = require("../controllers/admin.controller");
+const { getDashboardSummary, getDebugRuntime } = require("../controllers/admin.controller");
 const authMiddleware = require("../middlewares/auth.middleware");
 const recommendationAnalyticsRoutes = require("./recommendation-analytics.route");
 const { hideReview, unhideReview } = require("../controllers/review.controller");
 const ops = require("../controllers/adminOperations.controller");
 
 router.get("/dashboard-summary", authMiddleware, getDashboardSummary);
+router.get("/debug/runtime", authMiddleware, getDebugRuntime);
 router.use("/recommendations/analytics", recommendationAnalyticsRoutes);
 
 // Review visibility management

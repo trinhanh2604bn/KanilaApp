@@ -68,6 +68,7 @@
 
             <!-- Điểm sức khỏe làn da -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardHealthScore"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="24dp"
@@ -215,6 +216,25 @@
                 <include android:id="@+id/cardIngredient3" layout="@layout/item_grid_selection" />
 
             </LinearLayout>
+
+            <!-- Recommended Products Section -->
+            <TextView
+                style="@style/Text.Kanila.H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="Sản phẩm dành riêng cho bạn"
+                android:textColor="@color/accent_dark" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvRecommendedProducts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2"
+                tools:listitem="@layout/item_recommendation_product"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

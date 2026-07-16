@@ -1,0 +1,1283 @@
+erDiagram
+  Account {
+    String account_type
+    String email
+    String phone
+    String registration_channel
+    String username
+    String account_status
+    String password_hash
+    Date email_verified_at
+    Date phone_verified_at
+    Date last_login_at
+    Number failed_login_count
+    Date locked_until
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  AccountAuthProvider {
+    ObjectId account_id
+    String provider_code
+    String provider_subject
+    String provider_email
+    Date linked_at
+    Date last_used_at
+    ObjectId _id
+    Date created_at
+  }
+  AccountRole {
+    ObjectId account_id
+    ObjectId role_id
+    ObjectId assigned_by_account_id
+    Date assigned_at
+    ObjectId _id
+  }
+  Address {
+    ObjectId customer_id
+    String address_label
+    String recipient_name
+    String phone
+    String address_line_1
+    String address_line_2
+    String ward
+    String district
+    String city
+    String country_code
+    String postal_code
+    String address_type
+    String address_note
+    Boolean is_default_shipping
+    Boolean is_default_billing
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  AdminProfile {
+    ObjectId account_id
+    String employee_code
+    String full_name
+    String department
+    String job_title
+    ObjectId manager_account_id
+    String employment_status
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  AuditLog {
+    ObjectId actor_account_id
+    String action_code
+    String entity_name
+    Mixed entity_id
+    Mixed old_values_json
+    Mixed new_values_json
+    String ip_address
+    String user_agent
+    Date created_at
+    ObjectId _id
+  }
+  AuthOtp {
+    ObjectId account_id
+    String target_type
+    String target_value
+    String purpose
+    String otp_hash
+    String magic_token_hash
+    Date expires_at
+    Date consumed_at
+    Number attempt_count
+    Number max_attempts
+    String request_ip
+    String user_agent
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  BeautyReference {
+    String reference_group
+    String reference_code
+    String display_name_vi
+    String display_name_en
+    String description
+    String helper_text
+    String icon_url
+    String parent_code
+    Number sort_order
+    Boolean is_active
+    Boolean is_multi_select
+    Boolean severity_enabled
+    Number recommendation_weight
+    Array boost_tags
+    Array avoid_tags
+    Array preferred_ingredients
+    Array avoid_ingredients
+    Array recommended_categories
+    String warning_text
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  Brand {
+    String brandName
+    String brandCode
+    String description
+    String logoUrl
+    String brandStatus
+    Boolean isActive
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  Cart {
+    String owner_type
+    ObjectId customer_id
+    String guest_session_id
+    String cart_status
+    String currency_code
+    Number item_count
+    Number subtotal_amount
+    Number discount_amount
+    Number total_amount
+    Date expires_at
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  CartItem {
+    String line_key
+    ObjectId product_id
+    ObjectId cart_id
+    ObjectId variant_id
+    String sku_snapshot
+    String product_name_snapshot
+    String variant_name_snapshot
+    String brand_name_snapshot
+    String image_url_snapshot
+    Number compare_at_price_amount
+    String stock_status
+    Number quantity
+    Boolean selected
+    Number unit_price_amount
+    Number discount_amount
+    Number final_unit_price_amount
+    Number line_total_amount
+    Date added_at
+    ObjectId _id
+    Date updated_at
+  }
+  cartSummary.model {
+  }
+  Category {
+    String categoryName
+    String categoryCode
+    String description
+    ObjectId parentCategoryId
+    Number displayOrder
+    String categoryStatus
+    Boolean isActive
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ChatbotMessage {
+    ObjectId session_id
+    String sender_type
+    String message_text
+    String intent
+    String response_type
+    Mixed metadata
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  ChatbotSession {
+    ObjectId customer_id
+    ObjectId account_id
+    String guest_session_id
+    String status
+    String source_screen
+    String last_intent
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  CheckoutAddress {
+    ObjectId checkout_session_id
+    String address_type
+    String recipient_name
+    String phone
+    String address_line_1
+    String address_line_2
+    String ward
+    String district
+    String city
+    String country_code
+    String postal_code
+    Boolean is_selected
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  CheckoutSession {
+    String owner_type
+    String guest_session_id
+    ObjectId cart_id
+    ObjectId customer_id
+    String guest_email
+    String guest_phone
+    String guest_full_name
+    String checkout_status
+    String currency_code
+    ObjectId selected_shipping_address_id
+    ObjectId selected_billing_address_id
+    ObjectId selected_shipping_method_id
+    ObjectId selected_payment_method_id
+    Number subtotal_amount
+    Number shipping_fee_amount
+    Number discount_amount
+    ObjectId applied_coupon_id
+    String applied_coupon_code
+    Number coupon_discount_amount
+    Number tax_amount
+    Number total_amount
+    Date expires_at
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  CheckoutShippingMethod {
+    ObjectId checkout_session_id
+    ObjectId shipping_method_id
+    String shipping_method_code
+    String carrier_code
+    String service_name
+    Number estimated_days_min
+    Number estimated_days_max
+    Number shipping_fee_amount
+    String currency_code
+    Boolean is_selected
+    Date created_at
+    ObjectId _id
+  }
+  Coupon {
+    ObjectId promotionId
+    String couponCode
+    Date validFrom
+    Date validTo
+    Number usageLimitTotal
+    Number usageLimitPerCustomer
+    Number minOrderAmount
+    String couponStatus
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  CouponRedemption {
+    ObjectId couponId
+    ObjectId customer_id
+    ObjectId order_id
+    Number discountAmount
+    Date redeemedAt
+    String redemptionStatus
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  Customer {
+    ObjectId account_id
+    String customer_code
+    String first_name
+    String last_name
+    String full_name
+    Date date_of_birth
+    String gender
+    String avatar_url
+    String customer_status
+    Date registered_at
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  CustomerBeautyProfile {
+    ObjectId customer_id
+    String skin_type
+    Array skin_concerns
+    String sensitivity_level
+    String skin_color
+    String skin_undertone
+    String foundation_finish
+    Array lipstick_colors
+    Array makeup_styles
+    String budget
+    Array avoid_ingredients
+    Array beauty_goals
+    Array preferred_ingredients
+    Array preferred_brands
+    Array disliked_brands
+    Array preferred_categories
+    Array texture_preference
+    String fragrance_preference
+    Array purchase_intent
+    Number profile_completion_rate
+    String profile_hash
+    String source
+    Date last_updated_at
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  CustomerConsent {
+    ObjectId customer_id
+    String consent_type
+    String consent_status
+    String consent_version
+    Date consented_at
+    String source_channel
+    Date created_at
+    ObjectId _id
+  }
+  CustomerCoupon {
+    ObjectId couponId
+    ObjectId customer_id
+    Date savedAt
+    String status
+    Date usedAt
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  CustomerPreference {
+    ObjectId customer_id
+    String preference_key
+    String preference_value
+    Date updated_at
+    ObjectId _id
+  }
+  CustomerProductMatchSnapshot {
+    ObjectId customer_id
+    ObjectId product_id
+    String profile_hash
+    String product_match_hash
+    String algorithm_version
+    String status
+    Number score
+    Number estimated_score
+    String match_level
+    Number confidence_score
+    Number profile_completion_rate
+    Number matching_data_completeness
+    String match_explanation
+    Array reasons
+    Array cautions
+    Array hard_conflicts
+    Array matched_attributes
+    Mixed score_breakdown
+    Date generated_at
+    Date expires_at
+    Date invalidated_at
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  CustomerRecommendationSnapshot {
+    ObjectId customer_id
+    String recommendation_type
+    String profile_hash
+    Array product_ids
+    Array items
+    String algorithm_version
+    Date generated_at
+    Date expires_at
+    Date invalidated_at
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  EmailOtp {
+    String email
+    String purpose
+    String otp_code_hash
+    Date expires_at
+    Number attempt_count
+    ObjectId account_id
+    Date consumed_at
+    ObjectId _id
+    Date created_at
+    Date updated_at
+    String email
+    String purpose
+    String otp_code_hash
+    Date expires_at
+    Number attempt_count
+    ObjectId account_id
+    Date consumed_at
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  GuestSession {
+    String guest_session_id
+    String status
+    Date last_seen_at
+    String user_agent
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  InventoryBalance {
+    ObjectId warehouseId
+    ObjectId variantId
+    Number onHandQty
+    Number reservedQty
+    Number blockedQty
+    Number availableQty
+    Number reorderPointQty
+    Number safetyStockQty
+    Date lastCountedAt
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  InventoryTransaction {
+    ObjectId warehouseId
+    ObjectId variantId
+    String transactionType
+    Number quantityChange
+    String referenceType
+    String referenceId
+    String reasonCode
+    String note
+    ObjectId performedByAccountId
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  LoyaltyAccount {
+    ObjectId customer_id
+    ObjectId tierId
+    Number pointsBalance
+    Number lifetimePointsEarned
+    Number lifetimePointsRedeemed
+    String loyaltyStatus
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  LoyaltyPointLedger {
+    ObjectId loyaltyAccountId
+    ObjectId customer_id
+    ObjectId order_id
+    String transactionType
+    Number pointsDelta
+    Number pointsBefore
+    Number pointsAfter
+    Date expiryDate
+    String referenceType
+    String referenceId
+    String note
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  LoyaltyTier {
+    String tierCode
+    String tierName
+    Number minimumPoints
+    Number discountRate
+    Number priorityRank
+    String tierStatus
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  Order {
+    String owner_type
+    String guest_session_id
+    String guest_email
+    String guest_phone
+    String guest_full_name
+    String order_number
+    ObjectId customer_id
+    ObjectId checkout_session_id
+    String currency_code
+    String order_status
+    String payment_status
+    String fulfillment_status
+    String customer_note
+    Date placed_at
+    Date confirmed_at
+    Date cancelled_at
+    Date completed_at
+    String cancellation_reason
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  OrderAddress {
+    ObjectId order_id
+    String address_type
+    String recipient_name
+    String phone
+    String address_line_1
+    String address_line_2
+    String ward
+    String district
+    String city
+    String country_code
+    String postal_code
+    Date created_at
+    ObjectId _id
+  }
+  OrderItem {
+    ObjectId order_id
+    ObjectId product_id
+    ObjectId variant_id
+    String sku_snapshot
+    String product_name_snapshot
+    String variant_name_snapshot
+    String image_url_snapshot
+    Number quantity
+    Number unit_list_price_amount
+    Number unit_sale_price_amount
+    Number unit_final_price_amount
+    Number line_subtotal_amount
+    Number line_discount_amount
+    Number line_total_amount
+    String currency_code
+    String review_status
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  OrderStatusHistory {
+    ObjectId order_id
+    String old_order_status
+    String new_order_status
+    String old_payment_status
+    String new_payment_status
+    String old_fulfillment_status
+    String new_fulfillment_status
+    ObjectId changed_by_account_id
+    String change_reason
+    Date changed_at
+    ObjectId _id
+  }
+  OrderTotal {
+    ObjectId order_id
+    Number subtotal_amount
+    Number item_discount_amount
+    Number order_discount_amount
+    Number shipping_fee_amount
+    Number tax_amount
+    Number grand_total_amount
+    Number refunded_amount
+    String currency_code
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  EmailOtp {
+    String email
+    String purpose
+    String otp_code_hash
+    Date expires_at
+    Number attempt_count
+    ObjectId account_id
+    Date consumed_at
+    ObjectId _id
+    Date created_at
+    Date updated_at
+    String email
+    String purpose
+    String otp_code_hash
+    Date expires_at
+    Number attempt_count
+    ObjectId account_id
+    Date consumed_at
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  PaymentIntent {
+    ObjectId order_id
+    ObjectId payment_method_id
+    String providerCode
+    String providerPaymentIntentId
+    Number requestedAmount
+    Number authorizedAmount
+    Number capturedAmount
+    String currencyCode
+    String intentStatus
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  PaymentMethod {
+    String payment_method_code
+    String payment_method_name
+    String provider_code
+    String method_type
+    Boolean is_active
+    Number sort_order
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  PaymentTransaction {
+    ObjectId paymentIntentId
+    ObjectId order_id
+    String transactionType
+    String providerTransactionId
+    String transactionStatus
+    Number amount
+    String currencyCode
+    Date processedAt
+    String rawResponseJson
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  Permission {
+    String permission_code
+    String permission_name
+    String module_name
+    String description
+    Date created_at
+    ObjectId _id
+  }
+  PriceBook {
+    String priceBookCode
+    String priceBookName
+    String currencyCode
+    Boolean isDefault
+    Date startAt
+    Date endAt
+    String priceBookStatus
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  PriceBookEntry {
+    ObjectId priceBookId
+    ObjectId variantId
+    Number listPriceAmount
+    Number salePriceAmount
+    Date effectiveFrom
+    Date effectiveTo
+    Boolean isActive
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  PriceHistory {
+    ObjectId variantId
+    ObjectId priceBookId
+    String currencyCode
+    Number oldListPriceAmount
+    Number oldSalePriceAmount
+    Number newListPriceAmount
+    Number newSalePriceAmount
+    String changeReason
+    ObjectId changedByAccountId
+    Date changedAt
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  Product {
+    String productName
+    String productCode
+    String slug
+    ObjectId brandId
+    ObjectId categoryId
+    Number price
+    Number compareAtPrice
+    String imageUrl
+    String shortDescription
+    String longDescription
+    Number stock
+    Number bought
+    Number averageRating
+    Boolean isActive
+    String productStatus
+    String ingredientText
+    Array shades
+    Array skin_types_supported
+    Array concerns_targeted
+    Array ingredient_flags
+    Array key_ingredients
+    Boolean is_sensitive_friendly
+    Array tone_match_supported
+    String finish_type
+    String coverage_type
+    Number sales_count
+    Boolean is_best_seller
+    String usageInstruction
+    ObjectId createdByAccountId
+    ObjectId updatedByAccountId
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ProductAttribute {
+    ObjectId productId
+    String attributeName
+    String attributeValue
+    Number displayOrder
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ProductBeautyProfile {
+    ObjectId product_id
+    Array suitable_skin_types
+    Array suitable_skin_concerns
+    Array suitable_sensitivity_levels
+    Array suitable_skin_tones
+    Array suitable_undertones
+    Array supported_beauty_goals
+    Array key_ingredients
+    Array avoid_for_ingredients
+    String texture
+    String finish
+    String fragrance_type
+    Array product_tags
+    Number recommendation_boost_score
+    Number recommendation_penalty_score
+    Boolean is_active
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  ProductCategory {
+    ObjectId productId
+    ObjectId categoryId
+    Boolean isPrimary
+    Number sortOrder
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ProductMedia {
+    ObjectId productId
+    String mediaType
+    String mediaUrl
+    String altText
+    Number sortOrder
+    Boolean isPrimary
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ProductOption {
+    ObjectId productId
+    String optionName
+    Number displayOrder
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ProductOptionValue {
+    ObjectId productOptionId
+    String optionValue
+    Number displayOrder
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ProductReviewAiSummary {
+    ObjectId product_id
+    String segment_type
+    String segment_value
+    String language
+    String status
+    String short_summary
+    Array positive_themes
+    Array negative_themes
+    Array common_experiences
+    Array usage_tips
+    Array cautions
+    Number source_review_count
+    Number sampled_review_count
+    Number verified_review_count
+    String source_reviews_hash
+    Date latest_review_updated_at
+    String provider
+    String model_name
+    String prompt_version
+    String algorithm_version
+    Date generation_started_at
+    Date generation_lock_until
+    Date generated_at
+    Date stale_at
+    Number retry_count
+    Date next_retry_at
+    String last_error_code
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ProductVariant {
+    ObjectId productId
+    String sku
+    String barcode
+    String variantName
+    String variantStatus
+    Number weightGrams
+    Number volumeMl
+    Number costAmount
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  Promotion {
+    String promotionCode
+    String promotionName
+    String description
+    String promotionType
+    String discountType
+    Number discountValue
+    Number maxDiscountAmount
+    Date startAt
+    Date endAt
+    Number usageLimitTotal
+    Number usageLimitPerCustomer
+    Boolean isAutoApply
+    Number priority
+    Boolean stackableFlag
+    String promotionStatus
+    ObjectId createdByAccountId
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  PromotionRule {
+    ObjectId promotionId
+    String ruleType
+    String operator
+    String ruleValue
+    String currencyCode
+    String notes
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  PromotionTarget {
+    ObjectId promotionId
+    String targetType
+    ObjectId targetRefId
+    String targetRefCode
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  RecommendationLog {
+    ObjectId customer_id
+    ObjectId product_id
+    String context
+    String category_context
+    Number score
+    Array reason_codes
+    Array reasons
+    Array badges
+    Mixed score_breakdown
+    Number rank_position
+    Date generated_at
+    String algorithm_version
+    String session_id
+    String request_source
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  Refund {
+    ObjectId order_id
+    ObjectId paymentTransactionId
+    String refundReason
+    String refundStatus
+    Number requestedAmount
+    Number approvedAmount
+    Number refundedAmount
+    String currencyCode
+    ObjectId requestedByAccountId
+    ObjectId approvedByAccountId
+    Date requestedAt
+    Date approvedAt
+    Date completedAt
+    String note
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  Return {
+    ObjectId order_id
+    ObjectId shipmentId
+    String returnNumber
+    String returnReason
+    String returnStatus
+    String return_shipping_method
+    ObjectId requested_by_customer_id
+    ObjectId approvedByAccountId
+    Date requestedAt
+    Date approvedAt
+    Date receivedAt
+    Date completedAt
+    String note
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ReturnItem {
+    ObjectId returnId
+    ObjectId orderItemId
+    ObjectId variantId
+    Number requestedQty
+    Number approvedQty
+    Number receivedQty
+    Number restockQty
+    Number rejectQty
+    String restockStatus
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ReturnMedia {
+    ObjectId return_request_id
+    String media_type
+    String media_url
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  Review {
+    ObjectId customer_id
+    ObjectId orderItemId
+    ObjectId productId
+    ObjectId variantId
+    Number rating
+    String reviewTitle
+    String reviewContent
+    Array reviewTags
+    Array skinTypes
+    String reviewStatus
+    Number helpfulCount
+    Boolean verifiedPurchaseFlag
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ReviewMedia {
+    ObjectId reviewId
+    String mediaType
+    String mediaUrl
+    Number sortOrder
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ReviewSummary {
+    ObjectId productId
+    Number reviewCount
+    Number averageRating
+    Number rating1Count
+    Number rating2Count
+    Number rating3Count
+    Number rating4Count
+    Number rating5Count
+    String aiSummary
+    Array keywords
+    Array keywordStats
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ReviewVote {
+    ObjectId reviewId
+    ObjectId customer_id
+    String voteType
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  Role {
+    String role_code
+    String role_name
+    String description
+    Boolean is_system_role
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  RolePermission {
+    ObjectId role_id
+    ObjectId permission_id
+    Date created_at
+    ObjectId _id
+  }
+  Shipment {
+    ObjectId order_id
+    ObjectId warehouseId
+    String shipmentNumber
+    String carrierCode
+    String serviceName
+    String trackingNumber
+    String shipmentStatus
+    Date shippedAt
+    Date deliveredAt
+    Date failedAt
+    Number shippingFeeAmount
+    String currencyCode
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ShipmentEvent {
+    ObjectId shipmentId
+    String eventCode
+    String eventStatus
+    String eventDescription
+    Date eventTime
+    String locationText
+    String rawPayloadJson
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ShipmentItem {
+    ObjectId shipmentId
+    ObjectId orderItemId
+    ObjectId variantId
+    Number shippedQty
+    Number deliveredQty
+    Number returnedQty
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  ShippingMethod {
+    String shipping_method_code
+    String shipping_method_name
+    String carrier_code
+    String service_level
+    String description
+    Boolean is_active
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  StockReservation {
+    ObjectId warehouseId
+    ObjectId variantId
+    ObjectId cart_id
+    ObjectId checkout_session_id
+    ObjectId order_id
+    Number reservedQty
+    String reservationStatus
+    Date expiresAt
+    Date releasedAt
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  SupportTicket {
+    String ticket_code
+    ObjectId account_id
+    ObjectId customer_id
+    ObjectId session_id
+    ObjectId related_order_id
+    String category
+    String subject
+    String description
+    String status
+    String priority
+    String source
+    ObjectId _id
+    Date created_at
+    Date updated_at
+  }
+  VariantMedia {
+    ObjectId variantId
+    String mediaType
+    String mediaUrl
+    Number sortOrder
+    Boolean isPrimary
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  VariantOptionValue {
+    ObjectId variantId
+    ObjectId productOptionValueId
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  Warehouse {
+    String warehouseCode
+    String warehouseName
+    String contactName
+    String phone
+    String addressLine1
+    String addressLine2
+    String ward
+    String district
+    String city
+    String countryCode
+    String warehouseStatus
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  Wishlist {
+    ObjectId customer_id
+    String wishlistName
+    Boolean isDefault
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  WishlistItem {
+    ObjectId wishlistId
+    ObjectId productId
+    ObjectId variantId
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  AccountAuthProvider ||--o| Account : "account_id"
+  AccountRole ||--o| Account : "account_id"
+  AccountRole ||--o| Role : "role_id"
+  AccountRole ||--o| Account : "assigned_by_account_id"
+  Address ||--o| Customer : "customer_id"
+  AdminProfile ||--o| Account : "account_id"
+  AdminProfile ||--o| Account : "manager_account_id"
+  AuditLog ||--o| Account : "actor_account_id"
+  AuthOtp ||--o| Account : "account_id"
+  Cart ||--o| Customer : "customer_id"
+  CartItem ||--o| Product : "product_id"
+  CartItem ||--o| Cart : "cart_id"
+  CartItem ||--o| ProductVariant : "variant_id"
+  Category ||--o| Category : "parentCategoryId"
+  ChatbotMessage ||--o| ChatbotSession : "session_id"
+  ChatbotSession ||--o| Customer : "customer_id"
+  ChatbotSession ||--o| Account : "account_id"
+  CheckoutAddress ||--o| CheckoutSession : "checkout_session_id"
+  CheckoutSession ||--o| Cart : "cart_id"
+  CheckoutSession ||--o| Customer : "customer_id"
+  CheckoutSession ||--o| CheckoutAddress : "selected_shipping_address_id"
+  CheckoutSession ||--o| CheckoutAddress : "selected_billing_address_id"
+  CheckoutSession ||--o| CheckoutShippingMethod : "selected_shipping_method_id"
+  CheckoutSession ||--o| PaymentMethod : "selected_payment_method_id"
+  CheckoutSession ||--o| Coupon : "applied_coupon_id"
+  CheckoutShippingMethod ||--o| CheckoutSession : "checkout_session_id"
+  CheckoutShippingMethod ||--o| ShippingMethod : "shipping_method_id"
+  Coupon ||--o| Promotion : "promotionId"
+  CouponRedemption ||--o| Coupon : "couponId"
+  CouponRedemption ||--o| Customer : "customer_id"
+  CouponRedemption ||--o| Order : "order_id"
+  Customer ||--o| Account : "account_id"
+  CustomerBeautyProfile ||--o| Customer : "customer_id"
+  CustomerBeautyProfile ||--o{ Brand : "preferred_brands"
+  CustomerBeautyProfile ||--o{ Brand : "disliked_brands"
+  CustomerBeautyProfile ||--o{ Category : "preferred_categories"
+  CustomerConsent ||--o| Customer : "customer_id"
+  CustomerCoupon ||--o| Coupon : "couponId"
+  CustomerCoupon ||--o| Customer : "customer_id"
+  CustomerPreference ||--o| Customer : "customer_id"
+  CustomerProductMatchSnapshot ||--o| Customer : "customer_id"
+  CustomerProductMatchSnapshot ||--o| Product : "product_id"
+  CustomerRecommendationSnapshot ||--o| Customer : "customer_id"
+  EmailOtp ||--o| Account : "account_id"
+  InventoryBalance ||--o| Warehouse : "warehouseId"
+  InventoryBalance ||--o| ProductVariant : "variantId"
+  InventoryTransaction ||--o| Warehouse : "warehouseId"
+  InventoryTransaction ||--o| ProductVariant : "variantId"
+  InventoryTransaction ||--o| Account : "performedByAccountId"
+  LoyaltyAccount ||--o| Customer : "customer_id"
+  LoyaltyAccount ||--o| LoyaltyTier : "tierId"
+  LoyaltyPointLedger ||--o| LoyaltyAccount : "loyaltyAccountId"
+  LoyaltyPointLedger ||--o| Customer : "customer_id"
+  LoyaltyPointLedger ||--o| Order : "order_id"
+  Order ||--o| Customer : "customer_id"
+  Order ||--o| CheckoutSession : "checkout_session_id"
+  OrderAddress ||--o| Order : "order_id"
+  OrderItem ||--o| Order : "order_id"
+  OrderItem ||--o| Product : "product_id"
+  OrderItem ||--o| ProductVariant : "variant_id"
+  OrderStatusHistory ||--o| Order : "order_id"
+  OrderStatusHistory ||--o| Account : "changed_by_account_id"
+  OrderTotal ||--o| Order : "order_id"
+  EmailOtp ||--o| Account : "account_id"
+  PaymentIntent ||--o| Order : "order_id"
+  PaymentIntent ||--o| PaymentMethod : "payment_method_id"
+  PaymentTransaction ||--o| PaymentIntent : "paymentIntentId"
+  PaymentTransaction ||--o| Order : "order_id"
+  PriceBookEntry ||--o| PriceBook : "priceBookId"
+  PriceBookEntry ||--o| ProductVariant : "variantId"
+  PriceHistory ||--o| ProductVariant : "variantId"
+  PriceHistory ||--o| PriceBook : "priceBookId"
+  PriceHistory ||--o| Account : "changedByAccountId"
+  Product ||--o| Brand : "brandId"
+  Product ||--o| Category : "categoryId"
+  Product ||--o| Account : "createdByAccountId"
+  Product ||--o| Account : "updatedByAccountId"
+  ProductAttribute ||--o| Product : "productId"
+  ProductBeautyProfile ||--o| Product : "product_id"
+  ProductCategory ||--o| Product : "productId"
+  ProductCategory ||--o| Category : "categoryId"
+  ProductMedia ||--o| Product : "productId"
+  ProductOption ||--o| Product : "productId"
+  ProductOptionValue ||--o| ProductOption : "productOptionId"
+  ProductReviewAiSummary ||--o| Product : "product_id"
+  ProductVariant ||--o| Product : "productId"
+  Promotion ||--o| Account : "createdByAccountId"
+  PromotionRule ||--o| Promotion : "promotionId"
+  PromotionTarget ||--o| Promotion : "promotionId"
+  RecommendationLog ||--o| Customer : "customer_id"
+  RecommendationLog ||--o| Product : "product_id"
+  Refund ||--o| Order : "order_id"
+  Refund ||--o| PaymentTransaction : "paymentTransactionId"
+  Refund ||--o| Account : "requestedByAccountId"
+  Refund ||--o| Account : "approvedByAccountId"
+  Return ||--o| Order : "order_id"
+  Return ||--o| Shipment : "shipmentId"
+  Return ||--o| Customer : "requested_by_customer_id"
+  Return ||--o| Account : "approvedByAccountId"
+  Return ||--o{ ReturnMedia : "media"
+  ReturnItem ||--o| Return : "returnId"
+  ReturnItem ||--o| OrderItem : "orderItemId"
+  ReturnItem ||--o| ProductVariant : "variantId"
+  ReturnMedia ||--o| Return : "return_request_id"
+  Review ||--o| Customer : "customer_id"
+  Review ||--o| OrderItem : "orderItemId"
+  Review ||--o| Product : "productId"
+  Review ||--o| ProductVariant : "variantId"
+  ReviewMedia ||--o| Review : "reviewId"
+  ReviewSummary ||--o| Product : "productId"
+  ReviewVote ||--o| Review : "reviewId"
+  ReviewVote ||--o| Customer : "customer_id"
+  RolePermission ||--o| Role : "role_id"
+  RolePermission ||--o| Permission : "permission_id"
+  Shipment ||--o| Order : "order_id"
+  Shipment ||--o| Warehouse : "warehouseId"
+  ShipmentEvent ||--o| Shipment : "shipmentId"
+  ShipmentItem ||--o| Shipment : "shipmentId"
+  ShipmentItem ||--o| OrderItem : "orderItemId"
+  ShipmentItem ||--o| ProductVariant : "variantId"
+  StockReservation ||--o| Warehouse : "warehouseId"
+  StockReservation ||--o| ProductVariant : "variantId"
+  StockReservation ||--o| Cart : "cart_id"
+  StockReservation ||--o| CheckoutSession : "checkout_session_id"
+  StockReservation ||--o| Order : "order_id"
+  SupportTicket ||--o| Account : "account_id"
+  SupportTicket ||--o| Customer : "customer_id"
+  SupportTicket ||--o| ChatbotSession : "session_id"
+  SupportTicket ||--o| Order : "related_order_id"
+  VariantMedia ||--o| ProductVariant : "variantId"
+  VariantOptionValue ||--o| ProductVariant : "variantId"
+  VariantOptionValue ||--o| ProductOptionValue : "productOptionValueId"
+  Wishlist ||--o| Customer : "customer_id"
+  WishlistItem ||--o| Wishlist : "wishlistId"
+  WishlistItem ||--o| Product : "productId"
+  WishlistItem ||--o| ProductVariant : "variantId"

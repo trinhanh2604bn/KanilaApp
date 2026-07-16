@@ -1,0 +1,1315 @@
+Table Account {
+  account_type String 
+  email String 
+  phone String 
+  registration_channel String 
+  username String 
+  account_status String 
+  password_hash String 
+  email_verified_at Date 
+  phone_verified_at Date 
+  last_login_at Date 
+  failed_login_count Number 
+  locked_until Date 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table AccountAuthProvider {
+  account_id ObjectId [ref: > Account._id]
+  provider_code String 
+  provider_subject String 
+  provider_email String 
+  linked_at Date 
+  last_used_at Date 
+  _id ObjectId [primary key]
+  created_at Date 
+  __v Number 
+}
+
+Table AccountRole {
+  account_id ObjectId [ref: > Account._id]
+  role_id ObjectId [ref: > Role._id]
+  assigned_by_account_id ObjectId [ref: > Account._id]
+  assigned_at Date 
+  _id ObjectId [primary key]
+  __v Number 
+}
+
+Table Address {
+  customer_id ObjectId [ref: > Customer._id]
+  address_label String 
+  recipient_name String 
+  phone String 
+  address_line_1 String 
+  address_line_2 String 
+  ward String 
+  district String 
+  city String 
+  country_code String 
+  postal_code String 
+  address_type String 
+  address_note String 
+  is_default_shipping Boolean 
+  is_default_billing Boolean 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table AdminProfile {
+  account_id ObjectId [unique, ref: > Account._id]
+  employee_code String 
+  full_name String 
+  department String 
+  job_title String 
+  manager_account_id ObjectId [ref: > Account._id]
+  employment_status String 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table AuditLog {
+  actor_account_id ObjectId [ref: > Account._id]
+  action_code String 
+  entity_name String 
+  entity_id Mixed 
+  old_values_json Mixed 
+  new_values_json Mixed 
+  ip_address String 
+  user_agent String 
+  created_at Date 
+  _id ObjectId [primary key]
+  __v Number 
+}
+
+Table AuthOtp {
+  account_id ObjectId [ref: > Account._id]
+  target_type String 
+  target_value String 
+  purpose String 
+  otp_hash String 
+  magic_token_hash String 
+  expires_at Date 
+  consumed_at Date 
+  attempt_count Number 
+  max_attempts Number 
+  request_ip String 
+  user_agent String 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table BeautyReference {
+  reference_group String 
+  reference_code String 
+  display_name_vi String 
+  display_name_en String 
+  description String 
+  helper_text String 
+  icon_url String 
+  parent_code String 
+  sort_order Number 
+  is_active Boolean 
+  is_multi_select Boolean 
+  severity_enabled Boolean 
+  recommendation_weight Number 
+  boost_tags Array<String> 
+  avoid_tags Array<String> 
+  preferred_ingredients Array<String> 
+  avoid_ingredients Array<String> 
+  recommended_categories Array<String> 
+  warning_text String 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table Brand {
+  brandName String 
+  brandCode String [unique]
+  description String 
+  logoUrl String 
+  brandStatus String 
+  isActive Boolean 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table Cart {
+  owner_type String 
+  customer_id ObjectId [ref: > Customer._id]
+  guest_session_id String 
+  cart_status String 
+  currency_code String 
+  item_count Number 
+  subtotal_amount Number 
+  discount_amount Number 
+  total_amount Number 
+  expires_at Date 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table CartItem {
+  line_key String 
+  product_id ObjectId [ref: > Product._id]
+  cart_id ObjectId [ref: > Cart._id]
+  variant_id ObjectId [ref: > ProductVariant._id]
+  sku_snapshot String 
+  product_name_snapshot String 
+  variant_name_snapshot String 
+  brand_name_snapshot String 
+  image_url_snapshot String 
+  compare_at_price_amount Number 
+  stock_status String 
+  quantity Number 
+  selected Boolean 
+  unit_price_amount Number 
+  discount_amount Number 
+  final_unit_price_amount Number 
+  line_total_amount Number 
+  added_at Date 
+  _id ObjectId [primary key]
+  updated_at Date 
+  __v Number 
+}
+
+Table cartSummary.model {
+}
+
+Table Category {
+  categoryName String 
+  categoryCode String [unique]
+  description String 
+  parentCategoryId ObjectId [ref: > Category._id]
+  displayOrder Number 
+  categoryStatus String 
+  isActive Boolean 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ChatbotMessage {
+  session_id ObjectId [ref: > ChatbotSession._id]
+  sender_type String 
+  message_text String 
+  intent String 
+  response_type String 
+  metadata Mixed 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table ChatbotSession {
+  customer_id ObjectId [ref: > Customer._id]
+  account_id ObjectId [ref: > Account._id]
+  guest_session_id String 
+  status String 
+  source_screen String 
+  last_intent String 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table CheckoutAddress {
+  checkout_session_id ObjectId [ref: > CheckoutSession._id]
+  address_type String 
+  recipient_name String 
+  phone String 
+  address_line_1 String 
+  address_line_2 String 
+  ward String 
+  district String 
+  city String 
+  country_code String 
+  postal_code String 
+  is_selected Boolean 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table CheckoutSession {
+  owner_type String 
+  guest_session_id String 
+  cart_id ObjectId [ref: > Cart._id]
+  customer_id ObjectId [ref: > Customer._id]
+  guest_email String 
+  guest_phone String 
+  guest_full_name String 
+  checkout_status String 
+  currency_code String 
+  selected_shipping_address_id ObjectId [ref: > CheckoutAddress._id]
+  selected_billing_address_id ObjectId [ref: > CheckoutAddress._id]
+  selected_shipping_method_id ObjectId [ref: > CheckoutShippingMethod._id]
+  selected_payment_method_id ObjectId [ref: > PaymentMethod._id]
+  subtotal_amount Number 
+  shipping_fee_amount Number 
+  discount_amount Number 
+  applied_coupon_id ObjectId [ref: > Coupon._id]
+  applied_coupon_code String 
+  coupon_discount_amount Number 
+  tax_amount Number 
+  total_amount Number 
+  expires_at Date 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table CheckoutShippingMethod {
+  checkout_session_id ObjectId [ref: > CheckoutSession._id]
+  shipping_method_id ObjectId [ref: > ShippingMethod._id]
+  shipping_method_code String 
+  carrier_code String 
+  service_name String 
+  estimated_days_min Number 
+  estimated_days_max Number 
+  shipping_fee_amount Number 
+  currency_code String 
+  is_selected Boolean 
+  created_at Date 
+  _id ObjectId [primary key]
+  __v Number 
+}
+
+Table Coupon {
+  promotionId ObjectId [ref: > Promotion._id]
+  couponCode String [unique]
+  validFrom Date 
+  validTo Date 
+  usageLimitTotal Number 
+  usageLimitPerCustomer Number 
+  minOrderAmount Number 
+  couponStatus String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table CouponRedemption {
+  couponId ObjectId [ref: > Coupon._id]
+  customer_id ObjectId [ref: > Customer._id]
+  order_id ObjectId [ref: > Order._id]
+  discountAmount Number 
+  redeemedAt Date 
+  redemptionStatus String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table Customer {
+  account_id ObjectId [unique, ref: > Account._id]
+  customer_code String [unique]
+  first_name String 
+  last_name String 
+  full_name String 
+  date_of_birth Date 
+  gender String 
+  avatar_url String 
+  customer_status String 
+  registered_at Date 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table CustomerBeautyProfile {
+  customer_id ObjectId [unique, ref: > Customer._id]
+  skin_type String 
+  skin_concerns Array<String> 
+  sensitivity_level String 
+  skin_color String 
+  skin_undertone String 
+  foundation_finish String 
+  lipstick_colors Array<String> 
+  makeup_styles Array<String> 
+  budget String 
+  avoid_ingredients Array<String> 
+  beauty_goals Array<String> 
+  preferred_ingredients Array<String> 
+  preferred_brands Array<ObjectId> [ref: > Brand._id]
+  disliked_brands Array<ObjectId> [ref: > Brand._id]
+  preferred_categories Array<ObjectId> [ref: > Category._id]
+  texture_preference Array<String> 
+  fragrance_preference String 
+  purchase_intent Array<String> 
+  skin_indicators.data Array<String> 
+  skin_indicators.analyzed_at Date 
+  skin_indicators.source String 
+  skin_indicators.confidence_score Number 
+  profile_completion_rate Number 
+  profile_hash String 
+  source String 
+  last_updated_at Date 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table CustomerConsent {
+  customer_id ObjectId [ref: > Customer._id]
+  consent_type String 
+  consent_status String 
+  consent_version String 
+  consented_at Date 
+  source_channel String 
+  created_at Date 
+  _id ObjectId [primary key]
+  __v Number 
+}
+
+Table CustomerCoupon {
+  couponId ObjectId [ref: > Coupon._id]
+  customer_id ObjectId [ref: > Customer._id]
+  savedAt Date 
+  status String 
+  usedAt Date 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table CustomerPreference {
+  customer_id ObjectId [ref: > Customer._id]
+  preference_key String 
+  preference_value String 
+  updated_at Date 
+  _id ObjectId [primary key]
+  __v Number 
+}
+
+Table CustomerProductMatchSnapshot {
+  customer_id ObjectId [ref: > Customer._id]
+  product_id ObjectId [ref: > Product._id]
+  profile_hash String 
+  product_match_hash String 
+  algorithm_version String 
+  status String 
+  score Number 
+  estimated_score Number 
+  match_level String 
+  confidence_score Number 
+  profile_completion_rate Number 
+  matching_data_completeness Number 
+  match_explanation String 
+  reasons Array<Embedded>  [note: "Embedded"]
+  cautions Array<Embedded>  [note: "Embedded"]
+  hard_conflicts Array<Embedded>  [note: "Embedded"]
+  matched_attributes Array<String> 
+  score_breakdown Mixed 
+  generated_at Date 
+  expires_at Date 
+  invalidated_at Date 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table CustomerRecommendationSnapshot {
+  customer_id ObjectId [ref: > Customer._id]
+  recommendation_type String 
+  profile_hash String 
+  product_ids Array<ObjectId> 
+  items Array<Embedded>  [note: "Embedded"]
+  algorithm_version String 
+  ai_analysis.health_score Number 
+  ai_analysis.analysis_text String 
+  ai_analysis.ideal_ingredients Array<String> 
+  generated_at Date 
+  expires_at Date 
+  invalidated_at Date 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table EmailOtp {
+  email String 
+  purpose String 
+  otp_code_hash String 
+  expires_at Date 
+  attempt_count Number 
+  account_id ObjectId [ref: > Account._id]
+  consumed_at Date 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+  email String 
+  purpose String 
+  otp_code_hash String 
+  expires_at Date 
+  attempt_count Number 
+  account_id ObjectId [ref: > Account._id]
+  consumed_at Date 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table GuestSession {
+  guest_session_id String [unique]
+  status String 
+  last_seen_at Date 
+  user_agent String 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table InventoryBalance {
+  warehouseId ObjectId [ref: > Warehouse._id]
+  variantId ObjectId [ref: > ProductVariant._id]
+  onHandQty Number 
+  reservedQty Number 
+  blockedQty Number 
+  availableQty Number 
+  reorderPointQty Number 
+  safetyStockQty Number 
+  lastCountedAt Date 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table InventoryTransaction {
+  warehouseId ObjectId [ref: > Warehouse._id]
+  variantId ObjectId [ref: > ProductVariant._id]
+  transactionType String 
+  quantityChange Number 
+  referenceType String 
+  referenceId String 
+  reasonCode String 
+  note String 
+  performedByAccountId ObjectId [ref: > Account._id]
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table LoyaltyAccount {
+  customer_id ObjectId [ref: > Customer._id]
+  tierId ObjectId [ref: > LoyaltyTier._id]
+  pointsBalance Number 
+  lifetimePointsEarned Number 
+  lifetimePointsRedeemed Number 
+  loyaltyStatus String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table LoyaltyPointLedger {
+  loyaltyAccountId ObjectId [ref: > LoyaltyAccount._id]
+  customer_id ObjectId [ref: > Customer._id]
+  order_id ObjectId [ref: > Order._id]
+  transactionType String 
+  pointsDelta Number 
+  pointsBefore Number 
+  pointsAfter Number 
+  expiryDate Date 
+  referenceType String 
+  referenceId String 
+  note String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table LoyaltyTier {
+  tierCode String [unique]
+  tierName String 
+  minimumPoints Number 
+  discountRate Number 
+  priorityRank Number 
+  tierStatus String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table Order {
+  owner_type String 
+  guest_session_id String 
+  guest_email String 
+  guest_phone String 
+  guest_full_name String 
+  order_number String [unique]
+  customer_id ObjectId [ref: > Customer._id]
+  checkout_session_id ObjectId [ref: > CheckoutSession._id]
+  currency_code String 
+  order_status String 
+  payment_status String 
+  fulfillment_status String 
+  customer_note String 
+  placed_at Date 
+  confirmed_at Date 
+  cancelled_at Date 
+  completed_at Date 
+  cancellation_reason String 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table OrderAddress {
+  order_id ObjectId [ref: > Order._id]
+  address_type String 
+  recipient_name String 
+  phone String 
+  address_line_1 String 
+  address_line_2 String 
+  ward String 
+  district String 
+  city String 
+  country_code String 
+  postal_code String 
+  created_at Date 
+  _id ObjectId [primary key]
+  __v Number 
+}
+
+Table OrderItem {
+  order_id ObjectId [ref: > Order._id]
+  product_id ObjectId [ref: > Product._id]
+  variant_id ObjectId [ref: > ProductVariant._id]
+  sku_snapshot String 
+  product_name_snapshot String 
+  variant_name_snapshot String 
+  image_url_snapshot String 
+  quantity Number 
+  unit_list_price_amount Number 
+  unit_sale_price_amount Number 
+  unit_final_price_amount Number 
+  line_subtotal_amount Number 
+  line_discount_amount Number 
+  line_total_amount Number 
+  currency_code String 
+  review_status String 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table OrderStatusHistory {
+  order_id ObjectId [ref: > Order._id]
+  old_order_status String 
+  new_order_status String 
+  old_payment_status String 
+  new_payment_status String 
+  old_fulfillment_status String 
+  new_fulfillment_status String 
+  changed_by_account_id ObjectId [ref: > Account._id]
+  change_reason String 
+  changed_at Date 
+  _id ObjectId [primary key]
+  __v Number 
+}
+
+Table OrderTotal {
+  order_id ObjectId [ref: > Order._id]
+  subtotal_amount Number 
+  item_discount_amount Number 
+  order_discount_amount Number 
+  shipping_fee_amount Number 
+  tax_amount Number 
+  grand_total_amount Number 
+  refunded_amount Number 
+  currency_code String 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table EmailOtp {
+  email String 
+  purpose String 
+  otp_code_hash String 
+  expires_at Date 
+  attempt_count Number 
+  account_id ObjectId [ref: > Account._id]
+  consumed_at Date 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+  email String 
+  purpose String 
+  otp_code_hash String 
+  expires_at Date 
+  attempt_count Number 
+  account_id ObjectId [ref: > Account._id]
+  consumed_at Date 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table PaymentIntent {
+  order_id ObjectId [ref: > Order._id]
+  payment_method_id ObjectId [ref: > PaymentMethod._id]
+  providerCode String 
+  providerPaymentIntentId String 
+  requestedAmount Number 
+  authorizedAmount Number 
+  capturedAmount Number 
+  currencyCode String 
+  intentStatus String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table PaymentMethod {
+  payment_method_code String [unique]
+  payment_method_name String 
+  provider_code String 
+  method_type String 
+  is_active Boolean 
+  sort_order Number 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table PaymentTransaction {
+  paymentIntentId ObjectId [ref: > PaymentIntent._id]
+  order_id ObjectId [ref: > Order._id]
+  transactionType String 
+  providerTransactionId String 
+  transactionStatus String 
+  amount Number 
+  currencyCode String 
+  processedAt Date 
+  rawResponseJson String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table Permission {
+  permission_code String [unique]
+  permission_name String 
+  module_name String 
+  description String 
+  created_at Date 
+  _id ObjectId [primary key]
+  __v Number 
+}
+
+Table PriceBook {
+  priceBookCode String [unique]
+  priceBookName String 
+  currencyCode String 
+  isDefault Boolean 
+  startAt Date 
+  endAt Date 
+  priceBookStatus String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table PriceBookEntry {
+  priceBookId ObjectId [ref: > PriceBook._id]
+  variantId ObjectId [ref: > ProductVariant._id]
+  listPriceAmount Number 
+  salePriceAmount Number 
+  effectiveFrom Date 
+  effectiveTo Date 
+  isActive Boolean 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table PriceHistory {
+  variantId ObjectId [ref: > ProductVariant._id]
+  priceBookId ObjectId [ref: > PriceBook._id]
+  currencyCode String 
+  oldListPriceAmount Number 
+  oldSalePriceAmount Number 
+  newListPriceAmount Number 
+  newSalePriceAmount Number 
+  changeReason String 
+  changedByAccountId ObjectId [ref: > Account._id]
+  changedAt Date 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table Product {
+  productName String 
+  productCode String 
+  slug String [unique]
+  brandId ObjectId [ref: > Brand._id]
+  categoryId ObjectId [ref: > Category._id]
+  price Number 
+  compareAtPrice Number 
+  imageUrl String 
+  shortDescription String 
+  longDescription String 
+  stock Number 
+  bought Number 
+  averageRating Number 
+  isActive Boolean 
+  productStatus String 
+  ingredientText String 
+  shades Array<Embedded>  [note: "Embedded"]
+  skin_types_supported Array<String> 
+  concerns_targeted Array<String> 
+  ingredient_flags Array<String> 
+  key_ingredients Array<String> 
+  is_sensitive_friendly Boolean 
+  tone_match_supported Array<String> 
+  finish_type String 
+  coverage_type String 
+  sales_count Number 
+  is_best_seller Boolean 
+  usageInstruction String 
+  createdByAccountId ObjectId [ref: > Account._id]
+  updatedByAccountId ObjectId [ref: > Account._id]
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ProductAttribute {
+  productId ObjectId [ref: > Product._id]
+  attributeName String 
+  attributeValue String 
+  displayOrder Number 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ProductBeautyProfile {
+  product_id ObjectId [unique, ref: > Product._id]
+  suitable_skin_types Array<String> 
+  suitable_skin_concerns Array<String> 
+  suitable_sensitivity_levels Array<String> 
+  suitable_skin_tones Array<String> 
+  suitable_undertones Array<String> 
+  supported_beauty_goals Array<String> 
+  key_ingredients Array<String> 
+  avoid_for_ingredients Array<String> 
+  texture String 
+  finish String 
+  fragrance_type String 
+  product_tags Array<String> 
+  recommendation_boost_score Number 
+  recommendation_penalty_score Number 
+  is_active Boolean 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table ProductCategory {
+  productId ObjectId [ref: > Product._id]
+  categoryId ObjectId [ref: > Category._id]
+  isPrimary Boolean 
+  sortOrder Number 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ProductMedia {
+  productId ObjectId [ref: > Product._id]
+  mediaType String 
+  mediaUrl String 
+  altText String 
+  sortOrder Number 
+  isPrimary Boolean 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ProductOption {
+  productId ObjectId [ref: > Product._id]
+  optionName String 
+  displayOrder Number 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ProductOptionValue {
+  productOptionId ObjectId [ref: > ProductOption._id]
+  optionValue String 
+  displayOrder Number 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ProductReviewAiSummary {
+  product_id ObjectId [ref: > Product._id]
+  segment_type String 
+  segment_value String 
+  language String 
+  status String 
+  short_summary String 
+  positive_themes Array<Embedded>  [note: "Embedded"]
+  negative_themes Array<Embedded>  [note: "Embedded"]
+  common_experiences Array<String> 
+  usage_tips Array<String> 
+  cautions Array<String> 
+  source_review_count Number 
+  sampled_review_count Number 
+  verified_review_count Number 
+  source_reviews_hash String 
+  latest_review_updated_at Date 
+  provider String 
+  model_name String 
+  prompt_version String 
+  algorithm_version String 
+  generation_started_at Date 
+  generation_lock_until Date 
+  generated_at Date 
+  stale_at Date 
+  retry_count Number 
+  next_retry_at Date 
+  last_error_code String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ProductVariant {
+  productId ObjectId [ref: > Product._id]
+  sku String [unique]
+  barcode String 
+  variantName String 
+  variantStatus String 
+  weightGrams Number 
+  volumeMl Number 
+  costAmount Number 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table Promotion {
+  promotionCode String [unique]
+  promotionName String 
+  description String 
+  promotionType String 
+  discountType String 
+  discountValue Number 
+  maxDiscountAmount Number 
+  startAt Date 
+  endAt Date 
+  usageLimitTotal Number 
+  usageLimitPerCustomer Number 
+  isAutoApply Boolean 
+  priority Number 
+  stackableFlag Boolean 
+  promotionStatus String 
+  createdByAccountId ObjectId [ref: > Account._id]
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table PromotionRule {
+  promotionId ObjectId [ref: > Promotion._id]
+  ruleType String 
+  operator String 
+  ruleValue String 
+  currencyCode String 
+  notes String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table PromotionTarget {
+  promotionId ObjectId [ref: > Promotion._id]
+  targetType String 
+  targetRefId ObjectId 
+  targetRefCode String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table RecommendationLog {
+  customer_id ObjectId [ref: > Customer._id]
+  product_id ObjectId [ref: > Product._id]
+  context String 
+  category_context String 
+  score Number 
+  reason_codes Array<String> 
+  reasons Array<String> 
+  badges Array<String> 
+  score_breakdown Mixed 
+  rank_position Number 
+  generated_at Date 
+  algorithm_version String 
+  session_id String 
+  request_source String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table Refund {
+  order_id ObjectId [ref: > Order._id]
+  paymentTransactionId ObjectId [ref: > PaymentTransaction._id]
+  refundReason String 
+  refundStatus String 
+  requestedAmount Number 
+  approvedAmount Number 
+  refundedAmount Number 
+  currencyCode String 
+  requestedByAccountId ObjectId [ref: > Account._id]
+  approvedByAccountId ObjectId [ref: > Account._id]
+  requestedAt Date 
+  approvedAt Date 
+  completedAt Date 
+  note String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table Return {
+  order_id ObjectId [ref: > Order._id]
+  shipmentId ObjectId [ref: > Shipment._id]
+  returnNumber String [unique]
+  returnReason String 
+  returnStatus String 
+  return_shipping_method String 
+  requested_by_customer_id ObjectId [ref: > Customer._id]
+  approvedByAccountId ObjectId [ref: > Account._id]
+  requestedAt Date 
+  approvedAt Date 
+  receivedAt Date 
+  completedAt Date 
+  note String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ReturnItem {
+  returnId ObjectId [ref: > Return._id]
+  orderItemId ObjectId [ref: > OrderItem._id]
+  variantId ObjectId [ref: > ProductVariant._id]
+  requestedQty Number 
+  approvedQty Number 
+  receivedQty Number 
+  restockQty Number 
+  rejectQty Number 
+  restockStatus String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ReturnMedia {
+  return_request_id ObjectId [ref: > Return._id]
+  media_type String 
+  media_url String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table Review {
+  customer_id ObjectId [ref: > Customer._id]
+  orderItemId ObjectId [ref: > OrderItem._id]
+  productId ObjectId [ref: > Product._id]
+  variantId ObjectId [ref: > ProductVariant._id]
+  rating Number 
+  reviewTitle String 
+  reviewContent String 
+  reviewTags Array<String> 
+  skinTypes Array<String> 
+  reviewStatus String 
+  helpfulCount Number 
+  verifiedPurchaseFlag Boolean 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ReviewMedia {
+  reviewId ObjectId [ref: > Review._id]
+  mediaType String 
+  mediaUrl String 
+  sortOrder Number 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ReviewSummary {
+  productId ObjectId [unique, ref: > Product._id]
+  reviewCount Number 
+  averageRating Number 
+  rating1Count Number 
+  rating2Count Number 
+  rating3Count Number 
+  rating4Count Number 
+  rating5Count Number 
+  aiSummary String 
+  keywords Array<String> 
+  keywordStats Array<Embedded>  [note: "Embedded"]
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ReviewVote {
+  reviewId ObjectId [ref: > Review._id]
+  customer_id ObjectId [ref: > Customer._id]
+  voteType String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table Role {
+  role_code String [unique]
+  role_name String 
+  description String 
+  is_system_role Boolean 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table RolePermission {
+  role_id ObjectId [ref: > Role._id]
+  permission_id ObjectId [ref: > Permission._id]
+  created_at Date 
+  _id ObjectId [primary key]
+  __v Number 
+}
+
+Table Shipment {
+  order_id ObjectId [ref: > Order._id]
+  warehouseId ObjectId [ref: > Warehouse._id]
+  shipmentNumber String [unique]
+  carrierCode String 
+  serviceName String 
+  trackingNumber String 
+  shipmentStatus String 
+  shippedAt Date 
+  deliveredAt Date 
+  failedAt Date 
+  shippingFeeAmount Number 
+  currencyCode String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ShipmentEvent {
+  shipmentId ObjectId [ref: > Shipment._id]
+  eventCode String 
+  eventStatus String 
+  eventDescription String 
+  eventTime Date 
+  locationText String 
+  rawPayloadJson String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ShipmentItem {
+  shipmentId ObjectId [ref: > Shipment._id]
+  orderItemId ObjectId [ref: > OrderItem._id]
+  variantId ObjectId [ref: > ProductVariant._id]
+  shippedQty Number 
+  deliveredQty Number 
+  returnedQty Number 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table ShippingMethod {
+  shipping_method_code String [unique]
+  shipping_method_name String 
+  carrier_code String 
+  service_level String 
+  description String 
+  is_active Boolean 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table StockReservation {
+  warehouseId ObjectId [ref: > Warehouse._id]
+  variantId ObjectId [ref: > ProductVariant._id]
+  cart_id ObjectId [ref: > Cart._id]
+  checkout_session_id ObjectId [ref: > CheckoutSession._id]
+  order_id ObjectId [ref: > Order._id]
+  reservedQty Number 
+  reservationStatus String 
+  expiresAt Date 
+  releasedAt Date 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table SupportTicket {
+  ticket_code String [unique]
+  account_id ObjectId [ref: > Account._id]
+  customer_id ObjectId [ref: > Customer._id]
+  session_id ObjectId [ref: > ChatbotSession._id]
+  related_order_id ObjectId [ref: > Order._id]
+  category String 
+  subject String 
+  description String 
+  status String 
+  priority String 
+  source String 
+  _id ObjectId [primary key]
+  created_at Date 
+  updated_at Date 
+  __v Number 
+}
+
+Table VariantMedia {
+  variantId ObjectId [ref: > ProductVariant._id]
+  mediaType String 
+  mediaUrl String 
+  sortOrder Number 
+  isPrimary Boolean 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table VariantOptionValue {
+  variantId ObjectId [ref: > ProductVariant._id]
+  productOptionValueId ObjectId [ref: > ProductOptionValue._id]
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table Warehouse {
+  warehouseCode String [unique]
+  warehouseName String 
+  contactName String 
+  phone String 
+  addressLine1 String 
+  addressLine2 String 
+  ward String 
+  district String 
+  city String 
+  countryCode String 
+  warehouseStatus String 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table Wishlist {
+  customer_id ObjectId [ref: > Customer._id]
+  wishlistName String 
+  isDefault Boolean 
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}
+
+Table WishlistItem {
+  wishlistId ObjectId [ref: > Wishlist._id]
+  productId ObjectId [ref: > Product._id]
+  variantId ObjectId [ref: > ProductVariant._id]
+  _id ObjectId [primary key]
+  createdAt Date 
+  updatedAt Date 
+  __v Number 
+}

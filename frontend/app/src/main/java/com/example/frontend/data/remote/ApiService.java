@@ -355,6 +355,22 @@ public interface ApiService {
 
     @GET("api/accounts")
     Call<ApiResponse<List<Object>>> getAccounts();
+
+    @GET("api/account/address-book")
+    Call<ApiResponse<List<AddressDto>>> getAccountAddresses();
+
+    @POST("api/account/address-book")
+    Call<ApiResponse<AddressDto>> addAccountAddress(@Body Object body);
+
+    @PATCH("api/account/address-book/{id}")
+    Call<ApiResponse<AddressDto>> updateAccountAddress(@Path("id") String id, @Body Object body);
+
+    @DELETE("api/account/address-book/{id}")
+    Call<ApiResponse<Object>> deleteAccountAddress(@Path("id") String id);
+
+    @PATCH("api/account/address-book/{id}/default")
+    Call<ApiResponse<AddressDto>> setDefaultAccountAddress(@Path("id") String id);
+
     @GET("api/categories/root")
     Call<ApiResponse<List<CategoryDto>>> getRootCategories();
 

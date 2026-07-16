@@ -482,6 +482,20 @@
                 android:layout_marginTop="@dimen/spacing_l"
                 tools:text="Lưu địa chỉ" />
 
+            <TextView
+                android:id="@+id/btnDeleteAddress"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_card"
+                android:gravity="center"
+                android:text="Xóa địa chỉ"
+                android:textColor="#D64545"
+                android:textAppearance="@style/Text.Kanila.H3"
+                android:visibility="gone" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

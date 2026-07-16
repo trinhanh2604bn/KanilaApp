@@ -34,14 +34,7 @@
             android:textAppearance="@style/Text.Kanila.H2"
             android:textColor="@color/accent_dark" />
 
-        <!-- Notification icon or placeholder for balance -->
-        <ImageView
-            android:id="@+id/btnNotification"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="@string/notification"
-            android:src="@drawable/ic_notification"
-            app:tint="@color/text_main" />
+        <!-- Notification icon removed -->
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -67,13 +60,12 @@
                 android:textColor="@color/text_secondary"
                 android:textStyle="bold" />
 
-            <include layout="@layout/item_address_book" />
-
-            <include layout="@layout/item_address_book" />
-
-            <include layout="@layout/item_address_book" />
-
-            <include layout="@layout/item_address_book" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvAddressBook"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_checkout_address" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -32,17 +32,23 @@ public class ProfileHubDto {
     public static class AccountInfo {
         @SerializedName("customerId")
         private String customerId;
-        @SerializedName("fullName")
+        
+        @SerializedName(value = "fullName", alternate = {"full_name", "name"})
         private String fullName;
+        
         @SerializedName("email")
         private String email;
-        @SerializedName("phone")
+        
+        @SerializedName(value = "phone", alternate = {"phoneNumber", "mobile"})
         private String phone;
-        @SerializedName("gender")
+        
+        @SerializedName(value = "gender", alternate = {"sex"})
         private String gender;
-        @SerializedName("birthday")
+        
+        @SerializedName(value = "birthday", alternate = {"date_of_birth", "dob"})
         private String birthday;
-        @SerializedName("avatarUrl")
+        
+        @SerializedName(value = "avatarUrl", alternate = {"avatar", "profile_image", "avatar_url"})
         private String avatarUrl;
 
         public String getCustomerId() { return customerId; }

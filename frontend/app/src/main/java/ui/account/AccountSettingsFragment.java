@@ -18,8 +18,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.frontend.R;
 import com.example.frontend.data.remote.TokenManager;
-
-import ui.commerce.CheckoutAddressFragment;
 import ui.commerce.PaymentMethodFragment;
 import ui.common.FragmentNavigationHelper;
 
@@ -61,7 +59,11 @@ public class AccountSettingsFragment extends Fragment {
         });
 
         setupMenuItem(view.findViewById(R.id.menuAddress), "Địa chỉ", v -> {
-            FragmentNavigationHelper.replaceFragment(requireActivity(), new CheckoutAddressFragment());
+            if (getActivity() instanceof com.example.frontend.MainActivity) {
+                ((com.example.frontend.MainActivity) getActivity()).loadFragment(new AccountAddressFragment());
+            } else {
+                ui.common.FragmentNavigationHelper.replaceFragment(requireActivity(), new AccountAddressFragment());
+            }
         });
 
         setupMenuItem(view.findViewById(R.id.menuPayment), "Tài khoản / Thẻ ngân hàng", v -> {

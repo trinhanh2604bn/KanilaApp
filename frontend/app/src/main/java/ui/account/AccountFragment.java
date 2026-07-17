@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.data.model.account.ProfileHubDto;
 import com.example.frontend.feature.account.AccountViewModel;
+import ui.account.AccountAddressFragment;
 
 import java.util.Locale;
 
@@ -117,13 +118,6 @@ public class AccountFragment extends Fragment {
             requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.SAVE_BEAUTY_PROFILE);
         });
 
-        View menuAddress = view.findViewById(R.id.menuAddress);
-        if (menuAddress != null) {
-            menuAddress.setOnClickListener(v -> {
-                requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ADDRESS_BOOK);
-            });
-        }
-
         view.findViewById(R.id.btnAccountOrders).setOnClickListener(v -> {
             requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ORDER_LIST);
         });
@@ -157,6 +151,16 @@ public class AccountFragment extends Fragment {
         if (menuSettings != null) {
             menuSettings.setOnClickListener(v -> {
                 FragmentNavigationHelper.replaceFragment(requireActivity(), new AccountSettingsFragment());
+            });
+        }
+
+        View menuAddress = view.findViewById(R.id.menuAddress);
+        if (menuAddress != null) {
+            menuAddress.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new AccountAddressFragment())
+                        .addToBackStack(null)
+                        .commit();
             });
         }
 

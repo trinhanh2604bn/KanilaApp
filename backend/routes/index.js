@@ -17,6 +17,7 @@ const customerConsentRoutes = require("./customerConsent.route");
 const customerPreferenceRoutes = require("./customerPreference.route");
 const beautyReferenceRoutes = require("./beautyReference.routes");
 const customerBeautyProfileRoutes = require("./customerBeautyProfile.routes");
+const accountAddressRoutes = require("./accountAddress.routes");
 
 // Phase 3 routes
 const productMediaRoutes = require("./productMedia.route");
@@ -92,6 +93,7 @@ router.use("/product-categories", productCategoryRoutes);
 router.use("/mobile/products", mobileProductRoutes);
 
 router.use("/auth", authRoutes);
+router.use("/account/address-book", accountAddressRoutes);
 router.use("/accounts", accountRoutes);
 router.use("/account", accountRoutes);
 router.use("/customers", customerRoutes);
@@ -167,7 +169,3 @@ const migrateRoute = require("./migrate.route");
 router.use("/migrate-fields", migrateRoute);
 
 module.exports = router;
-
-
-
-

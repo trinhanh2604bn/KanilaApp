@@ -43,6 +43,12 @@ const customerSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    email: {
+      type: String,
+      default: "",
+      trim: true,
+      lowercase: true,
+    },
     avatar_url: {
       type: String,
       default: "",

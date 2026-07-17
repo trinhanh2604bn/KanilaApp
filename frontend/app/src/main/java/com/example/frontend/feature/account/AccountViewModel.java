@@ -17,6 +17,12 @@ public class AccountViewModel extends AndroidViewModel {
     private final MutableLiveData<NetworkResult<List<AddressDto>>> addressesResult = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<ProfileHubDto.AccountInfo>> updateProfileResult = new MutableLiveData<>();
 
+    private final MutableLiveData<NetworkResult<List<AddressDto>>> accountAddressesResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<AddressDto>> addAccountAddressResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<Object>> deleteAccountAddressResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<AddressDto>> setDefaultAccountAddressResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<AddressDto>> updateAccountAddressResult = new MutableLiveData<>();
+
     public AccountViewModel(@NonNull Application application) {
         super(application);
         this.repository = new AccountRepository(application);
@@ -48,5 +54,57 @@ public class AccountViewModel extends AndroidViewModel {
 
     public void resetUpdateProfileResult() {
         updateProfileResult.setValue(null);
+    }
+
+    public void resetAddAccountAddressResult() {
+        addAccountAddressResult.setValue(null);
+    }
+
+    public void resetUpdateAccountAddressResult() {
+        updateAccountAddressResult.setValue(null);
+    }
+
+    public void resetDeleteAccountAddressResult() {
+        deleteAccountAddressResult.setValue(null);
+    }
+
+    public LiveData<NetworkResult<List<AddressDto>>> getAccountAddressesResult() {
+        return accountAddressesResult;
+    }
+
+    public LiveData<NetworkResult<AddressDto>> getAddAccountAddressResult() {
+        return addAccountAddressResult;
+    }
+
+    public LiveData<NetworkResult<Object>> getDeleteAccountAddressResult() {
+        return deleteAccountAddressResult;
+    }
+
+    public LiveData<NetworkResult<AddressDto>> getSetDefaultAccountAddressResult() {
+        return setDefaultAccountAddressResult;
+    }
+
+    public LiveData<NetworkResult<AddressDto>> getUpdateAccountAddressResult() {
+        return updateAccountAddressResult;
+    }
+
+    public void loadAccountAddresses() {
+        repository.getAccountAddresses(accountAddressesResult);
+    }
+
+    public void addAccountAddress(java.util.Map<String, Object> body) {
+        repository.addAccountAddress(body, addAccountAddressResult);
+    }
+
+    public void updateAccountAddress(String id, java.util.Map<String, Object> body) {
+        repository.updateAccountAddress(id, body, updateAccountAddressResult);
+    }
+
+    public void deleteAccountAddress(String id) {
+        repository.deleteAccountAddress(id, deleteAccountAddressResult);
+    }
+
+    public void setDefaultAccountAddress(String id) {
+        repository.setDefaultAccountAddress(id, setDefaultAccountAddressResult);
     }
 }

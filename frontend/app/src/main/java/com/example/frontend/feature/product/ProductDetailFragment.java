@@ -27,6 +27,7 @@ import com.example.frontend.feature.product.adapter.RecentlyViewedAdapter;
 import com.example.frontend.feature.home.HomeProductAdapter;
 import com.example.frontend.feature.product.adapter.ReviewMediaAdapter;
 import com.example.frontend.data.model.review.ReviewMediaDto;
+import com.example.frontend.data.model.review.ReviewDto;
 import com.example.frontend.data.model.cart.CartItemDto;
 import com.example.frontend.data.model.checkout.CheckoutSessionDto;
 import com.google.android.material.chip.Chip;
@@ -38,6 +39,7 @@ import android.text.style.ImageSpan;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import android.util.Log;
@@ -558,7 +560,14 @@ public class ProductDetailFragment extends Fragment {
         if (reviewPreviewAdapter != null) {
             if (state.reviewPreviewList != null && !state.reviewPreviewList.isEmpty()) {
                 rvReviewPreview.setVisibility(View.VISIBLE);
-                reviewPreviewAdapter.submitList(state.reviewPreviewList);
+                
+                // Chỉ hiển thị tối đa 2 đánh giá (ngẫu nhiên)
+                List<ReviewDto> previewList = new ArrayList<>(state.reviewPreviewList);
+                if (previewList.size() > 2) {
+                    Collections.shuffle(previewList);
+                    previewList = previewList.subList(0, 2);
+                }
+                reviewPreviewAdapter.submitList(previewList);
             } else {
                 rvReviewPreview.setVisibility(View.GONE);
             }

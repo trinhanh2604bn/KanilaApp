@@ -200,7 +200,7 @@
                                 android:layout_height="match_parent"
                                 android:indeterminate="false"
                                 android:max="100"
-                                android:progress="82"
+                                tools:progress="82"
                                 android:secondaryProgress="100"
                                 android:progressDrawable="@drawable/custom_progress_circle"
                                 style="?android:attr/progressBarStyleHorizontal" />
@@ -215,7 +215,7 @@
                                     android:id="@+id/tvScore"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="82"
+                                    tools:text="82"
                                     android:textSize="36sp"
                                     android:textColor="@color/accent_dark"
                                     android:fontFamily="@font/nunito_bold"/>
@@ -223,7 +223,7 @@
                                     android:id="@+id/tvScoreStatus"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Tốt"
+                                    tools:text="Tốt"
                                     android:textColor="@color/success"
                                     android:textSize="12sp"
                                     android:fontFamily="@font/nunito_semibold"/>
@@ -237,7 +237,7 @@
                             android:layout_marginTop="16dp"
                             android:gravity="center"
                             android:alpha="0.8"
-                            android:text="Chỉ số của bạn cao hơn 75% người dùng."
+                            tools:text="Chỉ số của bạn cao hơn 75% người dùng."
                             style="@style/Text.Kanila.Caption"
                             android:textColor="@color/text_main"/>
 

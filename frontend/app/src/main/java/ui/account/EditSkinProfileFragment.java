@@ -189,7 +189,14 @@ public class EditSkinProfileFragment extends Fragment {
                 showLoadingDialog("Kanila AI đang phân tích làn da của bạn...");
             } else if (result.status == NetworkResult.Status.SUCCESS) {
                 hideLoadingDialog();
-                showSaveSuccessPopup();
+                // Bỏ màn hình set sẵn (Success Popup) và đi thẳng tới trang phân tích
+                int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                        ? R.id.main_fragment_container : R.id.main;
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(containerId, new SkinAnalysisFragment())
+                        .addToBackStack(null)
+                        .commit();
                 viewModel.resetSaveResult();
             } else if (result.status == NetworkResult.Status.ERROR) {
                 hideLoadingDialog();
@@ -500,42 +507,7 @@ public class EditSkinProfileFragment extends Fragment {
         }
     }
 
-    private void showSaveSuccessPopup() {
-        if (!isAdded() || getContext() == null) return;
-        Dialog dialog = new Dialog(requireContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.overview_popup);
-        dialog.setCancelable(true);
-        dialog.setCanceledOnTouchOutside(false);
 
-        MaterialButton btnPopupOk = dialog.findViewById(R.id.btnPopupOk);
-        if (btnPopupOk != null) {
-            btnPopupOk.setOnClickListener(v -> {
-                dialog.dismiss();
-                updateSaveButtonsState(false);
-                
-                // Chuyển hướng sang trang Kết quả phân tích theo tài liệu
-                int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
-                        ? R.id.main_fragment_container : R.id.main;
-                getParentFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(containerId, new SkinAnalysisFragment())
-                        .addToBackStack(null)
-                        .commit();
-            });
-        }
-        dialog.show();
-
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            WindowManager.LayoutParams lp = window.getAttributes();
-            lp.dimAmount = 0.5f;
-            window.setAttributes(lp);
-            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        }
-    }
 
     private void handleBackNavigation() {
         if (getParentFragmentManager().getBackStackEntryCount() > 0) getParentFragmentManager().popBackStack();

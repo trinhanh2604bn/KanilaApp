@@ -34,7 +34,7 @@ public class SkinAnalysisFragment extends Fragment {
     private RecommendationViewModel viewModel;
     private TextView tvScore, tvScoreStatus, tvAiVerdict, tvAiStats;
     private ProgressBar progressScore;
-    private View cardHealthScore;
+    private View cardHealthScore, cardAiVerdict;
     private RecyclerView rvRecommendedProducts;
     private RecommendationProductAdapter productAdapter;
     private View skinAnalysisRoot;
@@ -64,6 +64,7 @@ public class SkinAnalysisFragment extends Fragment {
         progressScore = view.findViewById(R.id.progressScore);
         rvRecommendedProducts = view.findViewById(R.id.rvRecommendedProducts);
         cardHealthScore = view.findViewById(R.id.cardHealthScore);
+        cardAiVerdict = view.findViewById(R.id.cardAiVerdict);
         
         setupProductRecyclerView();
     }
@@ -130,6 +131,7 @@ public class SkinAnalysisFragment extends Fragment {
         }
 
         if (cardHealthScore != null) cardHealthScore.setVisibility(View.VISIBLE);
+        if (cardAiVerdict != null) cardAiVerdict.setVisibility(View.VISIBLE);
         int healthScore = analysis.getHealthScore() != null ? analysis.getHealthScore() : 0;
 
         if (tvScore != null) tvScore.setText(String.valueOf(healthScore));

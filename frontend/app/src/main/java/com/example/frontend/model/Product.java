@@ -82,6 +82,8 @@ public class Product {
     @SerializedName("hasAr")
     private boolean hasAr;
 
+    private double score;
+
     private boolean isFavorite;
 
     private int imageResource;
@@ -179,6 +181,10 @@ public class Product {
     public boolean hasAr() { return hasAr; }
 
     public void setHasAr(boolean hasAr) { this.hasAr = hasAr; }
+
+    public double getScore() { return score; }
+
+    public void setScore(double score) { this.score = score; }
     
     public String getBadgeText() { 
         if (badgeText != null && !badgeText.isEmpty()) return badgeText;

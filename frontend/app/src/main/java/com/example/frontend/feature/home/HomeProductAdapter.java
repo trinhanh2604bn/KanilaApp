@@ -131,6 +131,9 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         if (product.getBadgeText() != null && !product.getBadgeText().isEmpty()) {
             holder.tvBadge.setText(product.getBadgeText());
             holder.layoutBadge.setVisibility(View.VISIBLE);
+        } else if (product.getScore() > 0) {
+            holder.tvBadge.setText(Math.round(product.getScore()) + "% Match");
+            holder.layoutBadge.setVisibility(View.VISIBLE);
         } else {
             holder.layoutBadge.setVisibility(View.GONE);
         }

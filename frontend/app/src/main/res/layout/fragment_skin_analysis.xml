@@ -71,11 +71,13 @@
                 android:id="@+id/cardHealthScore"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="0dp"
                 app:cardBackgroundColor="#FFF9FA"
                 app:strokeWidth="1dp"
-                app:strokeColor="@color/secondary">
+                app:strokeColor="@color/secondary"
+                tools:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -118,7 +120,7 @@
                                 android:id="@+id/tvScore"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="82"
+                                tools:text="82"
                                 android:textSize="42sp"
                                 android:textColor="@color/accent_dark"
                                 android:fontFamily="@font/nunito_bold"/>
@@ -126,7 +128,7 @@
                                 android:id="@+id/tvScoreStatus"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Tốt"
+                                tools:text="Tốt"
                                 android:textColor="@color/success"
                                 android:textSize="14sp"
                                 android:fontFamily="@font/nunito_semibold"/>
@@ -140,7 +142,7 @@
                         android:layout_marginTop="20dp"
                         android:gravity="center"
                         android:alpha="0.8"
-                        android:text="Chỉ số của bạn cao hơn 75% người dùng cùng loại da dầu."
+                        tools:text="Chỉ số của bạn cao hơn 75% người dùng cùng loại da dầu."
                         style="@style/Text.Kanila.Caption"
                         android:textColor="@color/text_main"/>
 
@@ -149,13 +151,16 @@
 
             <!-- AI Verdict Card -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAiVerdict"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:visibility="gone"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
                 app:cardBackgroundColor="@color/background_main"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                tools:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -188,7 +193,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:lineSpacingExtra="4dp"
-                        android:text="Làn da của bạn đang phản hồi tốt với quy trình hiện tại. Tuy nhiên, độ nhạy cảm tăng nhẹ do quá trình Treatment. Hãy ưu tiên các sản phẩm chứa Ceramide để củng cố hàng rào bảo vệ."
+                        tools:text="Làn da của bạn đang phản hồi tốt với quy trình hiện tại. Tuy nhiên, độ nhạy cảm tăng nhẹ do quá trình Treatment. Hãy ưu tiên các sản phẩm chứa Ceramide để củng cố hàng rào bảo vệ."
                         style="@style/Text.Kanila.Body"
                         android:textColor="@color/text_main"/>
 

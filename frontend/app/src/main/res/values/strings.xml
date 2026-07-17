@@ -102,6 +102,11 @@
 
     <string name="search_recommend_title">Đề xuất dành cho bạn</string>
     <string name="search_quick_discovery_title">Khám phá nhanh</string>
+    <string name="wishlist_added">Đã thêm vào danh sách yêu thích</string>
+    <string name="wishlist_removed">Đã xóa khỏi danh sách yêu thích</string>
+    <string name="cart_item_added">Đã thêm vào giỏ hàng</string>
+    <string name="error_generic">Đã xảy ra lỗi, vui lòng thử lại sau.</string>
+
     <string name="discovery_oily_skin_title">Da dầu mụn</string>
     <string name="discovery_oily_skin_desc">Giải pháp kiềm dầu, giảm mụn</string>
     <string name="discovery_daily_makeup_title">Makeup hằng ngày</string>

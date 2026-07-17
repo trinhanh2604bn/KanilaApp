@@ -161,6 +161,26 @@ public class SearchActivity extends AppCompatActivity {
 
     // ─── Search Bar ───────────────────────────────────────────────────────────
 
+    private void launchVoiceSearch() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.voice_search_prompt));
+        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
+        
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            try {
+                isVoiceSearchActive = true;
+                voiceSearchLauncher.launch(intent);
+            } catch (ActivityNotFoundException e) {
+                isVoiceSearchActive = false;
+                Toast.makeText(this, getString(R.string.voice_search_not_supported), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, getString(R.string.voice_search_not_supported), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void setupSearchBar() {
         btnExpandedSearchBack.setOnClickListener(v -> finish());
 
@@ -169,22 +189,18 @@ public class SearchActivity extends AppCompatActivity {
             btnExpandedSearchVoice.setOnClickListener(v -> {
                 if (isVoiceSearchActive) return;
                 
-                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN");
-                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.voice_search_prompt));
-                intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
+                android.content.SharedPreferences prefs = getSharedPreferences("kanila_prefs", MODE_PRIVATE);
+                boolean hasSeenVoicePrompt = prefs.getBoolean("has_seen_voice_prompt", false);
                 
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    try {
-                        isVoiceSearchActive = true;
-                        voiceSearchLauncher.launch(intent);
-                    } catch (ActivityNotFoundException e) {
-                        isVoiceSearchActive = false;
-                        Toast.makeText(this, getString(R.string.voice_search_not_supported), Toast.LENGTH_SHORT).show();
-                    }
+                if (hasSeenVoicePrompt) {
+                    launchVoiceSearch();
                 } else {
-                    Toast.makeText(this, getString(R.string.voice_search_not_supported), Toast.LENGTH_SHORT).show();
+                    VoicePermissionBottomSheet bottomSheet = new VoicePermissionBottomSheet();
+                    bottomSheet.setOnAllowListener(() -> {
+                        prefs.edit().putBoolean("has_seen_voice_prompt", true).apply();
+                        launchVoiceSearch();
+                    });
+                    bottomSheet.show(getSupportFragmentManager(), "VoicePermission");
                 }
             });
         }

@@ -23,6 +23,7 @@ async function buildMakeupBundle(occasion, shoppingContext) {
 
   const bundle = [];
   let total = 0;
+  const usedProductIds = new Set(); // ✅ Track used IDs to prevent duplicates
   
   for (const slotName of slots) {
     const slotContext = {
@@ -37,13 +38,28 @@ async function buildMakeupBundle(occasion, shoppingContext) {
     }
 
     try {
-      const { products } = await findMakeupProductsPipeline(slotContext, 1);
+      // Fetch more candidates to find one not already used
+      const { products } = await findMakeupProductsPipeline(slotContext, 5);
       
       if (products && products.length > 0) {
-        const topProduct = products[0];
-        topProduct.slot = slotName;
-        bundle.push(topProduct);
-        total += topProduct.price || 0;
+        // ✅ Pick first product NOT already in the bundle
+        const uniqueProduct = products.find(
+          (p) => !usedProductIds.has((p.product_id || p._id || "").toString())
+        );
+
+        if (uniqueProduct) {
+          uniqueProduct.slot = slotName;
+          bundle.push(uniqueProduct);
+          usedProductIds.add((uniqueProduct.product_id || uniqueProduct._id || "").toString());
+          total += uniqueProduct.price || 0;
+        } else {
+          // All candidates were duplicates — use the best one anyway but log it
+          const topProduct = products[0];
+          topProduct.slot = slotName;
+          bundle.push(topProduct);
+          total += topProduct.price || 0;
+          console.warn(`[MakeupBundle] No unique product for slot "${slotName}", reusing ${topProduct.name || topProduct.productName}`);
+        }
       }
     } catch (err) {
       console.error(`[MakeupBundle] Error fetching product for slot ${slotName}:`, err.message);

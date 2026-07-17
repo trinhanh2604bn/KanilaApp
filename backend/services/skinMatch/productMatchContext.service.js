@@ -78,7 +78,17 @@ class ProductMatchContextService {
 
   _getProductType(categoryCode) {
     const code = String(categoryCode).toLowerCase();
-    if (code.includes("makeup") || code.includes("foundation") || code.includes("lipstick")) return "MAKEUP";
+    // Full list of makeup-related category codes to ensure correct weight set is applied
+    const makeupKeywords = [
+      "makeup", "make_up", "make-up",
+      "foundation", "bb_cream", "cc_cream", "cushion",
+      "lipstick", "lip_gloss", "lip_liner", "lip_tint", "lip_balm",
+      "mascara", "eyeliner", "eyeshadow", "eyebrow",
+      "blush", "blusher", "contour", "bronzer", "highlighter",
+      "concealer", "color_corrector", "primer",
+      "setting_powder", "setting_spray", "face_powder",
+    ];
+    if (makeupKeywords.some((kw) => code.includes(kw))) return "MAKEUP";
     return "SKINCARE";
   }
 

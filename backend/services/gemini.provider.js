@@ -5,8 +5,7 @@
  * SECURITY REVIEW REQUIRED before commit/deploy:
  * - Remove TEMP_DEV_GEMINI_API_KEY and rely solely on process.env.GEMINI_API_KEY.
  */
-
-const { GoogleGenAI } = require("@google/genai");
+const { getVertexClient } = require("../config/vertex.config");
 const {
   KANILA_SYSTEM_PROMPT,
   buildProductContextMessage,
@@ -24,42 +23,19 @@ const {
   buildSkinAnalysisPrompt,
 } = require("./chatbot.prompt");
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TEMP DEV ONLY - remove before commit/deploy
-const TEMP_DEV_GEMINI_API_KEY = "PASTE_YOUR_GEMINI_KEY_HERE"; // TEMP DEV ONLY
-// ─────────────────────────────────────────────────────────────────────────────
-
-const geminiApiKey = process.env.GEMINI_API_KEY || TEMP_DEV_GEMINI_API_KEY;
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 const GEMINI_TIMEOUT_MS = 60000;
-
-let _genAI = null;
-function getGenAI() {
-  if (!geminiApiKey || geminiApiKey === "PASTE_YOUR_GEMINI_KEY_HERE") {
-    const err = new Error(
-      "Gemini API key is missing or not configured. Set GEMINI_API_KEY in .env."
-    );
-    err.code = "CHATBOT_CONFIG_ERROR";
-    throw err;
-  }
-  if (!_genAI) _genAI = new GoogleGenAI({ apiKey: geminiApiKey });
-  return _genAI;
-}
-
 /**
  * Internal: run a Gemini chat call with timeout protection.
  */
 async function _geminiChatWithTimeout(message, history = [], customConfig = {}) {
-  const genAI = getGenAI();
-
   const geminiPromise = (async () => {
+    const { client, model } = getVertexClient();
     const config = {
       systemInstruction: KANILA_SYSTEM_PROMPT,
-      maxOutputTokens: 150,
       ...customConfig
     };
-    const chat = genAI.chats.create({
-      model: GEMINI_MODEL,
+    const chat = client.chats.create({
+      model: model,
       config,
       history,
     });
@@ -90,11 +66,10 @@ async function _geminiChatWithTimeout(message, history = [], customConfig = {}) 
  * Internal: run a standalone Gemini generation without Chatbot system prompt.
  */
 async function _geminiGenerateTextWithTimeout(prompt) {
-  const genAI = getGenAI();
-
   const geminiPromise = (async () => {
-    const response = await genAI.models.generateContent({
-      model: GEMINI_MODEL,
+    const { client, model } = getVertexClient();
+    const response = await client.models.generateContent({
+      model: model,
       contents: prompt
     });
     return response.text;

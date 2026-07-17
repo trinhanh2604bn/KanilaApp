@@ -608,12 +608,22 @@ public class ProductDetailFragment extends Fragment {
         if (state.detailedSkinMatch != null && layoutSkinMatch != null) {
             bindSkinMatchData(state.detailedSkinMatch);
         } else if (state.skinMatch != null && layoutSkinMatch != null) {
-            // Fallback to legacy data
-            layoutSkinMatch.setVisibility(View.VISIBLE);
-            TextView tvScore = layoutSkinMatch.findViewById(R.id.tvSkinMatchScore);
-            if (tvScore != null) tvScore.setText(String.format(Locale.US, "%d%%", state.skinMatch.getScore()));
+            String fallbackStatus = state.skinMatch.getStatus();
+            if ("INSUFFICIENT_PRODUCT_DATA".equals(fallbackStatus) || "TEMPORARILY_UNAVAILABLE".equals(fallbackStatus)) {
+                layoutSkinMatch.setVisibility(View.GONE);
+            } else {
+                // Fallback to legacy data
+                layoutSkinMatch.setVisibility(View.VISIBLE);
+                TextView tvScore = layoutSkinMatch.findViewById(R.id.tvSkinMatchScore);
+            int fallbackScore = state.skinMatch.getScore();
+            if (state.skinMatch.getEstimatedScore() != null && state.skinMatch.getEstimatedScore() > 0 && fallbackScore == 0) {
+                if (tvScore != null) tvScore.setText(String.format(Locale.US, "≈%d%%", state.skinMatch.getEstimatedScore()));
+            } else {
+                if (tvScore != null) tvScore.setText(String.format(Locale.US, "%d%%", fallbackScore));
+            }
             TextView tvSubtitle = layoutSkinMatch.findViewById(R.id.tvSkinMatchSubtitle);
             if (tvSubtitle != null) tvSubtitle.setText("Phù hợp với làn da của bạn");
+        }
         } else if (layoutSkinMatch != null) {
             layoutSkinMatch.setVisibility(View.GONE);
         }
@@ -646,7 +656,15 @@ public class ProductDetailFragment extends Fragment {
         switch (data.getStatus()) {
             case READY:
                 layoutSkinMatch.setVisibility(View.VISIBLE);
-                if (tvScore != null) tvScore.setText(String.format(Locale.US, "%d%%", data.getScore()));
+
+                // If confidence is low, backend returns score=0 but estimated_score has the value.
+                // Show "≈XX%" to indicate the score is an estimate, not a guaranteed match.
+                if ((data.getScore() == null || data.getScore() == 0) && data.getEstimatedScore() != null && data.getEstimatedScore() > 0) {
+                    if (tvScore != null) tvScore.setText(String.format(Locale.US, "≈%d%%", data.getEstimatedScore()));
+                } else {
+                    if (tvScore != null) tvScore.setText(String.format(Locale.US, "%d%%", data.getScore() != null ? data.getScore() : 0));
+                }
+
                 if (tvSubtitle != null) {
                     if (data.getMatchExplanation() != null && !data.getMatchExplanation().isEmpty()) {
                         tvSubtitle.setText(data.getMatchExplanation());
@@ -663,7 +681,7 @@ public class ProductDetailFragment extends Fragment {
                     }
                 }
 
-                // Color mapping
+                // Color mapping based on match level
                 int colorRes = R.color.button;
                 if (data.getMatchLevel() != null) {
                     switch (data.getMatchLevel()) {
@@ -675,7 +693,11 @@ public class ProductDetailFragment extends Fragment {
                             colorRes = R.color.status_pending_text;
                             break;
                         case CAUTION:
-                            colorRes = R.color.error;
+                            // CAUTION = hard conflict present; use warning amber, not full error red
+                            colorRes = R.color.status_pending_text;
+                            break;
+                        default:
+                            colorRes = R.color.button;
                             break;
                     }
                 }
@@ -697,12 +719,43 @@ public class ProductDetailFragment extends Fragment {
 
             case PROFILE_INCOMPLETE:
                 layoutSkinMatch.setVisibility(View.VISIBLE);
-                if (tvScore != null) tvScore.setText(data.getScore() != null ? String.format(Locale.US, "%d%%", data.getScore()) : "?");
+                // Show estimated score if available, otherwise "?"
+                if (data.getEstimatedScore() != null && data.getEstimatedScore() > 0) {
+                    if (tvScore != null) tvScore.setText(String.format(Locale.US, "≈%d%%", data.getEstimatedScore()));
+                } else if (data.getScore() != null && data.getScore() > 0) {
+                    if (tvScore != null) tvScore.setText(String.format(Locale.US, "%d%%", data.getScore()));
+                } else {
+                    if (tvScore != null) tvScore.setText("?");
+                }
                 if (tvSubtitle != null) {
                     if (data.getMatchExplanation() != null && !data.getMatchExplanation().isEmpty()) {
                         tvSubtitle.setText(data.getMatchExplanation());
                     } else {
-                        tvSubtitle.setText("Cập nhật thêm thông tin da của bạn");
+                        tvSubtitle.setText("Cập nhật thêm thông tin da để kết quả chính xác hơn");
+                    }
+                }
+                // Use muted color for estimated/incomplete state
+                if (tvScore != null) tvScore.setTextColor(ContextCompat.getColor(getContext(), R.color.status_pending_text));
+                if (layoutScoreCircle != null) layoutScoreCircle.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.status_pending_text)));
+                break;
+
+            case CAUTION:
+                // Product-level caution (e.g. hard conflict with profile) — show with warning style
+                layoutSkinMatch.setVisibility(View.VISIBLE);
+                if (tvScore != null) {
+                    if (data.getScore() != null && data.getScore() > 0) {
+                        tvScore.setText(String.format(Locale.US, "%d%%", data.getScore()));
+                    } else {
+                        tvScore.setText("!");
+                    }
+                    tvScore.setTextColor(ContextCompat.getColor(getContext(), R.color.error));
+                }
+                if (layoutScoreCircle != null) layoutScoreCircle.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.error)));
+                if (tvSubtitle != null) {
+                    if (data.getMatchExplanation() != null && !data.getMatchExplanation().isEmpty()) {
+                        tvSubtitle.setText(data.getMatchExplanation());
+                    } else {
+                        tvSubtitle.setText("Cần lưu ý: sản phẩm có thể không phù hợp");
                     }
                 }
                 break;

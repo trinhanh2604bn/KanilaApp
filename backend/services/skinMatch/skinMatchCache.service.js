@@ -5,10 +5,79 @@ const skinMatchService = require("./skinMatch.service");
 
 class SkinMatchCacheService {
   async getOrComputeMatch(customer, beautyProfile, productId) {
+    // MOCK DATA: Sinh điểm giả lập ngẫu nhiên nhưng ổn định (deterministic) dựa trên ID sản phẩm
     if (!beautyProfile) {
       return { status: "PROFILE_REQUIRED" };
     }
 
+    const possibleScores = [30, 40, 50, 80, 90, 95];
+    const hash = String(productId).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const score = possibleScores[hash % possibleScores.length];
+
+    let match_level, match_explanation, reasons, cautions = [];
+
+    if (score >= 90) {
+      match_level = "EXCELLENT_MATCH";
+      match_explanation = "Sản phẩm rất phù hợp vì thành phần an toàn và hỗ trợ đúng vấn đề da của bạn.";
+      reasons = [
+        { code: "SKIN_TYPE_MATCH", text: "Phù hợp tuyệt đối với loại da của bạn", contribution: 40 },
+        { code: "CONCERN_MATCH", text: "Giải quyết hiệu quả các vấn đề da bạn đang gặp phải", contribution: 30 },
+        { code: "INGREDIENT_MATCH", text: "Chứa các thành phần bạn yêu thích", contribution: 25 }
+      ];
+    } else if (score >= 80) {
+      match_level = "GOOD_MATCH";
+      match_explanation = "Sản phẩm tốt cho làn da của bạn.";
+      reasons = [
+        { code: "SKIN_TYPE_MATCH", text: "Phù hợp với loại da của bạn", contribution: 40 },
+        { code: "CONCERN_MATCH", text: "Hỗ trợ một số vấn đề da của bạn", contribution: 40 }
+      ];
+    } else if (score >= 50) {
+      match_level = "MODERATE_MATCH";
+      match_explanation = "Sản phẩm phù hợp ở mức trung bình. Có thể kết hợp với các sản phẩm khác.";
+      reasons = [
+        { code: "SKIN_TYPE_MATCH", text: "Tương thích ở mức cơ bản với loại da của bạn", contribution: 50 }
+      ];
+    } else {
+      match_level = "CAUTION";
+      match_explanation = "Mức độ phù hợp thấp. Nên cân nhắc kỹ trước khi sử dụng.";
+      reasons = [
+        { code: "NO_CONCERN_MATCH", text: "Không tập trung vào các vấn đề da hiện tại của bạn", contribution: 0 }
+      ];
+      cautions = [{ code: "LOW_MATCH", text: "Sản phẩm này có thể không mang lại hiệu quả mong muốn cho tình trạng da của bạn.", severity: "INFO" }];
+    }
+
+    const possibleAttributes = [
+      "Da dầu", "Da khô", "Da nhạy cảm", "Da mụn", 
+      "Lỗ chân lông to", "Thâm nám", "Lão hóa", 
+      "Da không đều màu", "Niacinamide", "BHA", "Vitamin C", "HA"
+    ];
+    const numAttributes = 2 + (hash % 3); // Chọn từ 2 đến 4 thuộc tính
+    const matched_attributes = [];
+    for (let i = 0; i < numAttributes; i++) {
+      const attrIndex = (hash + i * 7) % possibleAttributes.length;
+      matched_attributes.push(possibleAttributes[attrIndex]);
+    }
+
+    return {
+      status: "READY",
+      product_id: String(productId),
+      score: score,
+      estimated_score: null,
+      estimated: false,
+      match_level: match_level,
+      confidence_score: 90,
+      profile_completion_rate: 100,
+      matching_data_completeness: 100,
+      match_explanation: match_explanation,
+      reasons: reasons,
+      cautions: cautions,
+      hard_conflicts: [],
+      matched_attributes: matched_attributes,
+      generated_at: new Date(),
+      expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    };
+
+    /* --- BỎ QUA LOGIC THỰC TẾ BÊN DƯỚI VÌ ĐÃ MOCK DATA ---
     const productContext = await productMatchContextService.getContext(productId);
     const productMatchHash = productMatchContextService.generateHash(productContext);
     const profileHash = beautyProfile.profile_hash;
@@ -52,6 +121,7 @@ class SkinMatchCacheService {
     );
 
     return this._formatResponse(snapshotData);
+    */
   }
 
   async invalidateByCustomerId(customerId) {

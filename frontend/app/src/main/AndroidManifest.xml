@@ -46,6 +46,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="ui.account.BeautyProfileActivity"
+            android:exported="false" />
+        <activity
             android:name="ui.support.SupportActivity"
             android:exported="false" />
         <activity

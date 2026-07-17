@@ -4,7 +4,7 @@
  */
 
 module.exports = {
-  SKIN_MATCH_ALGORITHM_VERSION: "skin_match_rule_v1",
+  SKIN_MATCH_ALGORITHM_VERSION: "skin_match_rule_v2",
 
   WEIGHTS: {
     SKINCARE: {

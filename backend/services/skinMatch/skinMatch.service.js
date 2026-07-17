@@ -175,17 +175,16 @@ class SkinMatchService {
     if (hardConflicts.length > 0) {
       explanationText = "Sản phẩm này có chứa thành phần hoặc đặc tính không phù hợp với hồ sơ của bạn, có thể gây kích ứng.";
     } else if (normalizedScore >= config.MATCH_LEVEL_THRESHOLDS.GOOD_MATCH) {
-      const strengths = reasons.map(r => r.text.toLowerCase()).join(", ");
-      explanationText = `Sản phẩm rất phù hợp vì ${strengths}.`;
+      if (reasons.length > 0) {
+        const strengths = reasons.map(r => r.text.toLowerCase()).join(", ");
+        explanationText = `Sản phẩm rất phù hợp vì ${strengths}.`;
+      } else {
+        explanationText = "Sản phẩm phù hợp với hồ sơ làm đẹp của bạn.";
+      }
     } else if (normalizedScore >= config.MATCH_LEVEL_THRESHOLDS.MODERATE_MATCH) {
       explanationText = "Sản phẩm ở mức tương đối phù hợp, đáp ứng được một phần nhu cầu theo hồ sơ làm đẹp của bạn.";
     } else {
       explanationText = "Sản phẩm này có thể chưa tối ưu nhất cho loại da và nhu cầu hiện tại của bạn.";
-    }
-    
-    // Fallback if empty array of reasons made it weird
-    if (explanationText.includes("vì .")) {
-      explanationText = "Sản phẩm phù hợp với hồ sơ làm đẹp của bạn.";
     }
 
     return {

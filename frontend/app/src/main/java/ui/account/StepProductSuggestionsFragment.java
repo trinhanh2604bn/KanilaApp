@@ -27,15 +27,21 @@ import java.util.List;
 public class StepProductSuggestionsFragment extends Fragment {
 
     private String stepName;
+    private String categoryId;
     private CartViewModel cartViewModel;
     private BeautyProfileViewModel beautyViewModel;
     private ProductRepository productRepository;
     private View layoutLoading;
 
     public static StepProductSuggestionsFragment newInstance(String stepName) {
+        return newInstance(stepName, null);
+    }
+
+    public static StepProductSuggestionsFragment newInstance(String stepName, String categoryId) {
         StepProductSuggestionsFragment fragment = new StepProductSuggestionsFragment();
         Bundle args = new Bundle();
         args.putString("step_name", stepName);
+        args.putString("category_id", categoryId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -45,6 +51,7 @@ public class StepProductSuggestionsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             stepName = getArguments().getString("step_name");
+            categoryId = getArguments().getString("category_id");
         }
     }
 
@@ -92,7 +99,7 @@ public class StepProductSuggestionsFragment extends Fragment {
 
     private void loadRealProducts(HomeProductAdapter adapter) {
         if (stepName == null) return;
-        
+
         // Get user budget from beauty profile
         String userBudget = null;
         NetworkResult<CustomerBeautyProfileDto> profileResult = beautyViewModel.getProfileResult().getValue();
@@ -103,10 +110,18 @@ public class StepProductSuggestionsFragment extends Fragment {
         final String finalBudget = userBudget;
         
         // Use the step name as a search query to get relevant products from DB
-        productRepository.getProducts(stepName, null, null).observe(getViewLifecycleOwner(), result -> {
+        productRepository.getProducts(stepName, categoryId, null).observe(getViewLifecycleOwner(), result -> {
             if (result != null) {
                 if (result.status == NetworkResult.Status.SUCCESS && result.data != null) {
                     List<Product> filtered = filterByBudget(result.data, finalBudget);
+                    
+                    // Sắp xếp theo score giảm dần (attribute trong Product)
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                        filtered.sort((p1, p2) -> Double.compare(p2.getScore(), p1.getScore()));
+                    } else {
+                        java.util.Collections.sort(filtered, (p1, p2) -> Double.compare(p2.getScore(), p1.getScore()));
+                    }
+                    
                     adapter.setProducts(filtered);
                 } else if (result.status == NetworkResult.Status.ERROR) {
                     Toast.makeText(getContext(), "Không thể tải sản phẩm: " + result.message, Toast.LENGTH_SHORT).show();

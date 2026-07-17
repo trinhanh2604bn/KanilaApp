@@ -46,32 +46,53 @@ async function loadBrandsMinimal() {
  */
 const getCatalogBundle = async (req, res) => {
   try {
+    const hasSearch = !!(req.query.search || req.query.q);
     const { page, limit, skip } = parseCatalogPagination(req.query);
     const include = parseIncludeFlags(req.query);
-    const { filter, sort } = buildMongoFilterFromQuery(req.query, { storefrontOnly: true });
-    const listingProfile = String(req.query.fields || "").toLowerCase().trim() === "card" ? "card" : "full";
+    const categoriesTask = include.categories ? loadCategoriesMinimal() : Promise.resolve(null);
+    const brandsTask = include.brands ? loadBrandsMinimal() : Promise.resolve(null);
 
-    const productsTask = (async () => {
+    let productPage;
+    let reviewSummaries = [];
+
+    if (hasSearch) {
+      const SearchService = require("../services/search.service");
+      const searchRes = await SearchService.searchProducts(req.query);
+      
+      productPage = {
+        items: searchRes.items,
+        total: searchRes.pagination.total,
+        page: searchRes.pagination.page,
+        limit: searchRes.pagination.limit,
+        totalPages: searchRes.pagination.total_pages
+      };
+      
+      const productIds = productPage.items.map((p) => p._id);
+      if (productIds.length > 0) {
+        reviewSummaries = await ReviewSummary.find({ productId: { $in: productIds } })
+            .select("productId averageRating reviewCount")
+            .lean();
+      }
+    } else {
+      const { filter, sort } = buildMongoFilterFromQuery(req.query, { storefrontOnly: true });
+      const listingProfile = String(req.query.fields || "").toLowerCase().trim() === "card" ? "card" : "full";
+
       const [total, items] = await Promise.all([
         Product.countDocuments(filter),
         queryListingProducts({ filter, sort, skip, limit, listingProfile }),
       ]);
       const totalPages = Math.max(1, Math.ceil(total / limit));
-      return { items, total, page, limit, totalPages };
-    })();
+      productPage = { items, total, page, limit, totalPages };
 
-    const categoriesTask = include.categories ? loadCategoriesMinimal() : Promise.resolve(null);
-    const brandsTask = include.brands ? loadBrandsMinimal() : Promise.resolve(null);
-
-    const [productPage, categories, brands] = await Promise.all([productsTask, categoriesTask, brandsTask]);
-
-    const productIds = productPage.items.map((p) => p._id);
-    const reviewSummaries =
-      productIds.length > 0
-        ? await ReviewSummary.find({ productId: { $in: productIds } })
+      const productIds = productPage.items.map((p) => p._id);
+      if (productIds.length > 0) {
+        reviewSummaries = await ReviewSummary.find({ productId: { $in: productIds } })
             .select("productId averageRating reviewCount")
-            .lean()
-        : [];
+            .lean();
+      }
+    }
+
+    const [categories, brands] = await Promise.all([categoriesTask, brandsTask]);
 
     return res.status(200).json({
       success: true,

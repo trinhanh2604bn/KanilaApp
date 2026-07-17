@@ -175,4 +175,22 @@ public class SearchRepository {
         });
         return call;
     }
+
+    // ─── Analytics ────────────────────────────────────────────────────────────
+
+    public void recordEvent(String type, String query, String sessionId) {
+        com.example.frontend.data.model.search.SearchEventRequest request =
+                new com.example.frontend.data.model.search.SearchEventRequest(type, query, sessionId, null);
+        searchApi.recordEvent(request).enqueue(new Callback<ApiResponse<Void>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Void>> call, Response<ApiResponse<Void>> response) {
+                // Silent fire and forget
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
+                // Silent fire and forget
+            }
+        });
+    }
 }

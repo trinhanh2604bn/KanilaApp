@@ -60,4 +60,11 @@ public interface SearchApi {
      */
     @GET("api/search/discovery")
     Call<ApiResponse<SearchResponse>> getDiscovery();
+
+    /**
+     * Record search event analytics.
+     * POST /api/search/event
+     */
+    @retrofit2.http.POST("api/search/event")
+    Call<ApiResponse<Void>> recordEvent(@retrofit2.http.Body com.example.frontend.data.model.search.SearchEventRequest request);
 }

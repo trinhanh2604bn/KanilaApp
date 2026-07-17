@@ -622,6 +622,7 @@ public class CheckoutFragment extends Fragment {
         if (tvValue != null) tvValue.setVisibility(View.GONE);
     }
 
+    @android.annotation.SuppressLint("MissingInflatedId")
     private void bindItems(java.util.List<CheckoutSessionDto.CheckoutItemDto> items) {
         if (items == null || layoutCheckoutItemsList == null) return;
         layoutCheckoutItemsList.removeAllViews();

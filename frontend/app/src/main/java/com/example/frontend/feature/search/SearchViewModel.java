@@ -89,11 +89,45 @@ public class SearchViewModel extends AndroidViewModel {
         return discoveryProducts;
     }
 
-    // ─── Search ───────────────────────────────────────────────────────────────
-
     public void searchProducts(String query) {
         resetPagination();
         this.currentQuery = query;
+        executeSearch();
+    }
+
+    public void submitVoiceSearch(String query) {
+        if (query == null || query.trim().isEmpty()) return;
+        String trimmed = query.trim();
+
+        // Cancel pending autocomplete debounce
+        if (suggestionRunnable != null) {
+            debounceHandler.removeCallbacks(suggestionRunnable);
+        }
+        // Cancel the active suggestion request
+        if (currentSuggestionCall != null && !currentSuggestionCall.isExecuted()) {
+            currentSuggestionCall.cancel();
+        }
+
+        // Save Search History once
+        String normalizedQuery = trimmed.toLowerCase();
+        java.util.concurrent.Executors.newSingleThreadExecutor().execute(() -> {
+            com.example.frontend.data.local.AppDatabase db = com.example.frontend.data.local.AppDatabase.getDatabase(getApplication());
+            com.example.frontend.data.local.SearchHistoryEntity existing = db.searchHistoryDao().getByNormalizedQuery(normalizedQuery);
+            if (existing != null) {
+                existing.timestamp = System.currentTimeMillis();
+                db.searchHistoryDao().update(existing);
+            } else {
+                db.searchHistoryDao().insert(
+                    new com.example.frontend.data.local.SearchHistoryEntity(trimmed, normalizedQuery, System.currentTimeMillis())
+                );
+            }
+        });
+
+        // Emit VOICE_SEARCH analytics
+        searchRepository.recordEvent("VOICE_SEARCH", trimmed, java.util.UUID.randomUUID().toString());
+
+        resetPagination();
+        this.currentQuery = trimmed;
         executeSearch();
     }
 

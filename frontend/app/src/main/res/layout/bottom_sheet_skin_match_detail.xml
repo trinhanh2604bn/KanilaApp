@@ -214,15 +214,20 @@
                     android:textColor="@color/accent_dark" />
             </LinearLayout>
 
-            <!-- Action Button -->
-            <com.google.android.material.button.MaterialButton
+            <!-- Action Link -->
+            <TextView
                 android:id="@+id/btnUpdateProfile"
-                style="@style/Widget.Kanila.Button.Ghost"
+                style="@style/Text.Kanila.Body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
                 android:text="Cập nhật hồ sơ để kết quả chính xác hơn"
-                android:textColor="@color/button" />
+                android:textColor="@color/button"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:textStyle="bold" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

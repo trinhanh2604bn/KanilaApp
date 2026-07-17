@@ -1,5 +1,6 @@
 package com.example.frontend.feature.product;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import ui.account.BeautyProfileActivity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,6 +78,20 @@ public class SkinMatchScoreFragment extends Fragment {
                 // TODO: Set adapter for reasons
                 rvReasons.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
             }
+        }
+
+        View btnEdit = view.findViewById(R.id.tvEditSkinProfile);
+        if (btnEdit != null) {
+            btnEdit.setOnClickListener(v -> {
+                startActivity(new Intent(requireContext(), BeautyProfileActivity.class));
+            });
+        }
+
+        View btnUpdate = view.findViewById(R.id.tvUpdateProfileLink);
+        if (btnUpdate != null) {
+            btnUpdate.setOnClickListener(v -> {
+                startActivity(new Intent(requireContext(), BeautyProfileActivity.class));
+            });
         }
     }
 }

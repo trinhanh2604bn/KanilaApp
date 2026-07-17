@@ -20,6 +20,7 @@ import com.example.frontend.data.model.product.SkinMatchDto;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import ui.account.BeautyProfileActivity;
 
 import java.util.List;
 import java.util.Locale;
@@ -276,7 +277,7 @@ public class SkinMatchDetailBottomSheet extends BottomSheetDialogFragment {
 
         view.findViewById(R.id.btnUpdateProfile).setOnClickListener(v -> {
             // Updated to use appropriate activity for skin profile update
-            startActivity(new Intent(requireContext(), ui.account.BeautyProfileActivity.class));
+            startActivity(new Intent(requireContext(), BeautyProfileActivity.class));
             dismiss();
         });
     }
@@ -315,7 +316,7 @@ public class SkinMatchDetailBottomSheet extends BottomSheetDialogFragment {
 
         // Navigate to Kanila Beauty profile when clicking on a reason
         itemView.setOnClickListener(v -> {
-            startActivity(new Intent(requireContext(), ui.account.BeautyProfileActivity.class));
+            startActivity(new Intent(requireContext(), BeautyProfileActivity.class));
             dismiss();
         });
 

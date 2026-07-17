@@ -12,6 +12,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.content.ActivityNotFoundException;
+import android.speech.RecognizerIntent;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -74,6 +78,11 @@ public class SearchActivity extends AppCompatActivity {
     private boolean isShowingResults = false;
     private boolean historyObserved = false;
 
+    // ─── Voice Search ─────────────────────────────────────────────────────────
+    private ActivityResultLauncher<Intent> voiceSearchLauncher;
+    private boolean isVoiceSearchActive = false;
+    private ImageButton btnExpandedSearchVoice;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +92,7 @@ public class SearchActivity extends AppCompatActivity {
         wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
         cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
 
+        setupVoiceSearchLauncher();
         initViews();
         setupSearchBar();
         setupHistory();
@@ -114,10 +124,86 @@ public class SearchActivity extends AppCompatActivity {
         scrollSearchContent   = findViewById(R.id.scrollSearchContent);
     }
 
+    private void setupVoiceSearchLauncher() {
+        voiceSearchLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                isVoiceSearchActive = false;
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    ArrayList<String> matches = result.getData().getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    if (matches != null && !matches.isEmpty()) {
+                        String spokenText = matches.get(0);
+                        if (spokenText != null && !spokenText.trim().isEmpty()) {
+                            edtExpandedSearchQuery.setText(spokenText);
+                            edtExpandedSearchQuery.setSelection(spokenText.length());
+                            hideKeyboard();
+                            
+                            // Hide discovery, show loading
+                            sectionSearchSuggestions.setVisibility(View.GONE);
+                            sectionSearchHistory.setVisibility(View.GONE);
+                            sectionRecommendProducts.setVisibility(View.GONE);
+                            
+                            viewModel.submitVoiceSearch(spokenText);
+                        } else {
+                            Toast.makeText(this, getString(R.string.voice_search_no_result), Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(this, getString(R.string.voice_search_no_result), Toast.LENGTH_SHORT).show();
+                    }
+                } else if (result.getResultCode() == RESULT_CANCELED) {
+                    // Do nothing
+                } else {
+                    Toast.makeText(this, getString(R.string.voice_search_error), Toast.LENGTH_SHORT).show();
+                }
+            }
+        );
+    }
+
     // ─── Search Bar ───────────────────────────────────────────────────────────
+
+    private void launchVoiceSearch() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.voice_search_prompt));
+        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
+        
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            try {
+                isVoiceSearchActive = true;
+                voiceSearchLauncher.launch(intent);
+            } catch (ActivityNotFoundException e) {
+                isVoiceSearchActive = false;
+                Toast.makeText(this, getString(R.string.voice_search_not_supported), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, getString(R.string.voice_search_not_supported), Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private void setupSearchBar() {
         btnExpandedSearchBack.setOnClickListener(v -> finish());
+
+        btnExpandedSearchVoice = findViewById(R.id.btnExpandedSearchVoice);
+        if (btnExpandedSearchVoice != null) {
+            btnExpandedSearchVoice.setOnClickListener(v -> {
+                if (isVoiceSearchActive) return;
+                
+                android.content.SharedPreferences prefs = getSharedPreferences("kanila_prefs", MODE_PRIVATE);
+                boolean hasSeenVoicePrompt = prefs.getBoolean("has_seen_voice_prompt", false);
+                
+                if (hasSeenVoicePrompt) {
+                    launchVoiceSearch();
+                } else {
+                    VoicePermissionBottomSheet bottomSheet = new VoicePermissionBottomSheet();
+                    bottomSheet.setOnAllowListener(() -> {
+                        prefs.edit().putBoolean("has_seen_voice_prompt", true).apply();
+                        launchVoiceSearch();
+                    });
+                    bottomSheet.show(getSupportFragmentManager(), "VoicePermission");
+                }
+            });
+        }
 
         // Submit on keyboard action
         edtExpandedSearchQuery.setOnEditorActionListener((v, actionId, event) -> {

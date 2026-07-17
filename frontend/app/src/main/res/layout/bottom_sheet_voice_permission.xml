@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_xl">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/spacing_xl"
+        android:background="@drawable/bg_drag_handle" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_mic"
+        app:tint="@color/button"
+        android:contentDescription="@null" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        style="@style/Text.Kanila.H2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_l"
+        android:gravity="center"
+        android:text="@string/voice_permission_title" />
+
+    <TextView
+        android:id="@+id/tvSubtitle"
+        style="@style/Text.Kanila.Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_m"
+        android:gravity="center"
+        android:text="@string/voice_permission_desc"
+        android:textColor="@color/text_secondary" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAllow"
+        style="@style/Widget.Kanila.Button.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_height"
+        android:layout_marginTop="32dp"
+        android:text="@string/voice_permission_allow" />
+
+    <TextView
+        android:id="@+id/btnDeny"
+        style="@style/Widget.Kanila.Button.Ghost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:padding="12dp"
+        android:text="@string/voice_permission_deny" />
+
+</LinearLayout>

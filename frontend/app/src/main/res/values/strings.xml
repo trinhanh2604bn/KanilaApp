@@ -17,6 +17,14 @@
     <string name="content_desc_camera_search">Tìm kiếm bằng hình ảnh</string>
     <string name="content_desc_voice_search">Tìm kiếm bằng giọng nói</string>
     <string name="content_desc_submit_search">Tìm kiếm</string>
+    <string name="voice_search_prompt">Bạn muốn tìm gì...</string>
+    <string name="voice_search_not_supported">Thiết bị của bạn không hỗ trợ tìm kiếm bằng giọng nói</string>
+    <string name="voice_search_no_result">Không nhận diện được giọng nói, vui lòng thử lại</string>
+    <string name="voice_search_error">Lỗi kết nối giọng nói, vui lòng thử lại</string>
+    <string name="voice_permission_title">Cho phép truy cập Micro</string>
+    <string name="voice_permission_desc">Kanila cần quyền ghi âm để giúp bạn tìm kiếm sản phẩm bằng giọng nói.</string>
+    <string name="voice_permission_allow">Cho phép</string>
+    <string name="voice_permission_deny">Lúc khác</string>
     <string name="category_face">Face</string>
     <string name="content_desc_category_icon">Biểu tượng danh mục</string>
     <string name="content_desc_category_product_image">Ảnh sản phẩm danh mục</string>

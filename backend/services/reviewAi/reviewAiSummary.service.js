@@ -2,7 +2,8 @@ const crypto = require("crypto");
 const ProductReviewAiSummary = require("../../models/productReviewAiSummary.model");
 const Review = require("../../models/review.model");
 const Product = require("../../models/product.model");
-const geminiProvider = require("./geminiReviewAi.provider");
+// Vertex AI provider — routes through shared vertexGemini.service using VERTEX_API_KEY + VERTEX_GEMINI_MODEL
+const { provider: vertexProvider } = require("./vertexReviewAi.provider");
 
 const ALGORITHM_VERSION = "review_summary_ai_v1";
 const PROMPT_VERSION = "review_summary_prompt_v1";
@@ -118,8 +119,8 @@ class ReviewAiSummaryService {
         return;
       }
 
-      // 4. Call Provider
-      const aiResult = await geminiProvider.generateSummary(product, reviews, { language: summary.language });
+      // 4. Call Vertex AI Provider
+      const aiResult = await vertexProvider.generateSummary(product, reviews, { language: summary.language });
 
       // 5. Update DB
       locked.short_summary = aiResult.short_summary;
@@ -142,6 +143,9 @@ class ReviewAiSummaryService {
       locked.last_error_code = null;
       locked.prompt_version = PROMPT_VERSION;
       locked.algorithm_version = ALGORITHM_VERSION;
+      // provider field kept as "gemini" per existing enum — transport is Vertex AI
+      // model_name records the actual VERTEX_GEMINI_MODEL used
+      locked.model_name = (process.env.VERTEX_GEMINI_MODEL || "").trim();
       
       await locked.save();
 

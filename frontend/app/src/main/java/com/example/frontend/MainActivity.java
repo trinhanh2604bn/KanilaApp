@@ -187,15 +187,30 @@ public class MainActivity extends AppCompatActivity {
         }
 
         View bottomNav = findViewById(R.id.layoutBottomNavigation);
-        if (bottomNav != null) {
+        if (bottomNav != null || ivChatbot != null) {
             if (!hasFragments) {
-                bottomNav.setVisibility(View.VISIBLE);
+                if (bottomNav != null) bottomNav.setVisibility(View.VISIBLE);
+                if (ivChatbot != null) ivChatbot.setVisibility(View.VISIBLE);
             } else {
                 Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
-                if (currentFragment instanceof com.example.frontend.feature.product.ProductDetailFragment) {
-                    bottomNav.setVisibility(View.GONE);
-                } else {
-                    bottomNav.setVisibility(View.VISIBLE);
+                
+                boolean isCheckoutFlow = currentFragment instanceof ui.commerce.CartFragment ||
+                        currentFragment instanceof ui.commerce.CheckoutFragment ||
+                        currentFragment instanceof ui.commerce.OrderSuccessFragment ||
+                        currentFragment instanceof ui.commerce.CheckoutAddressFragment ||
+                        currentFragment instanceof ui.commerce.CheckoutAddressAddFragment ||
+                        currentFragment instanceof ui.commerce.CheckoutShippingFragment ||
+                        currentFragment instanceof ui.commerce.PaymentMethodFragment;
+
+                boolean isProductDetail = currentFragment instanceof com.example.frontend.feature.product.ProductDetailFragment;
+
+                if (bottomNav != null) {
+                    // Hide bottom nav in both Checkout flow and Product Detail
+                    bottomNav.setVisibility((isCheckoutFlow || isProductDetail) ? View.GONE : View.VISIBLE);
+                }
+                if (ivChatbot != null) {
+                    // Hide chatbot ONLY in Checkout flow, keep visible in Product Detail
+                    ivChatbot.setVisibility(isCheckoutFlow ? View.GONE : View.VISIBLE);
                 }
             }
         }

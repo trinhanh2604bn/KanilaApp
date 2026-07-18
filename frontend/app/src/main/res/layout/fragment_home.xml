@@ -44,19 +44,15 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/button" />
 
-        <ImageButton
+        <include
             android:id="@+id/btnCart"
-            android:layout_width="32dp"
-            android:layout_height="36dp"
-            android:padding="8.5dp"
-            android:scaleType="centerInside"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_cart"
+            layout="@layout/layout_cart_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="6dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnWishlist"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/button" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/btnWishlist"

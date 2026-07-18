@@ -63,17 +63,12 @@
                 tools:ignore="TouchTargetSizeCheck"
                 app:tint="@color/button" />
 
-            <ImageButton
+            <include
                 android:id="@+id/btnCart"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_circle"
-                android:backgroundTint="#80F0F0F0"
-                android:contentDescription="@string/cart"
-                android:src="@drawable/ic_cart"
-                tools:ignore="TouchTargetSizeCheck"
-                app:tint="@color/button" />
+                layout="@layout/layout_cart_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp" />
 
         </LinearLayout>
 

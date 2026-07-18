@@ -60,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 vpHomeBanner;
     private View layoutSearchBar;
-    private ImageButton btnNotification, btnCart, btnWishlist;
+    private ImageButton btnNotification, btnWishlist;
+    private View btnCart;
     private RecyclerView rvHomeShortcuts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
@@ -130,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
         // Delay home data loading slightly to ensure UI is ready and prevent ANR
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             viewModel.loadHomeData();
+            cartViewModel.loadCart();
             checkAuthStatus();
         }, 500);
     }
@@ -264,7 +266,14 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        if (btnCart != null) btnCart.setOnClickListener(v -> navigateToCart());
+        if (btnCart != null) {
+            View cartIcon = btnCart.findViewById(R.id.btnCartIcon);
+            if (cartIcon != null) {
+                cartIcon.setOnClickListener(v -> navigateToCart());
+            } else {
+                btnCart.setOnClickListener(v -> navigateToCart());
+            }
+        }
 
         if (btnNotification != null) {
             btnNotification.setOnClickListener(v -> {
@@ -415,12 +424,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        cartViewModel.getTotalCartQuantity().observe(this, quantity -> {
+            // Already handled by CartBadgeHelper in ui/common, but if we have local logic:
+            android.util.Log.d("MainActivity", "Cart quantity updated: " + quantity);
+        });
+
+        ui.common.CartBadgeHelper.bindBadge(this, btnCart, cartViewModel);
+
         cartViewModel.getCartResult().observe(this, result -> {
             if (result == null) return;
-            if (result.status == NetworkResult.Status.SUCCESS) {
-                Toast.makeText(MainActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-            } else if (result.status == NetworkResult.Status.ERROR) {
-                Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+            if (result.status == NetworkResult.Status.ERROR) {
+                Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi đồng bộ giỏ hàng", Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -52,7 +52,9 @@
     <FrameLayout
         android:id="@+id/layoutTopBarRightAction"
         android:layout_width="@dimen/touch_target_min"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <ImageButton
             android:id="@+id/btnTopBarSearch"
@@ -66,6 +68,25 @@
             android:scaleType="centerInside"
             android:src="@drawable/ic_search"
             app:tint="@color/accent_dark" />
+
+        <TextView
+            android:id="@+id/tvCartBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_badge_dot"
+            android:gravity="center"
+            android:minWidth="16dp"
+            android:minHeight="16dp"
+            android:paddingHorizontal="4dp"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            android:fontFamily="@font/nunito_bold"
+            android:visibility="gone"
+            tools:text="1"
+            tools:visibility="visible" />
     </FrameLayout>
 
 </LinearLayout>

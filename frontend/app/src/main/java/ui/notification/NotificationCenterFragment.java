@@ -170,6 +170,10 @@ public class NotificationCenterFragment extends Fragment {
             btnCart.setOnClickListener(v -> {
                 FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CartFragment());
             });
+
+            // Bind Cart Badge
+            com.example.frontend.feature.cart.CartViewModel cartViewModel = new ViewModelProvider(requireActivity()).get(com.example.frontend.feature.cart.CartViewModel.class);
+            ui.common.CartBadgeHelper.bindBadge(getViewLifecycleOwner(), (View) btnCart.getParent(), cartViewModel);
         }
 
         for (TextView tab : filterTabs) {

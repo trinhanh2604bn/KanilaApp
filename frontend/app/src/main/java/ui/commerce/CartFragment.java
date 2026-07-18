@@ -67,8 +67,8 @@ public class CartFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(this).get(CartViewModel.class);
-        wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
+        wishlistViewModel = new ViewModelProvider(requireActivity()).get(WishlistViewModel.class);
 
         initViews(view);
         setupHeader(view);

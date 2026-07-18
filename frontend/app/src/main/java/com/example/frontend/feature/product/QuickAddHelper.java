@@ -20,20 +20,35 @@ public class QuickAddHelper {
         ProductRepository repo = new ProductRepository(context);
         repo.getProductDetail(product.getId()).observe(lifecycleOwner, result -> {
             if (result.status == NetworkResult.Status.SUCCESS && result.data != null) {
-                showVariantSelector(fragmentManager, result.data.getProduct(), result.data.getVariants(), cartViewModel);
+                showVariantSelector(context, lifecycleOwner, fragmentManager, result.data.getProduct(), result.data.getVariants(), cartViewModel);
             } else if (result.status == NetworkResult.Status.ERROR) {
                 Toast.makeText(context, "Không thể tải thông tin phân loại", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private static void showVariantSelector(FragmentManager fragmentManager, Product product, 
+    private static void showVariantSelector(Context context, LifecycleOwner lifecycleOwner, FragmentManager fragmentManager, Product product,
                                           List<ProductVariantDto> variants, CartViewModel cartViewModel) {
         VariantSelectorBottomSheet bottomSheet = VariantSelectorBottomSheet.newInstance(
             product, variants, VariantSelectorBottomSheet.ActionMode.ADD_TO_CART);
         
         bottomSheet.setListener((variant, mode, quantity) -> {
             String variantId = variant != null ? variant.getId() : null;
+            
+            // Observe result once to show success toast
+            cartViewModel.getCartResult().observe(lifecycleOwner, new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
+                @Override
+                public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
+                    if (result == null) return;
+                    if (result.status == NetworkResult.Status.SUCCESS) {
+                        Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                        cartViewModel.getCartResult().removeObserver(this);
+                    } else if (result.status == NetworkResult.Status.ERROR) {
+                        cartViewModel.getCartResult().removeObserver(this);
+                    }
+                }
+            });
+
             cartViewModel.addToCart(new AddToCartRequest(product.getId(), variantId, quantity));
         });
         bottomSheet.show(fragmentManager, "VariantSelector");

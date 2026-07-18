@@ -8,6 +8,10 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+
+@RunWith(RobolectricTestRunner.class)
 public class LipPathBuilderTest {
 
     @Test

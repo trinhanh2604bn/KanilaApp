@@ -30,6 +30,10 @@ public class LipOverlayView extends View {
     }
 
     private void init() {
+        // Hardware acceleration ignores BlurMaskFilter on some devices/OS versions,
+        // so we need to set the layer type to software for the mask filter to work.
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+
         lipPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         lipPaint.setStyle(Paint.Style.FILL);
         

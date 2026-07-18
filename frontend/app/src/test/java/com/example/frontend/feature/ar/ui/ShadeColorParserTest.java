@@ -4,6 +4,10 @@ import android.graphics.Color;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+
+@RunWith(RobolectricTestRunner.class)
 public class ShadeColorParserTest {
 
     private static final int FALLBACK = Color.RED;

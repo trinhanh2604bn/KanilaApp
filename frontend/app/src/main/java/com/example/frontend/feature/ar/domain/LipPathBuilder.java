@@ -12,17 +12,25 @@ public class LipPathBuilder {
         }
 
         path.reset();
-        path.setFillType(Path.FillType.EVEN_ODD); // Important: creates a hole for the inner mouth
+        
+        Path outerPath = new Path();
+        buildPathFromIndices(outerPath, mappedPoints, LipGeometry.OUTER_UPPER_LIP, true);
+        buildPathFromIndices(outerPath, mappedPoints, LipGeometry.OUTER_LOWER_LIP, false);
+        outerPath.close();
 
-        // Outer Lip Path (Clockwise)
-        buildPathFromIndices(path, mappedPoints, LipGeometry.OUTER_UPPER_LIP, true);
-        buildPathFromIndices(path, mappedPoints, LipGeometry.OUTER_LOWER_LIP, false);
-        path.close();
+        Path innerPath = new Path();
+        buildPathFromIndices(innerPath, mappedPoints, LipGeometry.INNER_UPPER_LIP, true);
+        buildPathFromIndices(innerPath, mappedPoints, LipGeometry.INNER_LOWER_LIP, false);
+        innerPath.close();
 
-        // Inner Lip Path (Counter-Clockwise to create hole with EVEN_ODD)
-        buildPathFromIndices(path, mappedPoints, LipGeometry.INNER_UPPER_LIP, true);
-        buildPathFromIndices(path, mappedPoints, LipGeometry.INNER_LOWER_LIP, false);
-        path.close();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            path.op(outerPath, innerPath, Path.Op.DIFFERENCE);
+        } else {
+            // Fallback for very old devices
+            path.addPath(outerPath);
+            path.addPath(innerPath);
+            path.setFillType(Path.FillType.EVEN_ODD);
+        }
 
         return path;
     }

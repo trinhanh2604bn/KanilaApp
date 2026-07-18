@@ -25,7 +25,9 @@ import com.example.frontend.feature.ar.domain.FaceLandmarkProvider;
 import com.example.frontend.feature.ar.domain.FaceLandmarkResult;
 import com.example.frontend.feature.ar.domain.LandmarkCoordinateMapper;
 import com.example.frontend.feature.ar.domain.LandmarkPoint;
-import com.example.frontend.feature.ar.domain.LandmarkSmoother;
+import com.example.frontend.feature.ar.domain.OneEuroLipSmoother;
+import com.example.frontend.feature.ar.domain.LipLightingEstimator;
+import com.example.frontend.feature.ar.domain.LipRenderProfile;
 import com.example.frontend.feature.ar.domain.LipPathBuilder;
 import com.example.frontend.feature.ar.domain.MlKitFaceMeshProvider;
 import com.google.android.material.button.MaterialButton;
@@ -51,10 +53,11 @@ public class ArTryOnActivity extends AppCompatActivity implements FaceLandmarkPr
 
     private ArCameraController cameraController;
     private FaceLandmarkProvider landmarkProvider;
-    private LandmarkSmoother smoother;
+    private OneEuroLipSmoother smoother;
     private LipPathBuilder lipPathBuilder;
     private LipColorRenderer colorRenderer;
     private LandmarkCoordinateMapper mapper;
+    private LipLightingEstimator lightingEstimator;
 
     private Paint currentLipPaint;
     private ArTryOnViewModel viewModel;
@@ -75,9 +78,10 @@ public class ArTryOnActivity extends AppCompatActivity implements FaceLandmarkPr
         rvShades = findViewById(R.id.rvShades);
         btnAddToCart = findViewById(R.id.btnAddToCart);
 
-        smoother = new LandmarkSmoother(0.5f);
+        smoother = new OneEuroLipSmoother(1.0f, 0.007f, 1.0f);
         lipPathBuilder = new LipPathBuilder();
         colorRenderer = new LipColorRenderer();
+        lightingEstimator = new LipLightingEstimator();
 
         // Default empty paint so it doesn't crash before loading
         currentLipPaint = new Paint();
@@ -123,7 +127,13 @@ public class ArTryOnActivity extends AppCompatActivity implements FaceLandmarkPr
             // Update paint
             LipColorRenderer.FinishType finishType = LipColorRenderer.FinishType.fromString(shade.getFinishType());
             float opacity = shade.getOpacity() != null ? shade.getOpacity() : 0.6f;
-            currentLipPaint = colorRenderer.getLipPaint(shade.getShadeHex(), finishType, opacity);
+            LipRenderProfile profile = LipRenderProfile.getDefaultProfile(shade.getFinishType());
+            
+            // Adjust opacity and profile based on lighting
+            LipLightingEstimator.LipLightingState lightingState = lightingEstimator.getCurrentState();
+            float adjustedOpacity = opacity * lightingState.exposureFactor;
+            
+            currentLipPaint = colorRenderer.getLipPaint(shade.getShadeHex(), finishType, adjustedOpacity, profile);
             lipOverlayView.invalidate(); // Force redraw without restarting camera
             
             // Update UI
@@ -195,7 +205,18 @@ public class ArTryOnActivity extends AppCompatActivity implements FaceLandmarkPr
         Path path = new Path();
         lipPathBuilder.buildLipPath(path, mappedPoints);
 
-        runOnUiThread(() -> lipOverlayView.setLipPath(path, currentLipPaint, mappedPoints));
+        // Periodically estimate lighting using preview bitmap
+        runOnUiThread(() -> {
+            if (lightingEstimator.shouldEstimate()) {
+                android.graphics.Bitmap bitmap = previewView.getBitmap();
+                if (bitmap != null) {
+                    lightingEstimator.estimate(bitmap, mappedPoints);
+                    // If lighting changed significantly, we should ideally trigger a paint update.
+                    // For now, it will apply on next shade change or we can force update here if needed.
+                }
+            }
+            lipOverlayView.setLipPath(path, currentLipPaint, mappedPoints);
+        });
     }
 
     @Override

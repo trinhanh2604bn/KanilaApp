@@ -20,18 +20,29 @@ public class LipColorRenderer {
         }
     }
 
-    public Paint getLipPaint(String hexColor, FinishType finish, float opacity) {
+    public Paint getLipPaint(String hexColor, FinishType finish, float baseOpacity, com.example.frontend.feature.ar.domain.LipRenderProfile profile) {
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         int color = ShadeColorParser.parseOrFallback(hexColor);
         
         int r = Color.red(color);
         int g = Color.green(color);
         int b = Color.blue(color);
-        int a = (int) (255 * Math.max(0, Math.min(1, opacity)));
+        
+        // Final opacity combines baseOpacity and profile coverage
+        float finalOpacity = baseOpacity * profile.coverage;
+        int a = (int) (255 * Math.max(0, Math.min(1, finalOpacity)));
         
         paint.setColor(Color.argb(a, r, g, b));
         paint.setStyle(Paint.Style.FILL);
         
+        // Apply edge feathering using BlurMaskFilter
+        if (profile.edgeFeather > 0) {
+            // Assume lips are roughly 20-50 pixels wide. edgeFeather is a ratio.
+            // Let's use a fixed radius scaled by the ratio for now.
+            float blurRadius = Math.max(1f, profile.edgeFeather * 20f); 
+            paint.setMaskFilter(new android.graphics.BlurMaskFilter(blurRadius, android.graphics.BlurMaskFilter.Blur.NORMAL));
+        }
+
         if (finish == null) finish = FinishType.MATTE;
         
         switch (finish) {

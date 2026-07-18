@@ -819,6 +819,18 @@ public class ProductDetailFragment extends Fragment {
         bottomSheet.setListener((variant, selectedMode, selectedQuantity) -> {
             String variantId = variant != null ? variant.getId() : null;
             if (selectedMode == VariantSelectorBottomSheet.ActionMode.BUY_NOW) {
+                // Kiểm tra đăng nhập khi nhấn Mua ngay
+                if (!com.example.frontend.data.remote.TokenManager.getInstance(getContext()).isLoggedIn()) {
+                    com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.START_CHECKOUT,
+                            "ProductDetail",
+                            0,
+                            null
+                    );
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
+                    return;
+                }
+
                 // Mock "Buy Now" by constructing CartItemDto locally and navigating to Checkout
                 Product product = state.product;
                 if (product != null) {

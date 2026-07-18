@@ -631,8 +631,20 @@ public class CartFragment extends Fragment {
 
         if (btnContinueCheckout != null) {
             btnContinueCheckout.setOnClickListener(v -> {
-                boolean hasSelection = false;
+                // 1. Kiểm tra đăng nhập
+                if (!com.example.frontend.data.remote.TokenManager.getInstance(getContext()).isLoggedIn()) {
+                    com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.START_CHECKOUT,
+                            "Cart",
+                            0,
+                            null
+                    );
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
+                    return;
+                }
 
+                // 2. Kiểm tra xem có chọn sản phẩm nào không
+                boolean hasSelection = false;
                 if (adapter != null && adapter.getItems() != null) {
                     for (CartItemDto item : adapter.getItems()) {
                         if (item != null && item.isSelected()) {
@@ -647,6 +659,7 @@ public class CartFragment extends Fragment {
                     return;
                 }
 
+                // 3. Tiến hành chuyển sang trang Checkout
                 if (getActivity() != null) {
                     List<CartItemDto> selectedItems = new java.util.ArrayList<>();
                     if (adapter != null && adapter.getItems() != null) {

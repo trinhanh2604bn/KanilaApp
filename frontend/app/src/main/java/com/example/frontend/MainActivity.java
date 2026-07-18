@@ -174,6 +174,11 @@ public class MainActivity extends AppCompatActivity {
         int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
         boolean hasFragments = backStackCount > 0;
 
+        View homeHeader = findViewById(R.id.layoutHomeSearchHeader);
+        if (homeHeader != null) {
+            homeHeader.setVisibility(hasFragments ? View.GONE : View.VISIBLE);
+        }
+
         if (layoutHomeScroll != null) {
             layoutHomeScroll.setVisibility(hasFragments ? View.GONE : View.VISIBLE);
         }

@@ -30,12 +30,14 @@ const PRODUCT_LISTING_FIELDS = [
   "coverage_type",
   "sales_count",
   "is_best_seller",
+  "hasAr",
 ].join(" ");
 
 /**
  * Lighter card/grid payload — omits extended facet fields the catalog derives from facet tables.
  * Opt-in: `GET /api/products?page=…&fields=card` (default remains full projection).
  */
+
 const PRODUCT_LISTING_FIELDS_CARD = [
   "productName",
   "productCode",
@@ -53,6 +55,7 @@ const PRODUCT_LISTING_FIELDS_CARD = [
   "productStatus",
   "shades",
   "skin_types_supported",
+  "hasAr",
 ].join(" ");
 
 const MAX_PAGE_SIZE = 100;
@@ -282,6 +285,10 @@ if (concerns.length > 0) {
     if (shadeHexes.length > 0) {
       filter["shades.hex"] = { $in: shadeHexes };
     }
+  }
+
+  if (query.hasAr === "true" || query.hasAr === "1") {
+    filter.hasAr = true;
   }
 
   if (query.sensitiveOnly === "true" || query.sensitiveOnly === "1") {

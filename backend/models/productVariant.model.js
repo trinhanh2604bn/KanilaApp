@@ -40,6 +40,15 @@ const productVariantSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    ar_config: {
+      enabled: { type: Boolean, default: false },
+      type: { type: String, enum: ["LIP"], default: "LIP" },
+      shade_hex: { type: String },
+      finish_type: { type: String, enum: ["MATTE", "SATIN", "GLOSS", "TINT"] },
+      opacity: { type: Number, min: 0, max: 1, default: 1 },
+      renderer_version: { type: String, default: "lip_v1" },
+      calibration_status: { type: String, enum: ["DRAFT", "VERIFIED", "DISABLED"], default: "DRAFT" },
+    },
   },
   { timestamps: true, collection: "product_variants" }
 );

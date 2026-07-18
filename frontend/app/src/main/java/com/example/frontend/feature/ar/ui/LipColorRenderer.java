@@ -8,12 +8,21 @@ import android.graphics.PorterDuffXfermode;
 public class LipColorRenderer {
 
     public enum FinishType {
-        MATTE, SATIN, GLOSS, TINT
+        MATTE, SATIN, GLOSS, TINT;
+
+        public static FinishType fromString(String finish) {
+            if (finish == null) return MATTE;
+            try {
+                return valueOf(finish.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return MATTE; // Fallback
+            }
+        }
     }
 
     public Paint getLipPaint(String hexColor, FinishType finish, float opacity) {
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        int color = Color.parseColor(hexColor);
+        int color = ShadeColorParser.parseOrFallback(hexColor);
         
         int r = Color.red(color);
         int g = Color.green(color);
@@ -23,9 +32,8 @@ public class LipColorRenderer {
         paint.setColor(Color.argb(a, r, g, b));
         paint.setStyle(Paint.Style.FILL);
         
-        // Simple blend mode for MVP
-        // In a more advanced implementation, OpenGL shaders would handle finish types (matte, gloss, etc.)
-        // For Android Canvas MVP, we use xfermode to blend with camera preview.
+        if (finish == null) finish = FinishType.MATTE;
+        
         switch (finish) {
             case GLOSS:
                 paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SCREEN));
@@ -36,7 +44,6 @@ public class LipColorRenderer {
             case MATTE:
             case SATIN:
             default:
-                // Use default overlay mode or SRC_OVER which keeps base texture somewhat visible with opacity
                 paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER));
                 break;
         }

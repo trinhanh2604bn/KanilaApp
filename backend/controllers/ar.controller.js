@@ -23,34 +23,89 @@ exports.getArConfig = async (req, res) => {
 
         if (variants.length === 0) {
             return res.status(200).json({
-                status: "NOT_SUPPORTED",
-                product_id: productId,
-                variants: []
+                success: true,
+                data: {
+                    status: "NOT_SUPPORTED",
+                    product_id: productId,
+                    variants: []
+                }
             });
         }
 
-        const formattedVariants = variants.map(v => ({
-            variant_id: v._id,
-            sku: v.sku,
-            variant_name: v.variantName,
-            shade_hex: v.ar_config.shade_hex,
-            finish_type: v.ar_config.finish_type,
-            opacity: v.ar_config.opacity,
-            // Mock pricing and inventory logic for this POC controller 
-            // since we don't know the exact services used in Kanila
-            price: v.costAmount > 0 ? v.costAmount : 299000, 
-            currency_code: "VND",
-            in_stock: true, 
-            thumbnail_url: "" 
-        }));
+        // Hardcoded 5 colors for testing AR Try-On as requested
+        const formattedVariants = [
+            {
+                variant_id: "AR-TEST-01",
+                sku: "AR-TEST-01",
+                variant_name: "Màu 1",
+                shade_hex: "#FF99CC",
+                finish_type: "MATTE",
+                opacity: 0.62,
+                price: 239000,
+                currency_code: "VND",
+                in_stock: true,
+                thumbnail_url: ""
+            },
+            {
+                variant_id: "AR-TEST-02",
+                sku: "AR-TEST-02",
+                variant_name: "Màu 2",
+                shade_hex: "#FFF0F5",
+                finish_type: "SATIN",
+                opacity: 0.60,
+                price: 249000,
+                currency_code: "VND",
+                in_stock: true,
+                thumbnail_url: ""
+            },
+            {
+                variant_id: "AR-TEST-03",
+                sku: "AR-TEST-03",
+                variant_name: "Màu 3",
+                shade_hex: "#CD9B9B",
+                finish_type: "MATTE",
+                opacity: 0.58,
+                price: 259000,
+                currency_code: "VND",
+                in_stock: true,
+                thumbnail_url: ""
+            },
+            {
+                variant_id: "AR-TEST-04",
+                sku: "AR-TEST-04",
+                variant_name: "Màu 4",
+                shade_hex: "#CD5C5C",
+                finish_type: "TINT",
+                opacity: 0.50,
+                price: 239000,
+                currency_code: "VND",
+                in_stock: true,
+                thumbnail_url: ""
+            },
+            {
+                variant_id: "AR-TEST-05",
+                sku: "AR-TEST-05",
+                variant_name: "Màu 5",
+                shade_hex: "#EE6363",
+                finish_type: "SATIN",
+                opacity: 0.55,
+                price: 249000,
+                currency_code: "VND",
+                in_stock: true,
+                thumbnail_url: ""
+            }
+        ];
 
         res.status(200).json({
-            status: "READY",
-            product_id: productId,
-            ar_type: "LIP",
-            renderer_version: "lip_v1",
-            disclaimer: "Màu thực tế có thể thay đổi tùy ánh sáng, camera, màu môi tự nhiên và màn hình.",
-            variants: formattedVariants
+            success: true,
+            data: {
+                status: "READY",
+                product_id: productId,
+                ar_type: "LIP",
+                renderer_version: "lip_v1",
+                disclaimer: "Màu thực tế có thể thay đổi tùy ánh sáng, camera, màu môi tự nhiên và màn hình.",
+                variants: formattedVariants
+            }
         });
 
     } catch (error) {

@@ -286,7 +286,9 @@ public class ProductListingFragment extends Fragment {
             }
 
         } else if (TYPE_COLLECTION.equals(listingType)) {
-            if (collectionType != null && !collectionType.trim().isEmpty()) {
+            if ("ar_try_on".equals(collectionType)) {
+                query.put("hasAr", "true");
+            } else if (collectionType != null && !collectionType.trim().isEmpty()) {
                 query.put("collection", collectionType);
             }
         }

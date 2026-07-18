@@ -55,8 +55,17 @@ dependencies {
     implementation(libs.glide)
 
     testImplementation(libs.junit)
+    testImplementation("org.robolectric:robolectric:4.11.1")
+    testImplementation("org.mockito:mockito-core:4.11.0")
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
+    
+    implementation(libs.camerax.core)
+    implementation(libs.camerax.camera2)
+    implementation(libs.camerax.lifecycle)
+    implementation(libs.camerax.view)
+    implementation(libs.mlkit.facemesh)
+    implementation(libs.concurrent.futures)
     
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")

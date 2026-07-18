@@ -1,0 +1,111 @@
+const ProductVariant = require('../models/productVariant.model');
+const Product = require('../models/product.model');
+const ArTryOnEvent = require('../models/arTryOnEvent.model');
+
+exports.getArConfig = async (req, res) => {
+    try {
+        const { productId } = req.params;
+
+        if (!productId || !productId.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({ status: "ERROR", error: "Invalid product ID" });
+        }
+
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ status: "ERROR", error: "Product not found" });
+        }
+
+        const variants = await ProductVariant.find({ 
+            productId: productId, 
+            variantStatus: "active",
+            "ar_config.enabled": true
+        });
+
+        if (variants.length === 0) {
+            return res.status(200).json({
+                status: "NOT_SUPPORTED",
+                product_id: productId,
+                variants: []
+            });
+        }
+
+        const formattedVariants = variants.map(v => ({
+            variant_id: v._id,
+            sku: v.sku,
+            variant_name: v.variantName,
+            shade_hex: v.ar_config.shade_hex,
+            finish_type: v.ar_config.finish_type,
+            opacity: v.ar_config.opacity,
+            // Mock pricing and inventory logic for this POC controller 
+            // since we don't know the exact services used in Kanila
+            price: v.costAmount > 0 ? v.costAmount : 299000, 
+            currency_code: "VND",
+            in_stock: true, 
+            thumbnail_url: "" 
+        }));
+
+        res.status(200).json({
+            status: "READY",
+            product_id: productId,
+            ar_type: "LIP",
+            renderer_version: "lip_v1",
+            disclaimer: "Màu thực tế có thể thay đổi tùy ánh sáng, camera, màu môi tự nhiên và màn hình.",
+            variants: formattedVariants
+        });
+
+    } catch (error) {
+        console.error("Error in getArConfig:", error);
+        res.status(500).json({ status: "ERROR", error: "Internal server error" });
+    }
+};
+
+exports.postBatchEvents = async (req, res) => {
+    try {
+        const { session_uuid, product_id, events } = req.body;
+
+        if (!session_uuid || !product_id || !Array.isArray(events)) {
+            return res.status(400).json({ error: "Invalid request payload" });
+        }
+
+        if (events.length > 50) {
+            return res.status(400).json({ error: "Batch too large, max 50 events allowed" });
+        }
+
+        let accepted_count = 0;
+        let rejected_count = 0;
+
+        for (const evt of events) {
+            try {
+                // Strip NoSQL operators (simple check)
+                if (evt.metadata) {
+                    const metaStr = JSON.stringify(evt.metadata);
+                    if (metaStr.includes('"$')) {
+                        throw new Error("Invalid metadata keys");
+                    }
+                }
+
+                await ArTryOnEvent.create({
+                    session_uuid,
+                    product_id,
+                    customer_id: req.user ? req.user._id : null,
+                    event_type: evt.event_type,
+                    variant_id: evt.variant_id,
+                    occurred_at: evt.occurred_at,
+                    metadata: evt.metadata
+                });
+                accepted_count++;
+            } catch (err) {
+                rejected_count++;
+            }
+        }
+
+        res.status(200).json({
+            accepted_count,
+            rejected_count
+        });
+
+    } catch (error) {
+        console.error("Error in postBatchEvents:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};

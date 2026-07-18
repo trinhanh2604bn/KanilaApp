@@ -119,6 +119,7 @@ public class HomeFragment extends Fragment {
                         public void onResponse(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, retrofit2.Response<com.example.frontend.data.remote.ApiResponse<Object>> response) {
                             if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
                                 tm.clearToken();
+                                if (cartViewModel != null) cartViewModel.loadCart();
                                 if (isAdded()) Toast.makeText(requireContext(), "Phiên đăng nhập hết hạn", Toast.LENGTH_SHORT).show();
                             }
                         }

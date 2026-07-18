@@ -148,7 +148,9 @@ public class MainActivity extends AppCompatActivity {
                         public void onResponse(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, retrofit2.Response<com.example.frontend.data.remote.ApiResponse<Object>> response) {
                             if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
                                 tm.clearToken();
-                                Toast.makeText(MainActivity.this, "Phien dang nhap het han", Toast.LENGTH_SHORT).show();
+                                // Refresh cart to update badge count if session expired
+                                cartViewModel.loadCart();
+                                Toast.makeText(MainActivity.this, "Phiên đăng nhập hết hạn", Toast.LENGTH_SHORT).show();
                             }
                         }
 

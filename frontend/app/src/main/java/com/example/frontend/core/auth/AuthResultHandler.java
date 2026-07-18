@@ -41,12 +41,22 @@ public class AuthResultHandler {
         CartRepository cartRepository = new CartRepository(activity);
         MutableLiveData<NetworkResult<CartDto>> result = new MutableLiveData<>();
         cartRepository.mergeGuestCart(result);
-        // We don't necessarily need to observe it here, but we could for showing a toast
+
+        // Get the shared CartViewModel from activity to trigger UI updates
+        com.example.frontend.feature.cart.CartViewModel cartViewModel =
+                new androidx.lifecycle.ViewModelProvider(activity).get(com.example.frontend.feature.cart.CartViewModel.class);
+
         result.observe(activity, networkResult -> {
             if (networkResult.status == NetworkResult.Status.SUCCESS) {
                 Toast.makeText(activity, "Giỏ hàng của bạn đã được đồng bộ", Toast.LENGTH_SHORT).show();
                 // Clear guest session after successful merge
                 com.example.frontend.data.remote.TokenManager.getInstance(activity).clearGuestSession();
+
+                // Refresh cart to update badge count immediately
+                cartViewModel.loadCart();
+            } else if (networkResult.status == NetworkResult.Status.ERROR) {
+                // If merge fails (e.g. no guest cart), still reload to show account cart
+                cartViewModel.loadCart();
             }
         });
     }

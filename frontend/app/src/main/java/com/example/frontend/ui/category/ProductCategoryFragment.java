@@ -56,6 +56,10 @@ public class ProductCategoryFragment extends Fragment {
     private CartViewModel cartViewModel;
     private RecyclerView rvFlashSaleProducts;
     private FlashSaleProductAdapter flashSaleAdapter;
+    private TextView tvFlashHour, tvFlashMinute, tvFlashSecond;
+    private final Handler countdownHandler = new Handler(Looper.getMainLooper());
+    private Runnable countdownRunnable;
+    private long remainingTimeMillis = 46 * 60 * 1000 + 52 * 1000; // Mock 00:46:52
 
     private final Map<String, Integer> categoryCardMap = new HashMap<String, Integer>() {{
         put("FACE", R.id.cardCategoryFace);
@@ -106,6 +110,7 @@ public class ProductCategoryFragment extends Fragment {
         setupSpecialCollectionCards(view);
         loadFeaturedBrands(view);
         setupFlashSaleProducts(view);
+        setupFlashSaleCountdown(view);
         loadFlashSaleProducts();
 
         TextView tvSeeAllBrands = view.findViewById(R.id.tvSeeAllBrands);
@@ -244,7 +249,8 @@ public class ProductCategoryFragment extends Fragment {
         });
 
         // AR and New/Hot if not in root categories
-        setupCategoryCard(root.findViewById(R.id.cardCategoryAR), R.string.category_ar, R.drawable.ic_ar, R.drawable.img_ar, null);
+        setupCategoryCard(root.findViewById(R.id.cardCategoryAR), R.string.category_ar, R.drawable.ic_ar, R.drawable.img_ar, 
+            ProductListingFragment.newCollectionInstance("ar_try_on", "Sản phẩm hỗ trợ AR"));
     }
 
     private void bindRootCategoryCards(View root, List<CategoryDto> categories) {
@@ -461,6 +467,36 @@ public class ProductCategoryFragment extends Fragment {
         rvFlashSaleProducts.setAdapter(flashSaleAdapter);
     }
 
+    private void setupFlashSaleCountdown(View root) {
+        tvFlashHour = root.findViewById(R.id.tvFlashHour);
+        tvFlashMinute = root.findViewById(R.id.tvFlashMinute);
+        tvFlashSecond = root.findViewById(R.id.tvFlashSecond);
+
+        if (tvFlashHour == null || tvFlashMinute == null || tvFlashSecond == null) return;
+
+        countdownRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (remainingTimeMillis > 0) {
+                    remainingTimeMillis -= 1000;
+                    updateCountdownUI();
+                    countdownHandler.postDelayed(this, 1000);
+                }
+            }
+        };
+        countdownHandler.post(countdownRunnable);
+    }
+
+    private void updateCountdownUI() {
+        long hours = (remainingTimeMillis / (1000 * 60 * 60)) % 24;
+        long minutes = (remainingTimeMillis / (1000 * 60)) % 60;
+        long seconds = (remainingTimeMillis / 1000) % 60;
+
+        if (tvFlashHour != null) tvFlashHour.setText(String.format("%02d", hours));
+        if (tvFlashMinute != null) tvFlashMinute.setText(String.format("%02d", minutes));
+        if (tvFlashSecond != null) tvFlashSecond.setText(String.format("%02d", seconds));
+    }
+
     private void loadFlashSaleProducts() {
         Map<String, String> query = new HashMap<>();
         query.put("page", "1");
@@ -526,5 +562,6 @@ public class ProductCategoryFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         autoSlideHandler.removeCallbacks(autoSlideRunnable);
+        countdownHandler.removeCallbacks(countdownRunnable);
     }
 }

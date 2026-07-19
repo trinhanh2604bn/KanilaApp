@@ -159,14 +159,15 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
                 android:id="@+id/layoutColorOptions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_marginTop="6dp"
                 android:paddingHorizontal="@dimen/spacing_l"
                 android:visibility="gone"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="4dp"
                 tools:visibility="visible" />
 
             <!-- Section: Dung tích / Options -->
@@ -183,14 +184,15 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
                 android:id="@+id/layoutSizeOptions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_marginTop="6dp"
                 android:paddingHorizontal="@dimen/spacing_l"
                 android:visibility="gone"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="4dp"
                 tools:visibility="visible" />
 
             <com.google.android.material.divider.MaterialDivider

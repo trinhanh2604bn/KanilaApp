@@ -19,20 +19,22 @@
 
         <ImageView
             android:id="@+id/ivReviewAvatar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="43dp"
+            android:layout_height="44dp"
             android:src="@drawable/bg_avatar_circle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvReviewUserName"
-            style="@style/Text.Kanila.H3"
+            style="@style/Text.Kanila.BodyMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/ivReviewAvatar"
             app:layout_constraintStart_toEndOf="@id/ivReviewAvatar"
             app:layout_constraintTop_toTopOf="@id/ivReviewAvatar"
+            app:layout_constraintVertical_bias="0.0"
             tools:text="Kim Trân" />
 
         <TextView
@@ -76,18 +78,19 @@
 
         <TextView
             android:id="@+id/tvReviewContent"
-            style="@style/Text.Kanila.Body"
+            style="@style/Text.Kanila.Caption1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@id/ivReviewAvatar"
+            tools:layout_editor_absoluteX="16dp"
             tools:text="Màu son lên chuẩn, chất son nhẹ môi, bám khá tốt và giúp gương mặt trông tươi tắn." />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvReviewMedia"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginTop="12dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@id/tvReviewContent" />
@@ -96,14 +99,14 @@
             android:id="@+id/layoutReviewActions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@id/rvReviewMedia">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/btnHelpful"
-                style="@style/Text.Kanila.Caption"
+                style="@style/Text.Kanila.Micro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
@@ -117,7 +120,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/btnReply"
-                style="@style/Text.Kanila.Caption"
+                style="@style/Text.Kanila.Micro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"

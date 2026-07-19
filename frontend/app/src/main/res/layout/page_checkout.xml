@@ -77,8 +77,8 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <include layout="@layout/item_cart_selected" />
-                        <!-- More items can be added dynamically -->
+                        <!-- Items are added dynamically in CheckoutFragment.bindItems using item_cart layout -->
+
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

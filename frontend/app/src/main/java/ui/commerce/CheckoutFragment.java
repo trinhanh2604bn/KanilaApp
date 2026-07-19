@@ -485,13 +485,13 @@ public class CheckoutFragment extends Fragment {
         // 6. Summary
         TextView tvSubtotalLabel = getView().findViewById(R.id.tvCheckoutPriceSubtotalLabel);
         if (tvSubtotalLabel != null && session.getItems() != null) {
-            int selectedCount = 0;
+            int totalQuantity = 0;
             for (CheckoutSessionDto.CheckoutItemDto item : session.getItems()) {
                 if (item.isSelected()) {
-                    selectedCount++;
+                    totalQuantity += item.getQuantity();
                 }
             }
-            tvSubtotalLabel.setText("Tạm tính (" + selectedCount + " sản phẩm)");
+            tvSubtotalLabel.setText("Tạm tính (" + totalQuantity + " sản phẩm)");
         }
 
         tvSubtotal.setText(formatPrice(safeDouble(session.getSubtotalAmount())));
@@ -641,31 +641,30 @@ public class CheckoutFragment extends Fragment {
             // Only show selected items
             if (!item.isSelected()) continue;
 
-            View itemView = getLayoutInflater().inflate(R.layout.item_cart_selected, layoutCheckoutItemsList, false);
-            TextView tvName = itemView.findViewById(R.id.tvSelectedCartProductName);
+            View itemView = getLayoutInflater().inflate(R.layout.item_cart, layoutCheckoutItemsList, false);
             
-            View layoutVariant = itemView.findViewById(R.id.item_variant_selection);
-            TextView tvVariantDisplay = null;
-            if (layoutVariant != null) {
-                tvVariantDisplay = layoutVariant.findViewById(R.id.tvVariantName);
-            } else {
-                // Fallback to original ID if include was not added/rolled back
-                layoutVariant = itemView.findViewById(R.id.tvSelectedCartVariant);
-                if (layoutVariant instanceof TextView) {
-                    tvVariantDisplay = (TextView) layoutVariant;
-                }
-            }
+            // Hide selection elements not needed in Checkout
+            View cbSelected = itemView.findViewById(R.id.cbCartSelected);
+            if (cbSelected != null) cbSelected.setVisibility(View.GONE);
             
-            TextView tvPrice = itemView.findViewById(R.id.tvSelectedCartPrice);
-            TextView tvQuantity = itemView.findViewById(R.id.tvSelectedCartQuantity);
-            ImageView ivProduct = itemView.findViewById(R.id.ivSelectedCartProductImage);
+            View btnWishlist = itemView.findViewById(R.id.btnCartWishlist);
+            if (btnWishlist != null) btnWishlist.setVisibility(View.GONE);
+
+            // Bind basic info
+            TextView tvName = itemView.findViewById(R.id.tvCartProductName);
+            TextView tvPrice = itemView.findViewById(R.id.tvCartPrice);
+            TextView tvQuantity = itemView.findViewById(R.id.tvCartQuantity);
+            ImageView ivProduct = itemView.findViewById(R.id.ivCartProductImage);
+            
+            // Optional: Hide old price and discount badge if not needed, or bind them
+            View tvOldPrice = itemView.findViewById(R.id.tvCartOldPrice);
+            View tvDiscountBadge = itemView.findViewById(R.id.tvCartDiscount);
+            if (tvOldPrice != null) tvOldPrice.setVisibility(View.GONE);
+            if (tvDiscountBadge != null) tvDiscountBadge.setVisibility(View.GONE);
 
             tvName.setText(item.getProductName());
-            if (tvVariantDisplay != null) {
-                tvVariantDisplay.setText(getDisplayVariantName(item));
-            }
             tvPrice.setText(formatPrice(item.getPrice()));
-            tvQuantity.setText("Số lượng: " + item.getQuantity());
+            tvQuantity.setText(String.valueOf(item.getQuantity()));
 
             Glide.with(this)
                     .load(item.getImageUrl() != null ? item.getImageUrl() : "")
@@ -673,7 +672,14 @@ public class CheckoutFragment extends Fragment {
                     .error(R.drawable.ic_product)
                     .into(ivProduct);
 
+            // Variant Selection logic
+            View layoutVariant = itemView.findViewById(R.id.item_variant_selection);
             if (layoutVariant != null) {
+                TextView tvVariantDisplay = layoutVariant.findViewById(R.id.tvVariantName);
+                if (tvVariantDisplay != null) {
+                    tvVariantDisplay.setText(getDisplayVariantName(item));
+                }
+
                 layoutVariant.setOnClickListener(v -> {
                     if (getContext() == null || item.getProductId() == null) return;
 
@@ -710,6 +716,28 @@ public class CheckoutFragment extends Fragment {
                             Toast.makeText(getContext(), "Không thể tải thông tin sản phẩm", Toast.LENGTH_SHORT).show();
                         }
                     });
+                });
+            }
+
+            // Quantity Control logic
+            View btnDecrease = itemView.findViewById(R.id.btnDecreaseQuantity);
+            View btnIncrease = itemView.findViewById(R.id.btnIncreaseQuantity);
+            
+            if (btnDecrease != null) {
+                btnDecrease.setOnClickListener(v -> {
+                    if (item.getQuantity() > 1) {
+                        item.setQuantity(item.getQuantity() - 1);
+                        viewModel.updateItems(items);
+                    } else {
+                        Toast.makeText(getContext(), "Số lượng tối thiểu là 1", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            
+            if (btnIncrease != null) {
+                btnIncrease.setOnClickListener(v -> {
+                    item.setQuantity(item.getQuantity() + 1);
+                    viewModel.updateItems(items);
                 });
             }
 

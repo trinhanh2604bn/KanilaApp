@@ -71,9 +71,33 @@ class ArCoreTryOnActivity : AppCompatActivity(), AugmentedFaceListener {
         }
 
         btnBuyNow.setOnClickListener {
-            btnBuyNow.isEnabled = false
-            viewModel.addToCart()
-            Toast.makeText(this, "Đang xử lý mua hàng...", Toast.LENGTH_SHORT).show()
+            val shade = viewModel.selectedShade.value
+            if (shade != null) {
+                val cartItem = com.example.frontend.data.model.cart.CartItemDto.createMock(
+                    "buy_now_" + System.currentTimeMillis(),
+                    tvVariantName.text.toString(),
+                    shade.variantName ?: "",
+                    shade.price?.toDouble() ?: 0.0,
+                    1,
+                    true,
+                    ""
+                )
+                cartItem.productId = intent.getStringExtra("product_id") ?: "mock_id"
+                cartItem.variantId = shade.variantId
+
+                val selectedItems = java.util.ArrayList<com.example.frontend.data.model.cart.CartItemDto>()
+                selectedItems.add(cartItem)
+
+                val mainIntent = android.content.Intent(this, com.example.frontend.MainActivity::class.java).apply {
+                    putExtra("TARGET_FRAGMENT", "checkout")
+                    putExtra("selected_items", selectedItems)
+                    flags = android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP or android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
+                }
+                startActivity(mainIntent)
+                finish()
+            } else {
+                Toast.makeText(this, "Vui lòng chọn màu trước", Toast.LENGTH_SHORT).show()
+            }
         }
 
         setupViewModel()

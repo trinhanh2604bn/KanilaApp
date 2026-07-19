@@ -131,7 +131,32 @@ public class MainActivity extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             viewModel.loadHomeData();
             checkAuthStatus();
+            handleIntent(getIntent());
         }, 500);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent != null) {
+            String targetFragment = intent.getStringExtra("TARGET_FRAGMENT");
+            if ("checkout".equals(targetFragment)) {
+                java.util.ArrayList<com.example.frontend.data.model.cart.CartItemDto> items =
+                        (java.util.ArrayList<com.example.frontend.data.model.cart.CartItemDto>) intent.getSerializableExtra("selected_items");
+                if (items != null) {
+                    ui.commerce.CheckoutFragment checkoutFragment = new ui.commerce.CheckoutFragment();
+                    Bundle args = new Bundle();
+                    args.putSerializable("selected_items", items);
+                    checkoutFragment.setArguments(args);
+                    loadFragment(checkoutFragment);
+                }
+            }
+        }
     }
 
     private void checkAuthStatus() {

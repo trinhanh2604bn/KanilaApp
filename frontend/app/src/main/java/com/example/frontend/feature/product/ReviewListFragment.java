@@ -114,6 +114,12 @@ public class ReviewListFragment extends Fragment {
         View topBar = view.findViewById(R.id.layoutTopBar);
         if (topBar == null) return;
 
+        // If inside ReviewHubFragment, hide the redundant header entirely
+        if (getParentFragment() instanceof ReviewHubFragment) {
+            topBar.setVisibility(View.GONE);
+            return;
+        }
+
         TextView tvTitle = topBar.findViewById(R.id.tvTopBarTitle);
         if (tvTitle != null) {
             tvTitle.setText(productId != null ? "Đánh giá sản phẩm" : "Đánh giá của tôi");

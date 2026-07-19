@@ -59,14 +59,22 @@ public class CheckoutFragment extends Fragment {
         observeViewModel();
 
         if (getArguments() != null) {
-            java.util.List<com.example.frontend.data.model.cart.CartItemDto> selectedItems =
-                    (java.util.List<com.example.frontend.data.model.cart.CartItemDto>) getArguments().getSerializable("selected_items");
-            com.example.frontend.data.model.coupon.CouponDto selectedVoucher =
-                    (com.example.frontend.data.model.coupon.CouponDto) getArguments().getSerializable("selected_voucher");
+            com.example.frontend.data.model.checkout.CheckoutSessionDto session =
+                    (com.example.frontend.data.model.checkout.CheckoutSessionDto) getArguments().getSerializable("checkout_session");
+            
+            if (session != null) {
+                android.util.Log.d("CheckoutFragment", "Setting checkout session from arguments");
+                viewModel.updateCheckoutSession(session);
+            } else {
+                java.util.List<com.example.frontend.data.model.cart.CartItemDto> selectedItems =
+                        (java.util.List<com.example.frontend.data.model.cart.CartItemDto>) getArguments().getSerializable("selected_items");
+                com.example.frontend.data.model.coupon.CouponDto selectedVoucher =
+                        (com.example.frontend.data.model.coupon.CouponDto) getArguments().getSerializable("selected_voucher");
 
-            if (selectedItems != null && !selectedItems.isEmpty()) {
-                android.util.Log.d("CheckoutFragment", "Setting mock data from cart arguments. Item count: " + selectedItems.size());
-                viewModel.setMockDataFromCart(selectedItems, selectedVoucher);
+                if (selectedItems != null && !selectedItems.isEmpty()) {
+                    android.util.Log.d("CheckoutFragment", "Setting mock data from cart arguments. Item count: " + selectedItems.size());
+                    viewModel.setMockDataFromCart(selectedItems, selectedVoucher);
+                }
             }
         }
 

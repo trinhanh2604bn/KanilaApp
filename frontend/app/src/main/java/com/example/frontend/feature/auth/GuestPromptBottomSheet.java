@@ -34,7 +34,7 @@ public class GuestPromptBottomSheet extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         setupContent();
 
         binding.btnLogin.setOnClickListener(v -> {
@@ -54,9 +54,10 @@ public class GuestPromptBottomSheet extends BottomSheetDialogFragment {
         if (getArguments() == null) return;
         String typeStr = getArguments().getString(ARG_ACTION_TYPE);
         if (typeStr == null) return;
-        
+
         PendingAuthAction.ActionType type = PendingAuthAction.ActionType.valueOf(typeStr);
-        
+
+        String title = getString(R.string.auth_guest_prompt_title);
         String subtitle;
         switch (type) {
             case ADD_TO_WISHLIST:
@@ -64,6 +65,7 @@ public class GuestPromptBottomSheet extends BottomSheetDialogFragment {
                 subtitle = "Đăng nhập để lưu sản phẩm yêu thích và xem lại bất cứ lúc nào.";
                 break;
             case START_CHECKOUT:
+                title = "Đăng nhập để mua hàng";
                 subtitle = "Đăng nhập để tiếp tục thanh toán, lưu địa chỉ và theo dõi đơn hàng.";
                 break;
             case SAVE_BEAUTY_PROFILE:
@@ -86,6 +88,7 @@ public class GuestPromptBottomSheet extends BottomSheetDialogFragment {
                 subtitle = "Đăng nhập để cá nhân hóa trải nghiệm Kanila của bạn.";
                 break;
         }
+        binding.tvTitle.setText(title);
         binding.tvSubtitle.setText(subtitle);
     }
 

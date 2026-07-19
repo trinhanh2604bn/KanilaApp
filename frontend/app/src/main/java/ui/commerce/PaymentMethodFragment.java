@@ -16,9 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
+import com.example.frontend.data.model.account.ProfileHubDto;
 import com.example.frontend.data.model.checkout.CheckoutSessionDto;
 import com.example.frontend.data.model.payment.PaymentMethodDto;
 import com.example.frontend.data.remote.NetworkResult;
+import com.example.frontend.feature.account.AccountViewModel;
 import com.example.frontend.feature.checkout.CheckoutViewModel;
 import com.example.frontend.feature.checkout.PaymentViewModel;
 
@@ -31,10 +33,12 @@ public class PaymentMethodFragment extends Fragment {
     private PaymentMethodAdapter adapter;
     private CheckBox cbInvoice;
     private View layoutInvoiceDetails;
+    private TextView tvInvoiceName, tvInvoiceTaxCode, tvInvoiceEmail;
     private View btnAgree;
 
     private PaymentViewModel paymentViewModel;
     private CheckoutViewModel checkoutViewModel;
+    private AccountViewModel accountViewModel;
     private PaymentMethodDto selectedMethod;
 
     @Nullable
@@ -49,6 +53,7 @@ public class PaymentMethodFragment extends Fragment {
 
         paymentViewModel = new ViewModelProvider(this).get(PaymentViewModel.class);
         checkoutViewModel = new ViewModelProvider(requireActivity()).get(CheckoutViewModel.class);
+        accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
 
         initViews(view);
         setupHeader();
@@ -58,6 +63,7 @@ public class PaymentMethodFragment extends Fragment {
         observeViewModel();
 
         paymentViewModel.loadPaymentMethods();
+        accountViewModel.loadProfileHub();
     }
 
     private void initViews(View view) {
@@ -65,6 +71,9 @@ public class PaymentMethodFragment extends Fragment {
         rvPaymentMethods = view.findViewById(R.id.rvPaymentMethods);
         cbInvoice = view.findViewById(R.id.cbInvoice);
         layoutInvoiceDetails = view.findViewById(R.id.layoutInvoiceDetails);
+        tvInvoiceName = view.findViewById(R.id.tvInvoiceName);
+        tvInvoiceTaxCode = view.findViewById(R.id.tvInvoiceTaxCode);
+        tvInvoiceEmail = view.findViewById(R.id.tvInvoiceEmail);
         btnAgree = view.findViewById(R.id.btnAgree);
     }
 
@@ -141,6 +150,40 @@ public class PaymentMethodFragment extends Fragment {
                     break;
             }
         });
+
+        accountViewModel.getProfileHubResult().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+                updateInvoiceInfo(result.data);
+            }
+        });
+    }
+
+    private void updateInvoiceInfo(ProfileHubDto profileHub) {
+        if (profileHub == null || profileHub.getProfile() == null) return;
+        
+        ProfileHubDto.AccountInfo profile = profileHub.getProfile();
+        
+        if (tvInvoiceName != null) {
+            tvInvoiceName.setText(profile.getFullName() != null ? profile.getFullName() : "");
+        }
+        
+        if (tvInvoiceEmail != null) {
+            tvInvoiceEmail.setText(profile.getEmail() != null ? profile.getEmail() : "");
+        }
+        
+        if (tvInvoiceTaxCode != null) {
+            // Tạo mã số thuế ngẫu nhiên bắt đầu bằng số 0
+            tvInvoiceTaxCode.setText(generateRandomTaxCode());
+        }
+    }
+
+    private String generateRandomTaxCode() {
+        java.util.Random random = new java.util.Random();
+        StringBuilder sb = new StringBuilder("0");
+        for (int i = 0; i < 9; i++) {
+            sb.append(random.nextInt(12));
+        }
+        return sb.toString();
     }
 
     private void displayPaymentMethods(List<PaymentMethodDto> methods) {

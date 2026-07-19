@@ -150,6 +150,19 @@ public class ProductCategoryFragment extends Fragment {
                 }
             });
         }
+
+        // Repurpose Search icon to Cart for Category landing page
+        ImageButton btnCart = topBar.findViewById(R.id.btnTopBarSearch);
+        if (btnCart != null) {
+            btnCart.setImageResource(R.drawable.ic_cart);
+            btnCart.setContentDescription(getString(R.string.cart));
+            btnCart.setOnClickListener(v -> {
+                ui.common.FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CartFragment());
+            });
+
+            // Bind Cart Badge
+            ui.common.CartBadgeHelper.bindBadge(getViewLifecycleOwner(), topBar, cartViewModel);
+        }
     }
 
     private void setupHeroSlider(View root) {

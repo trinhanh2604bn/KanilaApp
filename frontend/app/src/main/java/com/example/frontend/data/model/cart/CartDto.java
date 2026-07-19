@@ -83,6 +83,15 @@ public class CartDto {
         return items;
     }
 
+    public int getTotalQuantity() {
+        if (items == null) return 0;
+        int total = 0;
+        for (CartItemDto item : items) {
+            total += item.getQuantity();
+        }
+        return total;
+    }
+
     public static CartDto createEmptyGuestCart() {
         CartDto cart = new CartDto();
         cart.ownerType = "guest";

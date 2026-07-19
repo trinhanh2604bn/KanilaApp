@@ -16,6 +16,7 @@ import java.util.List;
 public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddressAdapter.ViewHolder> {
 
     private List<AddressDto> addressList = new ArrayList<>();
+    private List<AddressDto> accountAddressList = new ArrayList<>();
     private String selectedAddressId;
     private final OnAddressClickListener listener;
     private boolean isSelectionMode = true;
@@ -24,6 +25,7 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
         void onAddressSelected(AddressDto address, int position);
         void onAddressEdit(AddressDto address, int position);
         void onSetDefault(AddressDto address, int position);
+        void onSaveToAccount(AddressDto address, int position);
     }
 
     public CheckoutAddressAdapter(OnAddressClickListener listener) {
@@ -44,6 +46,12 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
             sorted.sort((a, b) -> Boolean.compare(b.isDefaultShipping(), a.isDefaultShipping()));
             this.addressList.addAll(sorted);
         }
+        notifyDataSetChanged();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void setAccountAddresses(List<AddressDto> addresses) {
+        this.accountAddressList = addresses != null ? addresses : new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -82,6 +90,25 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
                     listener.onSetDefault(address, position);
                 }
             });
+        }
+
+        if (holder.tvSaveToAccount != null) {
+            // Nút này hiện cho địa chỉ chưa có trong sổ địa chỉ (account_addresses)
+            boolean isAlreadyInAccount = checkIfAddressInAccount(address);
+            
+            // Nếu là địa chỉ mẫu thì luôn hiện (hoặc xử lý riêng)
+            boolean isMock = address.getId() != null && address.getId().startsWith("mock_");
+            
+            if (isAlreadyInAccount && !isMock) {
+                holder.tvSaveToAccount.setVisibility(View.GONE);
+            } else {
+                holder.tvSaveToAccount.setVisibility(View.VISIBLE);
+                holder.tvSaveToAccount.setOnClickListener(v -> {
+                    if (listener != null) {
+                        listener.onSaveToAccount(address, position);
+                    }
+                });
+            }
         }
         
         // Highlight logic: Pink background (selected) 
@@ -167,8 +194,57 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
         return addressList.size();
     }
 
+    public AddressDto getAddressAt(int position) {
+        if (position >= 0 && position < addressList.size()) {
+            return addressList.get(position);
+        }
+        return null;
+    }
+
+    private boolean checkIfAddressInAccount(AddressDto address) {
+        if (address == null) return false;
+        
+        // Luôn hiện cho địa chỉ mock
+        if (address.getId() != null && address.getId().startsWith("mock_")) return false;
+        
+        if (accountAddressList == null || accountAddressList.isEmpty()) return false;
+        
+        String currentName = address.getRecipientName();
+        String currentPhone = address.getPhone();
+        
+        // Nếu thông tin của địa chỉ hiện tại trống thì ko so sánh
+        if (currentName == null || currentName.trim().isEmpty()) return false;
+        if (currentPhone == null || currentPhone.trim().isEmpty()) return false;
+        
+        String cleanCurrentPhone = currentPhone.replaceAll("\\s+", "");
+        
+        for (AddressDto accAddr : accountAddressList) {
+            if (accAddr == null) continue;
+            
+            String accName = accAddr.getRecipientName();
+            if (accName == null) accName = accAddr.getFullName();
+            
+            String accPhone = accAddr.getPhone();
+            
+            // Bỏ qua các địa chỉ trong sổ bị thiếu thông tin quan trọng
+            if (accName == null || accName.trim().isEmpty()) continue;
+            if (accPhone == null || accPhone.trim().isEmpty()) continue;
+            
+            String cleanAccPhone = accPhone.replaceAll("\\s+", "");
+            
+            // So sánh tên và SĐT
+            boolean nameMatch = currentName.trim().equalsIgnoreCase(accName.trim());
+            boolean phoneMatch = cleanCurrentPhone.equals(cleanAccPhone);
+            
+            if (nameMatch && phoneMatch) {
+                return true; // Đã tồn tại trong account_addresses
+            }
+        }
+        return false;
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvPhone, tvDetail, tvDefaultText, tvSetDefault;
+        TextView tvName, tvPhone, tvDetail, tvDefaultText, tvSetDefault, tvSaveToAccount;
         ImageView ivRadio, btnEdit;
         View layoutDefaultTag, layoutRoot;
 
@@ -182,6 +258,7 @@ public class CheckoutAddressAdapter extends RecyclerView.Adapter<CheckoutAddress
             layoutDefaultTag = itemView.findViewById(R.id.layoutAddressDefaultTag);
             tvDefaultText = itemView.findViewById(R.id.tvAddressDefaultText);
             tvSetDefault = itemView.findViewById(R.id.tvSetDefault);
+            tvSaveToAccount = itemView.findViewById(R.id.tvSaveToAccount);
             btnEdit = itemView.findViewById(R.id.btnAddressEdit);
         }
     }

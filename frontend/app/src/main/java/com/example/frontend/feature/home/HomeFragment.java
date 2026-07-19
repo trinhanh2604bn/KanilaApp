@@ -46,13 +46,15 @@ import ui.account.AccountFragment;
 import ui.account.BeautyProfileOverviewFragment;
 import ui.account.KocRegistrationFragment;
 import ui.account.KocDashboardFragment;
+import ui.community.CommunityHomeFragment;
 import ui.support.HelpCenterFragment;
 
 public class HomeFragment extends Fragment {
 
     private ViewPager2 vpHomeBanner;
     private View layoutSearchBar;
-    private android.widget.ImageButton btnNotification, btnCart, btnWishlist;
+    private android.widget.ImageButton btnNotification, btnWishlist;
+    private View btnCart;
     private RecyclerView rvHomeShortcuts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
@@ -118,6 +120,7 @@ public class HomeFragment extends Fragment {
                         public void onResponse(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, retrofit2.Response<com.example.frontend.data.remote.ApiResponse<Object>> response) {
                             if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
                                 tm.clearToken();
+                                if (cartViewModel != null) cartViewModel.loadCart();
                                 if (isAdded()) Toast.makeText(requireContext(), "Phiên đăng nhập hết hạn", Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -135,7 +138,14 @@ public class HomeFragment extends Fragment {
             });
         }
 
-        if (btnCart != null) btnCart.setOnClickListener(v -> navigateToFragment(new ui.commerce.CartFragment()));
+        if (btnCart != null) {
+            View icon = btnCart.findViewById(R.id.btnCartIcon);
+            if (icon != null) {
+                icon.setOnClickListener(v -> navigateToFragment(new ui.commerce.CartFragment()));
+            } else {
+                btnCart.setOnClickListener(v -> navigateToFragment(new ui.commerce.CartFragment()));
+            }
+        }
 
         if (btnNotification != null) {
             btnNotification.setOnClickListener(v -> navigateToFragment(new ui.notification.NotificationCenterFragment()));
@@ -154,7 +164,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void navigateToFragment(Fragment fragment) {
-        FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+        FragmentNavigationHelper.loadFragment(requireActivity(), fragment);
     }
 
     private void initViews(View view) {
@@ -285,6 +295,11 @@ public class HomeFragment extends Fragment {
         if (layoutReelThumbOne != null) layoutReelThumbOne.setOnClickListener(reelsClick);
         if (layoutReelThumbTwo != null) layoutReelThumbTwo.setOnClickListener(reelsClick);
         if (layoutReelThumbThree != null) layoutReelThumbThree.setOnClickListener(reelsClick);
+
+        // Navigation to Community Challenge
+        View.OnClickListener challengeClick = v -> navigateToFragment(CommunityHomeFragment.newInstance(1));
+        if (layoutKanilaChallengeCard != null) layoutKanilaChallengeCard.setOnClickListener(challengeClick);
+        if (btnJoinChallenge != null) btnJoinChallenge.setOnClickListener(challengeClick);
     }
 
     private void setupReelsVideos() {
@@ -331,12 +346,12 @@ public class HomeFragment extends Fragment {
 
         cartViewModel.getCartResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
-            if (result.status == NetworkResult.Status.SUCCESS) {
-                Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-            } else if (result.status == NetworkResult.Status.ERROR) {
-                Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+            if (result.status == NetworkResult.Status.ERROR) {
+                Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi giỏ hàng", Toast.LENGTH_SHORT).show();
             }
         });
+
+        ui.common.CartBadgeHelper.bindBadge(getViewLifecycleOwner(), btnCart, cartViewModel);
     }
 
     private void showLoading() {

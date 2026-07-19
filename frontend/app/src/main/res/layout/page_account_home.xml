@@ -30,16 +30,42 @@
             android:textAppearance="@style/H2"
             android:textColor="@color/accent_dark" />
 
-        <ImageView
-            android:id="@+id/btnToolbarCart"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="Giỏ hàng"
-            android:src="@drawable/ic_cart"
-            app:tint="@color/text_main"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless"/>
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <ImageView
+                android:id="@+id/btnToolbarCart"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Giỏ hàng"
+                android:src="@drawable/ic_cart"
+                app:tint="@color/text_main"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+
+            <TextView
+                android:id="@+id/tvCartBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="-4dp"
+                android:layout_marginEnd="-4dp"
+                android:background="@drawable/bg_badge_dot"
+                android:gravity="center"
+                android:minWidth="14dp"
+                android:minHeight="14dp"
+                android:paddingHorizontal="2dp"
+                android:textColor="@android:color/white"
+                android:textSize="8sp"
+                android:fontFamily="@font/nunito_bold"
+                android:visibility="gone"
+                tools:text="1"
+                tools:visibility="visible" />
+        </FrameLayout>
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -544,7 +570,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:text="Địa chỉ giao hàng"
+                        android:text="Địa chỉ của tôi"
                         android:textAppearance="@style/H3"
                         android:textColor="@color/text_main" />
 

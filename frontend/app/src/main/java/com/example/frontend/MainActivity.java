@@ -273,7 +273,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (btnNotification != null) {
             btnNotification.setOnClickListener(v -> {
-                loadFragment(new ui.notification.NotificationCenterFragment());
+                if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                    loadFragment(new ui.notification.NotificationCenterFragment());
+                } else {
+                    showLoginPrompt();
+                }
             });
         }
 
@@ -531,18 +535,24 @@ public class MainActivity extends AppCompatActivity {
         shortcutAdapter = new HomeShortcutAdapter();
         shortcutAdapter.setOnShortcutClickListener(item -> {
             String id = item.getId();
+            boolean isLoggedIn = com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn();
+            
             if ("orders".equals(id)) {
-                loadFragment(new ui.order.OrderListFragment());
+                if (isLoggedIn) loadFragment(new ui.order.OrderListFragment());
+                else com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ORDER_LIST, "Home", 0, null));
             } else if ("kanila_beauty".equals(id)) {
-                loadFragment(new ui.account.BeautyProfileOverviewFragment());
+                if (isLoggedIn) loadFragment(new ui.account.BeautyProfileOverviewFragment());
+                else com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.SAVE_BEAUTY_PROFILE, "Home", 0, null));
             } else if ("support".equals(id)) {
                 loadFragment(new ui.support.HelpCenterFragment());
             } else if ("policy".equals(id)) {
                 loadFragment(new ui.support.PolicyFragment());
             } else if ("royalty".equals(id)) {
-                loadFragment(new ui.loyalty.LoyaltyFragment());
+                if (isLoggedIn) loadFragment(new ui.loyalty.LoyaltyFragment());
+                else com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_LOYALTY, "Home", 0, null));
             } else if ("voucher".equals(id)) {
-                loadFragment(new com.example.frontend.feature.voucher.VoucherListFragment());
+                if (isLoggedIn) loadFragment(new com.example.frontend.feature.voucher.VoucherListFragment());
+                else com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_VOUCHER_WALLET, "Home", 0, null));
             } else if ("ar".equals(id)) {
                 loadFragment(com.example.frontend.ui.category.ProductListingFragment.newCollectionInstance("ar_try_on", "Sản phẩm hỗ trợ AR"));
             } else if ("creator".equals(id)) {

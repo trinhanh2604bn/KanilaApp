@@ -272,7 +272,19 @@ public class ProductDetailFragment extends Fragment {
 
         View btnWishlist = view.findViewById(R.id.btnWishlist);
         if (btnWishlist != null) {
-            btnWishlist.setOnClickListener(v -> viewModel.toggleWishlist());
+            btnWishlist.setOnClickListener(v -> {
+                if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                    viewModel.toggleWishlist();
+                } else {
+                    com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
+                            "ProductDetail",
+                            0,
+                            null
+                    );
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
+                }
+            });
         }
 
         View btnCart = view.findViewById(R.id.btnCart);

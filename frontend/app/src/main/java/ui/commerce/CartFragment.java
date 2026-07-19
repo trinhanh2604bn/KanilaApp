@@ -647,6 +647,17 @@ public class CartFragment extends Fragment {
                     return;
                 }
 
+                if (!com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                    com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.START_CHECKOUT,
+                            "Cart",
+                            0,
+                            null
+                    );
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
+                    return;
+                }
+
                 if (getActivity() != null) {
                     List<CartItemDto> selectedItems = new java.util.ArrayList<>();
                     if (adapter != null && adapter.getItems() != null) {

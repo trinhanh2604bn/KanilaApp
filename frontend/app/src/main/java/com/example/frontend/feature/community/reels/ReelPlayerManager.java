@@ -60,6 +60,7 @@ public class ReelPlayerManager {
     public void stopCurrent() {
         if (currentVideoView != null) {
             currentVideoView.stopPlayback();
+            currentVideoView.setTag(null); // Reset tag so it can be re-initialized when scrolled back
             currentVideoView = null;
         }
         if (currentBinding != null) {

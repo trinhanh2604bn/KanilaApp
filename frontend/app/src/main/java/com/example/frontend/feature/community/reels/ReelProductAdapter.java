@@ -8,28 +8,29 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.frontend.databinding.ItemReelProductMockBinding;
-import com.example.frontend.feature.community.reels.mock.MockReelsDataSource;
+import com.example.frontend.model.Product;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ReelProductAdapter extends RecyclerView.Adapter<ReelProductAdapter.ProductViewHolder> {
 
-    private final List<MockReelsDataSource.MockReelProduct> items = new ArrayList<>();
+    private final List<Product> items = new ArrayList<>();
     private OnProductActionListener listener;
 
     public interface OnProductActionListener {
-        void onAddToCart(MockReelsDataSource.MockReelProduct product);
-        void onBuyNow(MockReelsDataSource.MockReelProduct product);
-        void onDetail(MockReelsDataSource.MockReelProduct product);
+        void onAddToCart(Product product);
+        void onBuyNow(Product product);
+        void onDetail(Product product);
     }
 
     public void setOnProductActionListener(OnProductActionListener listener) {
         this.listener = listener;
     }
 
-    public void setItems(List<MockReelsDataSource.MockReelProduct> newItems) {
+    public void setItems(List<Product> newItems) {
         items.clear();
         if (newItems != null) {
             items.addAll(newItems);
@@ -62,24 +63,28 @@ public class ReelProductAdapter extends RecyclerView.Adapter<ReelProductAdapter.
             this.binding = binding;
         }
 
-        public void bind(MockReelsDataSource.MockReelProduct product) {
-            binding.tvBrandName.setText(product.getBrandName());
-            binding.tvProductName.setText(product.getProductName());
-            binding.tvProductPrice.setText(product.getPriceText());
+        public void bind(Product product) {
+            binding.tvBrandName.setText(product.getBrand());
+            binding.tvProductName.setText(product.getName());
+            binding.tvProductPrice.setText(product.getPrice());
             
-            if (product.getOldPriceText() != null && !product.getOldPriceText().isEmpty()) {
+            Double comparePrice = product.getCompareAtPrice();
+            if (comparePrice != null && comparePrice > 0) {
                 binding.tvOldPrice.setVisibility(View.VISIBLE);
-                binding.tvOldPrice.setText(product.getOldPriceText());
+                String oldPriceText = String.format(java.util.Locale.US, "%,.0fđ", comparePrice).replace(",", ".");
+                binding.tvOldPrice.setText(oldPriceText);
                 binding.tvOldPrice.setPaintFlags(binding.tvOldPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
                 binding.tvOldPrice.setVisibility(View.GONE);
             }
 
-            binding.tvRating.setText(product.getRatingText());
-            binding.tvReviewCount.setText("(" + product.getReviewCountText() + ")");
-            binding.tvStockStatus.setText(product.getStockText());
+            binding.tvRating.setText(product.getRating());
+            binding.tvReviewCount.setText("(" + product.getReviewCount() + ")");
+            
+            int stock = product.getStock();
+            binding.tvStockStatus.setText(stock > 0 ? "Còn hàng" : "Hết hàng");
 
-            boolean inStock = product.isInStock();
+            boolean inStock = stock > 0;
             binding.btnAddToCart.setEnabled(inStock);
             binding.btnBuyNow.setEnabled(inStock);
 
@@ -94,6 +99,16 @@ public class ReelProductAdapter extends RecyclerView.Adapter<ReelProductAdapter.
             binding.btnDetail.setOnClickListener(v -> {
                 if (listener != null) listener.onDetail(product);
             });
+
+            // Load Image with Glide
+            if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
+                Glide.with(binding.ivProductImage.getContext())
+                        .load(product.getImageUrl())
+                        .placeholder(com.example.frontend.R.drawable.ic_product)
+                        .into(binding.ivProductImage);
+            } else if (product.getImageResource() != 0) {
+                binding.ivProductImage.setImageResource(product.getImageResource());
+            }
         }
     }
 }

@@ -1,10 +1,11 @@
 package com.example.frontend.data.model.checkout;
 
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 import java.util.List;
 
-public class CheckoutSessionDto {
-    @SerializedName("_id")
+public class CheckoutSessionDto implements Serializable {
+    @SerializedName(value = "_id", alternate = {"sessionId"})
     private String id;
     
     public void setId(String id) { this.id = id; }
@@ -19,34 +20,34 @@ public class CheckoutSessionDto {
     public void setItems(List<CheckoutItemDto> items) { this.items = items; }
     public void setCouponCode(String couponCode) { this.couponCode = couponCode; }
 
-    @SerializedName("customer_id")
+    @SerializedName(value = "customer_id", alternate = {"customerId"})
     private String customerId;
 
-    @SerializedName("cart_id")
+    @SerializedName(value = "cart_id", alternate = {"cartId"})
     private String cartId;
 
-    @SerializedName("session_status")
+    @SerializedName(value = "session_status", alternate = {"checkoutStatus"})
     private String sessionStatus;
 
-    @SerializedName("coupon_code")
+    @SerializedName(value = "coupon_code", alternate = {"appliedCouponCode"})
     private String couponCode;
 
-    @SerializedName("subtotal_amount")
+    @SerializedName(value = "subtotal_amount", alternate = {"subtotal"})
     private Double subtotalAmount;
 
-    @SerializedName("shipping_amount")
+    @SerializedName(value = "shipping_amount", alternate = {"shippingFee"})
     private Double shippingAmount;
 
-    @SerializedName("discount_amount")
+    @SerializedName(value = "discount_amount", alternate = {"discount"})
     private Double discountAmount;
 
     @SerializedName("points_amount")
     private Double pointsAmount;
 
-    @SerializedName("total_amount")
+    @SerializedName(value = "total_amount", alternate = {"total"})
     private Double totalAmount;
 
-    @SerializedName("shipping_address")
+    @SerializedName(value = "shipping_address", alternate = {"shippingAddress"})
     private CheckoutAddressDto shippingAddress;
 
     @SerializedName("shipping_method")
@@ -58,7 +59,7 @@ public class CheckoutSessionDto {
     @SerializedName("payment_method")
     private String paymentMethod;
 
-    @SerializedName("items")
+    @SerializedName(value = "items", alternate = {"selectedItems"})
     private List<CheckoutItemDto> items;
 
     public String getId() { return id; }
@@ -82,7 +83,7 @@ public class CheckoutSessionDto {
 
     public void setEstimatedDelivery(String estimatedDelivery) { this.estimatedDelivery = estimatedDelivery; }
 
-    public static class CheckoutItemDto {
+    public static class CheckoutItemDto implements Serializable {
         @SerializedName("_id")
         private String id;
 
@@ -141,7 +142,7 @@ public class CheckoutSessionDto {
         public void setSelected(boolean selected) { this.selected = selected; }
     }
 
-    public static class CheckoutAddressDto {
+    public static class CheckoutAddressDto implements Serializable {
         @SerializedName("full_name")
         private String fullName;
         @SerializedName("phone")

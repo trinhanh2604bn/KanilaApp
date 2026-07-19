@@ -67,7 +67,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb6_01",
         "variant_name": "Black",
-        "shade_hex": "#141414",
+        "shade_hex": "#FF6B6B",
         "finish_type": "MATTE",
         "opacity": 0.92,
         "price": 249000,
@@ -80,7 +80,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb6_02",
         "variant_name": "Brown Black",
-        "shade_hex": "#27201C",
+        "shade_hex": "#FF8C94",
         "finish_type": "MATTE",
         "opacity": 0.9,
         "price": 249000,
@@ -93,7 +93,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb6_03",
         "variant_name": "Deep Brown",
-        "shade_hex": "#3B251D",
+        "shade_hex": "#E84A5F",
         "finish_type": "MATTE",
         "opacity": 0.88,
         "price": 249000,
@@ -106,7 +106,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb6_04",
         "variant_name": "Burgundy Brown",
-        "shade_hex": "#4A2028",
+        "shade_hex": "#FF7F50",
         "finish_type": "MATTE",
         "opacity": 0.86,
         "price": 249000,
@@ -132,7 +132,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb7_01",
         "variant_name": "Black",
-        "shade_hex": "#141414",
+        "shade_hex": "#FF4500",
         "finish_type": "MATTE",
         "opacity": 0.92,
         "price": 329000,
@@ -145,7 +145,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb7_02",
         "variant_name": "Brown Black",
-        "shade_hex": "#27201C",
+        "shade_hex": "#FF6B6B",
         "finish_type": "MATTE",
         "opacity": 0.9,
         "price": 329000,
@@ -158,7 +158,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb7_03",
         "variant_name": "Deep Brown",
-        "shade_hex": "#3B251D",
+        "shade_hex": "#FF8C94",
         "finish_type": "MATTE",
         "opacity": 0.88,
         "price": 329000,
@@ -171,7 +171,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb7_04",
         "variant_name": "Burgundy Brown",
-        "shade_hex": "#4A2028",
+        "shade_hex": "#E84A5F",
         "finish_type": "MATTE",
         "opacity": 0.86,
         "price": 329000,
@@ -197,7 +197,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb8_01",
         "variant_name": "Black",
-        "shade_hex": "#141414",
+        "shade_hex": "#FF7F50",
         "finish_type": "MATTE",
         "opacity": 0.92,
         "price": 880000,
@@ -210,7 +210,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb8_02",
         "variant_name": "Brown Black",
-        "shade_hex": "#27201C",
+        "shade_hex": "#FF4500",
         "finish_type": "MATTE",
         "opacity": 0.9,
         "price": 880000,
@@ -223,7 +223,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb8_03",
         "variant_name": "Deep Brown",
-        "shade_hex": "#3B251D",
+        "shade_hex": "#FF6B6B",
         "finish_type": "MATTE",
         "opacity": 0.88,
         "price": 880000,
@@ -236,7 +236,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb8_04",
         "variant_name": "Burgundy Brown",
-        "shade_hex": "#4A2028",
+        "shade_hex": "#FF8C94",
         "finish_type": "MATTE",
         "opacity": 0.86,
         "price": 880000,
@@ -262,7 +262,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb9_01",
         "variant_name": "Black",
-        "shade_hex": "#141414",
+        "shade_hex": "#E84A5F",
         "finish_type": "MATTE",
         "opacity": 0.94,
         "price": 269000,
@@ -275,7 +275,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb9_02",
         "variant_name": "Brown",
-        "shade_hex": "#5A341F",
+        "shade_hex": "#FF7F50",
         "finish_type": "MATTE",
         "opacity": 0.9,
         "price": 269000,
@@ -288,7 +288,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb9_03",
         "variant_name": "Midnight Navy",
-        "shade_hex": "#1E2E4A",
+        "shade_hex": "#FF4500",
         "finish_type": "MATTE",
         "opacity": 0.88,
         "price": 269000,
@@ -301,7 +301,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fb9_04",
         "variant_name": "Smoky Charcoal",
-        "shade_hex": "#3E4146",
+        "shade_hex": "#FF6B6B",
         "finish_type": "MATTE",
         "opacity": 0.87,
         "price": 269000,
@@ -327,7 +327,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fba_01",
         "variant_name": "Black",
-        "shade_hex": "#141414",
+        "shade_hex": "#FF8C94",
         "finish_type": "MATTE",
         "opacity": 0.94,
         "price": 650000,
@@ -340,7 +340,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fba_02",
         "variant_name": "Brown",
-        "shade_hex": "#5A341F",
+        "shade_hex": "#E84A5F",
         "finish_type": "MATTE",
         "opacity": 0.9,
         "price": 650000,
@@ -353,7 +353,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fba_03",
         "variant_name": "Midnight Navy",
-        "shade_hex": "#1E2E4A",
+        "shade_hex": "#FF7F50",
         "finish_type": "MATTE",
         "opacity": 0.88,
         "price": 650000,
@@ -366,7 +366,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fba_04",
         "variant_name": "Smoky Charcoal",
-        "shade_hex": "#3E4146",
+        "shade_hex": "#FF4500",
         "finish_type": "MATTE",
         "opacity": 0.87,
         "price": 650000,
@@ -392,7 +392,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbb_01",
         "variant_name": "Black",
-        "shade_hex": "#141414",
+        "shade_hex": "#FF6B6B",
         "finish_type": "MATTE",
         "opacity": 0.94,
         "price": 189000,
@@ -405,7 +405,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbb_02",
         "variant_name": "Brown",
-        "shade_hex": "#5A341F",
+        "shade_hex": "#FF8C94",
         "finish_type": "MATTE",
         "opacity": 0.9,
         "price": 189000,
@@ -418,7 +418,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbb_03",
         "variant_name": "Midnight Navy",
-        "shade_hex": "#1E2E4A",
+        "shade_hex": "#E84A5F",
         "finish_type": "MATTE",
         "opacity": 0.88,
         "price": 189000,
@@ -431,7 +431,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbb_04",
         "variant_name": "Smoky Charcoal",
-        "shade_hex": "#3E4146",
+        "shade_hex": "#FF7F50",
         "finish_type": "MATTE",
         "opacity": 0.87,
         "price": 189000,
@@ -457,7 +457,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbc_01",
         "variant_name": "Warm Nude",
-        "shade_hex": "#B37758",
+        "shade_hex": "#FF4500",
         "finish_type": "MATTE",
         "opacity": 0.52,
         "price": 1350000,
@@ -470,7 +470,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbc_02",
         "variant_name": "Rose Brown",
-        "shade_hex": "#9F5F62",
+        "shade_hex": "#FF6B6B",
         "finish_type": "SATIN",
         "opacity": 0.54,
         "price": 1350000,
@@ -483,7 +483,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbc_03",
         "variant_name": "Champagne Gold",
-        "shade_hex": "#D6B17D",
+        "shade_hex": "#FF8C94",
         "finish_type": "GLOSSY",
         "opacity": 0.46,
         "price": 1350000,
@@ -496,7 +496,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbc_04",
         "variant_name": "Smoky Plum",
-        "shade_hex": "#6F4A5D",
+        "shade_hex": "#E84A5F",
         "finish_type": "SATIN",
         "opacity": 0.58,
         "price": 1350000,
@@ -522,7 +522,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbd_01",
         "variant_name": "Warm Nude",
-        "shade_hex": "#B37758",
+        "shade_hex": "#FF7F50",
         "finish_type": "MATTE",
         "opacity": 0.52,
         "price": 190000,
@@ -535,7 +535,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbd_02",
         "variant_name": "Rose Brown",
-        "shade_hex": "#9F5F62",
+        "shade_hex": "#FF4500",
         "finish_type": "SATIN",
         "opacity": 0.54,
         "price": 190000,
@@ -548,7 +548,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbd_03",
         "variant_name": "Champagne Gold",
-        "shade_hex": "#D6B17D",
+        "shade_hex": "#FF6B6B",
         "finish_type": "GLOSSY",
         "opacity": 0.46,
         "price": 190000,
@@ -561,7 +561,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbd_04",
         "variant_name": "Smoky Plum",
-        "shade_hex": "#6F4A5D",
+        "shade_hex": "#FF8C94",
         "finish_type": "SATIN",
         "opacity": 0.58,
         "price": 190000,
@@ -587,7 +587,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbe_01",
         "variant_name": "Warm Nude",
-        "shade_hex": "#B37758",
+        "shade_hex": "#E84A5F",
         "finish_type": "MATTE",
         "opacity": 0.52,
         "price": 850000,
@@ -600,7 +600,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbe_02",
         "variant_name": "Rose Brown",
-        "shade_hex": "#9F5F62",
+        "shade_hex": "#FF7F50",
         "finish_type": "SATIN",
         "opacity": 0.54,
         "price": 850000,
@@ -613,7 +613,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbe_03",
         "variant_name": "Champagne Gold",
-        "shade_hex": "#D6B17D",
+        "shade_hex": "#FF4500",
         "finish_type": "GLOSSY",
         "opacity": 0.46,
         "price": 850000,
@@ -626,7 +626,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbe_04",
         "variant_name": "Smoky Plum",
-        "shade_hex": "#6F4A5D",
+        "shade_hex": "#FF6B6B",
         "finish_type": "SATIN",
         "opacity": 0.58,
         "price": 850000,
@@ -652,7 +652,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbf_01",
         "variant_name": "Soft Brown",
-        "shade_hex": "#7B4D32",
+        "shade_hex": "#FF8C94",
         "finish_type": "MATTE",
         "opacity": 0.74,
         "price": 650000,
@@ -665,7 +665,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbf_02",
         "variant_name": "Dark Brown",
-        "shade_hex": "#3A2419",
+        "shade_hex": "#E84A5F",
         "finish_type": "MATTE",
         "opacity": 0.78,
         "price": 650000,
@@ -678,7 +678,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbf_03",
         "variant_name": "Ash Brown",
-        "shade_hex": "#5C4A40",
+        "shade_hex": "#FF7F50",
         "finish_type": "MATTE",
         "opacity": 0.8,
         "price": 650000,
@@ -691,7 +691,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fbf_04",
         "variant_name": "Dark Brown",
-        "shade_hex": "#3A2419",
+        "shade_hex": "#FF4500",
         "finish_type": "MATTE",
         "opacity": 0.84,
         "price": 650000,
@@ -717,7 +717,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fc0_01",
         "variant_name": "Soft Brown",
-        "shade_hex": "#7B4D32",
+        "shade_hex": "#FF6B6B",
         "finish_type": "MATTE",
         "opacity": 0.74,
         "price": 720000,
@@ -730,7 +730,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fc0_02",
         "variant_name": "Dark Brown",
-        "shade_hex": "#3A2419",
+        "shade_hex": "#FF8C94",
         "finish_type": "MATTE",
         "opacity": 0.78,
         "price": 720000,
@@ -743,7 +743,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fc0_03",
         "variant_name": "Ash Brown",
-        "shade_hex": "#5C4A40",
+        "shade_hex": "#E84A5F",
         "finish_type": "MATTE",
         "opacity": 0.8,
         "price": 720000,
@@ -756,7 +756,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fc0_04",
         "variant_name": "Dark Brown",
-        "shade_hex": "#3A2419",
+        "shade_hex": "#FF7F50",
         "finish_type": "MATTE",
         "opacity": 0.84,
         "price": 720000,
@@ -782,7 +782,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fc1_01",
         "variant_name": "Natural",
-        "shade_hex": "#F0D5C0",
+        "shade_hex": "#FF4500",
         "finish_type": "MATTE",
         "opacity": 0.92,
         "price": 160000,
@@ -795,7 +795,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fc1_02",
         "variant_name": "Dramatic",
-        "shade_hex": "#1B1B1B",
+        "shade_hex": "#FF6B6B",
         "finish_type": "MATTE",
         "opacity": 0.95,
         "price": 160000,
@@ -808,7 +808,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fc1_03",
         "variant_name": "Brown Black",
-        "shade_hex": "#2B221E",
+        "shade_hex": "#FF8C94",
         "finish_type": "MATTE",
         "opacity": 0.91,
         "price": 160000,
@@ -821,7 +821,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fc1_04",
         "variant_name": "Dark Brown",
-        "shade_hex": "#3A2419",
+        "shade_hex": "#E84A5F",
         "finish_type": "MATTE",
         "opacity": 0.89,
         "price": 160000,
@@ -847,7 +847,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fc2_01",
         "variant_name": "Natural",
-        "shade_hex": "#F0D5C0",
+        "shade_hex": "#FF7F50",
         "finish_type": "MATTE",
         "opacity": 0.92,
         "price": 480000,
@@ -860,7 +860,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fc2_02",
         "variant_name": "Dramatic",
-        "shade_hex": "#1B1B1B",
+        "shade_hex": "#FF4500",
         "finish_type": "MATTE",
         "opacity": 0.95,
         "price": 480000,
@@ -873,7 +873,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fc2_03",
         "variant_name": "Brown Black",
-        "shade_hex": "#2B221E",
+        "shade_hex": "#FF6B6B",
         "finish_type": "MATTE",
         "opacity": 0.91,
         "price": 480000,
@@ -886,7 +886,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fc2_04",
         "variant_name": "Dark Brown",
-        "shade_hex": "#3A2419",
+        "shade_hex": "#FF8C94",
         "finish_type": "MATTE",
         "opacity": 0.89,
         "price": 480000,
@@ -2537,7 +2537,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fdc_01",
         "variant_name": "Warm Neutral",
-        "shade_hex": "#B87755",
+        "shade_hex": "#E84A5F",
         "finish_type": "MATTE",
         "opacity": 0.52,
         "price": 1750000,
@@ -2550,7 +2550,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fdc_02",
         "variant_name": "Rose Glam",
-        "shade_hex": "#A85D71",
+        "shade_hex": "#FF7F50",
         "finish_type": "SATIN",
         "opacity": 0.54,
         "price": 1750000,
@@ -2563,7 +2563,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fdc_03",
         "variant_name": "Champagne Gold",
-        "shade_hex": "#D6B17D",
+        "shade_hex": "#FF4500",
         "finish_type": "GLOSSY",
         "opacity": 0.46,
         "price": 1750000,
@@ -2576,7 +2576,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fdc_04",
         "variant_name": "Smoky Plum",
-        "shade_hex": "#6F4A5D",
+        "shade_hex": "#FF6B6B",
         "finish_type": "SATIN",
         "opacity": 0.58,
         "price": 1750000,
@@ -2602,7 +2602,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fdd_01",
         "variant_name": "Warm Neutral",
-        "shade_hex": "#B87755",
+        "shade_hex": "#FF8C94",
         "finish_type": "MATTE",
         "opacity": 0.52,
         "price": 3200000,
@@ -2615,7 +2615,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fdd_02",
         "variant_name": "Rose Glam",
-        "shade_hex": "#A85D71",
+        "shade_hex": "#E84A5F",
         "finish_type": "SATIN",
         "opacity": 0.54,
         "price": 3200000,
@@ -2628,7 +2628,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fdd_03",
         "variant_name": "Champagne Gold",
-        "shade_hex": "#D6B17D",
+        "shade_hex": "#FF7F50",
         "finish_type": "GLOSSY",
         "opacity": 0.46,
         "price": 3200000,
@@ -2641,7 +2641,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fdd_04",
         "variant_name": "Smoky Plum",
-        "shade_hex": "#6F4A5D",
+        "shade_hex": "#FF4500",
         "finish_type": "SATIN",
         "opacity": 0.58,
         "price": 3200000,
@@ -2667,7 +2667,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fde_01",
         "variant_name": "Warm Neutral",
-        "shade_hex": "#B87755",
+        "shade_hex": "#FF6B6B",
         "finish_type": "MATTE",
         "opacity": 0.52,
         "price": 750000,
@@ -2680,7 +2680,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fde_02",
         "variant_name": "Rose Glam",
-        "shade_hex": "#A85D71",
+        "shade_hex": "#FF8C94",
         "finish_type": "SATIN",
         "opacity": 0.54,
         "price": 750000,
@@ -2693,7 +2693,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fde_03",
         "variant_name": "Champagne Gold",
-        "shade_hex": "#D6B17D",
+        "shade_hex": "#E84A5F",
         "finish_type": "GLOSSY",
         "opacity": 0.46,
         "price": 750000,
@@ -2706,7 +2706,7 @@ const AR_CONFIGS = [
       {
         "variant_id": "ar_000fde_04",
         "variant_name": "Smoky Plum",
-        "shade_hex": "#6F4A5D",
+        "shade_hex": "#FF7F50",
         "finish_type": "SATIN",
         "opacity": 0.58,
         "price": 750000,

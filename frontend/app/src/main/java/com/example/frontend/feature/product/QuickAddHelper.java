@@ -75,11 +75,31 @@ public class QuickAddHelper {
                 // Check if logged in for Buy Now
                 if (!TokenManager.getInstance(context).isLoggedIn()) {
                     if (context instanceof FragmentActivity) {
+                        // Prepare selected items to pass to Checkout after login
+                        ArrayList<CartItemDto> selectedItems = new ArrayList<>();
+                        CartItemDto cartItem = CartItemDto.createMock(
+                            "buy_now_" + System.currentTimeMillis(),
+                            product.getName(),
+                            variant != null ? variant.getVariantName() : "Mặc định",
+                            variant != null && variant.getPrice() != null ? variant.getPrice() : product.getPriceValue(),
+                            quantity,
+                            true,
+                            variant != null && variant.getImageUrl() != null && !variant.getImageUrl().isEmpty() ?
+                                variant.getImageUrl() : (product.getImageUrl() != null ? product.getImageUrl() : "")
+                        );
+                        cartItem.setProductId(product.getId());
+                        cartItem.setVariantId(variantId);
+                        cartItem.setBrandNameSnapshot(product.getBrand());
+                        selectedItems.add(cartItem);
+
+                        Bundle extras = new Bundle();
+                        extras.putSerializable("selected_items", selectedItems);
+
                         PendingAuthAction action = new PendingAuthAction(
                             PendingAuthAction.ActionType.START_CHECKOUT,
                             "QuickBuy",
                             0,
-                            null
+                            extras
                         );
                         AuthNavigationHelper.showAuthPrompt((FragmentActivity) context, action);
                     } else {

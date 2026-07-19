@@ -224,6 +224,7 @@ public class HomeFragment extends Fragment {
             else if ("orders".equals(item.getId())) navigateToFragment(new com.example.frontend.feature.order.OrderListFragment());
             else if ("support".equals(item.getId())) navigateToFragment(new HelpCenterFragment());
             else if ("policy".equals(item.getId())) navigateToFragment(new ui.support.PolicyFragment());
+            else if ("ar".equals(item.getId())) navigateToFragment(com.example.frontend.ui.category.ProductListingFragment.newCollectionInstance("ar_try_on", "Sản phẩm hỗ trợ AR"));
             else Toast.makeText(requireContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
         });
 

@@ -554,6 +554,8 @@ public class MainActivity extends AppCompatActivity {
                 loadFragment(new ui.loyalty.LoyaltyFragment());
             } else if ("voucher".equals(id)) {
                 loadFragment(new com.example.frontend.feature.voucher.VoucherListFragment());
+            } else if ("ar".equals(id)) {
+                loadFragment(com.example.frontend.ui.category.ProductListingFragment.newCollectionInstance("ar_try_on", "Sản phẩm hỗ trợ AR"));
             } else if ("creator".equals(id)) {
                 if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
                     // Kiểm tra trạng thái KOC đã lưu trong SharedPreferences

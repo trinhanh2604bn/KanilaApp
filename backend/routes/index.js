@@ -85,7 +85,9 @@ const mobileProductRoutes = require("./mobileProduct.routes");
 // Chatbot routes (Phase 1 MVP — Kanila AI Assistant)
 const chatbotRoutes = require("./chatbot.routes");
 const searchRoutes = require("./search.route");
+const arRoutes = require("./ar.route");
 
+router.use("/", arRoutes);
 router.use("/brands", brandRoutes);
 router.use("/categories", categoryRoutes);
 router.use("/products", productRoutes);

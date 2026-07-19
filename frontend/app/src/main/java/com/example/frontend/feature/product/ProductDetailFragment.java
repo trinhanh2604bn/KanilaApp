@@ -296,6 +296,18 @@ public class ProductDetailFragment extends Fragment {
 
             ui.common.CartBadgeHelper.bindBadge(getViewLifecycleOwner(), btnCart, cartViewModel);
         }
+
+        View btnArTryOn = view.findViewById(R.id.btnArTryOn);
+        if (btnArTryOn != null) {
+            btnArTryOn.setOnClickListener(v -> {
+                ProductDetailUiState state = viewModel.getUiState().getValue();
+                if (state != null && state.product != null && state.product.hasAr()) {
+                    android.content.Intent intent = new android.content.Intent(getContext(), com.example.frontend.feature.ar.ui.ArTryOnActivity.class);
+                    intent.putExtra("product_id", state.product.getId());
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
     private void setupAdapters(View view) {
@@ -661,6 +673,11 @@ public class ProductDetailFragment extends Fragment {
 
         View btnWishlist = getView() != null ? getView().findViewById(R.id.btnWishlist) : null;
         if (btnWishlist != null) btnWishlist.setSelected(state.isWishlisted);
+
+        View btnArTryOn = getView() != null ? getView().findViewById(R.id.btnArTryOn) : null;
+        if (btnArTryOn != null) {
+            btnArTryOn.setVisibility(product.hasAr() ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void bindSkinMatchData(com.example.frontend.data.model.product.SkinMatchDto data) {

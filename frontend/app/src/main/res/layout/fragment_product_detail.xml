@@ -111,7 +111,19 @@
                     android:textSize="12sp"
                     tools:text="1/5" />
 
-
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnArTryOn"
+                    style="@style/Widget.Kanila.Button.Pill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:backgroundTint="@color/button"
+                    android:textColor="@color/white"
+                    android:text="Thử màu AR"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
             </FrameLayout>
 
             <!-- Thumbnails -->

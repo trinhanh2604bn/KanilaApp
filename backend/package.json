@@ -21,6 +21,7 @@
     "test:search:unit": "jest --testPathPatterns=\"tests/unit/search\" --runInBand",
     "seed:search:aliases": "node scripts/seed-search-aliases.js",
     "rebuild:search:docs": "node scripts/rebuild-product-search-documents.js",
+    "test:ar": "jest --testPathPatterns=\"tests/unit/ar.test.js\" --runInBand",
     "test": "jest --runInBand"
   },
   "keywords": [],

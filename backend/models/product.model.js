@@ -139,6 +139,10 @@ const productSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    hasAr: {
+      type: Boolean,
+      default: false,
+    },
     /** Optional audit refs — must exist on schema for `.populate()` in getProductById. */
     createdByAccountId: {
       type: mongoose.Schema.Types.ObjectId,

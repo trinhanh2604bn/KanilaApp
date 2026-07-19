@@ -58,6 +58,9 @@
         <activity
             android:name="ui.notification.NotificationDetailActivity"
             android:exported="false" />
+        <activity
+            android:name=".feature.ar.ui.ArTryOnActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

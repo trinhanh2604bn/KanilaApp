@@ -93,6 +93,12 @@ public interface ApiService {
     @GET("api/product-variants/product/{productId}")
     Call<ApiResponse<List<ProductVariantDto>>> getProductVariants(@Path("productId") String productId);
 
+    @GET("/api/products/{productId}/ar-config")
+    Call<ApiResponse<com.example.frontend.feature.ar.data.ArConfigDto>> getProductArConfig(@Path("productId") String productId);
+
+    @POST("/api/ar/events")
+    Call<ApiResponse<Void>> postArEvents(@Body com.example.frontend.feature.ar.data.ArEventBatchRequest request);
+
     @GET("api/products/{productId}/skin-match/me")
     Call<ApiResponse<SkinMatchDto>> getSkinMatchScore(@Path("productId") String productId);
 

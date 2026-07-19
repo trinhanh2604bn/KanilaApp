@@ -23,12 +23,11 @@ const {
   buildSkinAnalysisPrompt,
 } = require("./chatbot.prompt");
 
-const GEMINI_TIMEOUT_MS = 60000;
 /**
- * Internal: run a Gemini chat call with timeout protection.
+ * Internal: run a Gemini chat call.
  */
 async function _geminiChatWithTimeout(message, history = [], customConfig = {}) {
-  const geminiPromise = (async () => {
+  try {
     const { client, model } = getVertexClient();
     const config = {
       systemInstruction: KANILA_SYSTEM_PROMPT,
@@ -41,20 +40,8 @@ async function _geminiChatWithTimeout(message, history = [], customConfig = {}) 
     });
     const result = await chat.sendMessage({ message });
     return result.text;
-  })();
-
-  const timeoutPromise = new Promise((_, reject) => {
-    setTimeout(() => {
-      const err = new Error("Gemini API request timed out.");
-      err.code = "CHATBOT_TIMEOUT";
-      reject(err);
-    }, GEMINI_TIMEOUT_MS);
-  });
-
-  try {
-    return await Promise.race([geminiPromise, timeoutPromise]);
   } catch (err) {
-    if (err.code === "CHATBOT_CONFIG_ERROR" || err.code === "CHATBOT_TIMEOUT") throw err;
+    if (err.code === "CHATBOT_CONFIG_ERROR") throw err;
     console.error("[Gemini] Provider error:", err.message);
     const wrapped = new Error("Gemini provider encountered an error.");
     wrapped.code = "CHATBOT_ERROR";
@@ -66,28 +53,12 @@ async function _geminiChatWithTimeout(message, history = [], customConfig = {}) 
  * Internal: run a standalone Gemini generation without Chatbot system prompt.
  */
 async function _geminiGenerateTextWithTimeout(prompt) {
-  const geminiPromise = (async () => {
-    const { client, model } = getVertexClient();
-    const response = await client.models.generateContent({
-      model: model,
-      contents: prompt
-    });
-    return response.text;
-  })();
-
-  const timeoutPromise = new Promise((_, reject) => {
-    setTimeout(() => {
-      const err = new Error("Gemini API request timed out.");
-      err.code = "CHATBOT_TIMEOUT";
-      reject(err);
-    }, GEMINI_TIMEOUT_MS);
+  const { client, model } = getVertexClient();
+  const response = await client.models.generateContent({
+    model: model,
+    contents: prompt
   });
-
-  try {
-    return await Promise.race([geminiPromise, timeoutPromise]);
-  } catch (err) {
-    throw err;
-  }
+  return response.text;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

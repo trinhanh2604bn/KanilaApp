@@ -26,6 +26,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     private int swipedPosition = -1;
 
     public interface OnCartItemChangeListener {
+        void onItemClick(CartItemDto item, int position);
         void onItemSelectedChanged(CartItemDto item, int position, boolean isSelected);
         void onQuantityChanged(CartItemDto item, int position, int newQuantity);
         void onVariantClick(CartItemDto item, int position);
@@ -158,6 +159,15 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                     .placeholder(R.drawable.ic_product)
                     .error(R.drawable.ic_product)
                     .into(ivProduct);
+
+            View.OnClickListener detailClickListener = v -> {
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION && listener != null) {
+                    listener.onItemClick(item, pos);
+                }
+            };
+            ivProduct.setOnClickListener(detailClickListener);
+            tvName.setOnClickListener(detailClickListener);
 
             btnWishlist.setSelected(item.isFavorite());
 

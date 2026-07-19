@@ -73,7 +73,11 @@ public class AuthResultHandler {
                 }
                 break;
             case START_CHECKOUT:
-                ui.common.FragmentNavigationHelper.replaceFragment(activity, new ui.commerce.CheckoutFragment());
+                ui.commerce.CheckoutFragment checkoutFragment = new ui.commerce.CheckoutFragment();
+                if (action.getExtras() != null) {
+                    checkoutFragment.setArguments(action.getExtras());
+                }
+                ui.common.FragmentNavigationHelper.replaceFragment(activity, checkoutFragment);
                 break;
             case OPEN_ACCOUNT:
                 ui.common.FragmentNavigationHelper.replaceFragment(activity, new ui.account.AccountFragment());

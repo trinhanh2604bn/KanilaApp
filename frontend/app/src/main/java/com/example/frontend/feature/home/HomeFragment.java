@@ -46,6 +46,7 @@ import ui.account.AccountFragment;
 import ui.account.BeautyProfileOverviewFragment;
 import ui.account.KocRegistrationFragment;
 import ui.account.KocDashboardFragment;
+import ui.community.CommunityHomeFragment;
 import ui.support.HelpCenterFragment;
 
 public class HomeFragment extends Fragment {
@@ -163,7 +164,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void navigateToFragment(Fragment fragment) {
-        FragmentNavigationHelper.replaceFragment(requireActivity(), fragment);
+        FragmentNavigationHelper.loadFragment(requireActivity(), fragment);
     }
 
     private void initViews(View view) {
@@ -294,6 +295,11 @@ public class HomeFragment extends Fragment {
         if (layoutReelThumbOne != null) layoutReelThumbOne.setOnClickListener(reelsClick);
         if (layoutReelThumbTwo != null) layoutReelThumbTwo.setOnClickListener(reelsClick);
         if (layoutReelThumbThree != null) layoutReelThumbThree.setOnClickListener(reelsClick);
+
+        // Navigation to Community Challenge
+        View.OnClickListener challengeClick = v -> navigateToFragment(CommunityHomeFragment.newInstance(1));
+        if (layoutKanilaChallengeCard != null) layoutKanilaChallengeCard.setOnClickListener(challengeClick);
+        if (btnJoinChallenge != null) btnJoinChallenge.setOnClickListener(challengeClick);
     }
 
     private void setupReelsVideos() {

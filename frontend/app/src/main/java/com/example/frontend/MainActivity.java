@@ -47,6 +47,7 @@ import com.example.frontend.model.HomeShortcutItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import ui.community.CommunityHomeFragment;
 import ui.account.AccountFragment;
 import ui.account.KocRegistrationFragment;
 import ui.account.KocDashboardFragment;
@@ -529,9 +530,17 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        if (layoutKanilaChallengeCard != null) layoutKanilaChallengeCard.setOnClickListener(v -> Toast.makeText(this, "Kanila Challenge", Toast.LENGTH_SHORT).show());
+        if (layoutKanilaChallengeCard != null) {
+            layoutKanilaChallengeCard.setOnClickListener(v -> {
+                loadFragment(CommunityHomeFragment.newInstance(1));
+            });
+        }
 
-        if (btnJoinChallenge != null) btnJoinChallenge.setOnClickListener(v -> Toast.makeText(this, "Tham gia challenge", Toast.LENGTH_SHORT).show());
+        if (btnJoinChallenge != null) {
+            btnJoinChallenge.setOnClickListener(v -> {
+                loadFragment(CommunityHomeFragment.newInstance(1));
+            });
+        }
 
         if (tvChallengeProgress != null) tvChallengeProgress.setText(getString(R.string.home_social_challenge_progress_format, "8", "14"));
         if (tvChallengeParticipants != null) tvChallengeParticipants.setText(getString(R.string.home_social_challenge_participants_format, "12.6K"));

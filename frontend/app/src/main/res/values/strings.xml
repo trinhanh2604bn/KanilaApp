@@ -59,6 +59,17 @@
     <string name="checkout_price_shipping">Phí vận chuyển</string>
     <string name="checkout_price_discount">Mã giảm giá</string>
     <string name="checkout_price_points">Điểm thưởng</string>
+    <string name="checkout_address_form_name">Họ và tên</string>
+    <string name="checkout_address_form_phone">Số điện thoại</string>
+    <string name="checkout_address_form_city">Tỉnh / Thành phố</string>
+    <string name="checkout_address_form_district">Quận / Huyện</string>
+    <string name="checkout_address_form_ward">Phường / Xã</string>
+    <string name="checkout_address_form_detail">Địa chỉ chi tiết (Số nhà, tên đường...)</string>
+    <string name="checkout_address_form_note">Ghi chú giao hàng</string>
+    <string name="checkout_address_save_to_book">Lưu địa chỉ này vào danh sách địa chỉ nhận hàng</string>
+    <string name="checkout_address_select_other">Chọn địa chỉ khác</string>
+    <string name="action_cancel">Huỷ</string>
+    <string name="action_apply">Áp dụng</string>
     <string name="checkout_sample_receiver_2">Nguyễn Thanh Thanh - 0794 644 108</string>
     <string name="checkout_sample_address_2">123 Trần Hưng Đạo, Phường Bến Thành, Hồ Chí Minh</string>
     <string name="checkout_sample_shipping_2">Giao hàng tiêu chuẩn</string>

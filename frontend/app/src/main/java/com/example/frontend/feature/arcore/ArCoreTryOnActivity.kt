@@ -5,11 +5,12 @@ import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModelProvider
-import com.denzcoskun.imageslider.ImageSlider
-import com.denzcoskun.imageslider.models.SlideModel
-import com.denzcoskun.imageslider.interfaces.ItemClickListener
-import com.denzcoskun.imageslider.interfaces.ItemChangeListener
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.frontend.R
 import com.example.frontend.data.remote.NetworkResult
 import com.example.frontend.feature.ar.data.ArShade
@@ -21,13 +22,15 @@ import java.util.Locale
 class ArCoreTryOnActivity : AppCompatActivity(), AugmentedFaceListener {
 
     private lateinit var augmentedFaceFragment: AugmentedFaceFragment
-    private lateinit var imageSlider: ImageSlider
+    private lateinit var rvColors: RecyclerView
+    private lateinit var colorAdapter: ArColorAdapter
     private lateinit var viewModel: ArTryOnViewModel
     
     private lateinit var tvVariantName: TextView
     private lateinit var tvPrice: TextView
     private lateinit var tvFinishAndStock: TextView
     private lateinit var btnAddToCart: MaterialButton
+    private lateinit var btnBuyNow: MaterialButton
     
     private var currentTexturePath = "models/lipstick.png"
     private var currentColor = floatArrayOf(0f, 0f, 0f, 0f)
@@ -36,22 +39,41 @@ class ArCoreTryOnActivity : AppCompatActivity(), AugmentedFaceListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        hideSystemBars()
         setContentView(R.layout.activity_arcore_tryon)
 
         augmentedFaceFragment = supportFragmentManager.findFragmentById(R.id.face_view) as AugmentedFaceFragment
         augmentedFaceFragment.setAugmentedFaceListener(this)
 
-        imageSlider = findViewById(R.id.image_slider)
+        rvColors = findViewById(R.id.rvColors)
         tvVariantName = findViewById(R.id.tvVariantName)
         tvPrice = findViewById(R.id.tvPrice)
         tvFinishAndStock = findViewById(R.id.tvFinishAndStock)
         btnAddToCart = findViewById(R.id.btnAddToCart)
+        btnBuyNow = findViewById(R.id.btnBuyNow)
+        
+        findViewById<android.view.View>(R.id.btnBack).setOnClickListener {
+            finish()
+        }
         
         viewModel = ViewModelProvider(this).get(ArTryOnViewModel::class.java)
+
+        // Setup RecyclerView
+        colorAdapter = ArColorAdapter { selectedShade ->
+            viewModel.selectShade(selectedShade)
+        }
+        rvColors.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        rvColors.adapter = colorAdapter
 
         btnAddToCart.setOnClickListener {
             btnAddToCart.isEnabled = false
             viewModel.addToCart()
+        }
+
+        btnBuyNow.setOnClickListener {
+            btnBuyNow.isEnabled = false
+            viewModel.addToCart()
+            Toast.makeText(this, "Đang xử lý mua hàng...", Toast.LENGTH_SHORT).show()
         }
 
         setupViewModel()
@@ -63,40 +85,24 @@ class ArCoreTryOnActivity : AppCompatActivity(), AugmentedFaceListener {
         }
     }
 
+    private fun hideSystemBars() {
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+        windowInsetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+    }
+
     private fun setupViewModel() {
         viewModel.shades.observe(this) { shades ->
             if (shades != null && shades.isNotEmpty()) {
                 this.shadesList = shades
-                val imageList = ArrayList<SlideModel>()
-                
-                for (shade in shades) {
-                    val imgUrl = shade.thumbnailUrl ?: "https://cdn-icons-png.flaticon.com/512/1024/1024505.png"
-                    imageList.add(SlideModel(imgUrl, shade.variantName ?: "Màu sắc"))
-                }
-
-                imageSlider.setImageList(imageList)
-                
-                imageSlider.setItemClickListener(object : ItemClickListener {
-                    override fun onItemSelected(position: Int) {
-                        val selectedShade = shades[position]
-                        viewModel.selectShade(selectedShade)
-                    }
-
-                    override fun doubleClick(position: Int) {}
-                })
-                
-                imageSlider.setItemChangeListener(object : ItemChangeListener {
-                    override fun onItemChanged(position: Int) {
-                        val selectedShade = shades[position]
-                        viewModel.selectShade(selectedShade)
-                    }
-                })
+                colorAdapter.submitList(shades)
             }
         }
 
         viewModel.selectedShade.observe(this) { shade ->
             if (shade != null) {
                 applyShadeConfig(shade)
+                colorAdapter.setSelectedShade(shade)
                 
                 // Update UI
                 tvVariantName.text = shade.variantName
@@ -111,7 +117,10 @@ class ArCoreTryOnActivity : AppCompatActivity(), AugmentedFaceListener {
                 tvFinishAndStock.text = "$finishText • $stockText"
                 
                 btnAddToCart.isEnabled = shade.inStock
-                btnAddToCart.text = if (shade.inStock) "Thêm vào giỏ hàng" else "Hết hàng"
+                btnAddToCart.text = if (shade.inStock) "Giỏ hàng" else "Hết hàng"
+                
+                btnBuyNow.isEnabled = shade.inStock
+                btnBuyNow.visibility = if (shade.inStock) android.view.View.VISIBLE else android.view.View.GONE
             }
         }
         
@@ -129,7 +138,9 @@ class ArCoreTryOnActivity : AppCompatActivity(), AugmentedFaceListener {
         
         viewModel.addToCartResult.observe(this) { result ->
             val selected = viewModel.selectedShade.value
-            btnAddToCart.isEnabled = selected != null && selected.inStock
+            val inStock = selected?.inStock ?: false
+            btnAddToCart.isEnabled = inStock
+            btnBuyNow.isEnabled = inStock
             if (result != null) {
                 if (result.status == NetworkResult.Status.SUCCESS) {
                     Toast.makeText(this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show()

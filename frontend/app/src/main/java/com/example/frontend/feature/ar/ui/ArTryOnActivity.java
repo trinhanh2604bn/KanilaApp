@@ -15,6 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -59,6 +62,8 @@ public class ArTryOnActivity extends AppCompatActivity implements FaceLandmarkPr
     private TextView tvFinishAndStock;
     private RecyclerView rvShades;
     private MaterialButton btnAddToCart;
+    private MaterialButton btnBuyNow;
+    private View btnBack;
 
     // ── AR pipeline ────────────────────────────────────────────────────────────
     private ArCameraController cameraController;
@@ -83,6 +88,7 @@ public class ArTryOnActivity extends AppCompatActivity implements FaceLandmarkPr
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideSystemBars();
         setContentView(R.layout.activity_ar_try_on);
 
         previewView     = findViewById(R.id.previewView);
@@ -95,6 +101,12 @@ public class ArTryOnActivity extends AppCompatActivity implements FaceLandmarkPr
         tvFinishAndStock = findViewById(R.id.tvFinishAndStock);
         rvShades         = findViewById(R.id.rvShades);
         btnAddToCart     = findViewById(R.id.btnAddToCart);
+        btnBuyNow        = findViewById(R.id.btnBuyNow);
+        btnBack          = findViewById(R.id.btnBack);
+
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
 
         // Determine renderer mode
         useGpuRenderer = ArRendererFactory.isGpuEnabled() && lipGlSurfaceView != null;
@@ -131,12 +143,29 @@ public class ArTryOnActivity extends AppCompatActivity implements FaceLandmarkPr
             viewModel.addToCart();
         });
 
+        btnBuyNow.setOnClickListener(v -> {
+            // "Mua ngay" logic: Add to cart then go to checkout/cart
+            // For now, we'll just add to cart and show a message
+            btnBuyNow.setEnabled(false);
+            viewModel.addToCart();
+            // Typically would navigate here, but for now we'll rely on the observe result
+            Toast.makeText(this, "Đang xử lý mua hàng...", Toast.LENGTH_SHORT).show();
+        });
+
         if (allPermissionsGranted()) {
             startCamera();
         } else {
             ActivityCompat.requestPermissions(
                     this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CODE);
         }
+    }
+
+    private void hideSystemBars() {
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setSystemBarsBehavior(
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
     }
 
     // ── Renderer visibility ────────────────────────────────────────────────────
@@ -204,12 +233,16 @@ public class ArTryOnActivity extends AppCompatActivity implements FaceLandmarkPr
             tvFinishAndStock.setText(finishText + " • " + stockText);
 
             btnAddToCart.setEnabled(shade.getInStock());
-            btnAddToCart.setText(shade.getInStock() ? "Thêm vào giỏ hàng" : "Hết hàng");
+            btnAddToCart.setText(shade.getInStock() ? "Giỏ hàng" : "Hết hàng");
+            btnBuyNow.setEnabled(shade.getInStock());
+            btnBuyNow.setVisibility(shade.getInStock() ? View.VISIBLE : View.GONE);
         });
 
         viewModel.getAddToCartResult().observe(this, result -> {
             ArShade selected = viewModel.getSelectedShade().getValue();
-            btnAddToCart.setEnabled(selected != null && selected.getInStock());
+            boolean inStock = selected != null && selected.getInStock();
+            btnAddToCart.setEnabled(inStock);
+            btnBuyNow.setEnabled(inStock);
             if (result == null) return;
             if (result.status == NetworkResult.Status.SUCCESS) {
                 Toast.makeText(this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();

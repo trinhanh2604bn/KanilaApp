@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.models.SlideModel
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
+import com.denzcoskun.imageslider.interfaces.ItemChangeListener
 import com.example.frontend.R
 import com.example.frontend.data.remote.NetworkResult
 import com.example.frontend.feature.ar.data.ArShade
@@ -82,6 +83,13 @@ class ArCoreTryOnActivity : AppCompatActivity(), AugmentedFaceListener {
                     }
 
                     override fun doubleClick(position: Int) {}
+                })
+                
+                imageSlider.setItemChangeListener(object : ItemChangeListener {
+                    override fun onItemChanged(position: Int) {
+                        val selectedShade = shades[position]
+                        viewModel.selectShade(selectedShade)
+                    }
                 })
             }
         }

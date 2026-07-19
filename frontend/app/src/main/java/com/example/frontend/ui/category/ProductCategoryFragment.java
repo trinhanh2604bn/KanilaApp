@@ -29,12 +29,18 @@ import com.example.frontend.data.repository.CatalogRepository;
 import com.example.frontend.data.repository.ProductRepository;
 import com.example.frontend.feature.cart.CartViewModel;
 import com.example.frontend.data.model.cart.AddToCartRequest;
+import com.example.frontend.data.model.product.ProductVariantDto;
+import com.example.frontend.data.remote.TokenManager;
+import com.example.frontend.feature.auth.GuestPromptBottomSheet;
+import com.example.frontend.core.auth.PendingAuthAction;
 import com.example.frontend.feature.product.ProductDetailFragment;
+import com.example.frontend.feature.product.VariantSelectorBottomSheet;
 import com.example.frontend.model.Brand;
 import com.example.frontend.model.Product;
 import com.example.frontend.data.remote.NetworkResult;
 import android.util.Log;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -540,20 +546,67 @@ public class ProductCategoryFragment extends Fragment {
     private void handleAddToCart(Product product) {
         if (product == null || product.getId() == null) return;
 
-        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
+        // Check if user is logged in
+        if (!TokenManager.getInstance(requireContext()).isLoggedIn()) {
+            GuestPromptBottomSheet.newInstance(PendingAuthAction.ActionType.ADD_TO_CART)
+                    .show(getChildFragmentManager(), "GuestPromptBottomSheet");
+            return;
+        }
+
+        // Fetch variants first, then show bottom sheet (like in ProductDetailFragment)
+        MutableLiveData<NetworkResult<List<ProductVariantDto>>> variantsResult = new MutableLiveData<>();
+        productRepository.getProductVariants(product.getId(), variantsResult);
+
+        variantsResult.observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case SUCCESS:
+                    if (result.data != null) {
+                        showVariantSelector(product, result.data);
+                    } else {
+                        // Fallback if no variants
+                        performDirectAddToCart(product.getId(), null, 1);
+                    }
+                    variantsResult.removeObservers(getViewLifecycleOwner());
+                    break;
+                case ERROR:
+                    Toast.makeText(requireContext(), "Không thể tải phân loại sản phẩm", Toast.LENGTH_SHORT).show();
+                    variantsResult.removeObservers(getViewLifecycleOwner());
+                    break;
+                case LOADING:
+                    break;
+            }
+        });
+    }
+
+    private void showVariantSelector(Product product, List<ProductVariantDto> variants) {
+        VariantSelectorBottomSheet bottomSheet = VariantSelectorBottomSheet.newInstance(
+                product, variants, VariantSelectorBottomSheet.ActionMode.ADD_TO_CART);
+
+        bottomSheet.setListener((variant, mode, quantity) -> {
+            String variantId = variant != null ? variant.getId() : null;
+            performDirectAddToCart(product.getId(), variantId, quantity);
+        });
+        bottomSheet.show(getChildFragmentManager(), "VariantSelector");
+    }
+
+    private void performDirectAddToCart(String productId, String variantId, int quantity) {
+        AddToCartRequest request = new AddToCartRequest(productId, variantId, quantity);
         cartViewModel.addToCart(request);
 
+        // One-time observer for result
         cartViewModel.getCartResult().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
             @Override
             public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
-                if (result == null) return;
+                if (result == null || result.status == NetworkResult.Status.LOADING) return;
+                
                 if (result.status == NetworkResult.Status.SUCCESS) {
                     Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
+                    cartViewModel.loadCart(); // Refresh cart badge
                 } else if (result.status == NetworkResult.Status.ERROR) {
                     Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
                 }
+                cartViewModel.getCartResult().removeObserver(this);
             }
         });
     }

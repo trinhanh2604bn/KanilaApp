@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menuCamera"
+        android:icon="@drawable/icon_camera"
+        android:title="Experimente!"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/menuProducts"
+        android:icon="@drawable/icon_list"
+        android:title="Ver maquiagens"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/menuFavorite"
+        android:icon="@drawable/icon_favorite"
+        android:title="Favoritos"
+        app:showAsAction="always"/>
+
+
+</menu>

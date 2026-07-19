@@ -18,6 +18,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        buildConfigField("String", "AR_LIP_RENDERER", "\"CANVAS\"")
     }
 
     buildTypes {
@@ -70,4 +72,11 @@ dependencies {
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
+
+    // ARCore & 3D Obj parsing
+    implementation("com.google.ar:core:1.31.0")
+    implementation("de.javagl:obj:0.2.1")
+    
+    // Picasso for ImageSlideshow
+    implementation("com.squareup.picasso:picasso:2.71828")
 }

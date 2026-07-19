@@ -287,7 +287,7 @@ public class ProductDetailFragment extends Fragment {
             btnArTryOn.setOnClickListener(v -> {
                 ProductDetailUiState state = viewModel.getUiState().getValue();
                 if (state != null && state.product != null && state.product.hasAr()) {
-                    android.content.Intent intent = new android.content.Intent(getContext(), com.example.frontend.feature.ar.ui.ArTryOnActivity.class);
+                    android.content.Intent intent = new android.content.Intent(getContext(), com.example.frontend.feature.arcore.ArCoreTryOnActivity.class);
                     intent.putExtra("product_id", state.product.getId());
                     startActivity(intent);
                 }

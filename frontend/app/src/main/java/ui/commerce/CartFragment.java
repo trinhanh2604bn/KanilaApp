@@ -153,6 +153,17 @@ public class CartFragment extends Fragment {
 
         adapter.setOnCartItemChangeListener(new CartAdapter.OnCartItemChangeListener() {
             @Override
+            public void onItemClick(CartItemDto item, int position) {
+                if (item != null && item.getProductId() != null) {
+                    if (getActivity() != null) {
+                        com.example.frontend.feature.product.ProductDetailFragment detailFragment =
+                                com.example.frontend.feature.product.ProductDetailFragment.newInstance(item.getProductId());
+                        ui.common.FragmentNavigationHelper.loadFragment(getActivity(), detailFragment);
+                    }
+                }
+            }
+
+            @Override
             public void onItemSelectedChanged(CartItemDto item, int position, boolean isSelected) {
                 if (item == null || item.getId() == null) return;
 
@@ -629,47 +640,43 @@ public class CartFragment extends Fragment {
             });
         }
 
-        if (btnContinueCheckout != null) {
             btnContinueCheckout.setOnClickListener(v -> {
-                // 1. Kiểm tra đăng nhập
+                // 1. Lấy danh sách sản phẩm đã chọn
+                List<CartItemDto> selectedItems = new java.util.ArrayList<>();
+                if (adapter != null && adapter.getItems() != null) {
+                    for (CartItemDto item : adapter.getItems()) {
+                        if (item != null && item.isSelected()) {
+                            selectedItems.add(item);
+                        }
+                    }
+                }
+
+                // 2. Kiểm tra xem có chọn sản phẩm nào không
+                if (selectedItems.isEmpty()) {
+                    Toast.makeText(getContext(), "Vui lòng chọn ít nhất 1 sản phẩm", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // 3. Kiểm tra đăng nhập
                 if (!com.example.frontend.data.remote.TokenManager.getInstance(getContext()).isLoggedIn()) {
+                    Bundle extras = new Bundle();
+                    extras.putSerializable("selected_items", (java.io.Serializable) selectedItems);
+                    if (selectedVoucher != null) {
+                        extras.putSerializable("selected_voucher", selectedVoucher);
+                    }
+
                     com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
                             com.example.frontend.core.auth.PendingAuthAction.ActionType.START_CHECKOUT,
                             "Cart",
                             0,
-                            null
+                            extras
                     );
                     com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
                     return;
                 }
 
-                // 2. Kiểm tra xem có chọn sản phẩm nào không
-                boolean hasSelection = false;
-                if (adapter != null && adapter.getItems() != null) {
-                    for (CartItemDto item : adapter.getItems()) {
-                        if (item != null && item.isSelected()) {
-                            hasSelection = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!hasSelection) {
-                    Toast.makeText(getContext(), "Vui lòng chọn ít nhất 1 sản phẩm", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                // 3. Tiến hành chuyển sang trang Checkout
+                // 4. Tiến hành chuyển sang trang Checkout (Đã đăng nhập)
                 if (getActivity() != null) {
-                    List<CartItemDto> selectedItems = new java.util.ArrayList<>();
-                    if (adapter != null && adapter.getItems() != null) {
-                        for (CartItemDto item : adapter.getItems()) {
-                            if (item != null && item.isSelected()) {
-                                selectedItems.add(item);
-                            }
-                        }
-                    }
-
                     CheckoutFragment checkoutFragment = new CheckoutFragment();
                     Bundle args = new Bundle();
                     args.putSerializable("selected_items", (java.io.Serializable) selectedItems);
@@ -684,7 +691,6 @@ public class CartFragment extends Fragment {
                             .commit();
                 }
             });
-        }
     }
 
     private void updateSummary(CartDto cart) {

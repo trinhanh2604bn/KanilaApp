@@ -855,45 +855,49 @@ public class ProductDetailFragment extends Fragment {
         bottomSheet.setListener((variant, selectedMode, selectedQuantity) -> {
             String variantId = variant != null ? variant.getId() : null;
             if (selectedMode == VariantSelectorBottomSheet.ActionMode.BUY_NOW) {
+                Product product = state.product;
+                if (product == null) return;
+
+                // Prepare CartItemDto for checkout
+                CartItemDto cartItem = CartItemDto.createMock(
+                    "buy_now_" + System.currentTimeMillis(),
+                    product.getName(),
+                    variant != null ? variant.getVariantName() : "Mặc định",
+                    variant != null && variant.getPrice() != null ? variant.getPrice() : product.getPriceValue(),
+                    selectedQuantity,
+                    true,
+                    variant != null && variant.getImageUrl() != null && !variant.getImageUrl().isEmpty() ?
+                        variant.getImageUrl() : (state.mediaList != null && !state.mediaList.isEmpty() ? state.mediaList.get(0).getUrl() : "")
+                );
+                cartItem.setProductId(productId);
+                cartItem.setVariantId(variantId);
+                cartItem.setBrandNameSnapshot(product.getBrand());
+
+                ArrayList<CartItemDto> selectedItems = new ArrayList<>();
+                selectedItems.add(cartItem);
+
                 // Kiểm tra đăng nhập khi nhấn Mua ngay
                 if (!com.example.frontend.data.remote.TokenManager.getInstance(getContext()).isLoggedIn()) {
+                    Bundle extras = new Bundle();
+                    extras.putSerializable("selected_items", selectedItems);
+
                     com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
                             com.example.frontend.core.auth.PendingAuthAction.ActionType.START_CHECKOUT,
                             "ProductDetail",
                             0,
-                            null
+                            extras
                     );
                     com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
                     return;
                 }
 
-                // Mock "Buy Now" by constructing CartItemDto locally and navigating to Checkout
-                Product product = state.product;
-                if (product != null) {
-                    CartItemDto cartItem = CartItemDto.createMock(
-                        "buy_now_" + System.currentTimeMillis(),
-                        product.getName(),
-                        variant != null ? variant.getVariantName() : "Mặc định",
-                        variant != null && variant.getPrice() != null ? variant.getPrice() : product.getPriceValue(),
-                        selectedQuantity,
-                        true,
-                        variant != null && variant.getImageUrl() != null && !variant.getImageUrl().isEmpty() ?
-                            variant.getImageUrl() : (state.mediaList != null && !state.mediaList.isEmpty() ? state.mediaList.get(0).getUrl() : "")
-                    );
-                    cartItem.setProductId(productId);
-                    cartItem.setVariantId(variantId);
-                    cartItem.setBrandNameSnapshot(product.getBrand());
+                // Mock "Buy Now" by navigating to Checkout (Logged in)
+                ui.commerce.CheckoutFragment checkoutFragment = new ui.commerce.CheckoutFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("selected_items", selectedItems);
+                checkoutFragment.setArguments(args);
 
-                    ArrayList<CartItemDto> selectedItems = new ArrayList<>();
-                    selectedItems.add(cartItem);
-
-                    ui.commerce.CheckoutFragment checkoutFragment = new ui.commerce.CheckoutFragment();
-                    Bundle args = new Bundle();
-                    args.putSerializable("selected_items", selectedItems);
-                    checkoutFragment.setArguments(args);
-
-                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), checkoutFragment);
-                }
+                ui.common.FragmentNavigationHelper.loadFragment(getActivity(), checkoutFragment);
             } else {
                 viewModel.addToCart(productId, variantId, selectedQuantity);
             }

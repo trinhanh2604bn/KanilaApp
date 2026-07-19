@@ -74,7 +74,7 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:$room_version")
 
     // ARCore & 3D Obj parsing
-    implementation("com.google.ar:core:1.31.0")
+    implementation("com.google.ar:core:1.45.0")
     implementation("de.javagl:obj:0.2.1")
     
     // Picasso for ImageSlideshow

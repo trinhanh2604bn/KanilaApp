@@ -75,6 +75,11 @@ public class AccountAddressAdapter extends RecyclerView.Adapter<AccountAddressAd
         holder.btnEdit.setOnClickListener(v -> {
             if (listener != null) listener.onEdit(address);
         });
+
+        // 6. Ẩn nút "Lưu vào sổ địa chỉ" (vì đây đã là sổ địa chỉ rồi)
+        if (holder.tvSaveToAccount != null) {
+            holder.tvSaveToAccount.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -83,7 +88,7 @@ public class AccountAddressAdapter extends RecyclerView.Adapter<AccountAddressAd
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvPhone, tvDetail, tvDefaultText, tvSetDefault;
+        TextView tvName, tvPhone, tvDetail, tvDefaultText, tvSetDefault, tvSaveToAccount;
         View layoutDefaultTag, layoutItem;
         ImageView ivRadio, btnEdit;
 
@@ -96,6 +101,7 @@ public class AccountAddressAdapter extends RecyclerView.Adapter<AccountAddressAd
             layoutDefaultTag = itemView.findViewById(R.id.layoutAddressDefaultTag);
             tvDefaultText = itemView.findViewById(R.id.tvAddressDefaultText);
             tvSetDefault = itemView.findViewById(R.id.tvSetDefault);
+            tvSaveToAccount = itemView.findViewById(R.id.tvSaveToAccount);
             ivRadio = itemView.findViewById(R.id.ivAddressRadio);
             btnEdit = itemView.findViewById(R.id.btnAddressEdit);
         }

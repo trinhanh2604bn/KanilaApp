@@ -31,6 +31,7 @@ public class CheckoutAddressFragment extends Fragment {
     private CheckoutAddressAdapter adapter;
     private CheckoutAddressViewModel viewModel;
     private CheckoutViewModel checkoutViewModel;
+    private com.example.frontend.feature.account.AccountViewModel accountViewModel;
 
     private static final boolean USE_MOCK_ADDRESS_WHEN_UNAUTHORIZED = true;
 
@@ -46,6 +47,7 @@ public class CheckoutAddressFragment extends Fragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(CheckoutAddressViewModel.class);
         checkoutViewModel = new ViewModelProvider(requireActivity()).get(CheckoutViewModel.class);
+        accountViewModel = new ViewModelProvider(requireActivity()).get(com.example.frontend.feature.account.AccountViewModel.class);
 
         setupHeader(view);
         setupAddressList(view);
@@ -53,6 +55,10 @@ public class CheckoutAddressFragment extends Fragment {
         
         observeViewModel();
         viewModel.loadCustomerAddresses();
+        
+        if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+            accountViewModel.loadAccountAddresses();
+        }
     }
 
     private void setupHeader(View view) {
@@ -102,9 +108,59 @@ public class CheckoutAddressFragment extends Fragment {
                 public void onSetDefault(AddressDto address, int position) {
                     viewModel.setDefaultAddress(address.getId());
                 }
+
+                @Override
+                public void onSaveToAccount(AddressDto address, int position) {
+                    saveAddressToAccount(address);
+                }
             });
             rvAddressList.setAdapter(adapter);
+            setupSwipeToDelete();
         }
+    }
+
+    private void setupSwipeToDelete() {
+        androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback swipeCallback = new androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(0, androidx.recyclerview.widget.ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                AddressDto address = adapter.getAddressAt(position);
+                
+                if (address != null) {
+                    showDeleteConfirmationDialog(address, position);
+                }
+            }
+
+            @Override
+            public void onChildDraw(@NonNull android.graphics.Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                // Thêm hiệu ứng màu đỏ khi trượt
+                new ui.common.SwipeToDeleteDecorator(requireContext()).onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+        };
+
+        new androidx.recyclerview.widget.ItemTouchHelper(swipeCallback).attachToRecyclerView(rvAddressList);
+    }
+
+    private void showDeleteConfirmationDialog(AddressDto address, int position) {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Xác nhận xóa")
+                .setMessage("Bạn có chắc chắn muốn xóa địa chỉ này không?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    viewModel.deleteAddress(address.getId());
+                })
+                .setNegativeButton("Hủy", (dialog, which) -> {
+                    adapter.notifyItemChanged(position); // Khôi phục lại item nếu không xóa
+                })
+                .setOnCancelListener(dialog -> {
+                    adapter.notifyItemChanged(position);
+                })
+                .show();
     }
 
     private void setupFooter(View view) {
@@ -128,6 +184,23 @@ public class CheckoutAddressFragment extends Fragment {
     }
 
     private void observeViewModel() {
+        viewModel.getDeleteResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case LOADING:
+                    break;
+                case SUCCESS:
+                    Toast.makeText(getContext(), "Đã xóa địa chỉ", Toast.LENGTH_SHORT).show();
+                    viewModel.loadCustomerAddresses();
+                    viewModel.clearDeleteResult();
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
+                    viewModel.clearDeleteResult();
+                    break;
+            }
+        });
+
         viewModel.getSetDefaultResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             switch (result.status) {
@@ -150,6 +223,25 @@ public class CheckoutAddressFragment extends Fragment {
             if (result.status == NetworkResult.Status.SUCCESS) {
                 // Just refresh list when an address is saved/updated elsewhere
                 viewModel.loadCustomerAddresses();
+                if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                    accountViewModel.loadAccountAddresses();
+                }
+            }
+        });
+
+        accountViewModel.getAccountAddressesResult().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.status == NetworkResult.Status.SUCCESS) {
+                if (adapter != null) {
+                    adapter.setAccountAddresses(result.data);
+                }
+            }
+        });
+
+        accountViewModel.getAddAccountAddressResult().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.status == NetworkResult.Status.SUCCESS) {
+                Toast.makeText(getContext(), "Đã lưu vào sổ địa chỉ", Toast.LENGTH_SHORT).show();
+                accountViewModel.loadAccountAddresses(); // Refresh the list to hide buttons
+                accountViewModel.resetAddAccountAddressResult();
             }
         });
 
@@ -287,5 +379,25 @@ public class CheckoutAddressFragment extends Fragment {
         }
 
         dialog.show();
+    }
+
+    private void saveAddressToAccount(AddressDto address) {
+        if (!com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+            Toast.makeText(getContext(), "Vui lòng đăng nhập để lưu địa chỉ", Toast.LENGTH_SHORT).show();
+            com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(),
+                    new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ADDRESS_BOOK,
+                            "CheckoutAddress", 0, null));
+            return;
+        }
+
+        java.util.Map<String, Object> data = new java.util.HashMap<>();
+        data.put("full_name", address.getRecipientName());
+        data.put("phone", address.getPhone());
+        data.put("address_line", address.getFullAddress());
+        data.put("is_default", false);
+
+        accountViewModel.addAccountAddress(data);
+        Toast.makeText(getContext(), "Đang lưu vào sổ địa chỉ...", Toast.LENGTH_SHORT).show();
     }
 }

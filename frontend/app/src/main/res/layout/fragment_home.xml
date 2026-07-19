@@ -12,7 +12,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/spacing_m"
-        android:paddingTop="@dimen/spacing_m">
+        android:paddingTop="@dimen/spacing_m"
+        android:paddingBottom="@dimen/spacing_s"
+        android:background="@color/background_main"
+        android:elevation="4dp"
+        android:translationZ="4dp">
 
         <FrameLayout
             android:id="@+id/containerSearchArea"
@@ -40,19 +44,15 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/button" />
 
-        <ImageButton
+        <include
             android:id="@+id/btnCart"
-            android:layout_width="32dp"
-            android:layout_height="36dp"
-            android:padding="8.5dp"
-            android:scaleType="centerInside"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_cart"
+            layout="@layout/layout_cart_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="6dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnWishlist"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/button" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/btnWishlist"
@@ -70,7 +70,8 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:clipToPadding="false">
 
         <LinearLayout

@@ -60,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 vpHomeBanner;
     private View layoutSearchBar;
-    private ImageButton btnNotification, btnCart, btnWishlist;
+    private ImageButton btnNotification, btnWishlist;
+    private View btnCart;
     private RecyclerView rvHomeShortcuts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
@@ -130,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
         // Delay home data loading slightly to ensure UI is ready and prevent ANR
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             viewModel.loadHomeData();
+            cartViewModel.loadCart();
             checkAuthStatus();
         }, 500);
     }
@@ -146,7 +148,9 @@ public class MainActivity extends AppCompatActivity {
                         public void onResponse(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, retrofit2.Response<com.example.frontend.data.remote.ApiResponse<Object>> response) {
                             if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
                                 tm.clearToken();
-                                Toast.makeText(MainActivity.this, "Phien dang nhap het han", Toast.LENGTH_SHORT).show();
+                                // Refresh cart to update badge count if session expired
+                                cartViewModel.loadCart();
+                                Toast.makeText(MainActivity.this, "Phiên đăng nhập hết hạn", Toast.LENGTH_SHORT).show();
                             }
                         }
 
@@ -174,6 +178,11 @@ public class MainActivity extends AppCompatActivity {
         int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
         boolean hasFragments = backStackCount > 0;
 
+        View homeHeader = findViewById(R.id.layoutHomeSearchHeader);
+        if (homeHeader != null) {
+            homeHeader.setVisibility(hasFragments ? View.GONE : View.VISIBLE);
+        }
+
         if (layoutHomeScroll != null) {
             layoutHomeScroll.setVisibility(hasFragments ? View.GONE : View.VISIBLE);
         }
@@ -182,15 +191,30 @@ public class MainActivity extends AppCompatActivity {
         }
 
         View bottomNav = findViewById(R.id.layoutBottomNavigation);
-        if (bottomNav != null) {
+        if (bottomNav != null || ivChatbot != null) {
             if (!hasFragments) {
-                bottomNav.setVisibility(View.VISIBLE);
+                if (bottomNav != null) bottomNav.setVisibility(View.VISIBLE);
+                if (ivChatbot != null) ivChatbot.setVisibility(View.VISIBLE);
             } else {
                 Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
-                if (currentFragment instanceof com.example.frontend.feature.product.ProductDetailFragment) {
-                    bottomNav.setVisibility(View.GONE);
-                } else {
-                    bottomNav.setVisibility(View.VISIBLE);
+                
+                boolean isCheckoutFlow = currentFragment instanceof ui.commerce.CartFragment ||
+                        currentFragment instanceof ui.commerce.CheckoutFragment ||
+                        currentFragment instanceof ui.commerce.OrderSuccessFragment ||
+                        currentFragment instanceof ui.commerce.CheckoutAddressFragment ||
+                        currentFragment instanceof ui.commerce.CheckoutAddressAddFragment ||
+                        currentFragment instanceof ui.commerce.CheckoutShippingFragment ||
+                        currentFragment instanceof ui.commerce.PaymentMethodFragment;
+
+                boolean isProductDetail = currentFragment instanceof com.example.frontend.feature.product.ProductDetailFragment;
+
+                if (bottomNav != null) {
+                    // Hide bottom nav in both Checkout flow and Product Detail
+                    bottomNav.setVisibility((isCheckoutFlow || isProductDetail) ? View.GONE : View.VISIBLE);
+                }
+                if (ivChatbot != null) {
+                    // Hide chatbot ONLY in Checkout flow, keep visible in Product Detail
+                    ivChatbot.setVisibility(isCheckoutFlow ? View.GONE : View.VISIBLE);
                 }
             }
         }
@@ -244,7 +268,14 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        if (btnCart != null) btnCart.setOnClickListener(v -> navigateToCart());
+        if (btnCart != null) {
+            View cartIcon = btnCart.findViewById(R.id.btnCartIcon);
+            if (cartIcon != null) {
+                cartIcon.setOnClickListener(v -> navigateToCart());
+            } else {
+                btnCart.setOnClickListener(v -> navigateToCart());
+            }
+        }
 
         if (btnNotification != null) {
             btnNotification.setOnClickListener(v -> {
@@ -395,12 +426,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        cartViewModel.getTotalCartQuantity().observe(this, quantity -> {
+            // Already handled by CartBadgeHelper in ui/common, but if we have local logic:
+            android.util.Log.d("MainActivity", "Cart quantity updated: " + quantity);
+        });
+
+        ui.common.CartBadgeHelper.bindBadge(this, btnCart, cartViewModel);
+
         cartViewModel.getCartResult().observe(this, result -> {
             if (result == null) return;
-            if (result.status == NetworkResult.Status.SUCCESS) {
-                Toast.makeText(MainActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-            } else if (result.status == NetworkResult.Status.ERROR) {
-                Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+            if (result.status == NetworkResult.Status.ERROR) {
+                Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi đồng bộ giỏ hàng", Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -95,6 +95,10 @@ public class AccountFragment extends Fragment {
             btnCart.setOnClickListener(v -> {
                 FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.commerce.CartFragment());
             });
+
+            // Bind Cart Badge
+            com.example.frontend.feature.cart.CartViewModel cartViewModel = new ViewModelProvider(requireActivity()).get(com.example.frontend.feature.cart.CartViewModel.class);
+            ui.common.CartBadgeHelper.bindBadge(getViewLifecycleOwner(), (View) btnCart.getParent(), cartViewModel);
         }
         
         view.findViewById(R.id.btnEdit).setOnClickListener(v -> {

@@ -22,6 +22,7 @@ import com.example.frontend.data.model.product.ProductDetailResponse;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.model.Product;
 import com.example.frontend.feature.product.adapter.ProductImageAdapter;
+import com.example.frontend.feature.cart.CartViewModel;
 import com.example.frontend.feature.product.adapter.ThumbnailAdapter;
 import com.example.frontend.feature.product.adapter.RecentlyViewedAdapter;
 import com.example.frontend.feature.home.HomeProductAdapter;
@@ -50,6 +51,7 @@ public class ProductDetailFragment extends Fragment {
 
     private ProductDetailViewModel viewModel;
     private ReviewViewModel reviewActionViewModel;
+    private CartViewModel cartViewModel;
     private String productId;
 
     private TextView tvName, tvBrand, tvPrice, tvComparePrice, tvGalleryCounter, tvRating, tvReviewCount, tvSoldCount, tvDesc, tvSelectedVariantName;
@@ -95,6 +97,7 @@ public class ProductDetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ProductDetailViewModel.class);
         reviewActionViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
 
         initViews(view);
         setupAdapters(view);
@@ -277,9 +280,21 @@ public class ProductDetailFragment extends Fragment {
 
         View btnCart = view.findViewById(R.id.btnCart);
         if (btnCart != null) {
-            btnCart.setOnClickListener(v -> {
-                ui.common.FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CartFragment());
-            });
+            View icon = btnCart.findViewById(R.id.btnCartIcon);
+            // Style icon for detail page (circular grey background)
+            if (icon != null) {
+                icon.setBackgroundResource(R.drawable.bg_circle);
+                icon.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#80F0F0F0")));
+                icon.setOnClickListener(v -> {
+                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CartFragment());
+                });
+            } else {
+                btnCart.setOnClickListener(v -> {
+                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CartFragment());
+                });
+            }
+
+            ui.common.CartBadgeHelper.bindBadge(getViewLifecycleOwner(), btnCart, cartViewModel);
         }
 
         View btnArTryOn = view.findViewById(R.id.btnArTryOn);
@@ -424,6 +439,10 @@ public class ProductDetailFragment extends Fragment {
             switch (result.status) {
                 case SUCCESS:
                     Toast.makeText(getContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    // Sync badge count by reloading cart in shared ViewModel
+                    if (cartViewModel != null) {
+                        cartViewModel.loadCart();
+                    }
                     break;
                 case ERROR:
                     Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
@@ -836,6 +855,18 @@ public class ProductDetailFragment extends Fragment {
         bottomSheet.setListener((variant, selectedMode, selectedQuantity) -> {
             String variantId = variant != null ? variant.getId() : null;
             if (selectedMode == VariantSelectorBottomSheet.ActionMode.BUY_NOW) {
+                // Kiểm tra đăng nhập khi nhấn Mua ngay
+                if (!com.example.frontend.data.remote.TokenManager.getInstance(getContext()).isLoggedIn()) {
+                    com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.START_CHECKOUT,
+                            "ProductDetail",
+                            0,
+                            null
+                    );
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
+                    return;
+                }
+
                 // Mock "Buy Now" by constructing CartItemDto locally and navigating to Checkout
                 Product product = state.product;
                 if (product != null) {

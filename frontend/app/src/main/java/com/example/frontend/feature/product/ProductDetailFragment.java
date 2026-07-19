@@ -658,6 +658,18 @@ public class ProductDetailFragment extends Fragment {
         View btnArTryOn = getView() != null ? getView().findViewById(R.id.btnArTryOn) : null;
         if (btnArTryOn != null) {
             btnArTryOn.setVisibility(product.hasAr() ? View.VISIBLE : View.GONE);
+            if (product.hasAr() && btnArTryOn instanceof TextView) {
+                String arType = product.getArType() != null ? product.getArType().toUpperCase() : "";
+                String arLabel = "Thử màu AR";
+                if ("LIPS".equals(arType)) {
+                    arLabel = "Thử màu AR (Son môi)";
+                } else if ("CHEEKS".equals(arType)) {
+                    arLabel = "Thử màu AR (Phấn má)";
+                } else if ("EYES".equals(arType)) {
+                    arLabel = "Thử màu AR (Phấn mắt)";
+                }
+                ((TextView) btnArTryOn).setText(arLabel);
+            }
         }
     }
 

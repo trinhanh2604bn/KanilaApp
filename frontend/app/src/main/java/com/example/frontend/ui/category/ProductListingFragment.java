@@ -66,6 +66,7 @@ public class ProductListingFragment extends Fragment {
 
     private ProductFilterParams currentFilterParams = new ProductFilterParams();
     private String currentSelectedCategoryId;
+    private String currentSelectedArType;
     private boolean currentIncludeChildren = true;
 
     private RecyclerView rvCategoryProducts;
@@ -223,8 +224,14 @@ public class ProductListingFragment extends Fragment {
             hsvCategoryFilterChips.setVisibility(View.GONE);
             loadProductsWithCurrentContext();
         } else if (TYPE_COLLECTION.equals(listingType)) {
-            hsvCategoryFilterChips.setVisibility(View.GONE);
-            loadProductsWithCurrentContext();
+            if ("ar_try_on".equals(collectionType)) {
+                hsvCategoryFilterChips.setVisibility(View.VISIBLE);
+                createArTypeChips();
+                loadProductsWithCurrentContext();
+            } else {
+                hsvCategoryFilterChips.setVisibility(View.GONE);
+                loadProductsWithCurrentContext();
+            }
         } else {
             hsvCategoryFilterChips.setVisibility(View.GONE);
             loadRealData();
@@ -288,6 +295,9 @@ public class ProductListingFragment extends Fragment {
         } else if (TYPE_COLLECTION.equals(listingType)) {
             if ("ar_try_on".equals(collectionType)) {
                 query.put("hasAr", "true");
+                if (currentSelectedArType != null && !currentSelectedArType.isEmpty()) {
+                    query.put("arType", currentSelectedArType);
+                }
             } else if (collectionType != null && !collectionType.trim().isEmpty()) {
                 query.put("collection", collectionType);
             }
@@ -408,6 +418,40 @@ public class ProductListingFragment extends Fragment {
                 selectChip(chip);
                 currentSelectedCategoryId = (String) chip.getTag();
                 currentIncludeChildren = false;
+                loadProductsWithCurrentContext();
+            });
+
+            layoutCategoryFilterChips.addView(chip);
+        }
+    }
+
+    private void createArTypeChips() {
+        layoutCategoryFilterChips.removeAllViews();
+
+        TextView allChip = createChipView(getString(R.string.chip_all), true);
+        allChip.setTag("");
+
+        allChip.setOnClickListener(v -> {
+            selectChip(allChip);
+            currentSelectedArType = "";
+            loadProductsWithCurrentContext();
+        });
+
+        layoutCategoryFilterChips.addView(allChip);
+
+        String[][] arTypes = {
+                {"LIPS", "Son môi"},
+                {"CHEEKS", "Phấn má"},
+                {"EYES", "Phấn mắt"}
+        };
+
+        for (String[] type : arTypes) {
+            TextView chip = createChipView(type[1], false);
+            chip.setTag(type[0]);
+
+            chip.setOnClickListener(v -> {
+                selectChip(chip);
+                currentSelectedArType = (String) chip.getTag();
                 loadProductsWithCurrentContext();
             });
 

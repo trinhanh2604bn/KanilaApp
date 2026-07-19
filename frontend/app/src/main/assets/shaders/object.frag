@@ -52,10 +52,12 @@ void main() {
     vec4 objectColor = texture2D(u_Texture, vec2(v_TexCoord.x, 1.0 - v_TexCoord.y));
 
     // Tint the texture by multiplying its color channels.
-    // This safely preserves the premultiplied alpha (0 rgb where alpha is 0).
-    // We blend between 1.0 (no tint) and the tint RGB based on tint opacity.
-    vec3 tintMultiplier = mix(vec3(1.0), u_TintColor.rgb, u_TintColor.a);
-    objectColor.rgb *= tintMultiplier;
+    // Instead of mixing with white, we directly multiply the color.
+    // And we multiply the alpha by u_TintColor.a to allow adjusting opacity.
+    // To preserve premultiplied alpha, we also multiply the RGB by u_TintColor.a
+    objectColor.rgb *= u_TintColor.rgb;
+    objectColor.rgb *= u_TintColor.a;
+    objectColor.a *= u_TintColor.a;
 
     // Apply inverse SRGB gamma to the texture before making lighting calculations.
     objectColor.rgb = pow(objectColor.rgb, vec3(kInverseGamma));

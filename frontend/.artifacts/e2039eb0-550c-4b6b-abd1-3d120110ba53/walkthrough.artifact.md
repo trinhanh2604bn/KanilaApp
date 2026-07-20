@@ -1,32 +1,30 @@
-# Walkthrough - Unified Address Management
+# Walkthrough - Thêm Số điện thoại cho tài khoản Email
 
-I have unified the address management experience between the "Account" and "Checkout" sections. Both screens now share the same data source, logic, and UI components.
+Tôi đã hoàn thành việc cập nhật hệ thống để cho phép người dùng đăng ký bằng Email có thể thêm Số điện thoại vào hồ sơ của mình, đồng thời đảm bảo an toàn cho thông tin đăng ký gốc.
 
-## Changes Made
+## Các thay đổi đã thực hiện
 
-### Frontend - Android
+### Backend
 
-#### [AccountAddressAdapter.java](file:///D:/KanilaApp/frontend/app/src/main/java/ui/account/AccountAddressAdapter.java)
-- **Selection Mode Support**: Added a `selectionMode` flag to show/hide RadioButtons and change item click behavior.
-- **Improved UI**: Enhanced the layout to show full recipient name, phone, and detailed address.
-- **Card Highlighting**: Selected or default addresses are now highlighted with a pink background.
+#### [account.controller.js](file:///D:/KanilaApp/backend/controllers/account.controller.js)
+- Cập nhật hàm `getProfileHub` để trả về trường `registrationChannel` (kênh đăng ký: email hoặc phone). Thông tin này giúp Frontend biết được trường nào là thông tin gốc không được sửa.
+- Đảm bảo logic trong `patchMyProfile` xử lý tốt việc cập nhật Số điện thoại (kiểm tra trùng lặp và định dạng).
 
-#### [CheckoutAddressFragment.java](file:///D:/KanilaApp/frontend/app/src/main/java/ui/commerce/CheckoutAddressFragment.java)
-- **Unified ViewModel**: Switched from `CheckoutAddressViewModel` to `AccountViewModel`.
-- **Unified Adapter**: Replaced `CheckoutAddressAdapter` with the newly enhanced `AccountAddressAdapter`.
-- **Selection Flow**:
-    1. Clicking an address now opens a confirmation dialog.
-    2. Confirming will set that address as the **Global Default** via the Account API.
-    3. The screen then automatically returns to the Checkout confirmation page with the new address selected.
+### Frontend (Android)
 
-#### [CheckoutFragment.java](file:///D:/KanilaApp/frontend/app/src/main/java/ui/commerce/CheckoutFragment.java)
-- **Sync with Account**: Updated to use `AccountViewModel` to load the default address. This ensures that changes made in the Account section or the "Select other address" screen are immediately reflected here.
+#### [ProfileHubDto.java](file:///D:/KanilaApp/frontend/app/src/main/java/com/example/frontend/data/model/account/ProfileHubDto.java)
+- Bổ sung trường `registrationChannel` vào mô hình dữ liệu để nhận thông tin từ API.
 
-### Clean up
-- **Deleted [CheckoutAddressAdapter.java](file:///D:/KanilaApp/frontend/app/src/main/java/ui/commerce/CheckoutAddressAdapter.java)**: This file is no longer needed as we use the unified `AccountAddressAdapter`.
+#### [page_profile_overview.xml](file:///D:/KanilaApp/frontend/app/src/main/res/layout/page_profile_overview.xml)
+- Thêm các icon mũi tên (`ivEmailChevron`, `ivPhoneChevron`) cho dòng Email và Số điện thoại để chỉ dẫn trực quan trường nào có thể chỉnh sửa.
 
-## Verification Results
+#### [ProfileOverviewFragment.java](file:///D:/KanilaApp/frontend/app/src/main/java/ui/account/ProfileOverviewFragment.java)
+- **Logic khóa thông tin gốc**:
+    - Nếu đăng ký bằng **Email**: Ẩn mũi tên ở dòng Email và hiện thông báo "Email đăng ký không thể thay đổi" khi nhấn vào. Hiện mũi tên và cho phép chỉnh sửa Số điện thoại.
+    - Nếu đăng ký bằng **SĐT**: Làm ngược lại (khóa SĐT, cho phép sửa Email).
+- **Đồng bộ dữ liệu**: Đảm bảo trường `phone` được gửi lên server khi người dùng nhấn "Lưu thay đổi".
 
-- **Data Consistency**: Both Account and Checkout now pull data from the same backend endpoint (`/api/account/address-book`).
-- **UI Uniformity**: The list of addresses looks and behaves exactly the same in both sections of the app.
-- **Selection Logic**: Setting a default in Account updates Checkout, and selecting an address in Checkout updates the default in Account.
+## Kết quả kiểm tra
+- Tài khoản Email hiện đã có thể nhấn vào dòng "Số điện thoại" để nhập thông tin.
+- Giao diện hiển thị rõ ràng thông qua icon mũi tên giúp người dùng biết mình được phép sửa gì.
+- Thông tin đăng ký gốc (Email đối với acc Email, SĐT đối với acc SĐT) được bảo vệ, không cho phép thay đổi tùy tiện.

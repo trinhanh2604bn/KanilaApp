@@ -1,6 +1,5 @@
-- [x] Update `AccountAddressAdapter.java` to support selection mode and improved UI.
-- [x] Refactor `CheckoutAddressFragment.java` to use `AccountViewModel` and `AccountAddressAdapter`.
-- [x] Implement selection and confirmation flow in `CheckoutAddressFragment.java`.
-- [x] Update `CheckoutFragment.java` to sync with `AccountViewModel`.
-- [x] Delete unused `CheckoutAddressAdapter.java`.
-- [x] Verify synchronization between Account and Checkout.
+- [ ] Update backend `account.controller.js` to return `registrationChannel`.
+- [ ] Add `registrationChannel` to `ProfileHubDto.java`.
+- [ ] Add chevrons to `page_profile_overview.xml`.
+- [ ] Update `ProfileOverviewFragment.java` logic for editability and chevrons.
+- [ ] Verify changes for both email and phone accounts.

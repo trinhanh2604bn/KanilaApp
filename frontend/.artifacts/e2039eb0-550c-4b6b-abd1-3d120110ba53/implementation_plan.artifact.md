@@ -1,48 +1,51 @@
-# Implementation Plan - Unified Address Management
+# Implementation Plan - Allow Email Accounts to Add Phone Number
 
-This plan outlines the changes to unify the address management pages in the Account and Checkout sections. Both pages will share the same data source, business logic, and UI components.
+This plan outlines the changes to allow users who registered with an email to add a phone number to their profile, while maintaining immutability for the primary registration information.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> The `CheckoutAddressFragment` will now use the same API and logic as the `AccountAddressFragment`. Selecting an address in the Checkout flow will automatically set it as the **Global Default** address for the account.
+> I will be making the primary registration method (Email or Phone) immutable in the UI. If a user registered by email, they can add/edit a phone number, but cannot change their registration email. Conversely, if they registered by phone, they can add/edit an email, but cannot change their registration phone.
 
 ## Proposed Changes
 
+### [Backend]
+
+#### [MODIFY] [account.controller.js](file:///D:/KanilaApp/backend/controllers/account.controller.js)
+- Update `getProfileHub` to include `registrationChannel` (from `account.registration_channel`) in the response profile object.
+- Ensure `patchMyProfile` correctly handles the `phone` field updates (uniqueness check and validation), similar to the existing email logic.
+
 ### [Frontend - Android]
 
-#### [MODIFY] [AccountAddressAdapter.java](file:///D:/KanilaApp/frontend/app/src/main/java/ui/account/AccountAddressAdapter.java)
-- Add `onAddressSelected(AddressDto address)` to `OnAddressActionListener`.
-- Add a `selectionMode` property to toggle RadioButton visibility and item selection behavior.
-- Update `onBindViewHolder` to show/hide the radio button based on `selectionMode`.
-- Handle item clicks in selection mode to trigger `onAddressSelected`.
+#### [MODIFY] [ProfileHubDto.java](file:///D:/KanilaApp/frontend/app/src/main/java/com/example/frontend/data/model/account/ProfileHubDto.java)
+- Add `registrationChannel` field to the `AccountInfo` nested class to store the registration method.
 
-#### [MODIFY] [CheckoutAddressFragment.java](file:///D:/KanilaApp/frontend/app/src/main/java/ui/commerce/CheckoutAddressFragment.java)
-- Replace `CheckoutAddressViewModel` with `AccountViewModel` for data loading and default address setting.
-- Replace `CheckoutAddressAdapter` with `AccountAddressAdapter`.
-- Set the adapter to `selectionMode(true)`.
-- Update `observeViewModel` to listen to `accountViewModel.getAccountAddressesResult()`.
-- Implement `onAddressSelected` to:
-    1. Show a confirmation dialog.
-    2. Call `accountViewModel.setDefaultAccountAddress()`.
-- Observe `accountViewModel.getSetDefaultAccountAddressResult()`:
-    - On success: Update `checkoutViewModel.setSelectedAddress()` and pop the fragment to return to the Checkout screen.
+#### [MODIFY] [page_profile_overview.xml](file:///D:/KanilaApp/frontend/app/src/main/res/layout/page_profile_overview.xml)
+- Add `ic_chevron_right` icons to the Email and Phone rows.
+- Set IDs for these chevrons (e.g., `ivEmailChevron`, `ivPhoneChevron`) so their visibility can be toggled in code.
 
-#### [MODIFY] [AccountAddressFragment.java](file:///D:/KanilaApp/frontend/app/src/main/java/ui/account/AccountAddressFragment.java)
-- Update the `OnAddressActionListener` implementation to include the new `onAddressSelected` method (can be empty).
+#### [MODIFY] [ProfileOverviewFragment.java](file:///D:/KanilaApp/frontend/app/src/main/java/ui/account/ProfileOverviewFragment.java)
+- Update `bindData` to store the `registrationChannel` and toggle the visibility of the Email/Phone chevrons based on whether they are editable.
+- Update `tvEmailValue` click listener:
+    - If `registrationChannel` is "email", show a toast: "Email đăng ký không thể thay đổi".
+    - Otherwise, allow editing.
+- Update `tvPhoneValue` click listener:
+    - If `registrationChannel` is "phone", show a toast: "Số điện thoại đăng ký không thể thay đổi".
+    - Otherwise, allow adding/editing.
+- Ensure the `phone` is correctly passed in the request body in `saveProfile`.
 
 ## Verification Plan
 
 ### Manual Verification
-1. **Consistency Check**:
-   - Go to "My Addresses" in Account.
-   - Go to "Select other address" in Checkout.
-   - Verify both lists look identical and have the same addresses.
-2. **Selection Flow**:
-   - In Checkout -> "Select other address", click an address.
-   - Confirm selection in the dialog.
-   - Verify it returns to Checkout with the selected address.
-   - Return to Account -> "My Addresses" and verify that address is now the default one.
-3. **Set Default Flow**:
-   - In either page, click "Set Default".
-   - Verify it updates immediately on both pages.
+1. **Email-registered Account**:
+    - Log in with an email account.
+    - Go to Personal Profile.
+    - Verify that the Email row has no chevron and shows a toast when clicked.
+    - Verify that the Phone row has a chevron and opens an edit dialog when clicked.
+    - Add a phone number and save. Verify the update is successful.
+2. **Phone-registered Account**:
+    - Log in with a phone account.
+    - Go to Personal Profile.
+    - Verify that the Phone row has no chevron and shows a toast when clicked.
+    - Verify that the Email row has a chevron and opens an edit dialog when clicked.
+    - Add an email and save. Verify the update is successful.

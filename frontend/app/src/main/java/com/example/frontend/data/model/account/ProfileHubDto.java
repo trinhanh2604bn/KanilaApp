@@ -51,6 +51,9 @@ public class ProfileHubDto {
         @SerializedName(value = "avatarUrl", alternate = {"avatar", "profile_image", "avatar_url"})
         private String avatarUrl;
 
+        @SerializedName("registrationChannel")
+        private String registrationChannel;
+
         public String getCustomerId() { return customerId; }
         public String getFullName() { return fullName; }
         public String getEmail() { return email; }
@@ -58,6 +61,7 @@ public class ProfileHubDto {
         public String getPhone() { return phone; }
         public String getGender() { return gender; }
         public String getBirthday() { return birthday; }
+        public String getRegistrationChannel() { return registrationChannel; }
     }
 
     public static class LoyaltyInfo {

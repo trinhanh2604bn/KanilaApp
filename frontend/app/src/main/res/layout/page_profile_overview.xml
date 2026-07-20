@@ -166,6 +166,15 @@
                         android:text="minhanh.nguyen@gmail.com"
                         android:textAppearance="@style/H3"
                         android:textColor="@color/text_main" />
+
+                    <ImageView
+                        android:id="@+id/ivEmailChevron"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/ic_chevron_right"
+                        android:visibility="gone"
+                        app:tint="@color/text_tertiary" />
                 </LinearLayout>
 
                 <View
@@ -199,6 +208,15 @@
                         android:text="0901 234 567"
                         android:textAppearance="@style/H3"
                         android:textColor="@color/text_main" />
+
+                    <ImageView
+                        android:id="@+id/ivPhoneChevron"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/ic_chevron_right"
+                        android:visibility="gone"
+                        app:tint="@color/text_tertiary" />
                 </LinearLayout>
 
                 <View

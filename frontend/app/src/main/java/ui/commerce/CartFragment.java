@@ -676,6 +676,17 @@ public class CartFragment extends Fragment {
                 }
 
                 // 4. Tiến hành chuyển sang trang Checkout (Đã đăng nhập)
+                if (!com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                    com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.START_CHECKOUT,
+                            "Cart",
+                            0,
+                            null
+                    );
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
+                    return;
+                }
+
                 if (getActivity() != null) {
                     CheckoutFragment checkoutFragment = new CheckoutFragment();
                     Bundle args = new Bundle();

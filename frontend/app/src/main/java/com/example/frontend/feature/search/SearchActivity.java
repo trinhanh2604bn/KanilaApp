@@ -505,7 +505,13 @@ public class SearchActivity extends AppCompatActivity {
         sectionSearchHistory.setVisibility(View.GONE);
         sectionRecommendProducts.setVisibility(View.GONE);
 
-        viewModel.searchProducts(trimmed);
+        // Navigate to MainActivity with search result fragment
+        Intent intent = new Intent(this, com.example.frontend.MainActivity.class);
+        intent.putExtra("TARGET_FRAGMENT", "search_results");
+        intent.putExtra("search_query", trimmed);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -527,8 +533,12 @@ public class SearchActivity extends AppCompatActivity {
 
     private void navigateToProduct(Product product) {
         if (product == null || product.getId() == null) return;
-        // Product navigation — extend when ProductDetailActivity is wired
-        Toast.makeText(this, product.getName(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, com.example.frontend.MainActivity.class);
+        intent.putExtra("TARGET_FRAGMENT", "product_detail");
+        intent.putExtra("product_id", product.getId());
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
     }
 
     private void handleAddToCart(Product product) {

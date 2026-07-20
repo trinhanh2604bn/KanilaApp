@@ -54,11 +54,21 @@ public class HelpCenterFragment extends Fragment {
         View faq1 = view.findViewById(R.id.faq1);
         TextView tv1 = faq1.findViewById(R.id.tvFaqQuestion);
         tv1.setText(questions.get(0).question);
+        
+        // Show status for the first question if available
+        TextView tvStatus1 = faq1.findViewById(R.id.tvFaqStatus);
+        if (tvStatus1 != null && questions.get(0).status != null) {
+            tvStatus1.setVisibility(View.VISIBLE);
+            tvStatus1.setText(getStatusText(questions.get(0).status));
+            tvStatus1.setTextColor(getStatusColor(questions.get(0).status));
+        }
+
         faq1.setOnClickListener(v -> replaceFragment(FaqDetailFragment.newInstance(questions.get(0).question, questions.get(0).answer)));
 
         // FAQ 2-5
         int[] ids = {R.id.faq2, R.id.faq3, R.id.faq4, R.id.faq5};
         int[] tvIds = {R.id.tvFaq2, R.id.tvFaq3, R.id.tvFaq4, R.id.tvFaq5};
+        int[] statusIds = {R.id.tvFaqStatus2, R.id.tvFaqStatus3, R.id.tvFaqStatus4, R.id.tvFaqStatus5};
 
         for (int i = 0; i < ids.length; i++) {
             int qIndex = i + 1; // Start from the second user question
@@ -66,8 +76,34 @@ public class HelpCenterFragment extends Fragment {
                 View faqView = view.findViewById(ids[i]);
                 TextView tv = view.findViewById(tvIds[i]);
                 tv.setText(questions.get(qIndex).question);
+                
+                TextView tvStatus = view.findViewById(statusIds[i]);
+                if (tvStatus != null && questions.get(qIndex).status != null) {
+                    tvStatus.setVisibility(View.VISIBLE);
+                    tvStatus.setText(getStatusText(questions.get(qIndex).status));
+                    tvStatus.setTextColor(getStatusColor(questions.get(qIndex).status));
+                }
+
                 faqView.setOnClickListener(v -> replaceFragment(FaqDetailFragment.newInstance(questions.get(qIndex).question, questions.get(qIndex).answer)));
             }
+        }
+    }
+
+    private String getStatusText(FaqViewModel.FaqStatus status) {
+        switch (status) {
+            case PENDING: return "Đang chờ";
+            case PROCESSING: return "Đang xử lý";
+            case ANSWERED: return "Đã trả lời";
+            default: return "";
+        }
+    }
+
+    private int getStatusColor(FaqViewModel.FaqStatus status) {
+        switch (status) {
+            case PENDING: return android.graphics.Color.parseColor("#FF9800");
+            case PROCESSING: return android.graphics.Color.parseColor("#2196F3");
+            case ANSWERED: return android.graphics.Color.parseColor("#2E9D62");
+            default: return android.graphics.Color.GRAY;
         }
     }
 

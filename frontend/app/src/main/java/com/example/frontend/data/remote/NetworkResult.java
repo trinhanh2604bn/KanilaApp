@@ -43,6 +43,10 @@ public class NetworkResult<T> {
         return new NetworkResult<>(Status.ERROR, null, message);
     }
 
+    public static <T> NetworkResult<T> error(@NonNull String message, @Nullable T data) {
+        return new NetworkResult<>(Status.ERROR, data, message);
+    }
+
     public static <T> NetworkResult<T> noInternet() {
         return new NetworkResult<>(Status.NO_INTERNET, null, "No internet connection");
     }

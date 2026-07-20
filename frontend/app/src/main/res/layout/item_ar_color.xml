@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="48dp"
+    android:layout_height="48dp"
+    android:layout_marginEnd="12dp">
+
+    <!-- The actual color circle -->
+    <View
+        android:id="@+id/viewColor"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_color_circle" />
+
+    <!-- The selection ring -->
+    <View
+        android:id="@+id/viewSelectionRing"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_color_circle_selected"
+        android:visibility="gone" />
+
+</FrameLayout>

@@ -51,13 +51,23 @@ public class ArCameraController {
         }, ContextCompat.getMainExecutor(context));
     }
 
+    private Preview.SurfaceProvider customSurfaceProvider = null;
+
+    public void setCustomSurfaceProvider(Preview.SurfaceProvider provider) {
+        this.customSurfaceProvider = provider;
+    }
+
     private void bindCameraUseCases(@NonNull ProcessCameraProvider cameraProvider) {
         CameraSelector cameraSelector = new CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
                 .build();
 
         Preview preview = new Preview.Builder().build();
-        preview.setSurfaceProvider(previewView.getSurfaceProvider());
+        // GPU mode: route to LipGlSurfaceView; Canvas mode: route to PreviewView
+        Preview.SurfaceProvider provider = (customSurfaceProvider != null)
+                ? customSurfaceProvider
+                : previewView.getSurfaceProvider();
+        preview.setSurfaceProvider(provider);
 
         ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)

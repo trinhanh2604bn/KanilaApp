@@ -164,6 +164,26 @@ public class FaqTopicFragment extends Fragment {
             FaqViewModel.FaqItemData item = items.get(position);
             holder.tvQuestion.setText(item.question);
 
+            if (item.status != null) {
+                holder.tvStatus.setVisibility(View.VISIBLE);
+                switch (item.status) {
+                    case PENDING:
+                        holder.tvStatus.setText("Đang chờ");
+                        holder.tvStatus.setTextColor(android.graphics.Color.parseColor("#FF9800"));
+                        break;
+                    case PROCESSING:
+                        holder.tvStatus.setText("Đang xử lý");
+                        holder.tvStatus.setTextColor(android.graphics.Color.parseColor("#2196F3"));
+                        break;
+                    case ANSWERED:
+                        holder.tvStatus.setText("Đã trả lời");
+                        holder.tvStatus.setTextColor(android.graphics.Color.parseColor("#2E9D62"));
+                        break;
+                }
+            } else {
+                holder.tvStatus.setVisibility(View.GONE);
+            }
+
             holder.itemView.setOnClickListener(v -> FragmentNavigationHelper.replaceFragment(requireActivity(), 
                     FaqDetailFragment.newInstance(item.question, item.answer)));
         }
@@ -175,10 +195,12 @@ public class FaqTopicFragment extends Fragment {
 
         class ViewHolder extends RecyclerView.ViewHolder {
             TextView tvQuestion;
+            TextView tvStatus;
 
             ViewHolder(View view) {
                 super(view);
                 tvQuestion = view.findViewById(R.id.tvFaqQuestion);
+                tvStatus = view.findViewById(R.id.tvFaqStatus);
             }
         }
     }

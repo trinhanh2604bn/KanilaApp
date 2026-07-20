@@ -64,16 +64,51 @@
         <!-- Product Image -->
         <ImageView
             android:id="@+id/ivProductImage"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_marginTop="8dp"
-            android:scaleType="centerInside"
+            android:scaleType="centerCrop"
             android:contentDescription="@string/product_image_desc"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btnWishlist"
             tools:src="@drawable/ic_product" />
+
+        <!-- Match Score Badge -->
+        <TextView
+            android:id="@+id/tvMatchScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_recommendation_highlight"
+            android:textColor="@color/primary"
+            android:textSize="10sp"
+            android:fontFamily="@font/nunito_bold"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@id/ivProductImage"
+            app:layout_constraintBottom_toBottomOf="@id/ivProductImage"
+            tools:text="Phù hợp 95%"
+            tools:visibility="visible" />
+
+        <!-- Kanila Beauty AI Badge -->
+        <TextView
+            android:id="@+id/tvKanilaBeautyBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_kanila_beauty_badge"
+            android:textColor="@color/white"
+            android:textSize="9sp"
+            android:fontFamily="@font/nunito_bold"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone"
+            android:text="✨ Kanila AI"
+            app:layout_constraintStart_toStartOf="@id/ivProductImage"
+            app:layout_constraintBottom_toTopOf="@id/tvMatchScore"
+            tools:visibility="visible" />
 
         <!-- Brand Name -->
         <TextView
@@ -119,36 +154,8 @@
             app:layout_constraintTop_toBottomOf="@id/tvProductName"
             tools:text="Chăm sóc da mặt" />
 
-        <!-- Rating Section -->
-        <LinearLayout
-            android:id="@+id/layoutRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:gravity="center_vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvProductCategory">
-
-            <RatingBar
-                android:id="@+id/tvProductRating"
-                style="?android:attr/ratingBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:numStars="5"
-                android:progressTint="@color/button"
-                android:rating="4.5"
-                android:isIndicator="true"/>
-
-            <TextView
-                android:id="@+id/tvProductReviewCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:fontFamily="@font/nunito_regular"
-                android:textColor="@color/text_secondary"
-                android:textSize="10sp"
-                tools:text="(1.2k)" />
-        </LinearLayout>
+        <!-- Rating Section (Old) -->
+        <!-- Removed or kept hidden if needed, we'll just leave it and hide it in adapter if needed, but since we are replacing tvProductRating, we must remove it -->
 
         <!-- Price Section -->
         <LinearLayout
@@ -160,7 +167,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toStartOf="@id/btnAddToCart"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layoutRating">
+            app:layout_constraintTop_toBottomOf="@id/tvProductCategory">
 
             <TextView
                 android:id="@+id/tvProductPrice"
@@ -182,6 +189,36 @@
                 android:alpha="0.6"
                 android:visibility="gone"
                 tools:text="600.000đ" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutRatingReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutProductPriceContainer">
+            
+            <TextView
+                android:id="@+id/tvProductRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textColor="@color/status_pending_text"
+                android:fontFamily="@font/nunito_bold"
+                tools:text="★ 4.7" />
+            
+            <TextView
+                android:id="@+id/tvProductReviewCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textColor="@color/text_tertiary"
+                android:fontFamily="@font/nunito_regular"
+                android:layout_marginStart="4dp"
+                tools:text="(120)" />
         </LinearLayout>
 
         <!-- Add to Cart Button (Default) -->
@@ -213,7 +250,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layoutProductPriceContainer"
+            app:layout_constraintTop_toBottomOf="@id/layoutRatingReview"
             tools:text="Phù hợp vì bạn cần son đi học dưới 300k, màu tự nhiên" />
 
         <!-- Chat Actions (Chat context) -->
@@ -222,30 +259,52 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvMatchedReason">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnChatViewDetail"
-                style="@style/Widget.Kanila.Button.Primary"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:text="@string/chat_view_product"
-                android:textSize="11sp" />
+            <!-- Primary actions row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnChatAddToCart"
-                style="@style/Widget.Kanila.Button.Secondary"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_weight="1"
-                android:text="@string/chat_add_to_cart"
-                android:textSize="11sp" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnChatViewDetail"
+                    style="@style/Widget.Kanila.Button.Primary"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/chat_view_product"
+                    android:textSize="11sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnChatAddToCart"
+                    style="@style/Widget.Kanila.Button.Secondary"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:text="@string/chat_add_to_cart"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- Why recommend button – only shown when reason exists -->
+            <TextView
+                android:id="@+id/btnWhyRecommend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:drawablePadding="4dp"
+                android:fontFamily="@font/nunito_bold"
+                android:text="💡 Tại sao được gợi ý?"
+                android:textColor="@color/button"
+                android:textSize="12sp"
+                android:visibility="gone"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="4dp" />
         </LinearLayout>
 
         <!-- Find Similar Action -->

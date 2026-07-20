@@ -20,15 +20,15 @@ const {
   buildProductComparisonMessage,
   buildIngredientMessage,
   buildMakeupProductContextMessage,
+  buildMakeupAnalysisPrompt,
   buildSkinAnalysisPrompt,
 } = require("./chatbot.prompt");
 
-const GEMINI_TIMEOUT_MS = 60000;
 /**
- * Internal: run a Gemini chat call with timeout protection.
+ * Internal: run a Gemini chat call.
  */
 async function _geminiChatWithTimeout(message, history = [], customConfig = {}) {
-  const geminiPromise = (async () => {
+  try {
     const { client, model } = getVertexClient();
     const config = {
       systemInstruction: KANILA_SYSTEM_PROMPT,
@@ -41,20 +41,8 @@ async function _geminiChatWithTimeout(message, history = [], customConfig = {}) 
     });
     const result = await chat.sendMessage({ message });
     return result.text;
-  })();
-
-  const timeoutPromise = new Promise((_, reject) => {
-    setTimeout(() => {
-      const err = new Error("Gemini API request timed out.");
-      err.code = "CHATBOT_TIMEOUT";
-      reject(err);
-    }, GEMINI_TIMEOUT_MS);
-  });
-
-  try {
-    return await Promise.race([geminiPromise, timeoutPromise]);
   } catch (err) {
-    if (err.code === "CHATBOT_CONFIG_ERROR" || err.code === "CHATBOT_TIMEOUT") throw err;
+    if (err.code === "CHATBOT_CONFIG_ERROR") throw err;
     console.error("[Gemini] Provider error:", err.message);
     const wrapped = new Error("Gemini provider encountered an error.");
     wrapped.code = "CHATBOT_ERROR";
@@ -66,28 +54,12 @@ async function _geminiChatWithTimeout(message, history = [], customConfig = {}) 
  * Internal: run a standalone Gemini generation without Chatbot system prompt.
  */
 async function _geminiGenerateTextWithTimeout(prompt) {
-  const geminiPromise = (async () => {
-    const { client, model } = getVertexClient();
-    const response = await client.models.generateContent({
-      model: model,
-      contents: prompt
-    });
-    return response.text;
-  })();
-
-  const timeoutPromise = new Promise((_, reject) => {
-    setTimeout(() => {
-      const err = new Error("Gemini API request timed out.");
-      err.code = "CHATBOT_TIMEOUT";
-      reject(err);
-    }, GEMINI_TIMEOUT_MS);
+  const { client, model } = getVertexClient();
+  const response = await client.models.generateContent({
+    model: model,
+    contents: prompt
   });
-
-  try {
-    return await Promise.race([geminiPromise, timeoutPromise]);
-  } catch (err) {
-    throw err;
-  }
+  return response.text;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -145,19 +117,7 @@ async function generateTicketConfirmation(ticket, userMessage, history = []) {
   return _geminiChatWithTimeout(messageWithContext, history);
 }
 
-module.exports = {
-  generateChatReply,
-  generateProductExplanation,            // Phase 2A — kept for compat
-  generatePersonalizedProductExplanation, // Phase 4A
-  generateMissingInfoQuestion,            // Phase 4A
-  generateOrderExplanation,              // Phase 3A
-  generateTicketConfirmation,            // Phase 3A
-  generateCartExplanation,               // Phase 5A
-  generateCartActionConfirmation,        // Phase 5A
-  generateCartSummaryReply,              // Phase 5A
-  generateBeautyConsultationReply,       // Phase 5 shopping assistant
-  generateComboExplanation,              // Phase 5 shopping assistant
-};
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Phase 5A cart functions
@@ -266,6 +226,62 @@ async function generateMakeupReply(contextMessage, history = []) {
 }
 
 /**
+ * Phase 9: Generate a makeup reply with detailed JSON AI analysis for each product.
+ * Returns an object with { overview, followUp, productAnalysis }.
+ */
+async function generateMakeupReplyWithAnalysis(contextMessage, history = []) {
+  let rawText = "";
+  try {
+    rawText = await _geminiChatWithTimeout(contextMessage, history, {
+      responseMimeType: "application/json",
+    });
+    
+    let parsed = null;
+    
+    // 1. Try JSON.parse directly
+    try {
+      parsed = JSON.parse(rawText);
+    } catch (e1) {
+      // 2. Try extract JSON from markdown code blocks
+      const codeBlockMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+      if (codeBlockMatch) {
+        try {
+          parsed = JSON.parse(codeBlockMatch[1]);
+        } catch (e2) {}
+      }
+      
+      // 3. Try regex extract
+      if (!parsed) {
+        const regexMatch = rawText.match(/\{[\s\S]*\}/);
+        if (regexMatch) {
+          try {
+            parsed = JSON.parse(regexMatch[0]);
+          } catch (e3) {}
+        }
+      }
+    }
+
+    if (!parsed) {
+      throw new Error("Failed all JSON parsing attempts");
+    }
+    
+    return {
+      overview: parsed.overview || "Mình đã tìm được một số sản phẩm phù hợp cho bạn.",
+      followUp: parsed.follow_up || "Bạn muốn xem chi tiết sản phẩm nào?",
+      productAnalysis: Array.isArray(parsed.product_analysis) ? parsed.product_analysis : [],
+    };
+  } catch (error) {
+    console.error("[Gemini] generateMakeupReplyWithAnalysis error:", error.message);
+    // 4. Use rawText as overview if available
+    return {
+      overview: rawText || "Mình đã tìm thấy một số sản phẩm phù hợp. Bạn xem thử nhé!",
+      followUp: "Bạn cần mình tư vấn thêm về sản phẩm nào không?",
+      productAnalysis: [],
+    };
+  }
+}
+
+/**
  * Generate Skin Analysis for CustomerBeautyProfile
  */
 async function generateSkinAnalysis(profile, products = []) {
@@ -298,5 +314,6 @@ module.exports = {
   generateIngredientReply,
   // Phase 8: Makeup Commerce
   generateMakeupReply,
+  generateMakeupReplyWithAnalysis,
   generateSkinAnalysis,
 };

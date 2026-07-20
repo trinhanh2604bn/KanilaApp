@@ -23,7 +23,7 @@ import com.example.frontend.data.model.address.AddressDto;
 import com.example.frontend.data.model.checkout.CheckoutSessionDto;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.data.remote.TokenManager;
-import com.example.frontend.feature.checkout.CheckoutAddressViewModel;
+import com.example.frontend.feature.account.AccountViewModel;
 import com.example.frontend.feature.checkout.CheckoutViewModel;
 import com.example.frontend.feature.checkout.ShippingViewModel;
 import com.example.frontend.data.model.shipping.ShippingMethodDto;
@@ -40,7 +40,7 @@ import java.util.Map;
 public class CheckoutFragment extends Fragment {
 
     private CheckoutViewModel viewModel;
-    private CheckoutAddressViewModel addressViewModel;
+    private AccountViewModel accountViewModel;
     private ShippingViewModel shippingViewModel;
     private LinearLayout layoutCheckoutItemsList;
     private TextView tvSubtotal, tvShipping, tvDiscount, tvTotal;
@@ -66,7 +66,7 @@ public class CheckoutFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(requireActivity()).get(CheckoutViewModel.class);
-        addressViewModel = new ViewModelProvider(requireActivity()).get(CheckoutAddressViewModel.class);
+        accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
         shippingViewModel = new ViewModelProvider(requireActivity()).get(ShippingViewModel.class);
 
         initViews(view);
@@ -96,7 +96,7 @@ public class CheckoutFragment extends Fragment {
         shippingViewModel.loadShippingMethods();
 
         if (TokenManager.getInstance(requireContext()).isLoggedIn()) {
-            addressViewModel.loadCustomerAddresses();
+            accountViewModel.loadAccountAddresses();
         }
     }
 
@@ -238,7 +238,7 @@ public class CheckoutFragment extends Fragment {
             }
         });
 
-        addressViewModel.getSaveResult().observe(getViewLifecycleOwner(), result -> {
+        accountViewModel.getAddAccountAddressResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             switch (result.status) {
                 case LOADING:
@@ -249,8 +249,8 @@ public class CheckoutFragment extends Fragment {
                     if (result.data != null) {
                         viewModel.setSelectedAddress(result.data);
                     }
-                    addressViewModel.loadCustomerAddresses();
-                    addressViewModel.clearSaveResult();
+                    accountViewModel.loadAccountAddresses();
+                    accountViewModel.resetAddAccountAddressResult();
                     toggleAddressForm(false);
                     Toast.makeText(getContext(), "Đã lưu địa chỉ vào danh sách", Toast.LENGTH_SHORT).show();
                     break;
@@ -261,22 +261,28 @@ public class CheckoutFragment extends Fragment {
             }
         });
 
-        addressViewModel.getAddressResult().observe(getViewLifecycleOwner(), result -> {
+        accountViewModel.getAccountAddressesResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null || result.status != NetworkResult.Status.SUCCESS || result.data == null) return;
             if (result.data.isEmpty()) {
                 viewModel.setSelectedAddress(null);
                 return;
             }
-            if (viewModel.getSelectedAddress().getValue() != null) return;
 
+            // Tìm địa chỉ mặc định trong danh sách
+            AddressDto defaultAddr = null;
             for (AddressDto address : result.data) {
-                if (address != null && address.isDefaultShipping()) {
-                    viewModel.setSelectedAddress(address);
+                if (address != null && address.isDefault()) {
+                    defaultAddr = address;
                     break;
                 }
             }
 
-            if (viewModel.getSelectedAddress().getValue() == null && !result.data.isEmpty()) {
+            // Logic chọn địa chỉ:
+            // 1. Nếu có địa chỉ mặc định, luôn ưu tiên hiển thị nó lúc mới vào hoặc reload.
+            // 2. Nếu không có địa chỉ mặc định và hiện tại chưa có cái nào được chọn, lấy cái đầu tiên.
+            if (defaultAddr != null) {
+                viewModel.setSelectedAddress(defaultAddr);
+            } else if (viewModel.getSelectedAddress().getValue() == null && !result.data.isEmpty()) {
                 viewModel.setSelectedAddress(result.data.get(0));
             }
         });
@@ -679,7 +685,7 @@ public class CheckoutFragment extends Fragment {
             data.put("address_note", noteValue);
             data.put("address_type", "other");
 
-            addressViewModel.addAddress(data);
+            accountViewModel.addAccountAddress(data);
         } else {
             AddressDto address = new AddressDto();
             address.setRecipientName(name);

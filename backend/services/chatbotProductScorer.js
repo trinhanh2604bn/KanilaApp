@@ -305,7 +305,13 @@ function buildExplanations(product, context, breakdown, needReasons) {
 
   const matchedReason = parts.length > 0
     ? parts.join(", ") + "."
-    : "Sản phẩm phù hợp với nhu cầu của bạn.";
+    : (() => {
+        const r = product.rating || product.averageRating;
+        const brand = product.brand_name || product.brandName;
+        const cat = product.category_name;
+        const fallback = [cat, brand, r >= 4.5 ? `đánh giá ${r.toFixed(1)}★` : null].filter(Boolean);
+        return fallback.length > 0 ? fallback.join(", ") + "." : "Sản phẩm phù hợp với bạn.";
+      })();
 
   // suggestedUse — based on occasion/skinType
   let suggestedUse = "Thoa đều lên da đã dưỡng ẩm.";
@@ -333,7 +339,22 @@ function buildExplanations(product, context, breakdown, needReasons) {
 
   const whyRecommended = whyParts.length > 0
     ? `Phù hợp với bạn vì: ${whyParts.join(", ")}.`
-    : "Sản phẩm phù hợp với nhu cầu makeup của bạn.";
+    : (() => {
+        // Build a fallback from product attributes when no user context
+        const fallbackParts = [];
+        if (product.category_name) fallbackParts.push(`đây là ${product.category_name} chất lượng`);
+        if (product.brand_name || product.brandName) {
+          fallbackParts.push(`từ thương hiệu ${product.brand_name || product.brandName} uy tín`);
+        }
+        const r = product.rating || product.averageRating;
+        if (r >= 4.5) fallbackParts.push(`được đánh giá cao ${r.toFixed(1)}★`);
+        if (product.compare_at_price > product.price || product.compareAtPrice > product.price) {
+          fallbackParts.push(`đang giảm giá hấp dẫn`);
+        }
+        return fallbackParts.length > 0
+          ? `Sản phẩm ${fallbackParts.join(", ")}.`
+          : "Sản phẩm phù hợp với nhu cầu makeup của bạn.";
+      })();
 
   return { matchedReason, suggestedUse, whyRecommended };
 }

@@ -82,10 +82,10 @@ public class ReelsFeedFragment extends Fragment {
                 if (tm.isLoggedIn()) {
                     if (tm.isKoc()) {
                         // Nếu đã là KOC, chuyển tới Dashboard (Creator Center)
-                        ui.common.FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.account.KocDashboardFragment());
+                        ui.common.FragmentNavigationHelper.loadFragment(requireActivity(), new ui.account.KocDashboardFragment());
                     } else {
                         // Nếu chưa là KOC, chuyển tới trang đăng ký KOC
-                        ui.common.FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.account.KocRegistrationFragment());
+                        ui.common.FragmentNavigationHelper.loadFragment(requireActivity(), new ui.account.KocRegistrationFragment());
                     }
                 } else {
                     // Yêu cầu đăng nhập nếu chưa login

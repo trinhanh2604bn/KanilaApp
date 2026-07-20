@@ -211,9 +211,9 @@ public class HomeFragment extends Fragment {
                 com.example.frontend.data.remote.TokenManager tm = com.example.frontend.data.remote.TokenManager.getInstance(requireContext());
                 if (tm.isLoggedIn()) {
                     if (tm.isKoc()) {
-                        navigateToFragment(new KocDashboardFragment());
+                        FragmentNavigationHelper.loadFragment(requireActivity(), new KocDashboardFragment());
                     } else {
-                        navigateToFragment(new KocRegistrationFragment());
+                        FragmentNavigationHelper.loadFragment(requireActivity(), new KocRegistrationFragment());
                     }
                 } else {
                     com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(),

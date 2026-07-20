@@ -4,37 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
-
-    <TextView
-        android:id="@+id/tvReviewSectionTitle"
-        style="@style/Text.Kanila.H3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tóm tắt đánh giá sản phẩm"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/btnViewAllReviews"
-        style="@style/Text.Kanila.Caption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Xem tất cả"
-        android:textColor="@color/button"
-        app:layout_constraintBottom_toBottomOf="@id/tvReviewSectionTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tvReviewSectionTitle" />
+    android:paddingHorizontal="16dp"
+    android:paddingBottom="8dp">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardAiSummary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
         app:cardBackgroundColor="@color/background_sub"
         app:cardCornerRadius="12dp"
         app:cardElevation="0dp"
-        app:layout_constraintTop_toBottomOf="@id/tvReviewSectionTitle">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -55,8 +35,9 @@
                     app:tint="@color/button" />
 
                 <TextView
-                    style="@style/Text.Kanila.Micro"
+                    style="@style/Text.Kanila.Caption1"
                     android:layout_width="wrap_content"
+
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="Tóm tắt bởi Kanila AI"
@@ -65,7 +46,7 @@
 
             <TextView
                 android:id="@+id/tvAiSummaryText"
-                style="@style/Text.Kanila.Caption"
+                style="@style/Text.Kanila.Caption1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
@@ -80,8 +61,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvReviewMediaPreview"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
+        android:minHeight="60dp"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@id/cardAiSummary" />

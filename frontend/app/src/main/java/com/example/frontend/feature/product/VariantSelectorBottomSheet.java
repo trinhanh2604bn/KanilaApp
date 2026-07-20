@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +20,7 @@ import com.example.frontend.data.model.product.ProductVariantDto;
 import com.example.frontend.model.Product;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.ChipGroup;
 
 import java.util.List;
 import java.util.Locale;
@@ -43,7 +43,7 @@ public class VariantSelectorBottomSheet extends BottomSheetDialogFragment {
 
     private ImageView ivProduct;
     private TextView tvBrand, tvName, tvCurrentPrice, tvOriginalPrice, tvStock, tvQuantity;
-    private LinearLayout layoutColorOptions, layoutSizeOptions;
+    private ChipGroup layoutColorOptions, layoutSizeOptions;
     private MaterialButton btnApply;
     private View btnDecrease, btnIncrease;
 

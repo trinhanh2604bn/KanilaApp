@@ -1,0 +1,120 @@
+MONGO_URI: mongodb+srv://admin:admin@prod...
+Connecting...
+Connected!
+
+--- accounts ---
+  Documents: 173
+
+--- orders ---
+  Documents: 24
+
+--- order_totals ---
+  Documents: 20
+
+--- ordertotals ---
+  Documents: 0
+
+--- products ---
+  Documents: 73
+
+--- brands ---
+  Documents: 80
+
+--- categories ---
+  Documents: 33
+
+--- promotions ---
+  Documents: 20
+
+--- coupons ---
+  Documents: 25
+
+--- customers ---
+  Documents: 0
+
+--- customer_beauty_profiles ---
+  Documents: 27
+  skin_tone -> skin_color: 27
+  undertone -> skin_undertone: 27
+  budget_range -> budget: 27
+  finish_preference -> foundation_finish: 27
+  lip_color_preference -> lipstick_colors: 27
+  makeup_style -> makeup_styles: 27
+
+--- addresses ---
+  Documents: 0
+
+--- carts ---
+  Documents: 101
+
+--- cartitems ---
+  Documents: 0
+
+--- checkoutsessions ---
+  Documents: 0
+
+--- checkoutaddresses ---
+  Documents: 0
+
+--- checkoutshippingmethods ---
+  Documents: 0
+
+--- shippingmethods ---
+  Documents: 0
+
+--- paymentmethods ---
+  Documents: 0
+
+--- paymentintents ---
+  Documents: 0
+
+--- stockreservations ---
+  Documents: 0
+
+--- shipments ---
+  Documents: 0
+
+--- refunds ---
+  Documents: 0
+
+--- paymenttransactions ---
+  Documents: 0
+
+--- wishlists ---
+  Documents: 17
+
+--- loyaltyaccounts ---
+  Documents: 0
+
+--- couponredemptions ---
+  Documents: 0
+
+--- loyaltypointledgers ---
+  Documents: 0
+
+--- reviews ---
+  Documents: 2
+
+--- reviewvotes ---
+  Documents: 0
+
+--- returns ---
+  Documents: 0
+
+--- order_items ---
+  Documents: 45
+
+--- orderitems ---
+  Documents: 0
+
+--- order_addresses ---
+  Documents: 20
+
+--- order_status_history ---
+  Documents: 23
+
+=== VERIFICATION ===
+Order keys: _id, owner_type, guest_session_id, guest_email, guest_phone, guest_full_name, order_number, customer_id, checkout_session_id, currency_code, order_status, payment_status, fulfillment_status, customer_note, placed_at, confirmed_at, cancelled_at, completed_at, cancellation_reason, created_at, updated_at, __v
+Total keys: _id, order_id, subtotal_amount, item_discount_amount, order_discount_amount, shipping_fee_amount, tax_amount, grand_total_amount, refunded_amount, currency_code, created_at, updated_at, __v
+
+=== MIGRATION COMPLETE ===

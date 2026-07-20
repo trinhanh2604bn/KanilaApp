@@ -54,7 +54,7 @@ async function getCustomerAndSkinProfile(accountId) {
       profile: {
         is_new_profile: true,
         skin_types: beautyProfile.skin_type && beautyProfile.skin_type !== "unknown" ? [beautyProfile.skin_type] : [],
-        skin_tone: beautyProfile.skin_tone,
+        skin_color: beautyProfile.skin_color,
         concerns: beautyProfile.skin_concerns || [],
         sensitivity_level: beautyProfile.sensitivity_level,
         beauty_goals: beautyProfile.beauty_goals || [],
@@ -63,8 +63,8 @@ async function getCustomerAndSkinProfile(accountId) {
         preferred_brands: beautyProfile.preferred_brands || [],
         disliked_brands: beautyProfile.disliked_brands || [],
         texture_preference: beautyProfile.texture_preference || [],
-        finish_preference: beautyProfile.finish_preference || [],
-        budget_range: beautyProfile.budget_range,
+        foundation_finish: beautyProfile.foundation_finish ? [beautyProfile.foundation_finish] : [],
+        budget: beautyProfile.budget,
       },
     };
   }
@@ -75,7 +75,7 @@ async function getCustomerAndSkinProfile(accountId) {
     preference_key: {
       $in: [
         "skin_type",
-        "skin_tone",
+        "skin_color",
         "eye_color",
         "concerns",
         "ingredient_preferences",
@@ -89,15 +89,15 @@ async function getCustomerAndSkinProfile(accountId) {
   const profile = {
     is_new_profile: false,
     skin_types: toArray(map.get("skin_type")),
-    skin_tone: String((toArray(map.get("skin_tone"))[0] || "")).trim(),
+    skin_color: String((toArray(map.get("skin_color"))[0] || "")).trim(),
     concerns: toArray(map.get("concerns")),
     preferred_ingredients: toArray(map.get("ingredient_preferences")),
     avoid_ingredients: [],
     favorite_brands: toArray(map.get("favorite_brands")),
-    budget_range: String((toArray(map.get("price_range_preference"))[0] || "")).trim(),
+    budget: String((toArray(map.get("price_range_preference"))[0] || "")).trim(),
     beauty_goals: toArray(map.get("routine_goal")),
     texture_preference: [],
-    finish_preference: [],
+    foundation_finish: [],
   };
   return { customer, profile };
 }
@@ -259,11 +259,11 @@ function scoreProduct(product, productProfile, profile, behavior) {
     score_breakdown.texture += WEIGHTS.textureMatch;
     matched_attributes.push("texture_preference");
   }
-  const finishPrefs = toLowerSet(profile.finish_preference);
+  const finishPrefs = toLowerSet(profile.foundation_finish);
   if (pFinish && finishPrefs.has(pFinish.toLowerCase())) {
     score += WEIGHTS.finishMatch;
     score_breakdown.finish += WEIGHTS.finishMatch;
-    matched_attributes.push("finish_preference");
+    matched_attributes.push("foundation_finish");
   }
 
   // Ratings & Popularity
@@ -293,9 +293,16 @@ function scoreProduct(product, productProfile, profile, behavior) {
   }
 
   // Sensitivity Check
+  // Reference codes seeded from seed-beauty-references.js are: LOW, MEDIUM, HIGH, REACTIVE (uppercase)
+  // We also guard against lowercase variants stored by legacy chatbot writes.
   const sensitivity = profile.sensitivity_level;
-  if (sensitivity === "high" || sensitivity === "reactive") {
-    const isSensitiveFriendly = productProfile ? (productProfile.suitable_sensitivity_levels || []).includes(sensitivity) : product.is_sensitive_friendly;
+  const sensitivityUpper = sensitivity ? String(sensitivity).toUpperCase() : "";
+  if (sensitivityUpper === "HIGH" || sensitivityUpper === "REACTIVE") {
+    const isSensitiveFriendly = productProfile
+      ? (productProfile.suitable_sensitivity_levels || []).some(
+          (s) => String(s).toUpperCase() === sensitivityUpper
+        )
+      : product.is_sensitive_friendly;
     if (!isSensitiveFriendly) {
       score += WEIGHTS.sensitiveMismatch;
       score_breakdown.skin_type += WEIGHTS.sensitiveMismatch;

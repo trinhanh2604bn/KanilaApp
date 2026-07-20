@@ -51,6 +51,7 @@ public class ProfileOverviewFragment extends Fragment {
     private String currentPhone;
     private String currentBirthday;
     private String currentGender;
+    private String currentEmail;
 
     private Uri pendingCameraUri;
     private ActivityResultLauncher<Uri> takePictureLauncher;
@@ -153,6 +154,19 @@ public class ProfileOverviewFragment extends Fragment {
         btnChangeAvatar = view.findViewById(R.id.btnChangeAvatar);
         tvNameValue = view.findViewById(R.id.tvNameValue);
         tvEmailValue = view.findViewById(R.id.tvEmailValue);
+        tvEmailValue.setOnClickListener(v -> {
+            String emailValue = tvEmailValue.getText().toString();
+            if (!emailValue.isEmpty() && !"Chưa cập nhật".equals(emailValue)) {
+                Toast.makeText(getContext(), "Email đăng ký không thể thay đổi", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            showEditDialog("Email", "", value -> {
+                if (!value.isEmpty()) {
+                    tvEmailValue.setText(value);
+                    currentEmail = value;
+                }
+            });
+        });
         tvPhoneValue = view.findViewById(R.id.tvPhoneValue);
         tvBirthValue = view.findViewById(R.id.tvBirthValue);
         tvGenderValue = view.findViewById(R.id.tvGenderValue);
@@ -305,15 +319,24 @@ public class ProfileOverviewFragment extends Fragment {
         
         ProfileHubDto.AccountInfo profile = data.getProfile();
         tvNameValue.setText(profile.getFullName() != null ? profile.getFullName() : "Chưa cập nhật");
-        tvEmailValue.setText(profile.getEmail());
+        tvEmailValue.setText(profile.getEmail() != null && !profile.getEmail().isEmpty() ? profile.getEmail() : "Chưa cập nhật");
         tvPhoneValue.setText(profile.getPhone() != null ? profile.getPhone() : "Chưa cập nhật");
-        tvBirthValue.setText(profile.getBirthday() != null ? profile.getBirthday() : "Chưa cập nhật");
+        
+        // Convert ISO date (YYYY-MM-DD) from DB to UI format (DD/MM/YYYY)
+        String rawBirthday = profile.getBirthday();
+        if (rawBirthday != null && !rawBirthday.isEmpty()) {
+            currentBirthday = formatBirthdayForUI(rawBirthday);
+            tvBirthValue.setText(currentBirthday);
+        } else {
+            tvBirthValue.setText("Chưa cập nhật");
+        }
+        
         tvGenderValue.setText(profile.getGender() != null ? profile.getGender() : "Chưa cập nhật");
         
         currentFullName = profile.getFullName();
         currentPhone = profile.getPhone();
-        currentBirthday = profile.getBirthday();
         currentGender = profile.getGender();
+        currentEmail = profile.getEmail();
         
         if (profile.getAvatarUrl() != null && !profile.getAvatarUrl().isEmpty()) {
             if (ivAvatarLarge != null) ivAvatarLarge.setImageTintList(null);
@@ -325,6 +348,18 @@ public class ProfileOverviewFragment extends Fragment {
         }
     }
 
+    private String formatBirthdayForUI(String rawDate) {
+        try {
+            // ISO might include time like "1987-12-31T00:00:00.000Z"
+            String datePart = rawDate.contains("T") ? rawDate.split("T")[0] : rawDate;
+            String[] parts = datePart.split("-");
+            if (parts.length == 3) {
+                return parts[2] + "/" + parts[1] + "/" + parts[0];
+            }
+        } catch (Exception ignored) {}
+        return rawDate;
+    }
+
     private void saveProfile() {
         if (currentFullName == null || currentFullName.trim().isEmpty()) {
             Toast.makeText(getContext(), "Vui lòng nhập họ tên", Toast.LENGTH_SHORT).show();
@@ -332,14 +367,46 @@ public class ProfileOverviewFragment extends Fragment {
         }
 
         Map<String, Object> data = new HashMap<>();
+        
+        // Send both camelCase and snake_case to ensure backend compatibility
         data.put("fullName", currentFullName);
-        data.put("full_name", currentFullName); 
-        if (currentPhone != null) data.put("phone", currentPhone);
-        if (currentBirthday != null) data.put("birthday", currentBirthday);
-        if (currentGender != null) data.put("gender", currentGender);
-        if (pendingAvatarBase64 != null) data.put("avatar_url", pendingAvatarBase64);
+        data.put("full_name", currentFullName);
+
+        if (currentPhone != null) {
+            data.put("phone", currentPhone);
+            data.put("phoneNumber", currentPhone);
+        }
+
+        if (currentEmail != null && !currentEmail.isEmpty()) data.put("email", currentEmail);
+
+        if (currentBirthday != null && !currentBirthday.equals("Chưa cập nhật")) {
+            String isoDate = convertToISODate(currentBirthday);
+            data.put("birthday", isoDate);
+            data.put("date_of_birth", isoDate);
+        }
+        
+        if (currentGender != null) {
+            data.put("gender", currentGender);
+            data.put("sex", currentGender);
+        }
+        
+        if (pendingAvatarBase64 != null) {
+            data.put("avatar_url", pendingAvatarBase64);
+            data.put("avatar", pendingAvatarBase64);
+        }
         
         viewModel.updateProfile(data);
+    }
+
+    private String convertToISODate(String uiDate) {
+        try {
+            String[] parts = uiDate.split("/");
+            if (parts.length == 3) {
+                // From DD/MM/YYYY to YYYY-MM-DD
+                return parts[2] + "-" + parts[1] + "-" + parts[0];
+            }
+        } catch (Exception ignored) {}
+        return uiDate;
     }
 
     @Override

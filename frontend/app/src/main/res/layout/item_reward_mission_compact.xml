@@ -68,7 +68,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDoMission"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
+        style="@style/Widget.Kanila.Button.Pill"
         android:layout_width="wrap_content"
         android:layout_height="32dp"
         android:fontFamily="@font/nunito_bold"
@@ -76,7 +76,6 @@
         android:insetBottom="0dp"
         android:paddingHorizontal="@dimen/spacing_m"
         android:text="@string/reward_do_now"
-        android:textColor="@color/burgundy"
         android:textSize="11sp"
         android:visibility="gone"
         tools:visibility="visible" />

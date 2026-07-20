@@ -119,9 +119,8 @@ public class CheckoutViewModel extends AndroidViewModel {
                 // Update total
                 double subtotal = session.getSubtotalAmount() != null ? session.getSubtotalAmount() : 0.0;
                 double discount = session.getDiscountAmount() != null ? session.getDiscountAmount() : 0.0;
-                double points = session.getPointsAmount() != null ? session.getPointsAmount() : 0.0;
 
-                double total = subtotal + method.getShippingFee() - discount - points;
+                double total = subtotal + method.getShippingFee() - discount;
                 session.setTotalAmount(Math.max(0, total));
                 android.util.Log.d("CheckoutViewModel", "Mock session updated. New total: " + session.getTotalAmount());
 
@@ -227,13 +226,15 @@ public class CheckoutViewModel extends AndroidViewModel {
         placeOrderResult.setValue(null);
 
         if (USE_MOCK_CHECKOUT) {
-            // If already set by setMockDataFromCart (has items), don't overwrite
+            // If already set by updateCheckoutSession or setMockDataFromCart (has items), don't overwrite
             CheckoutSessionDto current = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
             if (current == null || current.getItems() == null || current.getItems().isEmpty()) {
                 android.util.Log.d("CheckoutViewModel", "Preparing default mock session (current is empty)");
-                checkoutSession.postValue(NetworkResult.success(createDefaultMockSession()));
+                checkoutSession.setValue(NetworkResult.success(createDefaultMockSession()));
             } else {
                 android.util.Log.d("CheckoutViewModel", "Skipping prepareCheckout: Session already has " + current.getItems().size() + " items");
+                // Explicitly notify observers to ensure UI updates with the existing data
+                checkoutSession.setValue(checkoutSession.getValue());
             }
             return;
         }
@@ -247,7 +248,7 @@ public class CheckoutViewModel extends AndroidViewModel {
 
     public void updateCheckoutSession(CheckoutSessionDto session) {
         if (session != null) {
-            checkoutSession.postValue(NetworkResult.success(session));
+            checkoutSession.setValue(NetworkResult.success(session));
         }
     }
 
@@ -265,9 +266,8 @@ public class CheckoutViewModel extends AndroidViewModel {
                 
                 double shipping = session.getShippingAmount() != null ? session.getShippingAmount() : 0.0;
                 double discount = session.getDiscountAmount() != null ? session.getDiscountAmount() : 0.0;
-                double points = session.getPointsAmount() != null ? session.getPointsAmount() : 0.0;
                 
-                double total = subtotal + shipping - discount - points;
+                double total = subtotal + shipping - discount;
                 session.setTotalAmount(Math.max(0, total));
                 
                 checkoutSession.setValue(NetworkResult.success(session));
@@ -300,7 +300,7 @@ public class CheckoutViewModel extends AndroidViewModel {
         }
     }
 
-    public void setMockDataFromCart(List<CartItemDto> selectedItems, double coinsDiscount, com.example.frontend.data.model.coupon.CouponDto selectedVoucher) {
+    public void setMockDataFromCart(List<CartItemDto> selectedItems, com.example.frontend.data.model.coupon.CouponDto selectedVoucher) {
         if (!USE_MOCK_CHECKOUT) return;
 
         // Try to get existing session to preserve shipping/address selection
@@ -369,13 +369,12 @@ public class CheckoutViewModel extends AndroidViewModel {
             discount = 0;
         }
 
-        double points = coinsDiscount;
         session.setDiscountAmount(discount);
-        session.setPointsAmount(points);
+        session.setPointsAmount(0.0);
         
         // 4. Calculate Total
         double shippingFee = session.getShippingAmount() != null ? session.getShippingAmount() : 0.0;
-        double total = subtotal + shippingFee - discount - points;
+        double total = subtotal + shippingFee - discount;
         if (total < 0) total = 0;
         session.setTotalAmount(total);
 

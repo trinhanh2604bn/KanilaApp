@@ -43,6 +43,12 @@
         <item name="android:textColor">@color/text_main</item>
         <item name="lineHeight">18dp</item>
     </style>
+    <style name="Text.Kanila.Caption1" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">@font/nunito_regular</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/text_main</item>
+        <item name="lineHeight">20dp</item>
+    </style>
 
     <style name="Text.Kanila.Micro" parent="TextAppearance.Material3.BodySmall">
         <item name="android:fontFamily">@font/nunito_medium</item>

@@ -48,6 +48,12 @@ const customerRecommendationSnapshotSchema = new mongoose.Schema(
 
     algorithm_version: { type: String, default: "rule_v1", index: true },
 
+    ai_analysis: {
+      health_score: { type: Number, default: null },
+      analysis_text: { type: String, default: null },
+      ideal_ingredients: { type: [String], default: [] }
+    },
+
     generated_at: { type: Date, default: Date.now, index: true },
     expires_at: { type: Date, default: null, index: true },
 

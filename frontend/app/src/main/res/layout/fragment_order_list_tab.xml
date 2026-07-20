@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_sub">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvOrderList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingVertical="@dimen/spacing_s"
+        tools:listitem="@layout/item_order_card" />
+
+    <include
+        android:id="@+id/layoutLoading"
+        layout="@layout/view_loading_state"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/layoutError"
+        layout="@layout/view_error_generic"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/layoutEmpty"
+        layout="@layout/view_empty_state"
+        android:visibility="gone" />
+
+</FrameLayout>

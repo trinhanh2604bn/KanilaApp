@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -29,11 +28,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
 import com.example.frontend.data.model.beauty.CustomerBeautyProfileDto;
+import com.example.frontend.data.model.recommendation.AiAnalysis;
+import com.example.frontend.data.model.recommendation.RecommendationData;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.feature.beauty.BeautyProfileViewModel;
+import com.example.frontend.feature.beauty.BeautyReferenceMapper;
+import com.example.frontend.feature.beauty.BeautyReferenceResolver;
 import com.example.frontend.feature.cart.CartViewModel;
+import com.example.frontend.feature.recommendation.RecommendationProductAdapter;
+import com.example.frontend.feature.recommendation.RecommendationViewModel;
 import com.example.frontend.model.Product;
 
+import ui.account.StepProductSuggestionsFragment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,17 +54,25 @@ public class BeautyProfileOverviewFragment extends Fragment {
     private ProgressBar progressProfile;
     private View layoutRecommendations;
     private RecyclerView rvRecommendedProducts;
-    private com.example.frontend.feature.home.HomeProductAdapter productAdapter;
+    private RecommendationProductAdapter productAdapter;
+    
+    // AI Analysis UI
+    private View layoutAiAnalysis, cardHealthScore;
+    private TextView tvScore, tvScoreStatus, tvAiVerdict, tvAiStats;
+    private ProgressBar progressScore;
+    
     private boolean isRecExpanded = false;
     private CustomerBeautyProfileDto currentProfile;
     private BeautyProfileViewModel viewModel;
+    private RecommendationViewModel recommendationViewModel;
     private CartViewModel cartViewModel;
     private final Map<String, Boolean> expandedSections = new HashMap<>();
     private final Handler ctaHandler = new Handler(Looper.getMainLooper());
     private boolean isCtaShown = false;
 
-    private int brandPink, darkText, grayBorder;
+    private int brandPink, darkText;
     private final List<SectionData> sections = new ArrayList<>();
+    private final Map<String, Integer> referenceIcons = new HashMap<>();
 
     public BeautyProfileOverviewFragment() {
         super(R.layout.fragment_beauty_profile_overview);
@@ -68,53 +82,130 @@ public class BeautyProfileOverviewFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(BeautyProfileViewModel.class);
+        recommendationViewModel = new ViewModelProvider(requireActivity()).get(RecommendationViewModel.class);
         cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
 
         initColors();
+        initIconMapping();
         initSectionData();
         setupViews(view);
         setupEvents(view);
         observeViewModel();
 
+        viewModel.loadReferences();
+        recommendationViewModel.fetchHomepageRecommendations();
+        
         NetworkResult<CustomerBeautyProfileDto> currentResult = viewModel.getProfileResult().getValue();
         if (currentResult == null) {
-            viewModel.loadProfile("me");
-            // If data is not available immediately, schedule CTA popup to show after a short delay
-            // This ensures the user isn't stuck waiting for a failing network call (like in your logs)
-            startCtaTimer();
+            String customerId = com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).getCustomerId();
+            viewModel.loadProfile(customerId);
         } else if (currentResult.status == NetworkResult.Status.SUCCESS) {
             bindProfileData(currentResult.data);
-        } else {
-            showCtaPopup();
         }
     }
 
-    private void startCtaTimer() {
-        ctaHandler.postDelayed(() -> {
-            if (isAdded() && !isCtaShown && (currentProfile == null || currentProfile.getSkinType() == null)) {
-                showCtaPopup();
-            }
-        }, 600); // Reduced delay to 0.6 seconds for faster interaction
+    private void initIconMapping() {
+        // Skin Type
+        referenceIcons.put("OILY_SKIN", R.drawable.ic_drops_filled);
+        referenceIcons.put("oily", R.drawable.ic_drops_filled);
+        referenceIcons.put("DRY_SKIN", R.drawable.ic_drops);
+        referenceIcons.put("dry", R.drawable.ic_drops);
+        referenceIcons.put("COMBINATION_SKIN", R.drawable.ic_skin_mixed);
+        referenceIcons.put("combination", R.drawable.ic_skin_mixed);
+        referenceIcons.put("NORMAL_SKIN", R.drawable.ic_skin_normal);
+        referenceIcons.put("normal", R.drawable.ic_skin_normal);
+        referenceIcons.put("SENSITIVE_SKIN", R.drawable.ic_skin_sensitive);
+        referenceIcons.put("sensitive", R.drawable.ic_skin_sensitive);
+        referenceIcons.put("UNKNOWN_SKIN", R.drawable.ic_unsure);
+        referenceIcons.put("unknown", R.drawable.ic_unsure);
+
+        // Concerns
+        referenceIcons.put("ACNE", R.drawable.ic_skin_acne);
+        referenceIcons.put("acne", R.drawable.ic_skin_acne);
+        referenceIcons.put("DARK_SPOT", R.drawable.ic_skin_spots);
+        referenceIcons.put("dark_spots", R.drawable.ic_skin_spots);
+        referenceIcons.put("MELASMA", R.drawable.ic_skin_spots);
+        referenceIcons.put("melasma", R.drawable.ic_skin_spots);
+        referenceIcons.put("DULLNESS", R.drawable.ic_skin_dullness);
+        referenceIcons.put("dullness", R.drawable.ic_skin_dullness);
+        referenceIcons.put("LARGE_PORES", R.drawable.ic_skin_pores);
+        referenceIcons.put("large_pores", R.drawable.ic_skin_pores);
+        referenceIcons.put("BLACKHEADS", R.drawable.ic_skin_acne);
+        referenceIcons.put("blackheads", R.drawable.ic_skin_acne);
+        referenceIcons.put("REDNESS", R.drawable.ic_skin_redness);
+        referenceIcons.put("redness", R.drawable.ic_skin_redness);
+        referenceIcons.put("DEHYDRATED", R.drawable.ic_drops);
+        referenceIcons.put("dehydrated", R.drawable.ic_drops);
+        referenceIcons.put("AGING", R.drawable.ic_skin_aging);
+        referenceIcons.put("wrinkles", R.drawable.ic_skin_aging);
+        referenceIcons.put("UNEVEN", R.drawable.ic_skin_mixed);
+        referenceIcons.put("uneven_texture", R.drawable.ic_skin_mixed);
+        referenceIcons.put("DAMAGED", R.drawable.ic_goal_recovery);
+        referenceIcons.put("damaged_barrier", R.drawable.ic_goal_recovery);
+        referenceIcons.put("SUN_DAMAGE", R.drawable.ic_sun);
+        referenceIcons.put("sun_damage", R.drawable.ic_sun);
+
+        // Sensitivity
+        referenceIcons.put("LOW_SENSITIVITY", R.drawable.ic_shield_star);
+        referenceIcons.put("low", R.drawable.ic_shield_star);
+        referenceIcons.put("MEDIUM_SENSITIVITY", R.drawable.ic_skin_sensitive);
+        referenceIcons.put("medium", R.drawable.ic_skin_sensitive);
+        referenceIcons.put("HIGH_SENSITIVITY", R.drawable.ic_alert);
+        referenceIcons.put("high", R.drawable.ic_alert);
+        referenceIcons.put("REACTIVE_SENSITIVITY", R.drawable.ic_skin_redness);
+        referenceIcons.put("reactive", R.drawable.ic_skin_redness);
+
+        // Finish
+        referenceIcons.put("NATURAL_FINISH", R.drawable.ic_face);
+        referenceIcons.put("natural", R.drawable.ic_face);
+        referenceIcons.put("BRIGHT_FINISH", R.drawable.ic_lightbulb);
+        referenceIcons.put("glowy", R.drawable.ic_lightbulb);
+        referenceIcons.put("WARM_FINISH", R.drawable.ic_sun);
+        referenceIcons.put("PINKISH_FINISH", R.drawable.ic_face);
+        referenceIcons.put("MATTE_FINISH", R.drawable.ic_face);
+        referenceIcons.put("matte", R.drawable.ic_face);
+        referenceIcons.put("dewy", R.drawable.ic_drops);
+
+        // Avoid
+        referenceIcons.put("FRAGRANCE", R.drawable.ic_drops);
+        referenceIcons.put("fragrance", R.drawable.ic_drops);
+        referenceIcons.put("ALCOHOL", R.drawable.ic_beaker);
+        referenceIcons.put("alcohol_denat", R.drawable.ic_beaker);
+        referenceIcons.put("ESSENTIAL_OIL", R.drawable.ic_drops);
+        referenceIcons.put("essential_oil", R.drawable.ic_drops);
+        referenceIcons.put("PARABEN", R.drawable.ic_beaker);
+        referenceIcons.put("paraben", R.drawable.ic_beaker);
+        referenceIcons.put("MINERAL_OIL", R.drawable.ic_drops);
+        referenceIcons.put("mineral_oil", R.drawable.ic_drops);
+        referenceIcons.put("SILICONE", R.drawable.ic_beaker);
+        referenceIcons.put("silicone", R.drawable.ic_beaker);
+        referenceIcons.put("SULFATE", R.drawable.ic_beaker);
+        referenceIcons.put("sulfate", R.drawable.ic_beaker);
+        referenceIcons.put("LANOLIN", R.drawable.ic_beaker);
+        referenceIcons.put("lanolin", R.drawable.ic_beaker);
+        referenceIcons.put("RETINOID", R.drawable.ic_beaker);
+        referenceIcons.put("retinoid", R.drawable.ic_beaker);
+        referenceIcons.put("HIGH_ACID", R.drawable.ic_beaker);
+        referenceIcons.put("aha_bha_high", R.drawable.ic_beaker);
+        
+        referenceIcons.put("BUDGET", R.drawable.ic_wallet);
     }
 
     private void initColors() {
         brandPink = ContextCompat.getColor(requireContext(), R.color.button);
         darkText = ContextCompat.getColor(requireContext(), R.color.accent_dark);
-        grayBorder = ContextCompat.getColor(requireContext(), R.color.border_divider);
     }
 
     private void initSectionData() {
         sections.clear();
-        sections.add(new SectionData("Loại da", new String[]{"Da dầu", "Da khô", "Da hỗn hợp", "Da thường", "Da nhạy cảm", "Chưa xác định"}, new int[]{R.drawable.ic_drops_filled, R.drawable.ic_drops, R.drawable.ic_skin_mixed, R.drawable.ic_skin_normal, R.drawable.ic_skin_sensitive, R.drawable.ic_unsure}, "Loại da quyết định nền tảng các sản phẩm dưỡng da của bạn."));
-        sections.add(new SectionData("Tình trạng da", new String[]{"Mụn", "Thâm mụn", "Nám, sạm màu", "Da xỉn màu", "Lỗ chân lông to", "Mụn đầu đen", "Da dễ đỏ", "Da thiếu nước", "Nếp nhăn, lão hóa", "Bề mặt da không mịn", "Hàng rào da yếu", "Da chịu tác động của nắng"}, new int[]{R.drawable.ic_skin_acne, R.drawable.ic_skin_spots, R.drawable.ic_skin_spots, R.drawable.ic_skin_dullness, R.drawable.ic_skin_pores, R.drawable.ic_skin_acne, R.drawable.ic_skin_redness, R.drawable.ic_drops, R.drawable.ic_skin_aging, R.drawable.ic_skin_mixed, R.drawable.ic_goal_recovery, R.drawable.ic_sun}, "Kanila sẽ chọn hoạt chất đặc trị riêng cho từng vấn đề bạn đang gặp phải."));
-        sections.add(new SectionData("Mức độ nhạy cảm", new String[]{"Ít nhạy cảm", "Dễ kích ứng nhẹ", "Rất nhạy cảm", "Dễ đỏ hoặc rát khi đổi sản phẩm"}, new int[]{R.drawable.ic_shield_star, R.drawable.ic_skin_sensitive, R.drawable.ic_alert, R.drawable.ic_skin_redness}, "Hồ sơ nhạy cảm giúp chúng mình loại bỏ các thành phần có nguy cơ kích ứng cao."));
-        sections.add(new SectionData("Màu da", new String[]{"Da rất sáng", "Da sáng", "Da trung bình", "Da ngăm", "Da sẫm màu"}, new int[]{R.drawable.ic_sun, R.drawable.ic_sun, R.drawable.ic_sun, R.drawable.ic_sun, R.drawable.ic_sun}, "Tone màu da giúp gợi ý kem nền và phấn phủ chuẩn xác hơn."));
-        sections.add(new SectionData("Sắc độ da", new String[]{"Sắc lạnh", "Sắc ấm", "Sắc trung tính", "Sắc ô liu", "Chưa xác định"}, new int[]{R.drawable.skin_tone, R.drawable.skin_tone, R.drawable.skin_tone, R.drawable.skin_tone, R.drawable.ic_unsure}, "Undertone là chìa khóa để chọn màu son và màu má phù hợp nhất."));
-        sections.add(new SectionData("Hiệu ứng nền", new String[]{"Tự nhiên", "Sáng hơn tông da", "Căng bóng ánh ấm", "Tươi sáng ánh hồng", "Lì, ít bóng"}, new int[]{R.drawable.ic_face, R.drawable.ic_lightbulb, R.drawable.ic_sun, R.drawable.ic_face, R.drawable.ic_face}, "Lớp nền ưng ý sẽ mang lại vẻ ngoài rạng rỡ đúng ý muốn của bạn."));
-        sections.add(new SectionData("Màu son", new String[]{"Màu nude", "Màu hồng", "Màu cam san hô", "Màu đỏ", "Màu nâu", "Màu môi tự nhiên", "Màu đậm, nổi bật"}, new int[]{R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick, R.drawable.ic_lipstick}, "Danh sách màu son yêu thích giúp Kanila thu hẹp phạm vi tìm kiếm."));
-        sections.add(new SectionData("Trang điểm", new String[]{"Trang điểm tự nhiên", "Phong cách Hàn Quốc", "Trang điểm sắc sảo", "Trang điểm công sở", "Trang điểm dự tiệc", "Trang điểm hằng ngày"}, new int[]{R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face, R.drawable.ic_face}, "Phong cách này sẽ định hình các sản phẩm trong bộ trang điểm gợi ý."));
-        sections.add(new SectionData("Ngân sách", new String[]{"Dưới 300K", "300K - 500K", "500K +"}, new int[]{R.drawable.ic_wallet, R.drawable.ic_wallet, R.drawable.ic_wallet}, "Chúng mình sẽ cân đối các sản phẩm tốt nhất trong tầm giá bạn mong muốn."));
-        sections.add(new SectionData("Cần tránh", new String[]{"Hương liệu", "Cồn khô", "Tinh dầu", "Paraben", "Dầu khoáng", "Silicone", "Sulfate", "Lanolin", "Retinoid", "Acid cao"}, new int[]{R.drawable.ic_drops, R.drawable.ic_beaker, R.drawable.ic_drops, R.drawable.ic_beaker, R.drawable.ic_drops, R.drawable.ic_beaker, R.drawable.ic_beaker, R.drawable.ic_beaker, R.drawable.ic_beaker, R.drawable.ic_beaker}, "Sản phẩm được gợi ý sẽ hoàn toàn không chứa các thành phần này."));
+        sections.add(new SectionData("Loại da", BeautyReferenceMapper.SKIN_TYPE, "Nền tảng quan trọng nhất để chọn sản phẩm phù hợp."));
+        sections.add(new SectionData("Tình trạng da", BeautyReferenceMapper.SKIN_CONCERN, "Tập trung giải quyết các vấn đề da cụ thể."));
+        sections.add(new SectionData("Mức độ nhạy cảm", BeautyReferenceMapper.SENSITIVITY_LEVEL, "Đảm bảo an toàn và không gây kích ứng."));
+        sections.add(new SectionData("Mục tiêu làm đẹp", BeautyReferenceMapper.BEAUTY_GOAL, "Định hướng chu trình dưỡng da dài hạn."));
+        sections.add(new SectionData("Thành phần yêu thích", BeautyReferenceMapper.PREFERRED_INGREDIENT, "Ưu tiên các hoạt chất bạn tin dùng."));
+        sections.add(new SectionData("Thành phần cần tránh", BeautyReferenceMapper.AVOID_INGREDIENT, "Loại bỏ các nguy cơ gây hại cho da bạn."));
+        sections.add(new SectionData("Màu da & Sắc độ", BeautyReferenceMapper.SKIN_COLOR, "Chọn màu nền và son chuẩn xác."));
+        sections.add(new SectionData("Ngân sách", BeautyReferenceMapper.BUDGET, "Cân đối chi phí tối ưu nhất cho bạn."));
     }
 
     private void setupViews(@NonNull View view) {
@@ -124,35 +215,40 @@ public class BeautyProfileOverviewFragment extends Fragment {
         tvProgressLabel = view.findViewById(R.id.tvProgressLabel);
         progressProfile = view.findViewById(R.id.progressProfile);
         
+        // AI Analysis Views
+        layoutAiAnalysis = view.findViewById(R.id.layoutAiAnalysis);
+        cardHealthScore = view.findViewById(R.id.cardHealthScore);
+        tvScore = view.findViewById(R.id.tvScore);
+        tvScoreStatus = view.findViewById(R.id.tvScoreStatus);
+        tvAiVerdict = view.findViewById(R.id.tvAiVerdict);
+        tvAiStats = view.findViewById(R.id.tvAiStats);
+        progressScore = view.findViewById(R.id.progressScore);
+        
         layoutRecommendations = view.findViewById(R.id.layoutRecommendations);
         rvRecommendedProducts = view.findViewById(R.id.rvRecommendedProducts);
         
-        productAdapter = new com.example.frontend.feature.home.HomeProductAdapter();
-        productAdapter.setOnAddToCartListener(product -> {
-            cartViewModel.addToCart(product.getId(), null, 1);
-            Toast.makeText(getContext(), "Đã thêm " + product.getName() + " vào giỏ hàng", Toast.LENGTH_SHORT).show();
+        productAdapter = new RecommendationProductAdapter();
+        productAdapter.setOnProductClickListener(new RecommendationProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                        ? R.id.main_fragment_container : R.id.main;
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(containerId, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                cartViewModel.addToCart(product.getId(), null, 1);
+                Toast.makeText(getContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            }
         });
-        productAdapter.setOnProductClickListener(product -> {
-            int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
-                    ? R.id.main_fragment_container : R.id.main;
-            getParentFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                    .replace(containerId, com.example.frontend.feature.product.ProductDetailFragment.newInstance(product.getId()))
-                    .addToBackStack("beauty_profile_to_detail")
-                    .commit();
-        });
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        // Reduce width slightly to show more of the next card and fit better
-        productAdapter.setItemWidth((int) (screenWidth * 0.43));
 
         if (rvRecommendedProducts != null) {
-            rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
             rvRecommendedProducts.setAdapter(productAdapter);
-        }
-
-        // Show empty state by default until data is loaded
-        if (layoutEmptyState != null) {
-            layoutEmptyState.setVisibility(View.VISIBLE);
         }
     }
 
@@ -162,105 +258,139 @@ public class BeautyProfileOverviewFragment extends Fragment {
                 if (result.status == NetworkResult.Status.SUCCESS) {
                     bindProfileData(result.data);
                 } else if (result.status == NetworkResult.Status.ERROR) {
-                    if (layoutEmptyState != null) {
-                        layoutEmptyState.setVisibility(View.VISIBLE);
-                        // Even on error (like ConnectException), show the popup to let user edit manually
-                        showCtaPopup();
-                    }
+                    if (layoutEmptyState != null) layoutEmptyState.setVisibility(View.VISIBLE);
                 }
             }
         });
 
-        viewModel.getRecommendedProductsResult().observe(getViewLifecycleOwner(), result -> {
+        viewModel.getReferencesResult().observe(getViewLifecycleOwner(), result -> {
             if (result != null && result.status == NetworkResult.Status.SUCCESS) {
-                if (result.data != null && !result.data.isEmpty()) {
-                    productAdapter.setProducts(result.data);
-                    if (layoutRecommendations != null) {
-                        layoutRecommendations.setVisibility(View.VISIBLE);
-                    }
+                if (currentProfile != null) bindProfileData(currentProfile);
+            }
+        });
+
+        viewModel.getRecommendationsResult().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+                if (result.data.getProducts() != null && !result.data.getProducts().isEmpty()) {
+                    productAdapter.setItems(result.data.getProducts());
+                    if (layoutRecommendations != null) layoutRecommendations.setVisibility(View.VISIBLE);
                 }
             }
         });
+
+        recommendationViewModel.getHomepageRecommendations().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+                bindAnalysisData(result.data);
+            }
+        });
+    }
+
+    private void bindAnalysisData(RecommendationData recommendationData) {
+        AiAnalysis analysis = recommendationData.getAiAnalysis();
+        if (analysis == null) {
+            if (layoutAiAnalysis != null) layoutAiAnalysis.setVisibility(View.GONE);
+            return;
+        }
+
+        if (layoutAiAnalysis != null) layoutAiAnalysis.setVisibility(View.VISIBLE);
+        
+        int healthScore = analysis.getHealthScore() != null ? analysis.getHealthScore() : 0;
+        if (tvScore != null) tvScore.setText(String.valueOf(healthScore));
+        if (progressScore != null) {
+            progressScore.setProgress(healthScore);
+            int colorRes = (healthScore >= 75) ? R.color.success : 
+                         (healthScore >= 50) ? android.R.color.holo_orange_light : 
+                         android.R.color.holo_red_light;
+            progressScore.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), colorRes)));
+            if (tvScoreStatus != null) {
+                tvScoreStatus.setText(healthScore >= 75 ? "Khỏe mạnh" : healthScore >= 50 ? "Trung bình" : "Cần cải thiện");
+                tvScoreStatus.setTextColor(ContextCompat.getColor(requireContext(), colorRes));
+            }
+        }
+
+        if (tvAiVerdict != null) tvAiVerdict.setText(analysis.getAnalysisText());
+        if (tvAiStats != null) tvAiStats.setText("Chỉ số của bạn cao hơn " + (healthScore - 5) + "% người dùng.");
+
+        List<String> ingredients = analysis.getIdealIngredients();
+        View view = getView();
+        if (ingredients != null && view != null) {
+            updateIngredientCard(view, R.id.cardIngredient1, ingredients.size() > 0 ? ingredients.get(0) : null, R.drawable.ic_shield_star);
+            updateIngredientCard(view, R.id.cardIngredient2, ingredients.size() > 1 ? ingredients.get(1) : null, R.drawable.ic_beaker);
+            updateIngredientCard(view, R.id.cardIngredient3, ingredients.size() > 2 ? ingredients.get(2) : null, R.drawable.ic_goal_sparkle);
+        }
+    }
+
+    private void updateIngredientCard(View root, int id, String name, int iconRes) {
+        View card = root.findViewById(id);
+        if (card == null) return;
+        if (name == null) {
+            card.setVisibility(View.GONE);
+            return;
+        }
+        card.setVisibility(View.VISIBLE);
+        TextView label = card.findViewById(R.id.tvLabel);
+        ImageView icon = card.findViewById(R.id.ivIcon);
+        if (label != null) label.setText(name);
+        if (icon != null) {
+            icon.setImageResource(iconRes);
+            icon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.button)));
+        }
+        card.setOnClickListener(v -> navigateToFragment(StepProductSuggestionsFragment.newInstance("Sản phẩm chứa " + name)));
     }
 
     private void bindProfileData(@Nullable CustomerBeautyProfileDto profile) {
         if (profile == null) return;
         this.currentProfile = profile;
+        BeautyReferenceResolver resolver = viewModel.getReferenceResolver();
         
-        int completion = profile.getProfileCompletion();
-        if (progressProfile != null) {
-            progressProfile.setProgress(completion);
-        }
-        
-        if (tvProgressLabel != null) {
-            tvProgressLabel.setText(String.format(java.util.Locale.getDefault(), "Hồ sơ của bạn hoàn thành %d%%", completion));
+        int completion = profile.getProfileCompletionRate();
+        if (progressProfile != null) progressProfile.setProgress(completion);
+        if (tvProgressLabel != null) tvProgressLabel.setText(String.format("Hồ sơ hoàn thành %d%%", completion));
+
+        if (resolver != null) {
+            String skinTypeName = resolver.resolveName(profile.getSkinType());
+            tvSummarySkinType.setText((skinTypeName != null && !skinTypeName.isEmpty()) ? skinTypeName : "Chưa xác định");
         }
 
-        if (profile.getSkinType() != null && !profile.getSkinType().isEmpty() && !profile.getSkinType().equalsIgnoreCase("Chưa xác định")) {
-            tvSummarySkinType.setText(profile.getSkinType());
-        } else {
-            tvSummarySkinType.setText(R.string.skin_type_unknown);
-        }
-
-        if (layoutSectionsList != null) {
+        if (layoutSectionsList != null && resolver != null) {
             layoutSectionsList.removeAllViews();
             
-            // Add sections one by one if data exists
-            if (profile.getSkinType() != null) renderSummarySection(sections.get(0), profile.getSkinType());
-            if (profile.getSkinConcerns() != null && !profile.getSkinConcerns().isEmpty()) renderMultiSummarySection(sections.get(1), profile.getSkinConcerns());
-            if (profile.getSensitivityLevel() != null) renderSummarySection(sections.get(2), profile.getSensitivityLevel());
-            if (profile.getSkinColor() != null) renderSummarySection(sections.get(3), profile.getSkinColor());
-            if (profile.getSkinUndertone() != null) renderSummarySection(sections.get(4), profile.getSkinUndertone());
-            if (profile.getFoundationFinish() != null) renderSummarySection(sections.get(5), profile.getFoundationFinish());
-            if (profile.getLipstickColors() != null && !profile.getLipstickColors().isEmpty()) renderMultiSummarySection(sections.get(6), profile.getLipstickColors());
-            if (profile.getMakeupStyles() != null && !profile.getMakeupStyles().isEmpty()) renderMultiSummarySection(sections.get(7), profile.getMakeupStyles());
-            if (profile.getBudget() != null) renderSummarySection(sections.get(8), profile.getBudget());
-            if (profile.getAvoidIngredients() != null && !profile.getAvoidIngredients().isEmpty()) renderMultiSummarySection(sections.get(9), profile.getAvoidIngredients());
+            renderSection(sections.get(0), profile.getSkinType(), resolver);
+            renderMultiSection(sections.get(1), profile.getSkinConcerns(), resolver);
+            renderSection(sections.get(2), profile.getSensitivityLevel(), resolver);
+            renderMultiSection(sections.get(3), profile.getBeautyGoals(), resolver);
+            renderMultiSection(sections.get(4), profile.getPreferredIngredients(), resolver);
+            renderMultiSection(sections.get(5), profile.getAvoidIngredients(), resolver);
+            renderSection(sections.get(6), profile.getSkinColor(), resolver);
+            renderSection(sections.get(7), profile.getBudget(), resolver);
 
             boolean hasContent = layoutSectionsList.getChildCount() > 0;
-            if (layoutEmptyState != null) {
-                layoutEmptyState.setVisibility(hasContent ? View.GONE : View.VISIBLE);
-                
-                if (!hasContent) {
-                    showCtaPopup();
-                }
-            }
+            if (layoutEmptyState != null) layoutEmptyState.setVisibility(hasContent ? View.GONE : View.VISIBLE);
 
-            // Always try to load recommendations if we have at least skin type or any selection
-            if (hasContent || profile.getSkinType() != null) {
-                if (layoutRecommendations != null) layoutRecommendations.setVisibility(View.VISIBLE);
-                viewModel.loadRecommendedProducts(profile.getSkinType(), profile.getBudget());
-            } else {
-                if (layoutRecommendations != null) layoutRecommendations.setVisibility(View.GONE);
+            if (hasContent) {
+                viewModel.loadRecommendations();
             }
         }
     }
 
-    private void showRecommendations(CustomerBeautyProfileDto profile) {
-        // This method is now effectively replaced by loadRecommendedProducts + observer
-        // but kept for toggleRecommendations logic if it still relies on re-calling it
-        viewModel.loadRecommendedProducts(profile.getSkinType(), profile.getBudget());
+    private void renderSection(SectionData section, String code, BeautyReferenceResolver resolver) {
+        if (code == null || code.isEmpty() || code.contains("UNKNOWN")) return;
+        List<String> codes = new ArrayList<>();
+        codes.add(code);
+        renderFlexItems(section, codes, resolver);
     }
 
-    private void renderSummarySection(SectionData section, String selectedValue) {
-        if (selectedValue == null) return;
-        List<String> list = new ArrayList<>();
-        list.add(selectedValue);
-        renderFlexItems(section, list);
-    }
-
-    private void renderMultiSummarySection(SectionData section, List<String> selectedValues) {
-        if (selectedValues != null && !selectedValues.isEmpty()) {
-            renderFlexItems(section, selectedValues);
+    private void renderMultiSection(SectionData section, List<String> codes, BeautyReferenceResolver resolver) {
+        if (codes != null && !codes.isEmpty()) {
+            renderFlexItems(section, codes, resolver);
         }
     }
 
-    private void renderFlexItems(SectionData section, List<String> selectedLabels) {
-        if (selectedLabels == null || selectedLabels.isEmpty()) return;
+    private void renderFlexItems(SectionData section, List<String> selectedCodes, BeautyReferenceResolver resolver) {
+        if (selectedCodes == null || selectedCodes.isEmpty()) return;
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         boolean isExpanded = Boolean.TRUE.equals(expandedSections.get(section.title));
         
-        // 1. Title
         TextView tvTitle = new TextView(requireContext());
         tvTitle.setText(section.title);
         tvTitle.setTextColor(darkText);
@@ -272,58 +402,41 @@ public class BeautyProfileOverviewFragment extends Fragment {
         tvTitle.setLayoutParams(titleParams);
         layoutSectionsList.addView(tvTitle);
 
-        // 2. Section Box (Vertical Container)
         LinearLayout sectionBox = new LinearLayout(requireContext());
         sectionBox.setOrientation(LinearLayout.VERTICAL);
         sectionBox.setBackgroundResource(R.drawable.bg_beauty_profile_section);
         sectionBox.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
-        LinearLayout.LayoutParams boxParams = new LinearLayout.LayoutParams(-1, -2);
-        sectionBox.setLayoutParams(boxParams);
+        sectionBox.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
 
-        // 3. Chips Container (ChipGroup for auto-wrapping)
         com.google.android.material.chip.ChipGroup chipGroup = new com.google.android.material.chip.ChipGroup(requireContext());
         chipGroup.setChipSpacingHorizontal(dpToPx(4));
         chipGroup.setChipSpacingVertical(dpToPx(4));
         
         List<View> allChips = new ArrayList<>();
-        for (int i = 0; i < section.labels.length; i++) {
-            final String labelText = section.labels[i];
-            boolean isSelected = false;
-            for (String sel : selectedLabels) {
-                if (sel.equalsIgnoreCase(labelText)) {
-                    isSelected = true;
-                    break;
-                }
-            }
+        for (String code : selectedCodes) {
+            String name = resolver.resolveName(code);
+            if (name == null) continue;
 
-            if (isSelected) {
-                View chipItem = inflater.inflate(R.layout.item_overview_chip, chipGroup, false);
-                ImageView icon = chipItem.findViewById(R.id.ivIcon);
-                TextView label = chipItem.findViewById(R.id.tvLabel);
-                
-                icon.setImageResource(section.icons[i]);
-                label.setText(labelText);
-                
-                chipGroup.addView(chipItem);
-                allChips.add(chipItem);
-                
-                // Show only 3 chips if not expanded
-                if (!isExpanded && allChips.size() > 3) {
-                    chipItem.setVisibility(View.GONE);
-                }
-            }
+            View chipItem = inflater.inflate(R.layout.item_overview_chip, chipGroup, false);
+            ImageView icon = chipItem.findViewById(R.id.ivIcon);
+            TextView label = chipItem.findViewById(R.id.tvLabel);
+            
+            Integer iconRes = referenceIcons.get(code);
+            icon.setImageResource(iconRes != null ? iconRes : R.drawable.ic_face);
+            label.setText(name);
+            
+            chipGroup.addView(chipItem);
+            allChips.add(chipItem);
+            if (!isExpanded && allChips.size() > 3) chipItem.setVisibility(View.GONE);
         }
         sectionBox.addView(chipGroup);
 
-        // 4. "Xem thêm" Button inline with chips
         if (allChips.size() > 3) {
             TextView tvToggle = new TextView(requireContext());
             tvToggle.setText(isExpanded ? "Thu gọn" : "Xem thêm (" + (allChips.size() - 3) + ")");
             tvToggle.setTextColor(brandPink);
             tvToggle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
             tvToggle.setPadding(dpToPx(4), dpToPx(8), dpToPx(4), dpToPx(8));
-            tvToggle.setGravity(android.view.Gravity.CENTER_VERTICAL);
-            
             tvToggle.setOnClickListener(v -> {
                 expandedSections.put(section.title, !isExpanded);
                 bindProfileData(currentProfile);
@@ -331,12 +444,10 @@ public class BeautyProfileOverviewFragment extends Fragment {
             chipGroup.addView(tvToggle);
         }
 
-        // 5. Insight/Tip (Below chips)
         TextView tvInsight = new TextView(requireContext());
         tvInsight.setText(section.insight);
         tvInsight.setTextColor(Color.parseColor("#9B8F8F"));
         tvInsight.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-        tvInsight.setLineSpacing(0, 1.2f);
         LinearLayout.LayoutParams insightParams = new LinearLayout.LayoutParams(-1, -2);
         insightParams.topMargin = dpToPx(12);
         tvInsight.setLayoutParams(insightParams);
@@ -346,139 +457,47 @@ public class BeautyProfileOverviewFragment extends Fragment {
     }
 
     private void setupEvents(@NonNull View view) {
-        View btnBack = view.findViewById(R.id.btnBack);
-        if (btnBack != null) btnBack.setOnClickListener(v -> handleBackNavigation());
+        view.findViewById(R.id.btnBack).setOnClickListener(v -> handleBackNavigation());
+        view.findViewById(R.id.btnEdit).setOnClickListener(v -> navigateToEditProfile());
         
-        View btnEdit = view.findViewById(R.id.btnEdit);
-        if (btnEdit != null) btnEdit.setOnClickListener(v -> navigateToEditProfile());
-        
-        View btnSavedRoutines = view.findViewById(R.id.btnSavedRoutines);
-        if (btnSavedRoutines != null) {
-            btnSavedRoutines.setOnClickListener(v -> {
-                int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
-                        ? R.id.main_fragment_container : R.id.main;
-                getParentFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(containerId, new SavedBeautyRoutinesFragment())
-                        .addToBackStack("beauty_profile_to_saved")
-                        .commit();
-            });
-        }
-
         View btnAnalyzeSkin = view.findViewById(R.id.btnAnalyzeSkin);
         if (btnAnalyzeSkin != null) {
-            btnAnalyzeSkin.setOnClickListener(v -> {
-                int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
-                        ? R.id.main_fragment_container : R.id.main;
-                getParentFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(containerId, new SkinAnalysisFragment())
-                        .addToBackStack("beauty_profile_to_analysis")
-                        .commit();
-            });
+            btnAnalyzeSkin.setOnClickListener(v -> navigateToFragment(new SkinAnalysisFragment()));
+        }
+
+        View btnSavedRoutines = view.findViewById(R.id.btnSavedRoutines);
+        if (btnSavedRoutines != null) {
+            btnSavedRoutines.setOnClickListener(v -> navigateToFragment(new SavedBeautyRoutinesFragment()));
         }
 
         View btnViewAllRec = view.findViewById(R.id.btnViewAllRec);
         if (btnViewAllRec != null) {
-            btnViewAllRec.setOnClickListener(v -> toggleRecommendations());
+            btnViewAllRec.setOnClickListener(v -> navigateToFragment(new SkinAnalysisFragment()));
         }
+    }
+
+    private void navigateToFragment(Fragment fragment) {
+        int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                ? R.id.main_fragment_container : R.id.main;
+        getParentFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(containerId, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     private void navigateToEditProfile() {
         int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
                 ? R.id.main_fragment_container : R.id.main;
         getParentFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(containerId, new EditSkinProfileFragment())
-                .addToBackStack("beauty_profile_to_edit")
+                .addToBackStack(null)
                 .commit();
     }
 
-    private void toggleRecommendations() {
-        if (currentProfile == null) return;
-        
-        isRecExpanded = !isRecExpanded;
-        
-        if (isRecExpanded) {
-            rvRecommendedProducts.setLayoutManager(new androidx.recyclerview.widget.GridLayoutManager(requireContext(), 2));
-            rvRecommendedProducts.setNestedScrollingEnabled(false);
-            productAdapter.setItemWidth(-1);
-            
-            View btnViewAll = getView().findViewById(R.id.btnViewAllRec);
-            if (btnViewAll instanceof TextView) {
-                ((TextView) btnViewAll).setText("Thu gọn");
-            }
-        } else {
-            rvRecommendedProducts.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-            rvRecommendedProducts.setNestedScrollingEnabled(true);
-            int screenWidth = getResources().getDisplayMetrics().widthPixels;
-            productAdapter.setItemWidth((int) (screenWidth * 0.46));
-            
-            View btnViewAll = getView().findViewById(R.id.btnViewAllRec);
-            if (btnViewAll instanceof TextView) {
-                ((TextView) btnViewAll).setText(R.string.action_see_all);
-            }
-        }
-        
-        showRecommendations(currentProfile);
-    }
-
     private void handleBackNavigation() {
-        if (getParentFragmentManager().getBackStackEntryCount() > 0) {
-            getParentFragmentManager().popBackStack();
-        } else {
-            requireActivity().getOnBackPressedDispatcher().onBackPressed();
-        }
-    }
-
-    private void showCtaPopup() {
-        if (!isAdded() || getContext() == null || isCtaShown) return;
-        isCtaShown = true;
-        ctaHandler.removeCallbacksAndMessages(null);
-        
-        android.app.Dialog dialog = new android.app.Dialog(requireContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_beauty_profile_cta);
-        dialog.setCancelable(true);
-        dialog.setCanceledOnTouchOutside(true);
-
-        View btnEdit = dialog.findViewById(R.id.btnGoToEdit);
-        if (btnEdit != null) {
-            btnEdit.setOnClickListener(v -> {
-                dialog.dismiss();
-                if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
-                    navigateToEditProfile();
-                } else {
-                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(),
-                        new com.example.frontend.core.auth.PendingAuthAction(
-                            com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ACCOUNT, 
-                            "BeautyProfileCTA", 0, null));
-                }
-            });
-        }
-
-        View btnLater = dialog.findViewById(R.id.btnMaybeLater);
-        if (btnLater != null) {
-            btnLater.setOnClickListener(v -> dialog.dismiss());
-        }
-
-        dialog.show();
-
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            WindowManager.LayoutParams params = window.getAttributes();
-            params.dimAmount = 0.6f;
-            window.setAttributes(params);
-            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        ctaHandler.removeCallbacksAndMessages(null);
-        super.onDestroyView();
+        if (getParentFragmentManager().getBackStackEntryCount() > 0) getParentFragmentManager().popBackStack();
+        else requireActivity().getOnBackPressedDispatcher().onBackPressed();
     }
 
     private int dpToPx(int dp) {
@@ -487,13 +506,11 @@ public class BeautyProfileOverviewFragment extends Fragment {
 
     private static class SectionData {
         String title;
-        String[] labels;
-        int[] icons;
+        String groupCode;
         String insight;
-        SectionData(String title, String[] labels, int[] icons, String insight) {
+        SectionData(String title, String groupCode, String insight) {
             this.title = title;
-            this.labels = labels;
-            this.icons = icons;
+            this.groupCode = groupCode;
             this.insight = insight;
         }
     }

@@ -34,10 +34,25 @@ public class RewardAdapter extends RecyclerView.Adapter<RewardAdapter.ViewHolder
         holder.tvPoints.setText(holder.itemView.getContext().getString(R.string.challenge_reward_points, "" + reward.getPointCost()));
         
         if (reward.getImageUrl() != null) {
-            Glide.with(holder.itemView.getContext()).load(reward.getImageUrl()).placeholder(R.drawable.ic_gift).into(holder.ivImage);
+            Glide.with(holder.itemView.getContext()).load(reward.getImageUrl()).placeholder(R.drawable.icon_gift).into(holder.ivImage);
         } else {
-            holder.ivImage.setImageResource(R.drawable.ic_gift);
+            holder.ivImage.setImageResource(R.drawable.icon_gift);
         }
+
+        holder.itemView.setOnClickListener(v -> {
+            // Show a simple confirmation dialog or toast for now
+            androidx.appcompat.app.AlertDialog dialog = new com.google.android.material.dialog.MaterialAlertDialogBuilder(v.getContext())
+                    .setTitle("Đổi phần thưởng")
+                    .setMessage("Bạn có muốn dùng " + reward.getPointCost() + " điểm để đổi " + reward.getTitle() + " không?")
+                    .setNegativeButton("Hủy", (d, which) -> d.dismiss())
+                    .setPositiveButton("Đổi ngay", (d, which) -> {
+                        d.dismiss();
+                        android.widget.Toast.makeText(v.getContext(), "Đổi thưởng thành công!", android.widget.Toast.LENGTH_SHORT).show();
+                    })
+                    .show();
+            ui.common.ViewUtils.customizeDialogButtons(dialog);
+        });
+        ui.common.ViewUtils.applyClickAnimation(holder.itemView);
     }
 
     @Override

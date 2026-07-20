@@ -8,7 +8,7 @@ const fs = require("fs");
 
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 
-const LOG_FILE = "d:/KANILA/migration-log.txt";
+const LOG_FILE = path.join(__dirname, "migration-log.txt");
 const log = [];
 function L(msg) { log.push(msg); fs.writeFileSync(LOG_FILE, log.join("\n")); }
 
@@ -130,6 +130,14 @@ async function run() {
       registeredAt: "registered_at",
       createdAt: "created_at",
       updatedAt: "updated_at",
+    },
+    customer_beauty_profiles: {
+      skin_tone: "skin_color",
+      undertone: "skin_undertone",
+      budget_range: "budget",
+      finish_preference: "foundation_finish",
+      lip_color_preference: "lipstick_colors",
+      makeup_style: "makeup_styles",
     },
     /** Legacy `addresses` → customer_addresses */
     addresses: {

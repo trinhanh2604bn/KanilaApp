@@ -39,6 +39,14 @@ public class CommunityHomeFragment extends Fragment {
     private final Handler searchHandler = new Handler(Looper.getMainLooper());
     private Runnable searchRunnable;
 
+    public static CommunityHomeFragment newInstance(int initialTab) {
+        CommunityHomeFragment fragment = new CommunityHomeFragment();
+        Bundle args = new Bundle();
+        args.putInt("initial_tab", initialTab);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -49,6 +57,12 @@ public class CommunityHomeFragment extends Fragment {
         setupSearch();
         setupNotifications();
         setupHeaderActions();
+
+        if (getArguments() != null && getArguments().containsKey("initial_tab")) {
+            int initialTab = getArguments().getInt("initial_tab");
+            viewPager.post(() -> viewPager.setCurrentItem(initialTab, false));
+        }
+
         return view;
     }
 
@@ -161,8 +175,14 @@ public class CommunityHomeFragment extends Fragment {
 
     private void setupNotifications() {
         layoutNotification.setOnClickListener(v -> {
-            CommunityNotificationBottomSheet bottomSheet = new CommunityNotificationBottomSheet();
-            bottomSheet.show(getChildFragmentManager(), "CommunityNotificationBottomSheet");
+            if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                CommunityNotificationBottomSheet bottomSheet = new CommunityNotificationBottomSheet();
+                bottomSheet.show(getChildFragmentManager(), "CommunityNotificationBottomSheet");
+            } else {
+                com.example.frontend.feature.auth.GuestPromptBottomSheet.newInstance(
+                        com.example.frontend.core.auth.PendingAuthAction.ActionType.COMMUNITY_INTERACTION
+                ).show(getChildFragmentManager(), "GuestPromptBottomSheet");
+            }
         });
     }
 

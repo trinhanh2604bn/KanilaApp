@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutCartBadgeRoot"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <ImageButton
+        android:id="@+id/btnCartIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_cart"
+        app:tint="@color/button"
+        tools:ignore="ContentDescription,TouchTargetSizeCheck" />
+
+    <TextView
+        android:id="@+id/tvCartBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="2dp"
+        android:background="@drawable/bg_badge_dot"
+        android:gravity="center"
+        android:minWidth="16dp"
+        android:minHeight="16dp"
+        android:paddingHorizontal="4dp"
+        android:textColor="@android:color/white"
+        android:textSize="9sp"
+        android:fontFamily="@font/nunito_bold"
+        android:visibility="gone"
+        tools:text="1"
+        tools:visibility="visible" />
+
+</FrameLayout>

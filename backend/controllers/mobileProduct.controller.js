@@ -14,6 +14,8 @@ const Wishlist = require("../models/wishlist.model");
 const Customer = require("../models/customer.model");
 const CustomerBeautyProfile = require("../models/customerBeautyProfile.model");
 const validateObjectId = require("../utils/validateObjectId");
+const { getAggregateReviewSummary } = require("../services/reviewSummary.service");
+const skinMatchCacheService = require("../services/skinMatch/skinMatchCache.service");
 
 const getProductDetail = async (req, res) => {
   try {
@@ -42,10 +44,11 @@ const getProductDetail = async (req, res) => {
     const categoryObject = product.categoryId || null;
 
     // Load customer profile if logged in
+    let customerDoc = null;
     let customerId = null;
     if (accountId) {
-        const customer = await Customer.findOne({ account_id: accountId }).select("_id").lean();
-        customerId = customer?._id;
+        customerDoc = await Customer.findOne({ account_id: accountId }).lean();
+        customerId = customerDoc?._id;
     }
 
     // Load variants once
@@ -62,7 +65,7 @@ const getProductDetail = async (req, res) => {
     ] = await Promise.all([
       ProductMedia.find({ productId: id }).sort({ isPrimary: -1, sortOrder: 1 }).lean(),
       ProductAttribute.find({ productId: id }).sort({ displayOrder: 1 }).lean(),
-      ReviewSummary.findOne({ productId: id }).lean(),
+      getAggregateReviewSummary(id),
       InventoryBalance.find({ variantId: { $in: variantIds } }).lean(),
       VariantMedia.find({ variantId: { $in: variantIds } }).lean()
     ]);
@@ -96,12 +99,6 @@ const getProductDetail = async (req, res) => {
         }
     }
 
-    // Load review media preview (linked to reviews of this product)
-    const Review = require("../models/review.model");
-    const reviews = await Review.find({ productId: id, reviewStatus: "visible" }).select("_id").limit(10).lean();
-    const reviewIds = reviews.map(r => r._id);
-    const reviewMediaPreview = await ReviewMedia.find({ reviewId: { $in: reviewIds } }).limit(4).lean();
-
     // Wishlist status
     let isWishlisted = false;
     if (customerId) {
@@ -112,19 +109,19 @@ const getProductDetail = async (req, res) => {
         }
     }
 
-    // Skin match
+    // Skin match — use the canonical rule-based engine (same as GET /skin-match/me)
+    // Returns proper SkinMatchDto-compatible format with score, match_level, reasons, cautions, hard_conflicts
     let skinMatch = null;
-    if (customerId) {
-        const beautyProfile = await CustomerBeautyProfile.findOne({ customer_id: customerId }).lean();
-        if (beautyProfile) {
-            const isMatch = product.skin_types_supported?.includes(beautyProfile.skin_type);
-            skinMatch = {
-                score: isMatch ? 95 : 60,
-                level: isMatch ? "Phù hợp rất cao" : "Phù hợp trung bình",
-                profileChips: [beautyProfile.skin_type, ...(beautyProfile.skin_concerns || [])],
-                reasons: isMatch ? [{ title: "Dành cho da của bạn", description: `Sản phẩm này được thiết kế đặc biệt cho ${beautyProfile.skin_type}` }] : [],
-                warnings: !isMatch ? [{ title: "Lưu ý", description: "Sản phẩm này có thể không tối ưu cho loại da của bạn" }] : []
-            };
+    if (customerDoc) {
+        try {
+            const beautyProfile = await CustomerBeautyProfile.findOne({ customer_id: customerId }).lean();
+            // Returns { status, score, estimated_score, match_level, confidence_score,
+            //           match_explanation, reasons, cautions, hard_conflicts, matched_attributes }
+            skinMatch = await skinMatchCacheService.getOrComputeMatch(customerDoc, beautyProfile, id);
+        } catch (skinErr) {
+            // Non-fatal: skin match failure should not break product detail load
+            console.error("[MobileAPI] Skin match computation failed, proceeding without it:", skinErr.message);
+            skinMatch = null;
         }
     }
 
@@ -155,8 +152,8 @@ const getProductDetail = async (req, res) => {
           compareAtPrice: product.compareAtPrice,
           currency: "VND"
         },
-        reviewSummary: reviewSummary || { averageRating: product.averageRating || 0, reviewCount: 0 },
-        reviewMediaPreview,
+        reviewSummary: reviewSummary,
+        reviewMediaPreview: reviewSummary.reviewMediaPreview,
         isWishlisted,
         skinMatch,
         relatedProducts: {

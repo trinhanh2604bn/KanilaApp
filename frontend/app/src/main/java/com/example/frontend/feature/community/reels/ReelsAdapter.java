@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,11 +34,17 @@ public class ReelsAdapter extends RecyclerView.Adapter<ReelsAdapter.ReelViewHold
     }
 
     public void setItems(List<MockReelsDataSource.MockReel> newItems) {
-        items.clear();
-        if (newItems != null) {
+        if (items.isEmpty()) {
             items.addAll(newItems);
+            notifyDataSetChanged();
+        } else {
+            // Partial update to avoid video freezing
+            for (int i = 0; i < Math.min(items.size(), newItems.size()); i++) {
+                items.set(i, newItems.get(i));
+                // Notify with payload to only update products, not video
+                notifyItemChanged(i, "PAYLOAD_PRODUCT_UPDATE");
+            }
         }
-        notifyDataSetChanged();
     }
 
     @NonNull
@@ -51,7 +56,20 @@ public class ReelsAdapter extends RecyclerView.Adapter<ReelsAdapter.ReelViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ReelViewHolder holder, int position) {
-        holder.bind(items.get(position));
+        holder.bind(items.get(position), null);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ReelViewHolder holder, int position, @NonNull List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            holder.bind(items.get(position), null);
+        } else {
+            for (Object payload : payloads) {
+                if ("PAYLOAD_PRODUCT_UPDATE".equals(payload)) {
+                    holder.updateProductInfo(items.get(position));
+                }
+            }
+        }
     }
 
     @Override
@@ -67,7 +85,19 @@ public class ReelsAdapter extends RecyclerView.Adapter<ReelsAdapter.ReelViewHold
             this.binding = binding;
         }
 
-        public void bind(MockReelsDataSource.MockReel reel) {
+        public void updateProductInfo(MockReelsDataSource.MockReel reel) {
+            binding.btnProductPill.setVisibility(reel.hasProducts() ? View.VISIBLE : View.GONE);
+            binding.tvProductPillCount.setText(reel.getProductPillText());
+        }
+
+        public void bind(MockReelsDataSource.MockReel reel, Object payload) {
+            // If it's a partial update, only update product-related UI
+            if ("PAYLOAD_PRODUCT_UPDATE".equals(payload)) {
+                updateProductInfo(reel);
+                return;
+            }
+
+            // Full binding
             binding.tvCreatorUsername.setText(reel.getCreatorUsername());
             binding.tvCaption.setText(reel.getCaption());
             binding.tvHashtags.setText(reel.getHashtagText());
@@ -76,9 +106,7 @@ public class ReelsAdapter extends RecyclerView.Adapter<ReelsAdapter.ReelViewHold
             binding.tvCommentCount.setText(reel.getCommentCountText());
             binding.tvSaveCount.setText(reel.getSaveCountText());
             
-            binding.btnProductPill.setVisibility(reel.hasProducts() ? View.VISIBLE : View.GONE);
-            binding.tvProductPillCount.setText(reel.getProductPillText());
-
+            updateProductInfo(reel);
             updateLikeUI(reel);
             updateSaveUI(reel);
 
@@ -110,16 +138,21 @@ public class ReelsAdapter extends RecyclerView.Adapter<ReelsAdapter.ReelViewHold
                 if (listener != null) listener.onBackClick();
             });
 
-            // Initialize VideoView
-            binding.videoView.setVideoURI(Uri.parse(reel.getVideoUrl()));
-            binding.videoView.setOnPreparedListener(mp -> {
-                mp.setLooping(true);
-                // Thumbnail will be hidden when video starts playing
-            });
-            binding.videoView.setOnErrorListener((mp, what, extra) -> {
-                binding.ivThumbnail.setVisibility(View.VISIBLE);
-                return true; // Handle error to prevent system dialog
-            });
+            // Prevent VideoView from freezing by checking tag
+            String videoUrl = reel.getVideoUrl();
+            if (videoUrl != null && !videoUrl.equals(binding.videoView.getTag())) {
+                binding.videoView.setTag(videoUrl);
+                binding.videoView.setVideoURI(Uri.parse(videoUrl));
+                
+                binding.videoView.setOnPreparedListener(mp -> {
+                    mp.setLooping(true);
+                });
+                
+                binding.videoView.setOnErrorListener((mp, what, extra) -> {
+                    binding.ivThumbnail.setVisibility(View.VISIBLE);
+                    return true;
+                });
+            }
         }
 
         private void updateLikeUI(MockReelsDataSource.MockReel reel) {

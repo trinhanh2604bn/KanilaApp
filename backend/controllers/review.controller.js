@@ -4,12 +4,28 @@ const Customer = require("../models/customer.model");
 const Product = require("../models/product.model");
 const ReviewMedia = require("../models/reviewMedia.model");
 const ReviewVote = require("../models/reviewVote.model");
+const ReviewComment = require("../models/reviewComment.model");
 const OrderItem = require("../models/orderItem.model");
 const Order = require("../models/order.model");
 const validateObjectId = require("../utils/validateObjectId");
 const { pickCustomerId } = require("../utils/pickCustomerRef");
+const reviewEventService = require("../services/reviewAi/reviewEvent.service");
 
 const CUST = "customer_code full_name avatar_url";
+
+function parseJsonArray(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (err) {
+    return String(value)
+      .split(",")
+      .map(v => v.trim())
+      .filter(Boolean);
+  }
+}
 
 // Helper: recalculate review summary for a product (visible reviews only)
 const recalcReviewSummary = async (productId) => {
@@ -25,6 +41,9 @@ const recalcReviewSummary = async (productId) => {
     { reviewCount, averageRating, rating1Count: ratingCounts[1], rating2Count: ratingCounts[2], rating3Count: ratingCounts[3], rating4Count: ratingCounts[4], rating5Count: ratingCounts[5] },
     { upsert: true, new: true }
   );
+
+  // Trigger AI Summary Stale marking
+  await reviewEventService.markProductReviewAiSummaryStale(productId);
 };
 
 const getCustomerFromAuth = async (req) => {
@@ -44,23 +63,132 @@ const getReviewById = async (req, res) => {
   try {
     const { id } = req.params;
     if (!validateObjectId(id)) return res.status(400).json({ success: false, message: "Invalid ID" });
-    const review = await Review.findById(id).populate("customer_id", CUST).populate("productId", "productName").populate("variantId", "sku variantName");
+    const review = await Review.findById(id)
+      .populate("customer_id", CUST)
+      .populate("productId", "productName imageUrl")
+      .populate("variantId", "sku variantName")
+      .lean();
     if (!review) return res.status(404).json({ success: false, message: "Review not found" });
-    res.status(200).json({ success: true, message: "Get review successfully", data: review });
+
+    const media = await ReviewMedia.find({ reviewId: review._id }).sort({ sortOrder: 1 }).lean();
+
+    res.status(200).json({
+      success: true,
+      message: "Get review successfully",
+      data: {
+        ...review,
+        reviewId: String(review._id),
+        product: {
+          productId: review.productId?._id,
+          productName: review.productId?.productName,
+          variantName: review.variantId?.variantName,
+          imageUrl: review.productId?.imageUrl
+        },
+        media: media.map(m => ({
+          mediaType: m.mediaType,
+          mediaUrl: m.mediaUrl
+        }))
+      }
+    });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+};
+
+const getMyReviewDetail = async (req, res) => {
+  try {
+    const customer = await getCustomerFromAuth(req);
+    if (!customer) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+    const { id } = req.params;
+    if (!validateObjectId(id)) return res.status(400).json({ success: false, message: "Invalid ID" });
+
+    const review = await Review.findById(id)
+      .populate("productId", "productName imageUrl")
+      .populate("variantId", "sku variantName")
+      .lean();
+
+    if (!review) return res.status(404).json({ success: false, message: "Review not found" });
+
+    if (String(review.customer_id) !== String(customer._id)) {
+      return res.status(403).json({ success: false, message: "Forbidden: You are not the owner of this review" });
+    }
+
+    const media = await ReviewMedia.find({ reviewId: review._id }).sort({ sortOrder: 1 }).lean();
+
+    res.status(200).json({
+      success: true,
+      message: "Get my review detail successfully",
+      data: {
+        reviewId: String(review._id),
+        product: {
+          productId: review.productId?._id,
+          productName: review.productId?.productName,
+          variantName: review.variantId?.variantName,
+          imageUrl: review.productId?.imageUrl
+        },
+        rating: review.rating,
+        reviewContent: review.reviewContent,
+        reviewTags: review.reviewTags,
+        skinTypes: review.skinTypes,
+        media: media.map(m => ({
+          mediaType: m.mediaType,
+          mediaUrl: m.mediaUrl
+        })),
+        createdAt: review.createdAt
+      }
+    });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 };
 
 const getReviewsByProductId = async (req, res) => {
   try {
     const { productId } = req.params;
+    const { rating, hasMedia } = req.query;
+
     if (!validateObjectId(productId)) return res.status(400).json({ success: false, message: "Invalid product ID" });
-    const reviews = await Review.find({ productId, reviewStatus: "visible" })
+
+    const filter = { productId, reviewStatus: "visible" };
+    if (rating) filter.rating = Number(rating);
+
+    if (hasMedia === "true") {
+      const mediaReviews = await ReviewMedia.find().select("reviewId").lean();
+      const mediaReviewIds = [...new Set(mediaReviews.map(m => String(m.reviewId)))];
+      filter._id = { $in: mediaReviewIds };
+    }
+
+    const reviews = await Review.find(filter)
       .populate("customer_id", CUST)
       .populate("variantId", "variantName")
       .sort({ createdAt: -1 })
       .limit(100)
       .lean();
-    res.status(200).json({ success: true, message: "Get reviews by product successfully", count: reviews.length, data: reviews });
+
+    // Attach media and isLikedByMe if user is logged in
+    const accountId = req.user?.account_id || req.user?.accountId;
+    let customerId = null;
+    if (accountId) {
+      const customer = await Customer.findOne({ account_id: accountId }).select("_id").lean();
+      customerId = customer?._id;
+    }
+
+    const reviewIds = reviews.map(r => r._id);
+    const allMedia = await ReviewMedia.find({ reviewId: { $in: reviewIds } }).sort({ sortOrder: 1 }).lean();
+    const allVotes = customerId ? await ReviewVote.find({ reviewId: { $in: reviewIds }, customer_id: customerId, voteType: "helpful" }).lean() : [];
+    const allComments = await ReviewComment.find({ reviewId: { $in: reviewIds }, commentStatus: "visible" }).populate("customer_id", CUST).sort({ createdAt: 1 }).lean();
+
+    const reviewsWithExtras = reviews.map(r => {
+      const reviewMedia = allMedia.filter(m => String(m.reviewId) === String(r._id));
+      const isLikedByMe = allVotes.some(v => String(v.reviewId) === String(r._id));
+      const reviewComments = allComments.filter(c => String(c.reviewId) === String(r._id));
+      return {
+        ...r,
+        media: reviewMedia,
+        isLikedByMe,
+        comments: reviewComments.slice(-3),
+        commentCount: reviewComments.length
+      };
+    });
+
+    res.status(200).json({ success: true, message: "Get reviews by product successfully", count: reviewsWithExtras.length, data: reviewsWithExtras });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 };
 
@@ -151,10 +279,16 @@ const submitReviewFromOrderItem = async (req, res) => {
     const customer = await getCustomerFromAuth(req);
     if (!customer) return res.status(401).json({ success: false, message: "Unauthorized" });
 
-    const { orderItemId, rating, reviewTitle, reviewContent, reviewTags, skinTypes, mediaUrls } = req.body ?? {};
+    const orderItemId = String(req.body.orderItemId || "").trim();
+    const rating = Number(req.body.rating);
+    const reviewTitle = String(req.body.reviewTitle || "").trim();
+    const reviewContent = String(req.body.reviewContent || "").trim();
+
+    const reviewTags = parseJsonArray(req.body.reviewTags);
+    const skinTypes = parseJsonArray(req.body.skinTypes);
 
     if (!orderItemId || !validateObjectId(orderItemId)) return res.status(400).json({ success: false, message: "Valid orderItemId is required" });
-    if (!rating || !Number.isFinite(Number(rating))) return res.status(400).json({ success: false, message: "Rating is required" });
+    if (isNaN(rating)) return res.status(400).json({ success: false, message: "Rating is required" });
 
     const orderItem = await OrderItem.findById(orderItemId).populate("order_id", "order_status payment_status customer_id").populate("variant_id", "_id").populate("product_id", "_id");
     if (!orderItem) return res.status(404).json({ success: false, message: "Order item not found" });
@@ -170,41 +304,64 @@ const submitReviewFromOrderItem = async (req, res) => {
     const existing = await Review.findOne({ orderItemId: orderItem._id, customer_id: customer._id });
     if (existing) return res.status(409).json({ success: false, message: "You have already submitted a review for this item" });
 
+    const productId = orderItem.product_id?._id ?? orderItem.product_id;
+    const variantId = orderItem.variant_id?._id ?? orderItem.variant_id;
+
     const payload = {
       customer_id: customer._id,
       orderItemId: orderItem._id,
-      productId: orderItem.product_id?._id ?? orderItem.product_id,
-      variantId: orderItem.variant_id?._id ?? orderItem.variant_id,
-      rating: Number(rating),
-      reviewTitle: reviewTitle ?? "",
-      reviewContent: reviewContent ?? "",
-      reviewTags: Array.isArray(reviewTags) ? reviewTags : [],
-      skinTypes: Array.isArray(skinTypes) ? skinTypes : [],
+      productId,
+      variantId,
+      rating: Math.max(1, Math.min(5, rating)),
+      reviewTitle,
+      reviewContent,
+      reviewTags,
+      skinTypes,
       verifiedPurchaseFlag: true,
       reviewStatus: "visible",
     };
 
     const created = await Review.create(payload);
 
-    const mediaList = Array.isArray(mediaUrls) ? mediaUrls.filter(Boolean).slice(0, 8) : [];
-    if (mediaList.length) {
-      await ReviewMedia.insertMany(
-        mediaList.map((mediaUrl, idx) => ({
-          reviewId: created._id,
-          mediaType: "image",
-          mediaUrl: String(mediaUrl),
-          sortOrder: idx,
-        }))
-      );
+    // Handle files from multer
+    const files = req.files || [];
+    if (files.length > 0) {
+      const mediaDocs = files.map((file, idx) => ({
+        reviewId: created._id,
+        mediaType: file.mimetype.startsWith("video/") ? "video" : "image",
+        mediaUrl: `/uploads/reviews/${file.filename}`,
+        sortOrder: idx,
+      }));
+      await ReviewMedia.insertMany(mediaDocs);
+    } else {
+      // Fallback to mediaUrls if provided in body (for backward compatibility or direct URL submission)
+      const mediaUrls = parseJsonArray(req.body.mediaUrls);
+      const mediaList = mediaUrls.filter(Boolean).slice(0, 8);
+      if (mediaList.length) {
+        await ReviewMedia.insertMany(
+          mediaList.map((mediaUrl, idx) => ({
+            reviewId: created._id,
+            mediaType: "image",
+            mediaUrl: String(mediaUrl),
+            sortOrder: idx,
+          }))
+        );
+      }
     }
 
     // summary only counts approved reviews
     await recalcReviewSummary(created.productId);
 
+    // Fetch review with media to return
+    const media = await ReviewMedia.find({ reviewId: created._id }).sort({ sortOrder: 1 }).lean();
+
     res.status(201).json({
       success: true,
       message: "Review submitted successfully",
-      data: created,
+      data: {
+        ...created.toObject(),
+        media
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -220,14 +377,44 @@ const getMyReviews = async (req, res) => {
     const reviews = await Review.find({ customer_id: customer._id })
       .populate("productId", "productName imageUrl slug")
       .populate("variantId", "variantName sku")
+      .populate({
+        path: "orderItemId",
+        select: "order_id"
+      })
       .sort({ createdAt: -1 })
       .lean();
+
+    // Fetch media for each review
+    const reviewIds = reviews.map(r => r._id);
+    const allMedia = await ReviewMedia.find({ reviewId: { $in: reviewIds } }).lean();
+
+    const formattedData = reviews.map(r => {
+      const media = allMedia.filter(m => String(m.reviewId) === String(r._id));
+      return {
+        reviewId: String(r._id),
+        orderId: r.orderItemId?.order_id || null,
+        orderItemId: r.orderItemId?._id || null,
+        product: {
+          productId: r.productId?._id,
+          productName: r.productId?.productName,
+          variantName: r.variantId?.variantName,
+          imageUrl: r.productId?.imageUrl
+        },
+        rating: r.rating,
+        reviewContent: r.reviewContent,
+        media: media.map(m => ({
+          mediaType: m.mediaType,
+          mediaUrl: m.mediaUrl
+        })),
+        createdAt: r.createdAt
+      };
+    });
 
     res.status(200).json({
       success: true,
       message: "My reviews retrieved",
-      count: reviews.length,
-      data: reviews,
+      count: formattedData.length,
+      data: formattedData,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -242,10 +429,17 @@ const submitReviewDirect = async (req, res) => {
     const customer = await getCustomerFromAuth(req);
     if (!customer) return res.status(401).json({ success: false, message: "Vui lòng đăng nhập để viết đánh giá." });
 
-    const { productId, variantId, rating, reviewTitle, reviewContent, reviewTags, skinTypes, mediaUrls } = req.body ?? {};
+    const productId = String(req.body.productId || "").trim();
+    const variantId = String(req.body.variantId || "").trim();
+    const rating = Number(req.body.rating);
+    const reviewTitle = String(req.body.reviewTitle || "").trim();
+    const reviewContent = String(req.body.reviewContent || "").trim();
+
+    const reviewTags = parseJsonArray(req.body.reviewTags);
+    const skinTypes = parseJsonArray(req.body.skinTypes);
 
     if (!productId || !validateObjectId(productId)) return res.status(400).json({ success: false, message: "productId is required" });
-    if (!rating || !Number.isFinite(Number(rating))) return res.status(400).json({ success: false, message: "Rating is required" });
+    if (isNaN(rating)) return res.status(400).json({ success: false, message: "Rating is required" });
 
     const productExists = await Product.findById(productId);
     if (!productExists) return res.status(404).json({ success: false, message: "Product not found" });
@@ -258,35 +452,55 @@ const submitReviewDirect = async (req, res) => {
       customer_id: customer._id,
       productId,
       variantId: variantId && validateObjectId(variantId) ? variantId : undefined,
-      rating: Math.max(1, Math.min(5, Number(rating))),
-      reviewTitle: reviewTitle ?? "",
-      reviewContent: reviewContent ?? "",
-      reviewTags: Array.isArray(reviewTags) ? reviewTags : [],
-      skinTypes: Array.isArray(skinTypes) ? skinTypes : [],
+      rating: Math.max(1, Math.min(5, rating)),
+      reviewTitle,
+      reviewContent,
+      reviewTags,
+      skinTypes,
       verifiedPurchaseFlag: false,
       reviewStatus: "visible",
     };
 
     const created = await Review.create(payload);
 
-    const mediaList = Array.isArray(mediaUrls) ? mediaUrls.filter(Boolean).slice(0, 8) : [];
-    if (mediaList.length) {
-      await ReviewMedia.insertMany(
-        mediaList.map((mediaUrl, idx) => ({
-          reviewId: created._id,
-          mediaType: "image",
-          mediaUrl: String(mediaUrl),
-          sortOrder: idx,
-        }))
-      );
+    // Handle files from multer
+    const files = req.files || [];
+    if (files.length > 0) {
+      const mediaDocs = files.map((file, idx) => ({
+        reviewId: created._id,
+        mediaType: file.mimetype.startsWith("video/") ? "video" : "image",
+        mediaUrl: `/uploads/reviews/${file.filename}`,
+        sortOrder: idx,
+      }));
+      await ReviewMedia.insertMany(mediaDocs);
+    } else {
+      // Fallback to mediaUrls
+      const mediaUrls = parseJsonArray(req.body.mediaUrls);
+      const mediaList = mediaUrls.filter(Boolean).slice(0, 8);
+      if (mediaList.length) {
+        await ReviewMedia.insertMany(
+          mediaList.map((mediaUrl, idx) => ({
+            reviewId: created._id,
+            mediaType: "image",
+            mediaUrl: String(mediaUrl),
+            sortOrder: idx,
+          }))
+        );
+      }
     }
 
     await recalcReviewSummary(productId);
 
+    // Fetch review with media to return
+    const media = await ReviewMedia.find({ reviewId: created._id }).sort({ sortOrder: 1 }).lean();
+
     res.status(201).json({
       success: true,
       message: "Review submitted successfully",
-      data: created,
+      data: {
+        ...created.toObject(),
+        media
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -501,6 +715,7 @@ module.exports = {
   submitReviewFromOrderItem,
   submitReviewDirect,
   getMyReviews,
+  getMyReviewDetail,
   patchMyReview,
   deleteMyReview,
   getReviewableItems,

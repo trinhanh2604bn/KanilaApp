@@ -23,9 +23,281 @@
             android:paddingBottom="@dimen/spacing_xl">
 
             <!-- 1. Address Section -->
-            <include
-                android:id="@+id/layoutCheckoutAddress"
-                layout="@layout/view_checkout_option_card" />
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardCheckoutAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/spacing_s"
+                android:layout_marginVertical="@dimen/spacing_xs"
+                app:cardBackgroundColor="@color/background_main"
+                app:cardCornerRadius="@dimen/radius_m"
+                app:cardElevation="2dp"
+                app:cardPreventCornerOverlap="false"
+                app:strokeColor="@color/background_sub"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Summary Area -->
+                    <include
+                        android:id="@+id/layoutCheckoutAddressSummary"
+                        layout="@layout/view_checkout_option_card" />
+
+                    <!-- Expandable Form Area -->
+                    <LinearLayout
+                        android:id="@+id/layoutCheckoutAddressForm"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="@dimen/spacing_l"
+                        android:paddingBottom="@dimen/spacing_l"
+                        android:visibility="gone"
+                        tools:visibility="visible">
+
+                        <com.google.android.material.divider.MaterialDivider
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/spacing_m"
+                            app:dividerColor="@color/border_divider" />
+
+                        <!-- Name -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:text="@string/checkout_address_form_name"
+                            android:textColor="@color/text_main"
+                            android:textSize="13sp" />
+
+                        <EditText
+                            android:id="@+id/checkout_edtAddressFullName"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/input_height"
+                            android:layout_marginTop="@dimen/label_input_spacing"
+                            android:background="@drawable/bg_kanila_input_default"
+                            android:fontFamily="@font/nunito_regular"
+                            android:hint="@string/auth_full_name_hint"
+                            android:inputType="textPersonName"
+                            android:autofillHints="name"
+                            android:paddingHorizontal="@dimen/spacing_m"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+
+                        <!-- Phone -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/form_field_spacing"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:text="@string/checkout_address_form_phone"
+                            android:textColor="@color/text_main"
+                            android:textSize="13sp" />
+
+                        <EditText
+                            android:id="@+id/checkout_edtAddressPhone"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/input_height"
+                            android:layout_marginTop="@dimen/label_input_spacing"
+                            android:background="@drawable/bg_kanila_input_default"
+                            android:fontFamily="@font/nunito_regular"
+                            android:hint="@string/auth_phone_hint"
+                            android:inputType="phone"
+                            android:autofillHints="phone"
+                            android:paddingHorizontal="@dimen/spacing_m"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+
+                        <!-- City/Province -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/form_field_spacing"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:text="@string/checkout_address_form_city"
+                            android:textColor="@color/text_main"
+                            android:textSize="13sp" />
+
+                        <EditText
+                            android:id="@+id/checkout_edtAddressCity"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/input_height"
+                            android:layout_marginTop="@dimen/label_input_spacing"
+                            android:background="@drawable/bg_kanila_input_default"
+                            android:drawableEnd="@drawable/ic_chevron_down"
+                            android:focusable="false"
+                            android:fontFamily="@font/nunito_regular"
+                            android:hint="@string/checkout_address_form_city"
+                            android:inputType="text"
+                            android:autofillHints="postalAddressRegion"
+                            android:paddingHorizontal="@dimen/spacing_m"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+
+                        <!-- District -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/form_field_spacing"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:text="@string/checkout_address_form_district"
+                            android:textColor="@color/text_main"
+                            android:textSize="13sp" />
+
+                        <EditText
+                            android:id="@+id/checkout_edtAddressDistrict"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/input_height"
+                            android:layout_marginTop="@dimen/label_input_spacing"
+                            android:background="@drawable/bg_kanila_input_default"
+                            android:drawableEnd="@drawable/ic_chevron_down"
+                            android:focusable="false"
+                            android:fontFamily="@font/nunito_regular"
+                            android:hint="@string/checkout_address_form_district"
+                            android:inputType="text"
+                            android:autofillHints="postalAddressLocality"
+                            android:paddingHorizontal="@dimen/spacing_m"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+
+                        <!-- Ward -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/form_field_spacing"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:text="@string/checkout_address_form_ward"
+                            android:textColor="@color/text_main"
+                            android:textSize="13sp" />
+
+                        <EditText
+                            android:id="@+id/checkout_edtAddressWard"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/input_height"
+                            android:layout_marginTop="@dimen/label_input_spacing"
+                            android:background="@drawable/bg_kanila_input_default"
+                            android:drawableEnd="@drawable/ic_chevron_down"
+                            android:focusable="false"
+                            android:fontFamily="@font/nunito_regular"
+                            android:hint="@string/checkout_address_form_ward"
+                            android:inputType="text"
+                            android:autofillHints="none"
+                            android:paddingHorizontal="@dimen/spacing_m"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+
+                        <!-- Detail Address -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/form_field_spacing"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:text="@string/checkout_address_form_detail"
+                            android:textColor="@color/text_main"
+                            android:textSize="13sp" />
+
+                        <EditText
+                            android:id="@+id/checkout_edtAddressDetail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/label_input_spacing"
+                            android:background="@drawable/bg_kanila_input_default"
+                            android:fontFamily="@font/nunito_regular"
+                            android:hint="@string/checkout_address_form_detail"
+                            android:inputType="textMultiLine"
+                            android:autofillHints="streetAddress"
+                            android:minHeight="@dimen/input_height"
+                            android:padding="@dimen/spacing_m"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+
+                        <!-- Note -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/form_field_spacing"
+                            android:fontFamily="@font/nunito_semibold"
+                            android:text="@string/checkout_address_form_note"
+                            android:textColor="@color/text_main"
+                            android:textSize="13sp" />
+
+                        <EditText
+                            android:id="@+id/checkout_edtAddressNote"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/label_input_spacing"
+                            android:background="@drawable/bg_kanila_input_default"
+                            android:fontFamily="@font/nunito_regular"
+                            android:hint="@string/checkout_note_hint"
+                            android:inputType="text"
+                            android:autofillHints="none"
+                            android:minHeight="40dp"
+                            android:paddingHorizontal="@dimen/spacing_m"
+                            android:textColor="@color/text_main"
+                            android:textSize="13sp" />
+
+                        <!-- Save to Address Book Checkbox -->
+                        <com.google.android.material.checkbox.MaterialCheckBox
+                            android:id="@+id/checkout_cbSaveToAddressBook"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_s"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/checkout_address_save_to_book"
+                            android:textColor="@color/text_main"
+                            android:textSize="13sp"
+                            app:buttonTint="@color/primary" />
+
+                        <!-- Select Other Address Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/checkout_btnSelectOtherAddress"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="@dimen/spacing_s"
+                            android:fontFamily="@font/nunito_bold"
+                            android:text="@string/checkout_address_select_other"
+                            android:textColor="@color/button"
+                            android:textSize="13sp"
+                            app:icon="@drawable/ic_location"
+                            app:iconPadding="@dimen/spacing_xs"
+                            app:iconSize="16dp"
+                            app:iconTint="@color/button" />
+
+                        <!-- Action Buttons -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_m"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/checkout_btnCancelAddressEdit"
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/spacing_s"
+                                android:layout_weight="1"
+                                android:text="@string/action_cancel"
+                                android:textColor="@color/text_secondary"
+                                app:strokeColor="@color/border_divider" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/checkout_btnApplyAddressEdit"
+                                style="@style/Widget.Kanila.Button.Primary"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/spacing_s"
+                                android:layout_weight="1"
+                                android:text="@string/action_apply" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- 2. Shipping Section -->
             <include
@@ -77,8 +349,8 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <include layout="@layout/item_cart_selected" />
-                        <!-- More items can be added dynamically -->
+                        <!-- Items are added dynamically in CheckoutFragment.bindItems using item_cart layout -->
+
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

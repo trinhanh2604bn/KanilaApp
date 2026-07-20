@@ -17,6 +17,14 @@
     <string name="content_desc_camera_search">Tìm kiếm bằng hình ảnh</string>
     <string name="content_desc_voice_search">Tìm kiếm bằng giọng nói</string>
     <string name="content_desc_submit_search">Tìm kiếm</string>
+    <string name="voice_search_prompt">Bạn muốn tìm gì...</string>
+    <string name="voice_search_not_supported">Thiết bị của bạn không hỗ trợ tìm kiếm bằng giọng nói</string>
+    <string name="voice_search_no_result">Không nhận diện được giọng nói, vui lòng thử lại</string>
+    <string name="voice_search_error">Lỗi kết nối giọng nói, vui lòng thử lại</string>
+    <string name="voice_permission_title">Cho phép truy cập Micro</string>
+    <string name="voice_permission_desc">Kanila cần quyền ghi âm để giúp bạn tìm kiếm sản phẩm bằng giọng nói.</string>
+    <string name="voice_permission_allow">Cho phép</string>
+    <string name="voice_permission_deny">Lúc khác</string>
     <string name="category_face">Face</string>
     <string name="content_desc_category_icon">Biểu tượng danh mục</string>
     <string name="content_desc_category_product_image">Ảnh sản phẩm danh mục</string>
@@ -51,6 +59,17 @@
     <string name="checkout_price_shipping">Phí vận chuyển</string>
     <string name="checkout_price_discount">Mã giảm giá</string>
     <string name="checkout_price_points">Điểm thưởng</string>
+    <string name="checkout_address_form_name">Họ và tên</string>
+    <string name="checkout_address_form_phone">Số điện thoại</string>
+    <string name="checkout_address_form_city">Tỉnh / Thành phố</string>
+    <string name="checkout_address_form_district">Quận / Huyện</string>
+    <string name="checkout_address_form_ward">Phường / Xã</string>
+    <string name="checkout_address_form_detail">Địa chỉ chi tiết (Số nhà, tên đường...)</string>
+    <string name="checkout_address_form_note">Ghi chú giao hàng</string>
+    <string name="checkout_address_save_to_book">Lưu địa chỉ này vào danh sách địa chỉ nhận hàng</string>
+    <string name="checkout_address_select_other">Chọn địa chỉ khác</string>
+    <string name="action_cancel">Huỷ</string>
+    <string name="action_apply">Áp dụng</string>
     <string name="checkout_sample_receiver_2">Nguyễn Thanh Thanh - 0794 644 108</string>
     <string name="checkout_sample_address_2">123 Trần Hưng Đạo, Phường Bến Thành, Hồ Chí Minh</string>
     <string name="checkout_sample_shipping_2">Giao hàng tiêu chuẩn</string>
@@ -102,6 +121,11 @@
 
     <string name="search_recommend_title">Đề xuất dành cho bạn</string>
     <string name="search_quick_discovery_title">Khám phá nhanh</string>
+    <string name="wishlist_added">Đã thêm vào danh sách yêu thích</string>
+    <string name="wishlist_removed">Đã xóa khỏi danh sách yêu thích</string>
+    <string name="cart_item_added">Đã thêm vào giỏ hàng</string>
+    <string name="error_generic">Đã xảy ra lỗi, vui lòng thử lại sau.</string>
+
     <string name="discovery_oily_skin_title">Da dầu mụn</string>
     <string name="discovery_oily_skin_desc">Giải pháp kiềm dầu, giảm mụn</string>
     <string name="discovery_daily_makeup_title">Makeup hằng ngày</string>
@@ -259,7 +283,7 @@
     <string name="notification_filter_personal">Cá nhân</string>
     <string name="notification_new_tag">Mới</string>
     <string name="notification_empty">Không có thông báo nào</string>
-    <string name="address_book_title">Địa chỉ giao hàng</string>
+    <string name="address_book_title">Địa chỉ của tôi</string>
     <string name="address_book_list_header">Danh sách địa chỉ</string>
     <string name="address_book_add_new">Thêm địa chỉ mới</string>
     <string name="address_default_label">Mặc định</string>
@@ -1038,6 +1062,14 @@
     <string name="review_write_rating_required">Vui lòng chọn số sao đánh giá</string>
     <string name="review_write_char_counter_format">%1$d/1000</string>
 
+    <string name="review_empty_all">Chưa có đánh giá nào</string>
+    <string name="review_empty_5_star">Chưa có đánh giá 5 sao</string>
+    <string name="review_empty_4_star">Chưa có đánh giá 4 sao</string>
+    <string name="review_empty_3_star">Chưa có đánh giá 3 sao</string>
+    <string name="review_empty_2_star">Chưa có đánh giá 2 sao</string>
+    <string name="review_empty_1_star">Chưa có đánh giá 1 sao</string>
+    <string name="review_empty_has_media">Chưa có đánh giá kèm hình ảnh/video</string>
+
     <!-- Flash Sale & Voucher -->
     <string name="flash_sale_title">Flash Sale</string>
     <string name="flash_sale_countdown_label">Kết thúc sau</string>
@@ -1046,9 +1078,9 @@
     <string name="voucher_claim">Săn ít</string>
 
     <!-- Mock Flash Sale Countdown -->
-    <string name="mock_flash_hour">02</string>
-    <string name="mock_flash_minute">45</string>
-    <string name="mock_flash_second">32</string>
+    <string name="mock_flash_hour">00</string>
+    <string name="mock_flash_minute">46</string>
+    <string name="mock_flash_second">52</string>
     <string name="symbol_colon">:</string>
     <string name="badge_sale">SALE</string>
     <string name="badge_trending">ĐANG BÁN CHẠY</string>
@@ -1058,4 +1090,19 @@
     <string name="flash_sale_status_tomorrow">Ngày mai</string>
     <string name="flash_sale_ends_in">KẾT THÚC TRONG</string>
     <string name="flash_sale_starts_in">BẮT ĐẦU SAU</string>
+
+    <!-- Recommendation Feature -->
+    <string name="recommendation_title">Sản phẩm phù hợp với bạn</string>
+    <string name="recommendation_subtitle">Dựa trên hồ sơ làm đẹp và sở thích của bạn</string>
+    <string name="recommendation_guest_title">Khám phá gợi ý riêng cho bạn</string>
+    <string name="recommendation_guest_desc">Đăng nhập và hoàn thành Beauty Profile để nhận gợi ý phù hợp nhất.</string>
+    <string name="recommendation_empty_title">Chưa có gợi ý phù hợp</string>
+    <string name="recommendation_empty_desc">Hoàn thành Beauty Profile để nhận gợi ý phù hợp hơn.</string>
+    <string name="recommendation_error_msg">Không thể tải gợi ý lúc này. Vui lòng thử lại.</string>
+    <string name="auth_token_expired_msg">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</string>
+    <string name="skin_match_reason">Lý do phù hợp</string>
+    <string name="skin_match_analysis">Skin Match Analysis</string>
+    <string name="skin_match_matched_traits">Đặc điểm da khớp với sản phẩm</string>
+    <string name="skin_match_detailed_reasons">Lý giải chi tiết độ phù hợp</string>
+    <string name="skin_match_ai_note">Kết quả này được tính toán dựa trên thuật toán AI độc quyền của Kanila Beauty kết hợp với hồ sơ cá nhân của bạn.</string>
 </resources>

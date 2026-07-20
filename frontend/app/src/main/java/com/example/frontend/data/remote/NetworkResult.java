@@ -10,7 +10,8 @@ public class NetworkResult<T> {
         EMPTY,
         ERROR,
         NO_INTERNET,
-        UNAUTHORIZED
+        UNAUTHORIZED,
+        GUEST
     }
 
     @NonNull
@@ -48,5 +49,9 @@ public class NetworkResult<T> {
 
     public static <T> NetworkResult<T> unauthorized() {
         return new NetworkResult<>(Status.UNAUTHORIZED, null, "Unauthorized access");
+    }
+
+    public static <T> NetworkResult<T> guest() {
+        return new NetworkResult<>(Status.GUEST, null, "Guest user");
     }
 }

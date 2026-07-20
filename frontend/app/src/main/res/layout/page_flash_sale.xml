@@ -98,7 +98,7 @@
                     style="@style/Text.Kanila.H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="21:00"
+                    android:text="18:00"
                     android:textColor="@color/button" />
 
                 <TextView
@@ -134,7 +134,7 @@
                     style="@style/Text.Kanila.H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="00:00"
+                    android:text="21:00"
                     android:textColor="@color/text_secondary" />
 
                 <TextView
@@ -142,7 +142,7 @@
                     style="@style/Text.Kanila.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/flash_sale_status_tomorrow"
+                    android:text="Hôm nay"
                     android:textColor="@color/text_tertiary" />
 
                 <View
@@ -171,7 +171,7 @@
                     style="@style/Text.Kanila.H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="02:00"
+                    android:text="00:00"
                     android:textColor="@color/text_secondary" />
 
                 <TextView
@@ -309,7 +309,7 @@
                             android:fontFamily="@font/nunito_bold"
                             android:paddingHorizontal="4dp"
                             android:paddingVertical="2dp"
-                            android:text="31"
+                            android:text="45"
                             android:textColor="@color/white"
                             android:textSize="12sp" />
 
@@ -329,7 +329,7 @@
                             android:fontFamily="@font/nunito_bold"
                             android:paddingHorizontal="4dp"
                             android:paddingVertical="2dp"
-                            android:text="26"
+                            android:text="52"
                             android:textColor="@color/white"
                             android:textSize="12sp" />
                     </LinearLayout>

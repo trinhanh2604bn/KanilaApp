@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.data.model.account.ProfileHubDto;
 import com.example.frontend.feature.account.AccountViewModel;
+import ui.account.AccountAddressFragment;
 
 import java.util.Locale;
 
@@ -94,6 +95,10 @@ public class AccountFragment extends Fragment {
             btnCart.setOnClickListener(v -> {
                 FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.commerce.CartFragment());
             });
+
+            // Bind Cart Badge
+            com.example.frontend.feature.cart.CartViewModel cartViewModel = new ViewModelProvider(requireActivity()).get(com.example.frontend.feature.cart.CartViewModel.class);
+            ui.common.CartBadgeHelper.bindBadge(getViewLifecycleOwner(), (View) btnCart.getParent(), cartViewModel);
         }
         
         view.findViewById(R.id.btnEdit).setOnClickListener(v -> {
@@ -116,13 +121,6 @@ public class AccountFragment extends Fragment {
         menuBeautyProfile.setOnClickListener(v -> {
             requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.SAVE_BEAUTY_PROFILE);
         });
-
-        View menuAddress = view.findViewById(R.id.menuAddress);
-        if (menuAddress != null) {
-            menuAddress.setOnClickListener(v -> {
-                requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ADDRESS_BOOK);
-            });
-        }
 
         view.findViewById(R.id.btnAccountOrders).setOnClickListener(v -> {
             requireLogin(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ORDER_LIST);
@@ -157,6 +155,23 @@ public class AccountFragment extends Fragment {
         if (menuSettings != null) {
             menuSettings.setOnClickListener(v -> {
                 FragmentNavigationHelper.replaceFragment(requireActivity(), new AccountSettingsFragment());
+            });
+        }
+
+        View menuAddress = view.findViewById(R.id.menuAddress);
+        if (menuAddress != null) {
+            menuAddress.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main, new AccountAddressFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+
+        View menuMyReviews = view.findViewById(R.id.menuMyReviews);
+        if (menuMyReviews != null) {
+            menuMyReviews.setOnClickListener(v -> {
+                FragmentNavigationHelper.replaceFragment(requireActivity(), new com.example.frontend.feature.product.ReviewListFragment());
             });
         }
 
@@ -205,13 +220,6 @@ public class AccountFragment extends Fragment {
                         .replace(R.id.main, new ui.loyalty.LoyaltyFragment())
                         .addToBackStack(null)
                         .commit();
-                break;
-            case OPEN_ADDRESS_BOOK:
-                ui.commerce.CheckoutAddressFragment addressFragment = new ui.commerce.CheckoutAddressFragment();
-                Bundle args = new Bundle();
-                args.putBoolean(ui.commerce.CheckoutAddressFragment.ARG_IS_SELECTION_MODE, false);
-                addressFragment.setArguments(args);
-                FragmentNavigationHelper.replaceFragment(requireActivity(), addressFragment);
                 break;
         }
     }

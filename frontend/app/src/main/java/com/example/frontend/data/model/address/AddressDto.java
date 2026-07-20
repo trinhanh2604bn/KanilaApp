@@ -14,13 +14,13 @@ public class AddressDto implements Serializable {
     @SerializedName("address_label")
     private String addressLabel;
 
-    @SerializedName("recipient_name")
+    @SerializedName(value = "recipient_name", alternate = {"full_name"})
     private String recipientName;
 
     @SerializedName("phone")
     private String phone;
 
-    @SerializedName("address_line_1")
+    @SerializedName(value = "address_line_1", alternate = {"address_line"})
     private String addressLine1;
 
     @SerializedName("address_line_2")

@@ -51,6 +51,9 @@ public class ReviewHubFragment extends Fragment {
         TextView tvTitle = view.findViewById(R.id.tvTopBarTitle);
         if (tvTitle != null) tvTitle.setText("Đánh giá sản phẩm");
 
+        View btnSearch = view.findViewById(R.id.btnTopBarSearch);
+        if (btnSearch != null) btnSearch.setVisibility(View.GONE);
+
         TabLayout tabLayout = view.findViewById(R.id.tabReviewHub);
         ViewPager2 viewPager = view.findViewById(R.id.vpReviewHub);
 
@@ -72,8 +75,8 @@ public class ReviewHubFragment extends Fragment {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            if (position == 0) return new ReviewOverviewFragment();
-            return new ReviewListFragment();
+            if (position == 0) return ReviewOverviewFragment.newInstance(productId);
+            return ReviewListFragment.newInstance(productId);
         }
 
         @Override

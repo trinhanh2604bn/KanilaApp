@@ -42,6 +42,16 @@ public class NotificationCenterFragment extends Fragment {
     private int colorActiveText, colorActiveBg;
     private int colorInactiveText, colorInactiveBg;
 
+    public static NotificationCenterFragment newInstance(@Nullable NotificationType initialFilter) {
+        NotificationCenterFragment fragment = new NotificationCenterFragment();
+        Bundle args = new Bundle();
+        if (initialFilter != null) {
+            args.putString("initial_filter", initialFilter.name());
+        }
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -118,12 +128,33 @@ public class NotificationCenterFragment extends Fragment {
 
     private void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(NotificationViewModel.class);
+        
+        // Handle initial filter from arguments
+        if (getArguments() != null && getArguments().containsKey("initial_filter")) {
+            String filterName = getArguments().getString("initial_filter");
+            try {
+                NotificationType type = NotificationType.valueOf(filterName);
+                viewModel.setFilter(type);
+                updateTabsForType(type);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
         viewModel.getUiState().observe(getViewLifecycleOwner(), state -> {
             adapter.setItems(state.items);
             boolean showEmpty = state.empty;
             layoutNotifEmpty.setVisibility(showEmpty ? View.VISIBLE : View.GONE);
             rvNotifications.setVisibility(showEmpty ? View.GONE : View.VISIBLE);
         });
+    }
+
+    private void updateTabsForType(@Nullable NotificationType type) {
+        TextView targetTab = tvFilterAll;
+        if (type == NotificationType.ORDER) targetTab = tvFilterOrders;
+        else if (type == NotificationType.OFFER) targetTab = tvFilterOffers;
+        else if (type == NotificationType.COMMUNITY) targetTab = tvFilterCommunity;
+        else if (type == NotificationType.PERSONAL) targetTab = tvFilterPersonal;
+        
+        updateTabs(targetTab);
     }
 
     private void setupListeners() {
@@ -139,6 +170,10 @@ public class NotificationCenterFragment extends Fragment {
             btnCart.setOnClickListener(v -> {
                 FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CartFragment());
             });
+
+            // Bind Cart Badge
+            com.example.frontend.feature.cart.CartViewModel cartViewModel = new ViewModelProvider(requireActivity()).get(com.example.frontend.feature.cart.CartViewModel.class);
+            ui.common.CartBadgeHelper.bindBadge(getViewLifecycleOwner(), (View) btnCart.getParent(), cartViewModel);
         }
 
         for (TextView tab : filterTabs) {

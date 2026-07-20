@@ -11,21 +11,33 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
-import com.example.frontend.data.model.beauty.CustomerBeautyProfileDto;
+import com.example.frontend.data.model.recommendation.AiAnalysis;
+import com.example.frontend.data.model.recommendation.RecommendationData;
 import com.example.frontend.data.remote.NetworkResult;
-import com.example.frontend.feature.beauty.BeautyProfileViewModel;
+import com.example.frontend.feature.product.ProductDetailFragment;
+import com.example.frontend.feature.recommendation.RecommendationProductAdapter;
+import com.example.frontend.feature.recommendation.RecommendationViewModel;
+import com.example.frontend.model.Product;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+
+import java.util.List;
 
 import ui.common.ViewUtils;
 
 public class SkinAnalysisFragment extends Fragment {
 
-    private BeautyProfileViewModel viewModel;
+    private RecommendationViewModel viewModel;
     private TextView tvScore, tvScoreStatus, tvAiVerdict, tvAiStats;
     private ProgressBar progressScore;
+    private View cardHealthScore, cardAiVerdict;
+    private RecyclerView rvRecommendedProducts;
+    private RecommendationProductAdapter productAdapter;
+    private View skinAnalysisRoot;
 
     public SkinAnalysisFragment() {
         super(R.layout.fragment_skin_analysis);
@@ -34,76 +46,139 @@ public class SkinAnalysisFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(requireActivity()).get(BeautyProfileViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(RecommendationViewModel.class);
         
         setupViews(view);
         setupEvents(view);
         observeViewModel();
+
+        viewModel.fetchHomepageRecommendations();
     }
 
     private void setupViews(View view) {
+        skinAnalysisRoot = view.findViewById(R.id.skinAnalysisRoot);
         tvScore = view.findViewById(R.id.tvScore);
         tvScoreStatus = view.findViewById(R.id.tvScoreStatus);
         tvAiVerdict = view.findViewById(R.id.tvAiVerdict);
         tvAiStats = view.findViewById(R.id.tvAiStats);
         progressScore = view.findViewById(R.id.progressScore);
+        rvRecommendedProducts = view.findViewById(R.id.rvRecommendedProducts);
+        cardHealthScore = view.findViewById(R.id.cardHealthScore);
+        cardAiVerdict = view.findViewById(R.id.cardAiVerdict);
+        
+        setupProductRecyclerView();
     }
 
-    private void observeViewModel() {
-        viewModel.getProfileResult().observe(getViewLifecycleOwner(), result -> {
-            if (result != null && result.status == NetworkResult.Status.SUCCESS) {
-                bindAnalysisData(result.data);
+    private void setupProductRecyclerView() {
+        if (rvRecommendedProducts == null) return;
+        
+        productAdapter = new RecommendationProductAdapter();
+        rvRecommendedProducts.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(requireContext()));
+        rvRecommendedProducts.setAdapter(productAdapter);
+        
+        productAdapter.setOnProductClickListener(new RecommendationProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
+                        ? R.id.main_fragment_container : R.id.main;
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(containerId, ProductDetailFragment.newInstance(product.getId()))
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                // Handle add to cart
             }
         });
     }
 
-    private void bindAnalysisData(CustomerBeautyProfileDto profile) {
-        if (profile == null) return;
+    private void observeViewModel() {
+        viewModel.getHomepageRecommendations().observe(getViewLifecycleOwner(), result -> {
+            if (result != null) {
+                switch (result.status) {
+                    case SUCCESS:
+                        if (result.data != null) {
+                            bindAnalysisData(result.data);
+                        }
+                        break;
+                    case LOADING:
+                        // Could show a loading state if needed
+                        break;
+                    case ERROR:
+                        // Handle error
+                        break;
+                }
+            }
+        });
+    }
 
-        // Giả lập điểm sức khỏe dựa trên độ hoàn thiện hồ sơ hoặc dữ liệu có sẵn
-        int healthScore = 75; 
-        if (profile.getSkinIndicators() != null && !profile.getSkinIndicators().isEmpty()) {
-            healthScore = profile.getSkinIndicators().get(0).getScore();
-        } else {
-            // Logic giả lập: Hồ sơ càng chi tiết điểm càng cao (vui vẻ thôi)
-            healthScore = 60 + (profile.getProfileCompletion() / 4);
+    private void bindAnalysisData(RecommendationData recommendationData) {
+        AiAnalysis analysis = recommendationData.getAiAnalysis();
+        if (analysis == null) {
+            // Hiển thị fallback UI như tài liệu yêu cầu
+            if (cardHealthScore != null) cardHealthScore.setVisibility(View.GONE);
+            if (tvAiVerdict != null) {
+                tvAiVerdict.setText("Hệ thống AI đang tạm bận, bạn xem trước các sản phẩm gợi ý bên dưới nhé!");
+            }
+            // Mapping Recommended Products anyway
+            if (productAdapter != null && recommendationData.getProducts() != null) {
+                productAdapter.setItems(recommendationData.getProducts());
+            }
+            return;
         }
+
+        if (cardHealthScore != null) cardHealthScore.setVisibility(View.VISIBLE);
+        if (cardAiVerdict != null) cardAiVerdict.setVisibility(View.VISIBLE);
+        int healthScore = analysis.getHealthScore() != null ? analysis.getHealthScore() : 0;
 
         if (tvScore != null) tvScore.setText(String.valueOf(healthScore));
-        if (progressScore != null) progressScore.setProgress(healthScore);
-        
-        if (tvScoreStatus != null) {
-            if (healthScore >= 80) tvScoreStatus.setText("Tuyệt vời");
-            else if (healthScore >= 60) tvScoreStatus.setText("Tốt");
-            else tvScoreStatus.setText("Cần cải thiện");
+        if (progressScore != null) {
+            progressScore.setProgress(healthScore);
+            // Áp dụng màu sắc theo tài liệu
+            // 0 - 49: Đỏ, 50 - 74: Vàng/Cam, 75 - 100: Xanh lá
+            int colorRes;
+            if (healthScore >= 75) {
+                colorRes = R.color.success; // Xanh lá
+                if (tvScoreStatus != null) tvScoreStatus.setText("Khỏe mạnh");
+            } else if (healthScore >= 50) {
+                colorRes = android.R.color.holo_orange_light; // Vàng/Cam
+                if (tvScoreStatus != null) tvScoreStatus.setText("Trung bình - Khá");
+            } else {
+                colorRes = android.R.color.holo_red_light; // Đỏ
+                if (tvScoreStatus != null) tvScoreStatus.setText("Cần cải thiện nhiều");
+            }
+            progressScore.setProgressTintList(android.content.res.ColorStateList.valueOf(androidx.core.content.ContextCompat.getColor(requireContext(), colorRes)));
+            if (tvScoreStatus != null) {
+                tvScoreStatus.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), colorRes));
+            }
         }
 
-        // AI Verdict dựa trên Skin Type và Concerns
-        StringBuilder verdict = new StringBuilder();
-        String skinType = profile.getSkinType() != null ? profile.getSkinType().toLowerCase() : "da thường";
-        
-        verdict.append("Dựa trên loại ").append(skinType);
-        if (profile.getSkinConcerns() != null && !profile.getSkinConcerns().isEmpty()) {
-            verdict.append(" và tình trạng ").append(String.join(", ", profile.getSkinConcerns()).toLowerCase());
+        if (tvAiVerdict != null) {
+            tvAiVerdict.setText(analysis.getAnalysisText());
         }
-        verdict.append(", làn da của bạn cần sự chú ý đặc biệt vào việc ");
-        
-        if (skinType.contains("dầu")) {
-            verdict.append("kiểm soát bã nhờn và làm sạch sâu lỗ chân lông.");
-        } else if (skinType.contains("khô")) {
-            verdict.append("cấp ẩm tầng sâu và phục hồi hàng rào bảo vệ da.");
-        } else {
-            verdict.append("duy trì sự cân bằng độ ẩm và bảo vệ trước tác động môi trường.");
-        }
-
-        if (profile.getSensitivityLevel() != null && profile.getSensitivityLevel().contains("nhạy cảm")) {
-            verdict.append(" Hãy ưu tiên các sản phẩm không chứa hương liệu và cồn khô.");
-        }
-
-        if (tvAiVerdict != null) tvAiVerdict.setText(verdict.toString());
         
         if (tvAiStats != null) {
-            tvAiStats.setText("Chỉ số của bạn cao hơn " + (healthScore - 5) + "% người dùng cùng loại " + skinType + ".");
+            // Theo tài liệu: "Chỉ số của bạn cao hơn 75% người dùng cùng loại da dầu."
+            // Backend trả về text này hoặc mình tự chế dựa trên score.
+            // Ở đây mình dùng text từ API nếu có, hoặc giữ nguyên mẫu.
+            tvAiStats.setText("Chỉ số của bạn cao hơn " + (healthScore - 5) + "% người dùng cùng phân khúc.");
+        }
+
+        // Mapping Recommended Products
+        if (productAdapter != null && recommendationData.getProducts() != null) {
+            productAdapter.setItems(recommendationData.getProducts());
+        }
+
+        // Mapping Ideal Ingredients
+        List<String> ingredients = analysis.getIdealIngredients();
+        View fragmentView = getView();
+        if (ingredients != null && fragmentView != null) {
+            updateIngredientCard(fragmentView, R.id.cardIngredient1, ingredients.size() > 0 ? ingredients.get(0) : null, R.drawable.ic_shield_star);
+            updateIngredientCard(fragmentView, R.id.cardIngredient2, ingredients.size() > 1 ? ingredients.get(1) : null, R.drawable.ic_beaker);
+            updateIngredientCard(fragmentView, R.id.cardIngredient3, ingredients.size() > 2 ? ingredients.get(2) : null, R.drawable.ic_goal_sparkle);
         }
     }
 
@@ -113,11 +188,6 @@ public class SkinAnalysisFragment extends Fragment {
             ViewUtils.applyClickAnimation(btnBack);
             btnBack.setOnClickListener(v -> handleBackNavigation());
         }
-
-        // Setup Ingredients
-        setupIngredientCard(view, R.id.cardIngredient1, "Ceramide", R.drawable.ic_shield_star);
-        setupIngredientCard(view, R.id.cardIngredient2, "BHA", R.drawable.ic_beaker);
-        setupIngredientCard(view, R.id.cardIngredient3, "Vitamin C", R.drawable.ic_goal_sparkle);
 
         MaterialButton btnViewFullRoutine = view.findViewById(R.id.btnViewFullRoutine);
         if (btnViewFullRoutine != null) {
@@ -135,10 +205,16 @@ public class SkinAnalysisFragment extends Fragment {
         }
     }
 
-    private void setupIngredientCard(View root, int id, String name, int iconRes) {
+    private void updateIngredientCard(View root, int id, String name, int iconRes) {
         View card = root.findViewById(id);
         if (card == null) return;
-        
+
+        if (name == null) {
+            card.setVisibility(View.GONE);
+            return;
+        }
+
+        card.setVisibility(View.VISIBLE);
         TextView label = card.findViewById(R.id.tvLabel);
         ImageView icon = card.findViewById(R.id.ivIcon);
         

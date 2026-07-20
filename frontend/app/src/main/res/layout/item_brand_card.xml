@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutBrandCard"
     android:layout_width="110dp"
@@ -13,27 +12,15 @@
     android:orientation="vertical"
     android:padding="4dp">
 
-    <ImageButton
-        android:id="@+id/btnBrandFavorite"
-        android:layout_width="@dimen/brand_card_favorite_icon_size"
-        android:layout_height="@dimen/brand_card_favorite_icon_size"
-        android:layout_gravity="top|end"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/app_name"
-
+    <ImageView
+        android:id="@+id/ivBrandLogo"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="@dimen/spacing_xs"
+        android:adjustViewBounds="false"
+        android:contentDescription="@string/content_desc_brand_logo"
         android:scaleType="centerInside"
-        android:src="@drawable/selector_post_like"
-        app:tint="@color/selector_post_action_tint" />
-
-        <ImageView
-            android:id="@+id/ivBrandLogo"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_margin="@dimen/spacing_xs"
-            android:adjustViewBounds="false"
-            android:contentDescription="@string/content_desc_brand_logo"
-            android:scaleType="centerInside"
-            tools:src="@drawable/brand_fee" />
+        tools:src="@drawable/brand_fee" />
 
 
 

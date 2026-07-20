@@ -241,14 +241,14 @@
                     android:id="@+id/tvChallengeBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
+                    android:layout_margin="3dp"
                     android:background="@drawable/bg_badge_hot"
                     android:fontFamily="@font/nunito_bold"
-                    android:paddingHorizontal="6dp"
-                    android:paddingVertical="2dp"
+                    android:paddingHorizontal="3dp"
+                    android:paddingVertical="1dp"
                     android:text="@string/home_social_challenge_hot"
                     android:textColor="@color/white"
-                    android:textSize="8sp" />
+                    android:textSize="7sp" />
             </FrameLayout>
 
             <TextView

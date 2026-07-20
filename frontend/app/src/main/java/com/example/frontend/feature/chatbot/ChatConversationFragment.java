@@ -34,6 +34,7 @@ public class ChatConversationFragment extends Fragment {
     private static final String ARG_STARTER_MESSAGE = "starter_message";
 
     private ChatbotViewModel viewModel;
+    private com.example.frontend.feature.cart.CartViewModel cartViewModel;
     private ChatMessageAdapter chatAdapter;
     private QuickReplyAdapter quickReplyAdapter;
     private EditText edtMessage;
@@ -60,6 +61,7 @@ public class ChatConversationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ChatbotViewModel.class);
+        cartViewModel = new ViewModelProvider(requireActivity()).get(com.example.frontend.feature.cart.CartViewModel.class);
 
         initViews(view);
         setupRecyclerViews(view);
@@ -393,7 +395,10 @@ public class ChatConversationFragment extends Fragment {
             switch (result.status) {
                 case SUCCESS:
                     Toast.makeText(getContext(), R.string.chat_cart_add_success, Toast.LENGTH_SHORT).show();
-                    // Optionally show "View Cart" button or message in chat
+                    // Sync badge count by reloading cart in shared ViewModel
+                    if (cartViewModel != null) {
+                        cartViewModel.loadCart();
+                    }
                     break;
                 case ERROR:
                     Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();

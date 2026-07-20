@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.MediatorLiveData;
 
 import com.example.frontend.data.model.cart.AddToCartRequest;
 import com.example.frontend.data.model.cart.CartDto;
@@ -20,15 +21,27 @@ public class CartViewModel extends AndroidViewModel {
 
     private final CartRepository cartRepository;
     private final MutableLiveData<NetworkResult<CartDto>> cartResult = new MutableLiveData<>();
+    private final MediatorLiveData<Integer> totalCartQuantity = new MediatorLiveData<>();
     private CartDto mockCart;
 
     public CartViewModel(@NonNull Application application) {
         super(application);
         this.cartRepository = new CartRepository(application);
+        
+        totalCartQuantity.setValue(0);
+        totalCartQuantity.addSource(cartResult, result -> {
+            if (result != null && result.status == NetworkResult.Status.SUCCESS && result.data != null) {
+                totalCartQuantity.setValue(result.data.getTotalQuantity());
+            }
+        });
     }
 
     public LiveData<NetworkResult<CartDto>> getCartResult() {
         return cartResult;
+    }
+
+    public LiveData<Integer> getTotalCartQuantity() {
+        return totalCartQuantity;
     }
 
     public void loadCart() {
@@ -146,8 +159,8 @@ public class CartViewModel extends AndroidViewModel {
                 subtotal += item.getFinalUnitPriceAmount() * item.getQuantity();
             }
         }
-        double discount = subtotal > 0 ? 100000 : 0;
-        double total = subtotal - discount;
+        double discount = 0;
+        double total = subtotal;
         mockCart = CartDto.createMockCart(items, subtotal, discount, total);
     }
 
@@ -217,9 +230,8 @@ public class CartViewModel extends AndroidViewModel {
             }
         }
         
-        // Mock discount if any items are selected
-        double discount = subtotal > 0 ? 100000 : 0;
-        double total = subtotal - discount;
+        double discount = 0;
+        double total = subtotal;
 
         return CartDto.createMockCart(items, subtotal, discount, total);
     }

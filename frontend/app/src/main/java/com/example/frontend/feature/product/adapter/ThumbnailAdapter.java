@@ -13,6 +13,7 @@ import com.example.frontend.data.model.product.ProductMediaDto;
 import com.google.android.material.card.MaterialCardView;
 import java.util.ArrayList;
 import java.util.List;
+import android.util.Log;
 
 public class ThumbnailAdapter extends RecyclerView.Adapter<ThumbnailAdapter.ViewHolder> {
     private List<ProductMediaDto> mediaList = new ArrayList<>();
@@ -49,9 +50,14 @@ public class ThumbnailAdapter extends RecyclerView.Adapter<ThumbnailAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ProductMediaDto media = mediaList.get(position);
+        String imageUrl = media != null ? media.getUrl() : null;
+
+        Log.d("ThumbnailAdapter", "load thumbnail url = " + imageUrl);
+
         Glide.with(holder.ivThumbnail.getContext())
-                .load(media.getUrl())
+                .load(imageUrl)
                 .placeholder(R.drawable.ic_product)
+                .error(R.drawable.ic_product)
                 .into(holder.ivThumbnail);
 
         if (position == selectedPosition) {

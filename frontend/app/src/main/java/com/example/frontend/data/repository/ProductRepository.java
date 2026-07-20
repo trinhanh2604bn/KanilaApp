@@ -12,6 +12,8 @@ import com.example.frontend.model.Product;
 import com.example.frontend.data.model.product.ProductVariantDto;
 import com.example.frontend.data.model.product.ProductMediaDto;
 import com.example.frontend.data.model.product.ProductDetailResponse;
+import com.example.frontend.data.model.product.SkinMatchDto;
+import com.example.frontend.data.model.product.ReviewInsightDto;
 import com.example.frontend.data.model.common.PaginatedData;
 import java.util.List;
 import java.util.Map;
@@ -26,15 +28,77 @@ public class ProductRepository {
         this.apiService = ApiClient.getClient(context).create(ApiService.class);
     }
 
+    public LiveData<NetworkResult<SkinMatchDto>> getSkinMatchScore(String productId) {
+        MutableLiveData<NetworkResult<SkinMatchDto>> result = new MutableLiveData<>();
+        result.setValue(NetworkResult.loading());
+
+        apiService.getSkinMatchScore(productId).enqueue(new Callback<ApiResponse<SkinMatchDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<SkinMatchDto>> call, Response<ApiResponse<SkinMatchDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<SkinMatchDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to load skin match score"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<SkinMatchDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<NetworkResult<ReviewInsightDto>> getReviewInsights(String productId) {
+        MutableLiveData<NetworkResult<ReviewInsightDto>> result = new MutableLiveData<>();
+        result.setValue(NetworkResult.loading());
+
+        apiService.getReviewInsights(productId).enqueue(new Callback<ApiResponse<ReviewInsightDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<ReviewInsightDto>> call, Response<ApiResponse<ReviewInsightDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<ReviewInsightDto> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to load review insights"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<ReviewInsightDto>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
     public LiveData<NetworkResult<ProductDetailResponse>> getProductDetail(String id) {
         MutableLiveData<NetworkResult<ProductDetailResponse>> result = new MutableLiveData<>();
         result.setValue(NetworkResult.loading());
 
+        android.util.Log.d("ProductRepository", "getProductDetail id = " + id);
+
         apiService.getProductDetail(id).enqueue(new Callback<ApiResponse<ProductDetailResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<ProductDetailResponse>> call, Response<ApiResponse<ProductDetailResponse>> response) {
+                android.util.Log.d("ProductRepository", "response code = " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<ProductDetailResponse> apiResponse = response.body();
+                    android.util.Log.d("ProductRepository", "api success = " + apiResponse.isSuccess());
+                    android.util.Log.d("ProductRepository", "detail data = " + new com.google.gson.Gson().toJson(apiResponse.getData()));
+
                     if (apiResponse.isSuccess() && apiResponse.getData() != null) {
                         result.setValue(NetworkResult.success(apiResponse.getData()));
                     } else {

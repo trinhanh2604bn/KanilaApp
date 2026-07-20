@@ -14,6 +14,7 @@ public class OrderListViewModel extends AndroidViewModel {
     private final OrderRepository repository;
     private final MutableLiveData<OrderListUiState> uiState = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<List<OrderSummaryDto>>> orderResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<OrderSummaryDto>> reorderResult = new MutableLiveData<>();
 
     public OrderListViewModel(@NonNull Application application) {
         super(application);
@@ -36,6 +37,21 @@ public class OrderListViewModel extends AndroidViewModel {
                     break;
             }
         });
+
+        reorderResult.observeForever(result -> {
+            if (result == null) return;
+            switch (result.status) {
+                case LOADING:
+                    uiState.setValue(OrderListUiState.loading());
+                    break;
+                case SUCCESS:
+                    uiState.setValue(OrderListUiState.reorderSuccess());
+                    break;
+                case ERROR:
+                    uiState.setValue(OrderListUiState.error("Mua lại thất bại: " + result.message));
+                    break;
+            }
+        });
     }
 
     public LiveData<OrderListUiState> getUiState() {
@@ -44,6 +60,10 @@ public class OrderListViewModel extends AndroidViewModel {
 
     public void loadOrders(String status) {
         repository.getMyOrders(status, 1, orderResult);
+    }
+
+    public void reorderOrder(String orderId) {
+        repository.reorderOrder(orderId, reorderResult);
     }
 
 }

@@ -5,8 +5,7 @@
  * SECURITY REVIEW REQUIRED before commit/deploy:
  * - Remove TEMP_DEV_GEMINI_API_KEY and rely solely on process.env.GEMINI_API_KEY.
  */
-
-const { GoogleGenAI } = require("@google/genai");
+const { getVertexClient } = require("../config/vertex.config");
 const {
   KANILA_SYSTEM_PROMPT,
   buildProductContextMessage,
@@ -21,43 +20,23 @@ const {
   buildProductComparisonMessage,
   buildIngredientMessage,
   buildMakeupProductContextMessage,
+  buildSkinAnalysisPrompt,
 } = require("./chatbot.prompt");
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TEMP DEV ONLY - remove before commit/deploy
-const TEMP_DEV_GEMINI_API_KEY = "PASTE_YOUR_GEMINI_KEY_HERE"; // TEMP DEV ONLY
-// ─────────────────────────────────────────────────────────────────────────────
-
-const geminiApiKey = process.env.GEMINI_API_KEY || TEMP_DEV_GEMINI_API_KEY;
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 const GEMINI_TIMEOUT_MS = 60000;
-
-let _genAI = null;
-function getGenAI() {
-  if (!geminiApiKey || geminiApiKey === "PASTE_YOUR_GEMINI_KEY_HERE") {
-    const err = new Error(
-      "Gemini API key is missing or not configured. Set GEMINI_API_KEY in .env."
-    );
-    err.code = "CHATBOT_CONFIG_ERROR";
-    throw err;
-  }
-  if (!_genAI) _genAI = new GoogleGenAI({ apiKey: geminiApiKey });
-  return _genAI;
-}
-
 /**
  * Internal: run a Gemini chat call with timeout protection.
  */
-async function _geminiChatWithTimeout(message, history = []) {
-  const genAI = getGenAI();
-
+async function _geminiChatWithTimeout(message, history = [], customConfig = {}) {
   const geminiPromise = (async () => {
-    const chat = genAI.chats.create({
-      model: GEMINI_MODEL,
-      config: {
-        systemInstruction: KANILA_SYSTEM_PROMPT,
-        maxOutputTokens: 150,
-      },
+    const { client, model } = getVertexClient();
+    const config = {
+      systemInstruction: KANILA_SYSTEM_PROMPT,
+      ...customConfig
+    };
+    const chat = client.chats.create({
+      model: model,
+      config,
       history,
     });
     const result = await chat.sendMessage({ message });
@@ -80,6 +59,34 @@ async function _geminiChatWithTimeout(message, history = []) {
     const wrapped = new Error("Gemini provider encountered an error.");
     wrapped.code = "CHATBOT_ERROR";
     throw wrapped;
+  }
+}
+
+/**
+ * Internal: run a standalone Gemini generation without Chatbot system prompt.
+ */
+async function _geminiGenerateTextWithTimeout(prompt) {
+  const geminiPromise = (async () => {
+    const { client, model } = getVertexClient();
+    const response = await client.models.generateContent({
+      model: model,
+      contents: prompt
+    });
+    return response.text;
+  })();
+
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => {
+      const err = new Error("Gemini API request timed out.");
+      err.code = "CHATBOT_TIMEOUT";
+      reject(err);
+    }, GEMINI_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([geminiPromise, timeoutPromise]);
+  } catch (err) {
+    throw err;
   }
 }
 
@@ -116,7 +123,7 @@ async function generatePersonalizedProductExplanation(products, userMessage, cus
 
 /**
  * Phase 4A: ask one progressive question when customer profile is incomplete.
- * @param {string} missingField — "skin_type" | "skin_concerns" | "budget_range"
+ * @param {string} missingField — "skin_type" | "skin_concerns" | "budget"
  * @param {string} userMessage
  * @param {Array} history
  * @returns {Promise<string>}
@@ -258,6 +265,23 @@ async function generateMakeupReply(contextMessage, history = []) {
   return _geminiChatWithTimeout(contextMessage, history);
 }
 
+/**
+ * Generate Skin Analysis for CustomerBeautyProfile
+ */
+async function generateSkinAnalysis(profile, products = []) {
+  const messageWithContext = buildSkinAnalysisPrompt(profile, products);
+  try {
+    const jsonStr = await _geminiGenerateTextWithTimeout(messageWithContext);
+    console.log("Raw Gemini Output:", jsonStr);
+    const match = jsonStr.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("No JSON object found in Gemini response");
+    return JSON.parse(match[0]);
+  } catch (error) {
+    console.error("[Gemini] generateSkinAnalysis error:", error.message);
+    return null;
+  }
+}
+
 module.exports = {
   generateChatReply,
   generatePersonalizedProductExplanation,
@@ -274,4 +298,5 @@ module.exports = {
   generateIngredientReply,
   // Phase 8: Makeup Commerce
   generateMakeupReply,
+  generateSkinAnalysis,
 };

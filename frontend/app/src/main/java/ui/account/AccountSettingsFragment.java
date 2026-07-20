@@ -18,8 +18,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.frontend.R;
 import com.example.frontend.data.remote.TokenManager;
-
-import ui.commerce.CheckoutAddressFragment;
 import ui.commerce.PaymentMethodFragment;
 import ui.common.FragmentNavigationHelper;
 
@@ -61,7 +59,11 @@ public class AccountSettingsFragment extends Fragment {
         });
 
         setupMenuItem(view.findViewById(R.id.menuAddress), "Địa chỉ", v -> {
-            FragmentNavigationHelper.replaceFragment(requireActivity(), new CheckoutAddressFragment());
+            if (getActivity() instanceof com.example.frontend.MainActivity) {
+                ((com.example.frontend.MainActivity) getActivity()).loadFragment(new AccountAddressFragment());
+            } else {
+                ui.common.FragmentNavigationHelper.replaceFragment(requireActivity(), new AccountAddressFragment());
+            }
         });
 
         setupMenuItem(view.findViewById(R.id.menuPayment), "Tài khoản / Thẻ ngân hàng", v -> {
@@ -155,10 +157,20 @@ public class AccountSettingsFragment extends Fragment {
         // 1. Clear token locally
         TokenManager.getInstance(requireContext()).clearToken();
 
-        // 2. Reset AuthViewModel state to avoid "Success" message from previous session
+        // 2. Reset ViewModels state
         com.example.frontend.feature.auth.AuthViewModel authViewModel = 
                 new androidx.lifecycle.ViewModelProvider(requireActivity()).get(com.example.frontend.feature.auth.AuthViewModel.class);
         authViewModel.resetStates();
+        
+        com.example.frontend.feature.recommendation.RecommendationViewModel recommendationViewModel =
+                new androidx.lifecycle.ViewModelProvider(requireActivity()).get(com.example.frontend.feature.recommendation.RecommendationViewModel.class);
+        recommendationViewModel.clearData();
+
+        // Refresh cart to update badge count immediately after logout
+        com.example.frontend.feature.cart.CartViewModel cartViewModel =
+                new androidx.lifecycle.ViewModelProvider(requireActivity()).get(com.example.frontend.feature.cart.CartViewModel.class);
+        cartViewModel.loadCart();
+
         com.example.frontend.core.auth.AuthRequiredManager.getInstance().clearPendingAction();
         
         // 3. Clear all Fragment BackStack to prevent going back to restricted screens

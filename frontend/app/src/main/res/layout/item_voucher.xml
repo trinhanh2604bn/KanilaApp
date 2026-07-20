@@ -124,13 +124,13 @@
             android:minHeight="0dp"
             android:paddingStart="18dp"
             android:paddingEnd="18dp"
-            android:text="Sao chép"
+            android:text="Lưu"
             android:textColor="@android:color/white"
             android:textSize="12sp"
             app:backgroundTint="@color/button"
             app:cornerRadius="18dp"
             tools:ignore="TouchTargetSizeCheck"
-            tools:text="Sao chép" />
+            tools:text="Lưu" />
     </LinearLayout>
 
 </LinearLayout>

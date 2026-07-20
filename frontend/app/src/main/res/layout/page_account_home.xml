@@ -30,16 +30,42 @@
             android:textAppearance="@style/H2"
             android:textColor="@color/accent_dark" />
 
-        <ImageView
-            android:id="@+id/btnToolbarCart"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="Giỏ hàng"
-            android:src="@drawable/ic_cart"
-            app:tint="@color/text_main"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless"/>
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <ImageView
+                android:id="@+id/btnToolbarCart"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Giỏ hàng"
+                android:src="@drawable/ic_cart"
+                app:tint="@color/text_main"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+
+            <TextView
+                android:id="@+id/tvCartBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="-4dp"
+                android:layout_marginEnd="-4dp"
+                android:background="@drawable/bg_badge_dot"
+                android:gravity="center"
+                android:minWidth="14dp"
+                android:minHeight="14dp"
+                android:paddingHorizontal="2dp"
+                android:textColor="@android:color/white"
+                android:textSize="8sp"
+                android:fontFamily="@font/nunito_bold"
+                android:visibility="gone"
+                tools:text="1"
+                tools:visibility="visible" />
+        </FrameLayout>
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -476,6 +502,48 @@
                     android:layout_marginStart="56dp"
                     android:background="@color/border_divider" />
 
+                <!-- My Reviews -->
+                <LinearLayout
+                    android:id="@+id/menuMyReviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_chatbot_soft_dot"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_star"
+                        app:tint="@color/accent_dark" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:text="Đánh giá của tôi"
+                        android:textAppearance="@style/H3"
+                        android:textColor="@color/text_main" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_tertiary" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="56dp"
+                    android:background="@color/border_divider" />
+
                 <!-- Địa chỉ -->
                 <LinearLayout
                     android:id="@+id/menuAddress"
@@ -502,7 +570,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:text="Địa chỉ giao hàng"
+                        android:text="Địa chỉ của tôi"
                         android:textAppearance="@style/H3"
                         android:textColor="@color/text_main" />
 

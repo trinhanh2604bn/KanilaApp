@@ -107,7 +107,7 @@ const INTENT_DEFINITIONS = [
     required: [],
     keywords: [
       "da ngăm", "da sáng", "da trắng", "warm tone", "cool tone",
-      "undertone", "tông da", "tìm màu", "shade phù hợp",
+      "skin_undertone", "tông da", "tìm màu", "shade phù hợp",
       "chọn màu", "màu nào phù hợp", "tông nào",
       "da ngăm đen", "da vàng", "da olive",
     ],
@@ -291,7 +291,7 @@ const CLARIFICATION_PROMPTS = {
     text: "Bạn cần trang điểm cho dịp nào?",
     quickReplies: ["Đi học hằng ngày", "Đi làm / Công sở", "Đi tiệc / Sự kiện", "Đám cưới", "Hẹn hò"],
   },
-  find_by_skin_tone: {
+  find_by_skin_color: {
     text: "Bạn muốn tìm màu phù hợp với tông da nào?",
     quickReplies: ["Da sáng / Trắng", "Da trung bình", "Da ngăm / Olive", "Warm tone", "Cool tone"],
   },
@@ -422,7 +422,7 @@ function resolveRoutingIntent(classifiedIntent, existingChatbotIntent) {
     // ── Existing intents ───────────────────────────────────────────────────
     find_makeup_set:   "makeup_set_builder",
     find_by_event:     "event_makeup_look",
-    find_by_skin_tone: "shade_tone_advice",
+    find_by_skin_color: "shade_tone_advice",
     find_best_seller:  "product_recommendation",
     find_by_budget:    "product_recommendation",
     find_sale_product: "find_sale_product",

@@ -44,10 +44,20 @@ public class KocDashboardFragment extends Fragment {
         view.findViewById(R.id.btnSettings).setOnClickListener(v -> 
             Toast.makeText(requireContext(), "Cài đặt tài khoản Creator", Toast.LENGTH_SHORT).show());
 
-        view.findViewById(R.id.btnWithdraw).setOnClickListener(v -> 
-            Toast.makeText(requireContext(), "Yêu cầu rút tiền đã được gửi. Kanila sẽ xử lý trong 24h.", Toast.LENGTH_SHORT).show());
+        view.findViewById(R.id.btnWithdraw).setOnClickListener(v -> {
+            com.example.frontend.data.remote.TokenManager tm = com.example.frontend.data.remote.TokenManager.getInstance(requireContext());
+            if (tm.isBankSetup()) {
+                Toast.makeText(requireContext(), "Yêu cầu rút tiền đã được gửi. Kanila sẽ xử lý trong 24h.", Toast.LENGTH_SHORT).show();
+            } else {
+                // Nếu chưa thiết lập ngân hàng, chuyển tới trang thiết lập
+                navigateToTool(new KocPaymentSetupFragment());
+            }
+        });
 
         // Logic cho các công cụ sáng tạo
+        view.findViewById(R.id.btnCreateContent).setOnClickListener(v -> 
+            navigateToTool(new KocCreateReelFragment()));
+
         view.findViewById(R.id.btnFreeSample).setOnClickListener(v -> 
             navigateToTool(new KocFreeSamplesFragment()));
             

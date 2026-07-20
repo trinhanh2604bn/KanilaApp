@@ -11,6 +11,7 @@ public class TokenManager {
     private static final String KEY_CHATBOT_SESSION_ID = "chatbot_session_id";
     private static final String KEY_CUSTOMER_ID = "customer_id";
     private static final String KEY_IS_KOC = "is_koc";
+    private static final String KEY_IS_BANK_SETUP = "is_bank_setup";
 
     private static TokenManager instance;
     private final SharedPreferences prefs;
@@ -127,5 +128,13 @@ public class TokenManager {
 
     public boolean isKoc() {
         return prefs.getBoolean(KEY_IS_KOC, false);
+    }
+
+    public void saveBankSetupStatus(boolean isSetup) {
+        prefs.edit().putBoolean(KEY_IS_BANK_SETUP, isSetup).apply();
+    }
+
+    public boolean isBankSetup() {
+        return prefs.getBoolean(KEY_IS_BANK_SETUP, false);
     }
 }

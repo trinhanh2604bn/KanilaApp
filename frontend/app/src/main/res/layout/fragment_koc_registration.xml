@@ -57,7 +57,7 @@
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="8dp"
-            android:max="3"
+            android:max="2"
             android:progress="1"
             android:progressDrawable="@drawable/bg_progress_bar" />
 
@@ -96,9 +96,10 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/nunito_semibold"
                 android:gravity="center"
-                android:text="Thanh toán"
+                android:text="Hoàn tất"
                 android:textColor="@color/text_tertiary"
-                android:textSize="11sp" />
+                android:textSize="11sp"
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 

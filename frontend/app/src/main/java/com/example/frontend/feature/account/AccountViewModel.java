@@ -68,6 +68,10 @@ public class AccountViewModel extends AndroidViewModel {
         deleteAccountAddressResult.setValue(null);
     }
 
+    public void resetSetDefaultAccountAddressResult() {
+        setDefaultAccountAddressResult.setValue(null);
+    }
+
     public LiveData<NetworkResult<List<AddressDto>>> getAccountAddressesResult() {
         return accountAddressesResult;
     }

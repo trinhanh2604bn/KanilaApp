@@ -22,7 +22,7 @@ public class KocRegistrationFragment extends Fragment {
     private int currentStep = 1;
     private FrameLayout containerSteps;
     private ProgressBar pbRegistration;
-    private TextView tvStep1, tvStep2, tvStep3;
+    private TextView tvStep1, tvStep2;
     private Button btnNext;
 
     @Nullable
@@ -44,7 +44,6 @@ public class KocRegistrationFragment extends Fragment {
         pbRegistration = view.findViewById(R.id.pbRegistration);
         tvStep1 = view.findViewById(R.id.tvStepIndicator1);
         tvStep2 = view.findViewById(R.id.tvStepIndicator2);
-        tvStep3 = view.findViewById(R.id.tvStepIndicator3);
         btnNext = view.findViewById(R.id.btnNext);
 
         view.findViewById(R.id.btnBack).setOnClickListener(v -> {
@@ -56,7 +55,7 @@ public class KocRegistrationFragment extends Fragment {
         });
 
         btnNext.setOnClickListener(v -> {
-            if (currentStep < 3) {
+            if (currentStep < 2) {
                 loadStep(currentStep + 1);
             } else {
                 completeRegistration();
@@ -80,11 +79,6 @@ public class KocRegistrationFragment extends Fragment {
             case 2:
                 layoutId = R.layout.layout_koc_step_2;
                 updateIndicators(2);
-                btnNext.setText("Tiếp tục");
-                break;
-            case 3:
-                layoutId = R.layout.layout_koc_step_3;
-                updateIndicators(3);
                 btnNext.setText("Hoàn tất đăng ký");
                 break;
             default:
@@ -101,7 +95,6 @@ public class KocRegistrationFragment extends Fragment {
 
         tvStep1.setTextColor(step >= 1 ? activeColor : inactiveColor);
         tvStep2.setTextColor(step >= 2 ? activeColor : inactiveColor);
-        tvStep3.setTextColor(step >= 3 ? activeColor : inactiveColor);
     }
 
     private void completeRegistration() {
@@ -111,7 +104,7 @@ public class KocRegistrationFragment extends Fragment {
         Toast.makeText(requireContext(), "Đăng ký KOC thành công! Hồ sơ của bạn đã được lưu.", Toast.LENGTH_LONG).show();
         getParentFragmentManager().popBackStack();
         
-        // Có thể mở luôn Dashboard sau khi đăng ký thành công nếu muốn
+        // Mở luôn Dashboard sau khi đăng ký thành công
         Fragment dashboard = new KocDashboardFragment();
         int containerId = (requireActivity().findViewById(R.id.main_fragment_container) != null)
                 ? R.id.main_fragment_container : R.id.main;

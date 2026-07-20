@@ -3,7 +3,6 @@ package com.example.frontend.ui.category;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -69,14 +68,6 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHol
             holder.ivBrandLogo.setImageResource(R.drawable.bg_circle);
         }
 
-        holder.btnBrandFavorite.setSelected(brand.isFavorite());
-
-        holder.btnBrandFavorite.setOnClickListener(v -> {
-            boolean newState = !brand.isFavorite();
-            brand.setFavorite(newState);
-            holder.btnBrandFavorite.setSelected(newState);
-        });
-
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onBrandClick(brand);
@@ -91,13 +82,11 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHol
 
     static class BrandViewHolder extends RecyclerView.ViewHolder {
         ImageView ivBrandLogo;
-        ImageButton btnBrandFavorite;
         TextView tvBrandName;
 
         public BrandViewHolder(@NonNull View itemView) {
             super(itemView);
             ivBrandLogo = itemView.findViewById(R.id.ivBrandLogo);
-            btnBrandFavorite = itemView.findViewById(R.id.btnBrandFavorite);
             tvBrandName = itemView.findViewById(R.id.tvBrandName);
         }
     }

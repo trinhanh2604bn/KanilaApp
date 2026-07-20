@@ -27,6 +27,7 @@ public class ReelsAdapter extends RecyclerView.Adapter<ReelsAdapter.ReelViewHold
         void onSaveClick(MockReelsDataSource.MockReel reel);
         void onShareClick(MockReelsDataSource.MockReel reel);
         void onBackClick();
+        void onCreateReelClick();
     }
 
     public void setOnReelActionListener(OnReelActionListener listener) {
@@ -136,6 +137,10 @@ public class ReelsAdapter extends RecyclerView.Adapter<ReelsAdapter.ReelViewHold
 
             binding.btnBack.setOnClickListener(v -> {
                 if (listener != null) listener.onBackClick();
+            });
+
+            binding.btnCreateReel.setOnClickListener(v -> {
+                if (listener != null) listener.onCreateReelClick();
             });
 
             // Prevent VideoView from freezing by checking tag

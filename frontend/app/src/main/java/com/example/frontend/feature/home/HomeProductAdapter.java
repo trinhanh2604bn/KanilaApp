@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.model.Product;
+import com.example.frontend.utils.UrlUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,7 +122,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
 
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
             Glide.with(holder.ivImage.getContext())
-                    .load(product.getImageUrl())
+                    .load(UrlUtils.getFullUrl(product.getImageUrl()))
                     .placeholder(R.drawable.ic_product)
                     .error(R.drawable.ic_product)
                     .into(holder.ivImage);

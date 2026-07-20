@@ -43,7 +43,7 @@ import java.util.Map;
 public class ProfileOverviewFragment extends Fragment {
 
     private AccountViewModel viewModel;
-    private ImageView ivAvatarLarge;
+    private ImageView ivAvatarLarge, ivEmailChevron, ivPhoneChevron;
     private TextView tvNameValue, tvEmailValue, tvPhoneValue, tvBirthValue, tvGenderValue, btnSaveProfile;
     private View btnChangeAvatar;
     
@@ -52,6 +52,7 @@ public class ProfileOverviewFragment extends Fragment {
     private String currentBirthday;
     private String currentGender;
     private String currentEmail;
+    private String registrationChannel;
 
     private Uri pendingCameraUri;
     private ActivityResultLauncher<Uri> takePictureLauncher;
@@ -154,20 +155,9 @@ public class ProfileOverviewFragment extends Fragment {
         btnChangeAvatar = view.findViewById(R.id.btnChangeAvatar);
         tvNameValue = view.findViewById(R.id.tvNameValue);
         tvEmailValue = view.findViewById(R.id.tvEmailValue);
-        tvEmailValue.setOnClickListener(v -> {
-            String emailValue = tvEmailValue.getText().toString();
-            if (!emailValue.isEmpty() && !"Chưa cập nhật".equals(emailValue)) {
-                Toast.makeText(getContext(), "Email đăng ký không thể thay đổi", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            showEditDialog("Email", "", value -> {
-                if (!value.isEmpty()) {
-                    tvEmailValue.setText(value);
-                    currentEmail = value;
-                }
-            });
-        });
+        ivEmailChevron = view.findViewById(R.id.ivEmailChevron);
         tvPhoneValue = view.findViewById(R.id.tvPhoneValue);
+        ivPhoneChevron = view.findViewById(R.id.ivPhoneChevron);
         tvBirthValue = view.findViewById(R.id.tvBirthValue);
         tvGenderValue = view.findViewById(R.id.tvGenderValue);
         btnSaveProfile = view.findViewById(R.id.btnSaveProfile);
@@ -183,12 +173,31 @@ public class ProfileOverviewFragment extends Fragment {
             }
         }));
 
-        tvPhoneValue.setOnClickListener(v -> showEditDialog("Số điện thoại", tvPhoneValue.getText().toString(), value -> {
-            if (!value.isEmpty()) {
-                tvPhoneValue.setText(value);
-                currentPhone = value;
+        tvEmailValue.setOnClickListener(v -> {
+            if ("email".equals(registrationChannel)) {
+                Toast.makeText(getContext(), "Email đăng ký không thể thay đổi", Toast.LENGTH_SHORT).show();
+            } else {
+                showEditDialog("Email", currentEmail != null ? currentEmail : "", value -> {
+                    if (!value.isEmpty()) {
+                        tvEmailValue.setText(value);
+                        currentEmail = value;
+                    }
+                });
             }
-        }));
+        });
+
+        tvPhoneValue.setOnClickListener(v -> {
+            if ("phone".equals(registrationChannel)) {
+                Toast.makeText(getContext(), "Số điện thoại đăng ký không thể thay đổi", Toast.LENGTH_SHORT).show();
+            } else {
+                showEditDialog("Số điện thoại", currentPhone != null ? currentPhone : "", value -> {
+                    if (!value.isEmpty()) {
+                        tvPhoneValue.setText(value);
+                        currentPhone = value;
+                    }
+                });
+            }
+        });
 
         tvBirthValue.setOnClickListener(v -> showEditDialog("Ngày sinh (DD/MM/YYYY)", tvBirthValue.getText().toString(), value -> {
             tvBirthValue.setText(value);
@@ -318,9 +327,19 @@ public class ProfileOverviewFragment extends Fragment {
         if (data == null || data.getProfile() == null) return;
         
         ProfileHubDto.AccountInfo profile = data.getProfile();
+        registrationChannel = profile.getRegistrationChannel();
+
         tvNameValue.setText(profile.getFullName() != null ? profile.getFullName() : "Chưa cập nhật");
         tvEmailValue.setText(profile.getEmail() != null && !profile.getEmail().isEmpty() ? profile.getEmail() : "Chưa cập nhật");
-        tvPhoneValue.setText(profile.getPhone() != null ? profile.getPhone() : "Chưa cập nhật");
+        tvPhoneValue.setText(profile.getPhone() != null && !profile.getPhone().isEmpty() ? profile.getPhone() : "Chưa cập nhật");
+        
+        // Toggles chevrons based on registration channel
+        if (ivEmailChevron != null) {
+            ivEmailChevron.setVisibility("email".equals(registrationChannel) ? View.GONE : View.VISIBLE);
+        }
+        if (ivPhoneChevron != null) {
+            ivPhoneChevron.setVisibility("phone".equals(registrationChannel) ? View.GONE : View.VISIBLE);
+        }
         
         // Convert ISO date (YYYY-MM-DD) from DB to UI format (DD/MM/YYYY)
         String rawBirthday = profile.getBirthday();

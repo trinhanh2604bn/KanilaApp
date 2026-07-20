@@ -1,0 +1,5 @@
+- [ ] Update backend `account.controller.js` to return `registrationChannel`.
+- [ ] Add `registrationChannel` to `ProfileHubDto.java`.
+- [ ] Add chevrons to `page_profile_overview.xml`.
+- [ ] Update `ProfileOverviewFragment.java` logic for editability and chevrons.
+- [ ] Verify changes for both email and phone accounts.

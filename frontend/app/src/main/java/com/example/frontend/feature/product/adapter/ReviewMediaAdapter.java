@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.data.model.review.ReviewMediaDto;
+import com.example.frontend.utils.UrlUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class ReviewMediaAdapter extends RecyclerView.Adapter<ReviewMediaAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ReviewMediaDto media = mediaList.get(position);
-        String url = media.getMediaUrl();
+        String url = UrlUtils.getFullUrl(media.getMediaUrl());
         
         Glide.with(holder.ivImage.getContext())
                 .load(url)

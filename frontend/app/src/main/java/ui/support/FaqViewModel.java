@@ -8,6 +8,32 @@ import java.util.List;
 
 public class FaqViewModel extends ViewModel {
     
+    public enum FaqStatus {
+        PENDING,    // Đang chờ xử lý
+        PROCESSING, // Đang được trả lời
+        ANSWERED    // Đã trả lời
+    }
+
+    public static class FaqItemData {
+        public String question;
+        public String answer;
+        public String category;
+        public FaqStatus status;
+        public long timestamp;
+
+        public FaqItemData(String question, String answer, String category) {
+            this(question, answer, category, FaqStatus.ANSWERED);
+        }
+
+        public FaqItemData(String question, String answer, String category, FaqStatus status) {
+            this.question = question;
+            this.answer = answer;
+            this.category = category;
+            this.status = status;
+            this.timestamp = System.currentTimeMillis();
+        }
+    }
+
     // Static to persist across different fragment instances in the same session
     private static final List<FaqItemData> userQuestions = new ArrayList<>();
     private final MutableLiveData<List<FaqItemData>> _questions = new MutableLiveData<>(userQuestions);
@@ -16,7 +42,8 @@ public class FaqViewModel extends ViewModel {
     public void addQuestion(String question, String category) {
         userQuestions.add(0, new FaqItemData(question, 
             "Cảm ơn bạn đã đặt câu hỏi! Kanila đã ghi nhận và sẽ có chuyên viên phản hồi chi tiết cho bạn trong giây lát.",
-            category));
+            category,
+            FaqStatus.PENDING));
         _questions.setValue(new ArrayList<>(userQuestions));
     }
 
@@ -32,17 +59,5 @@ public class FaqViewModel extends ViewModel {
             }
         }
         return filtered;
-    }
-
-    public static class FaqItemData {
-        public String question;
-        public String answer;
-        public String category;
-
-        public FaqItemData(String question, String answer, String category) {
-            this.question = question;
-            this.answer = answer;
-            this.category = category;
-        }
     }
 }

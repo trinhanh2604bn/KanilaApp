@@ -34,7 +34,7 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
     }
 
     public interface OnWhyRecommendClickListener {
-        void onWhyRecommendClick(ChatProductUiModel product);
+        void onWhyRecommendClick(ChatProductUiModel product, boolean customerContextUsed);
     }
 
     public ChatProductAdapter(OnProductClickListener listener) {
@@ -82,6 +82,8 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProductImage;
         TextView tvBrandName, tvProductName, tvCategory, tvSalePrice, tvOriginalPrice, tvMatchedReason, tvRecommendationBadge, btnViewDetail, btnAddToCart, btnWhyRecommend;
+        TextView tvProductRating, tvProductReviewCount, tvMatchScore, tvKanilaBeautyBadge;
+        View layoutRatingReview;
         private final OnProductClickListener listener;
 
         public ProductViewHolder(@NonNull View itemView, OnProductClickListener listener) {
@@ -98,6 +100,11 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
             btnViewDetail = itemView.findViewById(R.id.btnChatViewDetail);
             btnAddToCart = itemView.findViewById(R.id.btnChatAddToCart);
             btnWhyRecommend = itemView.findViewById(R.id.btnWhyRecommend);
+            tvProductRating = itemView.findViewById(R.id.tvProductRating);
+            tvProductReviewCount = itemView.findViewById(R.id.tvProductReviewCount);
+            layoutRatingReview = itemView.findViewById(R.id.layoutRatingReview);
+            tvMatchScore = itemView.findViewById(R.id.tvMatchScore);
+            tvKanilaBeautyBadge = itemView.findViewById(R.id.tvKanilaBeautyBadge);
         }
 
         public void bind(ChatProductUiModel product, boolean customerContextUsed, OnAddToCartClickListener addToCartListener, OnWhyRecommendClickListener whyRecommendListener) {
@@ -122,6 +129,39 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
                 tvOriginalPrice.setVisibility(View.VISIBLE);
             } else {
                 tvOriginalPrice.setVisibility(View.GONE);
+            }
+
+            // Bind Rating and Review
+            if (layoutRatingReview != null) {
+                if (product.getRatingText() != null && !product.getRatingText().isEmpty()) {
+                    layoutRatingReview.setVisibility(View.VISIBLE);
+                    if (tvProductRating != null) {
+                        tvProductRating.setText("★ " + product.getRatingText());
+                    }
+                    if (tvProductReviewCount != null) {
+                        String count = product.getReviewCountText() != null ? product.getReviewCountText() : "0";
+                        tvProductReviewCount.setText("(" + count + ")");
+                    }
+                } else {
+                    layoutRatingReview.setVisibility(View.GONE);
+                }
+            }
+
+            // Bind Match Score
+            if (tvMatchScore != null) {
+                if (product.getMatchScore() > 0) {
+                    int score = product.getMatchScore();
+                    if (score > 100) score = score / 100;
+                    tvMatchScore.setText("Phù hợp " + score + "%");
+                    tvMatchScore.setVisibility(View.VISIBLE);
+                } else {
+                    tvMatchScore.setVisibility(View.GONE);
+                }
+            }
+            
+            // Bind Kanila Beauty AI Badge
+            if (tvKanilaBeautyBadge != null) {
+                tvKanilaBeautyBadge.setVisibility(customerContextUsed ? View.VISIBLE : View.GONE);
             }
 
             // Hide inline reason — shown via popup instead
@@ -158,7 +198,7 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
                 btnWhyRecommend.setVisibility(hasReason ? View.VISIBLE : View.GONE);
                 if (hasReason) {
                     btnWhyRecommend.setOnClickListener(v -> {
-                        if (whyRecommendListener != null) whyRecommendListener.onWhyRecommendClick(product);
+                        if (whyRecommendListener != null) whyRecommendListener.onWhyRecommendClick(product, customerContextUsed);
                     });
                 }
             }

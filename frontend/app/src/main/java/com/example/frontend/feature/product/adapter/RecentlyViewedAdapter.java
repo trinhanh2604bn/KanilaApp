@@ -68,7 +68,13 @@ public class RecentlyViewedAdapter extends RecyclerView.Adapter<RecentlyViewedAd
         holder.tvOriginalPrice.setVisibility(View.GONE);
 
         // Rating
-        holder.rbRating.setRating((float) product.getAverageRatingValue());
+        double rating = product.getAverageRatingValue();
+        if (rating > 0) {
+            holder.tvRating.setText(String.format(java.util.Locale.US, "★ %.1f", rating));
+            holder.tvRating.setVisibility(View.VISIBLE);
+        } else {
+            holder.tvRating.setVisibility(View.GONE);
+        }
         holder.tvReviewCount.setText(String.format(java.util.Locale.US, "(%s)", product.getReviewCount()));
 
         // Badge
@@ -101,8 +107,7 @@ public class RecentlyViewedAdapter extends RecyclerView.Adapter<RecentlyViewedAd
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivImage;
-        TextView tvBrand, tvName, tvPrice, tvOriginalPrice, tvReviewCount, tvBadge;
-        RatingBar rbRating;
+        TextView tvBrand, tvName, tvPrice, tvOriginalPrice, tvReviewCount, tvBadge, tvRating;
         View layoutBadge;
         ImageButton btnWishlist, btnAddToCart;
 
@@ -115,7 +120,7 @@ public class RecentlyViewedAdapter extends RecyclerView.Adapter<RecentlyViewedAd
             tvOriginalPrice = view.findViewById(R.id.tvProductOriginalPrice);
             tvReviewCount = view.findViewById(R.id.tvProductReviewCount);
             tvBadge = view.findViewById(R.id.tvProductBadge);
-            rbRating = view.findViewById(R.id.tvProductRating);
+            tvRating = view.findViewById(R.id.tvProductRating);
             layoutBadge = view.findViewById(R.id.layoutProductStatusBadge);
             btnWishlist = view.findViewById(R.id.btnWishlist);
             btnAddToCart = view.findViewById(R.id.btnAddToCart);

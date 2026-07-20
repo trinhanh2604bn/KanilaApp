@@ -79,4 +79,7 @@ dependencies {
     
     // Picasso for ImageSlideshow
     implementation("com.squareup.picasso:picasso:2.71828")
+    
+    // LocalBroadcastManager
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
 }

@@ -117,19 +117,7 @@ async function generateTicketConfirmation(ticket, userMessage, history = []) {
   return _geminiChatWithTimeout(messageWithContext, history);
 }
 
-module.exports = {
-  generateChatReply,
-  generateProductExplanation,            // Phase 2A — kept for compat
-  generatePersonalizedProductExplanation, // Phase 4A
-  generateMissingInfoQuestion,            // Phase 4A
-  generateOrderExplanation,              // Phase 3A
-  generateTicketConfirmation,            // Phase 3A
-  generateCartExplanation,               // Phase 5A
-  generateCartActionConfirmation,        // Phase 5A
-  generateCartSummaryReply,              // Phase 5A
-  generateBeautyConsultationReply,       // Phase 5 shopping assistant
-  generateComboExplanation,              // Phase 5 shopping assistant
-};
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Phase 5A cart functions
@@ -242,16 +230,40 @@ async function generateMakeupReply(contextMessage, history = []) {
  * Returns an object with { overview, followUp, productAnalysis }.
  */
 async function generateMakeupReplyWithAnalysis(contextMessage, history = []) {
+  let rawText = "";
   try {
-    const rawText = await _geminiChatWithTimeout(contextMessage, history, {
+    rawText = await _geminiChatWithTimeout(contextMessage, history, {
       responseMimeType: "application/json",
     });
     
-    // Attempt to parse JSON safely
-    const match = rawText.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("No JSON object found in Gemini response");
+    let parsed = null;
     
-    const parsed = JSON.parse(match[0]);
+    // 1. Try JSON.parse directly
+    try {
+      parsed = JSON.parse(rawText);
+    } catch (e1) {
+      // 2. Try extract JSON from markdown code blocks
+      const codeBlockMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+      if (codeBlockMatch) {
+        try {
+          parsed = JSON.parse(codeBlockMatch[1]);
+        } catch (e2) {}
+      }
+      
+      // 3. Try regex extract
+      if (!parsed) {
+        const regexMatch = rawText.match(/\{[\s\S]*\}/);
+        if (regexMatch) {
+          try {
+            parsed = JSON.parse(regexMatch[0]);
+          } catch (e3) {}
+        }
+      }
+    }
+
+    if (!parsed) {
+      throw new Error("Failed all JSON parsing attempts");
+    }
     
     return {
       overview: parsed.overview || "Mình đã tìm được một số sản phẩm phù hợp cho bạn.",
@@ -260,9 +272,9 @@ async function generateMakeupReplyWithAnalysis(contextMessage, history = []) {
     };
   } catch (error) {
     console.error("[Gemini] generateMakeupReplyWithAnalysis error:", error.message);
-    // Fallback if JSON parsing fails
+    // 4. Use rawText as overview if available
     return {
-      overview: "Mình đã tìm thấy một số sản phẩm phù hợp. Bạn xem thử nhé!",
+      overview: rawText || "Mình đã tìm thấy một số sản phẩm phù hợp. Bạn xem thử nhé!",
       followUp: "Bạn cần mình tư vấn thêm về sản phẩm nào không?",
       productAnalysis: [],
     };

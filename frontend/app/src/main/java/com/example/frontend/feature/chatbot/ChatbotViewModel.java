@@ -285,6 +285,20 @@ public class ChatbotViewModel extends AndroidViewModel {
                     }
                 }
 
+                String supportPhone = null;
+                String supportZalo = null;
+                if (data.getSupportContact() != null) {
+                    supportPhone = data.getSupportContact().getPhone();
+                    supportZalo = data.getSupportContact().getZalo();
+                }
+
+                int profileCompletionRate = 0;
+                List<String> profileMissingFields = null;
+                if (data.getProfileStatus() != null) {
+                    profileCompletionRate = data.getProfileStatus().getCompletionRate() != null ? data.getProfileStatus().getCompletionRate() : 0;
+                    profileMissingFields = data.getProfileStatus().getMissingFields();
+                }
+
                 ChatMessageUiModel botMsg = new ChatMessageUiModel(
                         UUID.randomUUID().toString(),
                         botMessage,
@@ -301,7 +315,12 @@ public class ChatbotViewModel extends AndroidViewModel {
                         cartActionUiModel,
                         comparisonUiModel,
                         ingredientUiModel,
-                        upsellUiModels
+                        upsellUiModels,
+                        data.isHandoffRequired(),
+                        supportPhone,
+                        supportZalo,
+                        profileCompletionRate,
+                        profileMissingFields
                 );
                 messageList.add(botMsg);
 
@@ -316,8 +335,32 @@ public class ChatbotViewModel extends AndroidViewModel {
                 updateState(false, null);
             }
         } else if (result.status == NetworkResult.Status.ERROR) {
-            // Add error bubble
             String errorMsg = result.message != null ? result.message : "Mình chưa thể trả lời bạn, hãy thử sau";
+            
+            // Check for contextual error handling
+            if (result.data != null && result.data.getError() != null) {
+                String errorType = result.data.getError().getErrorType();
+                if (errorType != null) {
+                    switch (errorType) {
+                        case "CONTEXT_MISSING":
+                            errorMsg = "Mình cần thêm một chút thông tin để tư vấn chính xác hơn.";
+                            break;
+                        case "OUT_OF_SCOPE":
+                            errorMsg = "Câu hỏi này nằm ngoài phạm vi hỗ trợ của mình. Mình có thể giúp gì về mỹ phẩm không?";
+                            break;
+                        case "CLARIFICATION_NEEDED":
+                            errorMsg = "Ý bạn là sao nhỉ? Mình chưa hiểu rõ lắm.";
+                            break;
+                    }
+                }
+                
+                // Add recovery actions as quick replies
+                if (result.data.getError().getRecoveryActions() != null && !result.data.getError().getRecoveryActions().isEmpty()) {
+                    currentQuickReplies.clear();
+                    currentQuickReplies.addAll(result.data.getError().getRecoveryActions());
+                }
+            }
+            
             android.util.Log.e("CHATBOT_DEBUG", "ViewModel ERROR state: " + errorMsg);
             addErrorBubble(errorMsg);
         } else if (result.status == NetworkResult.Status.NO_INTERNET) {
@@ -386,7 +429,8 @@ public class ChatbotViewModel extends AndroidViewModel {
                 p.getStockStatus(),
                 reasonText,
                 p.getSuggestedUse(),
-                p.getAction()
+                p.getAction(),
+                p.getMatchScore()
         );
     }
 
@@ -466,10 +510,19 @@ public class ChatbotViewModel extends AndroidViewModel {
                 productUiModels.add(mapToUiModel(p));
             }
         }
+        java.util.Map<String, ComparisonUiModel.ProsConsUi> prosConsUiMap = null;
+        if (c.getProsCons() != null) {
+            prosConsUiMap = new java.util.HashMap<>();
+            for (java.util.Map.Entry<String, ChatComparisonResponse.ProsCons> entry : c.getProsCons().entrySet()) {
+                prosConsUiMap.put(entry.getKey(), new ComparisonUiModel.ProsConsUi(entry.getValue().getPros(), entry.getValue().getCons()));
+            }
+        }
+
         return new ComparisonUiModel(
                 productUiModels,
                 c.getDifferences(),
-                c.getRecommendation()
+                c.getRecommendation(),
+                prosConsUiMap
         );
     }
 

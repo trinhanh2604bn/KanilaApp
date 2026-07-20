@@ -180,7 +180,12 @@ async function handleProductComparison(message, user, productIds, history) {
   const comparison = compareProducts(products, customerProfile);
   
   // Need to call gemini provider
-  const botReply = await generateProductComparisonReply(message, comparison, customerProfile, history);
+  let botReply;
+  try {
+    botReply = await generateProductComparisonReply(message, comparison, customerProfile, history);
+  } catch (e) {
+    botReply = `Mình đã phân tích ${comparison.products.length} sản phẩm. Bạn có thể xem chi tiết sự khác biệt và ưu nhược điểm của từng loại dưới đây.`;
+  }
   
   return {
     botText: botReply,

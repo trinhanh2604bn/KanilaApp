@@ -58,15 +58,28 @@ public class QuickAddHelper {
             String variantId = variant != null ? variant.getId() : null;
             
             if (selectedMode == VariantSelectorBottomSheet.ActionMode.ADD_TO_CART) {
+                final boolean[] hasStartedAction = {false};
                 cartViewModel.getCartResult().observe(lifecycleOwner, new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
                     @Override
                     public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
                         if (result == null) return;
-                        if (result.status == NetworkResult.Status.SUCCESS) {
-                            Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                            cartViewModel.getCartResult().removeObserver(this);
-                        } else if (result.status == NetworkResult.Status.ERROR) {
-                            cartViewModel.getCartResult().removeObserver(this);
+                        
+                        // We only process SUCCESS/ERROR after we've seen a LOADING state
+                        // or if we trust that the current state is the result of our call.
+                        if (result.status == NetworkResult.Status.LOADING) {
+                            hasStartedAction[0] = true;
+                            return;
+                        }
+
+                        if (hasStartedAction[0]) {
+                            if (result.status == NetworkResult.Status.SUCCESS) {
+                                Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                                cartViewModel.getCartResult().removeObserver(this);
+                            } else if (result.status == NetworkResult.Status.ERROR) {
+                                // Error handled by ViewModel or other observers usually, 
+                                // but we remove ourselves to avoid multiple toasts
+                                cartViewModel.getCartResult().removeObserver(this);
+                            }
                         }
                     }
                 });

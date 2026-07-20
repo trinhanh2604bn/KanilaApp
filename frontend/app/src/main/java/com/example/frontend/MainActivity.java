@@ -17,6 +17,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -89,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
+    private BroadcastReceiver sessionExpiredReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +142,17 @@ public class MainActivity extends AppCompatActivity {
             checkAuthStatus();
             handleIntent(getIntent());
         }, 500);
+
+        sessionExpiredReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (com.example.frontend.data.remote.AuthInterceptor.ACTION_SESSION_EXPIRED.equals(intent.getAction())) {
+                    Toast.makeText(MainActivity.this, "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show();
+                    showLoginPrompt();
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(sessionExpiredReceiver, new IntentFilter(com.example.frontend.data.remote.AuthInterceptor.ACTION_SESSION_EXPIRED));
     }
 
     @Override
@@ -157,6 +174,16 @@ public class MainActivity extends AppCompatActivity {
                     args.putSerializable("selected_items", items);
                     checkoutFragment.setArguments(args);
                     loadFragment(checkoutFragment);
+                }
+            } else if ("search_results".equals(targetFragment)) {
+                String query = intent.getStringExtra("search_query");
+                if (query != null) {
+                    loadFragment(com.example.frontend.ui.category.ProductListingFragment.newSearchInstance(query));
+                }
+            } else if ("product_detail".equals(targetFragment)) {
+                String productId = intent.getStringExtra("product_id");
+                if (productId != null) {
+                    loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(productId));
                 }
             }
         }
@@ -772,6 +799,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         if (autoSlideHandler != null && autoSlideRunnable != null) {
             autoSlideHandler.removeCallbacks(autoSlideRunnable);
+        }
+        if (sessionExpiredReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(sessionExpiredReceiver);
         }
         super.onDestroy();
     }

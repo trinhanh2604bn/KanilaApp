@@ -38,11 +38,7 @@ async function loadConversationContext(sessionId, message) {
   
   const isFollowUp = FOLLOW_UP_KEYWORDS.some((kw) => lowerMsg.includes(kw));
 
-  if (!isFollowUp) {
-    return { isFollowUp: false, resolvedContext: null };
-  }
-
-  // Fetch the last bot message for this session
+  // Always fetch the last bot message for this session to get context
   const lastBotMessage = await ChatbotMessage.findOne({
     session_id: sessionId,
     sender_type: "bot",
@@ -70,7 +66,7 @@ async function loadConversationContext(sessionId, message) {
     return { isFollowUp: false, resolvedContext: null };
   }
 
-  return { isFollowUp: true, resolvedContext };
+  return { isFollowUp, resolvedContext };
 }
 
 module.exports = {

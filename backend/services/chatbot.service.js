@@ -108,6 +108,32 @@ const CART_ADDED_QUICK_REPLIES = ["Xem giỏ hàng của mình", "Thanh toán ng
 const CART_SUMMARY_QUICK_REPLIES = ["Thanh toán ngay", "Xóa sản phẩm khỏi giỏ", "Tiếp tục mua sắm", "Tư vấn thêm sản phẩm"];
 const CART_EMPTY_QUICK_REPLIES = ["Tạo combo skincare", "Tư vấn sản phẩm", "Xem ưu đãi hôm nay"];
 
+function buildDynamicQuickReplies(intent, products, context, replyType) {
+  const dynamicReplies = [];
+  if (products && products.length > 0) {
+    const p1 = products[0];
+    const p2 = products[1];
+    if (products.length >= 2) {
+      dynamicReplies.push(`So sánh ${p1.productName || p1.name || 'sản phẩm 1'} và ${p2.productName || p2.name || 'sản phẩm 2'}`);
+    }
+    dynamicReplies.push(`Thêm ${p1.productName || p1.name || 'sản phẩm'} vào giỏ`);
+  }
+  if (intent === 'makeup_recommendation' || intent === 'beauty_consultation') {
+    dynamicReplies.push('Tư vấn màu sắc phù hợp');
+    dynamicReplies.push('Finish của sản phẩm ra sao?');
+  }
+  if (context && context.budget_max) {
+    dynamicReplies.push('Xem sản phẩm giá cao hơn');
+    dynamicReplies.push('Xem sản phẩm giá rẻ hơn');
+  }
+  if (dynamicReplies.length > 0) {
+    return dynamicReplies.slice(0, 5);
+  }
+  if (intent === 'beauty_consultation' || intent === 'product_recommendation') return PRODUCT_QUICK_REPLIES;
+  return DEFAULT_QUICK_REPLIES;
+}
+
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Intent detection
 // ─────────────────────────────────────────────────────────────────────────────
@@ -174,7 +200,7 @@ const INTENT_RULES = [
       "gặp nhân viên", "hỗ trợ", "khiếu nại", "đổi trả", "hoàn tiền",
       "sai hàng", "thiếu hàng", "lỗi sản phẩm", "cần tư vấn thêm",
       "gặp người", "tư vấn viên", "tạo yêu cầu", "yêu cầu hỗ trợ",
-      "giao nhầm", "không nhận được",
+      "giao nhầm", "không nhận được", "sai sản phẩm",
     ],
   },
   {
@@ -343,13 +369,15 @@ async function handlePersonalizedProductRecommendation(message, user, history) {
     try {
       botText = await generateChatReply(message, history);
     } catch (_) {
-      botText = "Mình chưa tìm được sản phẩm phù hợp. Bạn có thể cho mình biết thêm về loại da, vấn đề da và ngân sách không?";
+      botText = `Không tìm thấy ${constraints.category || 'sản phẩm'} trong ngân sách ${constraints.budgetMax ? (constraints.budgetMax/1000) + 'k' : 'của bạn'}. Bạn thử mở rộng mức giá xem sao?`;
     }
     return {
       botText,
       products: [],
       quickReplies: NO_PRODUCT_QUICK_REPLIES,
-      replyType: "text",
+      replyType: "error",
+      error_type: "no_products_found",
+      recovery_actions: ["Thử lại", "Mở rộng ngân sách", "Đổi loại sản phẩm"],
       customerContextUsed,
       askingQuestion: false,
     };
@@ -370,7 +398,7 @@ async function handlePersonalizedProductRecommendation(message, user, history) {
   return {
     botText,
     products,
-    quickReplies: PRODUCT_QUICK_REPLIES,
+    quickReplies: buildDynamicQuickReplies('product_recommendation', products, profile, 'product_recommendation'),
     replyType: "product_recommendation",
     customerContextUsed,
     askingQuestion: false,
@@ -430,7 +458,7 @@ async function handleSupportTicket(message, user, sessionId, history) {
     const botText =
       "Để tạo yêu cầu hỗ trợ, bạn cần đăng nhập tài khoản Kanila. " +
       "Sau khi đăng nhập, mình sẽ ghi nhận và chuyển yêu cầu đến đội ngũ hỗ trợ ngay nhé!";
-    return { botText, ticket: null, quickReplies: SUPPORT_LOGIN_QUICK_REPLIES, replyType: "support_ticket", handoffRequired: true };
+    return { botText, ticket: null, quickReplies: SUPPORT_LOGIN_QUICK_REPLIES, replyType: "error", error_type: "auth_required", recovery_actions: ["Đăng nhập", "Đăng ký"], handoffRequired: true };
   }
 
   const result = await createSupportTicket({ accountId, message, sessionId: sessionId.toString() }).catch((err) => {
@@ -512,13 +540,15 @@ async function handleBeautyConsultation(message, user, history) {
     try {
       botText = await generateChatReply(message, history);
     } catch (_) {
-      botText = "Mình chưa tìm được sản phẩm phù hợp. Bạn có thể cho mình biết loại da, vấn đề da đang gặp và ngân sách không?";
+      botText = `Không tìm thấy ${constraints.category || 'sản phẩm'} phù hợp với ngân sách ${constraints.budgetMax ? (constraints.budgetMax/1000) + 'k' : 'của bạn'}. Bạn có thể cho mình biết thêm về loại da và vấn đề da không?`;
     }
     return {
       botText,
       products: [],
       quickReplies: NO_PRODUCT_QUICK_REPLIES,
-      replyType: "text",
+      replyType: "error",
+      error_type: "no_products_found",
+      recovery_actions: ["Thay đổi bộ lọc", "Mở rộng ngân sách"],
       customerContextUsed: false,
     };
   }
@@ -534,7 +564,7 @@ async function handleBeautyConsultation(message, user, history) {
   return {
     botText,
     products,
-    quickReplies: PRODUCT_QUICK_REPLIES,
+    quickReplies: buildDynamicQuickReplies('beauty_consultation', products, customerProfile, 'product_recommendation'),
     replyType: "product_recommendation",
     customerContextUsed: customer_context_used,
   };
@@ -591,13 +621,15 @@ async function handleComboRecommendation(message, user, history) {
     try {
       botText = await generateChatReply(message, history);
     } catch (_) {
-      botText = "Mình chưa tìm được bộ sản phẩm phù hợp. Bạn hãy cho mình biết ngân sách và loại da để mình tư vấn chính xác hơn nhé!";
+      botText = `Không tìm thấy bộ sản phẩm ${comboType !== 'unknown' ? comboType : 'chăm sóc da'} trong ngân sách ${constraints.budgetMax ? (constraints.budgetMax/1000) + 'k' : 'của bạn'}. Bạn thử tăng ngân sách một chút nhé!`;
     }
     return {
       botText,
       products: [],
       quickReplies: NO_PRODUCT_QUICK_REPLIES,
-      replyType: "text",
+      replyType: "error",
+      error_type: "no_products_found",
+      recovery_actions: ["Mở rộng ngân sách", "Đổi bộ khác"],
       customerContextUsed: false,
     };
   }
@@ -826,7 +858,9 @@ async function handleAddToCart(message, user, productIds, history, cartItems = n
       botText: "Để thêm sản phẩm vào giỏ, bạn cần đăng nhập tài khoản Kanila trước nhé!",
       cartAction: { success: false, reason: "login_required" },
       quickReplies: CART_LOGIN_REQUIRED_QUICK_REPLIES,
-      replyType: "text",
+      replyType: "error",
+      error_type: "auth_required",
+      recovery_actions: ["Đăng nhập", "Đăng ký"],
     };
   }
 
@@ -1069,7 +1103,8 @@ async function handleMakeupRecommendation(intent, message, user, history, follow
     console.error("[MakeupHandler] log error:", err.message);
   }
 
-  let quickReplies = MAKEUP_RECOMMEND_QUICK_REPLIES;
+  let quickReplies = buildDynamicQuickReplies(intent, products, customerProfile, 'makeup_recommendation');
+  if (!quickReplies || quickReplies.length === 0) quickReplies = MAKEUP_RECOMMEND_QUICK_REPLIES;
   if (intent === "makeup_set_builder" || intent === "event_makeup_look") {
     quickReplies = MAKEUP_SET_QUICK_REPLIES;
   }
@@ -1157,7 +1192,7 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
   }
 
   // 1.8 Load previous conversation context (if it's a follow-up)
-  const { isFollowUp, resolvedContext } = await loadConversationContext(session._id, message.trim());
+  let { isFollowUp, resolvedContext } = await loadConversationContext(session._id, message.trim());
 
   // 2. Intent classification
   let classification = { intent: "find_product", needsClarification: false };
@@ -1172,6 +1207,10 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
     classification = classifyIntent(message.trim());
     fallbackIntent = detectIntent(message);
 
+    if (!isFollowUp && classification.needsClarification && resolvedContext && resolvedContext.previousIntent) {
+      isFollowUp = true;
+    }
+
     if (isFollowUp) {
       if (classification.intent === "compare_products" || message.toLowerCase().includes("so sánh")) {
         classification.intent = "compare_products";
@@ -1182,6 +1221,41 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
       }
       classification.needsClarification = false;
     }
+  }
+
+  let profileStatus = null;
+  if (user && user.account_id) {
+    try {
+      const customer = await Customer.findOne({ account_id: user.account_id }).select("_id").lean();
+      if (customer) {
+        const ctx = await getCustomerContext(customer._id);
+        if (ctx && ctx.customer_profile) {
+          const cp = ctx.customer_profile;
+          const fields = ['skin_type', 'skin_concerns', 'budget_max', 'preferred_brands', 'avoid_ingredients'];
+          const fieldLabels = {
+            skin_type: "Loại da",
+            skin_concerns: "Vấn đề da",
+            budget_max: "Ngân sách",
+            preferred_brands: "Thương hiệu yêu thích",
+            avoid_ingredients: "Thành phần cần tránh"
+          };
+          let filledFields = 0;
+          let missingFieldLabels = [];
+          fields.forEach(f => {
+            if (cp[f] && (Array.isArray(cp[f]) ? cp[f].length > 0 : true)) {
+              filledFields++;
+            } else {
+              missingFieldLabels.push(fieldLabels[f]);
+            }
+          });
+          profileStatus = {
+            completion_rate: Math.round((filledFields / fields.length) * 100),
+            missing_fields: missingFieldLabels,
+            confidence: cp.preference_confidence || 'low'
+          };
+        }
+      }
+    } catch (_) {}
   }
 
   const intent = resolveRoutingIntent(classification.intent, fallbackIntent);
@@ -1217,37 +1291,6 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
     "find_sale_product",
   ];
   
-  let needsClarification = classification.needsClarification;
-  if (shoppingContext.categoryNames && shoppingContext.categoryNames.length > 0) needsClarification = false;
-  if (shoppingContext.occasion) needsClarification = false;
-  if (DIRECT_SEARCH_INTENTS.includes(intent)) needsClarification = false;
-
-  if (needsClarification && classification.clarificationPrompt && !["find_product", "order_tracking", "support_ticket"].includes(intent)) {
-    const history = await buildGeminiHistory(session._id);
-    await ChatbotMessage.create({
-      session_id: session._id,
-      sender_type: "user",
-      message_text: message.trim(),
-      intent,
-      response_type: "text",
-    });
-    const botText = classification.clarificationPrompt.text;
-    const quickReplies = classification.clarificationPrompt.quickReplies;
-    await ChatbotMessage.create({
-      session_id: session._id,
-      sender_type: "bot",
-      message_text: botText,
-      intent,
-      response_type: "text",
-      metadata: { reply_type: "text", quick_replies: quickReplies }
-    });
-    return {
-      session_id: session._id,
-      bot_message: botText,
-      products: [], quick_replies: quickReplies,
-      reply_type: "text", handoff_required: false, customer_context_used: false,
-    };
-  }
 
   // 3. Build Gemini history BEFORE saving current user message
   const history = await buildGeminiHistory(session._id);
@@ -1418,20 +1461,37 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
       handoffRequired = r.handoffRequired || false;
 
     } else {
-      // Phase 1: general Gemini reply
-      botText = await generateChatReply(message.trim(), history);
+      // Phase 1: general Gemini reply - now powered by recommendation engine for context-aware chat
+      const r = await handleBeautyConsultation(message.trim(), user, history);
+      botText = r.botText;
+      products = r.products;
+      quickReplies = r.quickReplies;
+      replyType = r.replyType;
+      customerContextUsed = r.customerContextUsed;
       handoffRequired = intent === "human_support";
     }
   } catch (err) {
+    const errorType = err.message && err.message.toLowerCase().includes("timeout") ? "ai_unavailable" : "network_error";
+    const botText = `Xin lỗi, mình không thể xử lý yêu cầu liên quan đến "${intent}" của bạn lúc này. Vui lòng thử lại sau.`;
     await ChatbotMessage.create({
       session_id: session._id,
       sender_type: "bot",
-      message_text: "Xin lỗi, mình không thể xử lý yêu cầu của bạn lúc này. Vui lòng thử lại sau.",
+      message_text: botText,
       intent,
       response_type: "error",
-      metadata: { error_code: err.code || "CHATBOT_ERROR" },
+      metadata: { error_code: err.code || "CHATBOT_ERROR", error_type: errorType },
     });
-    throw err;
+    return {
+      session_id: session._id.toString(),
+      reply_type: "error",
+      bot_message: botText,
+      error_type: errorType,
+      recovery_actions: ["Thử lại", "Kiểm tra kết nối", "Gặp nhân viên hỗ trợ"],
+      products: [],
+      quick_replies: ["Thử lại", "Gặp nhân viên hỗ trợ"],
+      handoff_required: true,
+      profile_status: profileStatus,
+    };
   }
 
   // 7. Save bot reply (safe metadata only)
@@ -1455,7 +1515,8 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
       // Phase 5B
       needs_variant_selection: cartAction?.needs_variant_selection || null,
       filters: makeupFilters,
-      support_actions: supportActions,
+      support_actions: handoffRequired ? ["contact_support", "call_hotline", ...supportActions] : supportActions,
+      support_contact: handoffRequired ? { phone: "1900xxxx", zalo: "https://zalo.me/kanila", email: "support@kanila.vn" } : undefined,
     },
   });
 
@@ -1487,7 +1548,9 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
     // Phase 5B: variant selection prompt
     needs_variant_selection: cartAction?.needs_variant_selection || null,
     filters: makeupFilters,
-    support_actions: supportActions,
+    support_actions: handoffRequired ? ["contact_support", "call_hotline", ...supportActions] : supportActions,
+    support_contact: handoffRequired ? { phone: "1900xxxx", zalo: "https://zalo.me/kanila", email: "support@kanila.vn" } : undefined,
+    profile_status: profileStatus,
     comparison: comparison,
   };
 }

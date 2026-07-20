@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.core.content.ContextCompat;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -233,17 +235,12 @@ public class ChatConversationFragment extends Fragment {
 
     private void onAddToCartClick(ChatProductUiModel product) {
         if (product == null) return;
-
-        if (product.getVariantId() != null && !product.getVariantId().isEmpty()) {
-            viewModel.addToCart(product.getProductId(), product.getVariantId());
-        } else {
-            onProductClick(product);
-        }
+        String varId = (product.getVariantId() != null && !product.getVariantId().isEmpty()) ? product.getVariantId() : "";
+        viewModel.addToCart(product.getProductId(), varId);
     }
 
-    private void onWhyRecommendClick(ChatProductUiModel product) {
-        if (product == null || getContext() == null) return;
-        showProductReasonDialog(product);
+    private void onWhyRecommendClick(ChatProductUiModel product, boolean customerContextUsed) {
+        showProductReasonDialog(product, customerContextUsed);
     }
 
     private void onComparisonDetailClick(ChatMessageUiModel message) {
@@ -264,21 +261,134 @@ public class ChatConversationFragment extends Fragment {
 
         try {
             if (getActivity() != null) {
+                Fragment parent = getParentFragment();
+                while (parent != null) {
+                    if (parent instanceof com.google.android.material.bottomsheet.BottomSheetDialogFragment) {
+                        ((com.google.android.material.bottomsheet.BottomSheetDialogFragment) parent).dismiss();
+                        break;
+                    }
+                    parent = parent.getParentFragment();
+                }
                 ui.common.FragmentNavigationHelper.loadFragment(getActivity(), ProductDetailFragment.newInstance(product.getProductId()));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             Toast.makeText(getContext(), R.string.chat_product_detail_next_phase, Toast.LENGTH_SHORT).show();
         }
     }
 
     private void onOrderClick(ChatOrderUiModel order) {
-        // Feature connects in next phase as OrderDetailFragment is not found
-        Toast.makeText(getContext(), "Tính năng xem chi tiết đơn hàng sẽ được kết nối ở bước tiếp theo.", Toast.LENGTH_SHORT).show();
+        if (getContext() == null || order == null) return;
+
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        View dialogView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.dialog_chat_order_detail, null);
+                
+        TextView tvOrderCode = dialogView.findViewById(R.id.tvOrderCode);
+        TextView tvOrderStatus = dialogView.findViewById(R.id.tvOrderStatus);
+        TextView tvPaymentStatus = dialogView.findViewById(R.id.tvPaymentStatus);
+        TextView tvTotalAmount = dialogView.findViewById(R.id.tvTotalAmount);
+        TextView tvItemsCount = dialogView.findViewById(R.id.tvItemsCount);
+        LinearLayout llTimeline = dialogView.findViewById(R.id.llTimeline);
+        android.widget.Button btnNextAction = dialogView.findViewById(R.id.btnNextAction);
+        
+        if (tvOrderCode != null) tvOrderCode.setText(order.getOrderCode());
+        if (tvOrderStatus != null) {
+            tvOrderStatus.setText(order.getStatusLabel());
+            String status = order.getStatus() != null ? order.getStatus().toLowerCase() : "";
+            int bgColor;
+            if (status.contains("completed") || status.contains("delivered")) {
+                bgColor = ContextCompat.getColor(requireContext(), R.color.success);
+            } else if (status.contains("cancelled") || status.contains("failed")) {
+                bgColor = ContextCompat.getColor(requireContext(), R.color.error);
+            } else if (status.contains("shipping") || status.contains("delivering")) {
+                bgColor = ContextCompat.getColor(requireContext(), R.color.primary);
+            } else {
+                bgColor = ContextCompat.getColor(requireContext(), R.color.status_pending_text);
+            }
+            tvOrderStatus.setBackgroundTintList(android.content.res.ColorStateList.valueOf(bgColor));
+        }
+        
+        if (tvPaymentStatus != null) tvPaymentStatus.setText("Thanh toán: " + (order.getPaymentStatusLabel() != null ? order.getPaymentStatusLabel() : order.getPaymentStatus()));
+        if (tvTotalAmount != null) tvTotalAmount.setText("Tổng tiền: " + java.text.NumberFormat.getInstance().format(order.getTotalAmount()) + " đ");
+        if (tvItemsCount != null) tvItemsCount.setText("Số lượng sản phẩm: " + order.getItemsCount());
+        if (llTimeline != null && order.getTimeline() != null) {
+            for (int i = 0; i < order.getTimeline().size(); i++) {
+                com.example.frontend.feature.chatbot.model.ChatOrderTimelineUiModel item = order.getTimeline().get(i);
+                TextView tv = new TextView(requireContext());
+                tv.setText("• " + item.getLabel() + " (" + item.getTime() + ")");
+                tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary));
+                tv.setTextSize(13f);
+                tv.setPadding(0, 0, 0, 8);
+                llTimeline.addView(tv);
+            }
+        }
+        
+        if (btnNextAction != null) {
+            if (order.getNextAction() != null && !order.getNextAction().isEmpty()) {
+                btnNextAction.setText(order.getNextAction());
+                btnNextAction.setOnClickListener(v -> {
+                    dialog.dismiss();
+                    viewModel.sendMessage(order.getNextAction());
+                });
+            } else {
+                btnNextAction.setVisibility(View.GONE);
+            }
+        }
+        
+        dialog.setContentView(dialogView);
+        dialog.show();
     }
 
     private void onTicketClick(ChatTicketUiModel ticket) {
-        // Feature connects in next phase as SupportTicketDetailFragment is not found
-        Toast.makeText(getContext(), "Tính năng theo dõi yêu cầu hỗ trợ sẽ được kết nối ở bước tiếp theo.", Toast.LENGTH_SHORT).show();
+        if (getContext() == null || ticket == null) return;
+
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        View dialogView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.dialog_chat_ticket_detail, null);
+
+        TextView tvTicketCode = dialogView.findViewById(R.id.tvTicketCode);
+        TextView tvTicketStatus = dialogView.findViewById(R.id.tvTicketStatus);
+        TextView tvTicketCategory = dialogView.findViewById(R.id.tvTicketCategory);
+        TextView tvTicketPriority = dialogView.findViewById(R.id.tvTicketPriority);
+        TextView tvTicketDate = dialogView.findViewById(R.id.tvTicketDate);
+        TextView tvTicketDescription = dialogView.findViewById(R.id.tvTicketDescription);
+        android.widget.Button btnContactCS = dialogView.findViewById(R.id.btnContactCS);
+
+        if (tvTicketCode != null) tvTicketCode.setText(ticket.getTicketCode());
+        if (tvTicketStatus != null) {
+            tvTicketStatus.setText(ticket.getStatusLabel());
+            String status = ticket.getStatus() != null ? ticket.getStatus().toLowerCase() : "";
+            int bgColor;
+            if (status.contains("resolved") || status.contains("closed")) {
+                bgColor = ContextCompat.getColor(requireContext(), R.color.success);
+            } else if (status.contains("open") || status.contains("pending")) {
+                bgColor = ContextCompat.getColor(requireContext(), R.color.status_pending_text);
+            } else {
+                bgColor = ContextCompat.getColor(requireContext(), R.color.primary);
+            }
+            tvTicketStatus.setBackgroundTintList(android.content.res.ColorStateList.valueOf(bgColor));
+        }
+
+        if (tvTicketCategory != null) tvTicketCategory.setText("Phân loại: " + ticket.getCategoryLabel());
+        if (tvTicketPriority != null) tvTicketPriority.setVisibility(View.GONE); // No priority in model
+        if (tvTicketDate != null) tvTicketDate.setText("Ngày tạo: " + ticket.getCreatedAt());
+        if (tvTicketDescription != null) tvTicketDescription.setText(ticket.getMessage());
+
+        if (btnContactCS != null) {
+            String status = ticket.getStatus() != null ? ticket.getStatus().toLowerCase() : "";
+            if (status.contains("resolved") || status.contains("closed")) {
+                btnContactCS.setVisibility(View.GONE);
+            } else {
+                btnContactCS.setOnClickListener(v -> {
+                    dialog.dismiss();
+                    viewModel.sendMessage("Tôi cần hỗ trợ thêm về yêu cầu " + ticket.getTicketCode());
+                });
+            }
+        }
+
+        dialog.setContentView(dialogView);
+        dialog.show();
     }
 
     private void onPreferenceClick(String option) {
@@ -317,19 +427,33 @@ public class ChatConversationFragment extends Fragment {
     }
 
     private void showAddComboConfirmation(ChatMessageUiModel message) {
-        String info = getString(R.string.chat_cart_confirm_info, 
-                message.getCartSummary().getItemsCount(), 
-                message.getCartSummary().getTotal());
-
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle(R.string.chat_cart_confirm_title)
-                .setMessage(getString(R.string.chat_cart_confirm_msg) + "\n\n" + info)
-                .setNegativeButton(R.string.chat_new_chat_confirm_btn_cancel, null)
-                .setPositiveButton(R.string.chat_cart_confirm_btn_add, (dialog, which) -> {
-                    if (message.getCartAction() != null) {
-                        viewModel.confirmAddCombo(message.getCartAction().getAction());
+        if (getContext() == null || message.getCartAction() == null) return;
+        
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Thêm Combo")
+                .setMessage("Bạn có chắc chắn muốn thêm toàn bộ sản phẩm này vào giỏ hàng?")
+                .setPositiveButton("Thêm", (dialog, which) -> {
+                    java.util.List<com.example.frontend.feature.chatbot.model.ChatProductUiModel> comboProducts = new java.util.ArrayList<>();
+                    if (message.getUpsellProducts() != null && !message.getUpsellProducts().isEmpty()) {
+                        comboProducts.addAll(message.getUpsellProducts());
+                    } else if (message.getProducts() != null && !message.getProducts().isEmpty()) {
+                        comboProducts.addAll(message.getProducts());
                     }
+                    
+                    if (comboProducts.isEmpty()) {
+                        Toast.makeText(getContext(), "Không có sản phẩm nào trong combo", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    
+                    for (com.example.frontend.feature.chatbot.model.ChatProductUiModel p : comboProducts) {
+                        String varId = (p.getVariantId() != null && !p.getVariantId().isEmpty()) ? p.getVariantId() : "";
+                        viewModel.addToCart(p.getProductId(), varId);
+                    }
+                    
+                    // Inform backend for flexible AI response
+                    viewModel.confirmAddCombo(message.getCartAction().getAction());
                 })
+                .setNegativeButton("Hủy", null)
                 .show();
     }
 
@@ -426,11 +550,27 @@ public class ChatConversationFragment extends Fragment {
 
     // ─── Progressive Disclosure: Detail Popup Dialogs ───────────────────────────
 
-    private void showProductReasonDialog(ChatProductUiModel product) {
+    private void showProductReasonDialog(ChatProductUiModel product, boolean customerContextUsed) {
         if (getContext() == null) return;
         BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
         View dialogView = LayoutInflater.from(requireContext())
                 .inflate(R.layout.dialog_chat_product_reason, null);
+
+        // Update UI based on Kanila Beauty Context
+        TextView tvReasonSubtitle = dialogView.findViewById(R.id.tvReasonSubtitle);
+        ImageView ivReasonAiIcon = dialogView.findViewById(R.id.ivReasonAiIcon);
+        if (tvReasonSubtitle != null && ivReasonAiIcon != null) {
+            if (customerContextUsed) {
+                tvReasonSubtitle.setText("Dựa trên hồ sơ Kanila Beauty của bạn");
+                tvReasonSubtitle.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.primary));
+                ivReasonAiIcon.setImageResource(R.drawable.ic_shortcut_kanila_beauty);
+                ivReasonAiIcon.setColorFilter(null); // Keep original colors if it's a colorful icon
+            } else {
+                tvReasonSubtitle.setText("Phân tích từ Kanila AI");
+                tvReasonSubtitle.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.text_tertiary));
+                ivReasonAiIcon.setImageResource(R.drawable.ic_chat_placeholder);
+            }
+        }
 
         // Product mini info
         ImageView ivImage = dialogView.findViewById(R.id.ivReasonProductImage);
@@ -457,6 +597,20 @@ public class ChatConversationFragment extends Fragment {
             tvReason.setText(product.getReason() != null ? product.getReason() : "");
         }
 
+        View layoutMatchScoreDialog = dialogView.findViewById(R.id.layoutMatchScoreDialog);
+        TextView tvMatchScorePercentage = dialogView.findViewById(R.id.tvMatchScorePercentage);
+        android.widget.ProgressBar pbMatchScore = dialogView.findViewById(R.id.pbMatchScore);
+
+        if (product.getMatchScore() > 0) {
+            int score = product.getMatchScore();
+            if (score > 100) score = score / 100;
+            if (layoutMatchScoreDialog != null) layoutMatchScoreDialog.setVisibility(View.VISIBLE);
+            if (tvMatchScorePercentage != null) tvMatchScorePercentage.setText(score + "%");
+            if (pbMatchScore != null) pbMatchScore.setProgress(score);
+        } else {
+            if (layoutMatchScoreDialog != null) layoutMatchScoreDialog.setVisibility(View.GONE);
+        }
+
         dialog.setContentView(dialogView);
         dialog.show();
     }
@@ -477,7 +631,7 @@ public class ChatConversationFragment extends Fragment {
                         .inflate(R.layout.item_chat_product_card, layoutProducts, false);
                 com.example.frontend.feature.chatbot.adapter.ChatProductAdapter.ProductViewHolder holder =
                         new com.example.frontend.feature.chatbot.adapter.ChatProductAdapter.ProductViewHolder(productView, this::onProductClick);
-                holder.bind(p, message.isCustomerContextUsed(), null, null);
+                holder.bind(p, message.isCustomerContextUsed(), this::onAddToCartClick, this::onWhyRecommendClick);
                 layoutProducts.addView(productView);
             }
         }
@@ -510,6 +664,70 @@ public class ChatConversationFragment extends Fragment {
                 rowLayout.addView(tvValue);
                 layoutDiffs.addView(rowLayout);
             }
+        }
+
+        // Pros Cons Section
+        View layoutProsCons = dialogView.findViewById(R.id.layoutDialogProsCons);
+        LinearLayout layoutProsConsContent = dialogView.findViewById(R.id.layoutDialogProsConsContent);
+        if (comparison.getProsCons() != null && !comparison.getProsCons().isEmpty()) {
+            if (layoutProsCons != null) layoutProsCons.setVisibility(View.VISIBLE);
+            if (layoutProsConsContent != null) {
+                for (java.util.Map.Entry<String, ComparisonUiModel.ProsConsUi> entry : comparison.getProsCons().entrySet()) {
+                    LinearLayout cardLayout = new LinearLayout(requireContext());
+                    cardLayout.setOrientation(LinearLayout.VERTICAL);
+                    cardLayout.setBackgroundResource(R.drawable.bg_card);
+                    cardLayout.setPadding((int)(12 * getResources().getDisplayMetrics().density), (int)(12 * getResources().getDisplayMetrics().density), (int)(12 * getResources().getDisplayMetrics().density), (int)(12 * getResources().getDisplayMetrics().density));
+                    LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    cardParams.setMargins(0, 0, 0, (int)(12 * getResources().getDisplayMetrics().density));
+                    cardLayout.setLayoutParams(cardParams);
+
+                    TextView tvTitle = new TextView(requireContext());
+                    tvTitle.setText(entry.getKey());
+                    tvTitle.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.text_main));
+                    tvTitle.setTextSize(14f);
+                    tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+                    tvTitle.setPadding(0, 0, 0, (int)(8 * getResources().getDisplayMetrics().density));
+                    cardLayout.addView(tvTitle);
+
+                    ComparisonUiModel.ProsConsUi pc = entry.getValue();
+                    if (pc.getPros() != null && !pc.getPros().isEmpty()) {
+                        TextView tvProsHeader = new TextView(requireContext());
+                        tvProsHeader.setText("✅ Ưu điểm:");
+                        tvProsHeader.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.success));
+                        tvProsHeader.setTextSize(13f);
+                        cardLayout.addView(tvProsHeader);
+
+                        for (String pro : pc.getPros()) {
+                            TextView tvPro = new TextView(requireContext());
+                            tvPro.setText("• " + pro);
+                            tvPro.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.text_secondary));
+                            tvPro.setTextSize(13f);
+                            cardLayout.addView(tvPro);
+                        }
+                    }
+
+                    if (pc.getCons() != null && !pc.getCons().isEmpty()) {
+                        TextView tvConsHeader = new TextView(requireContext());
+                        tvConsHeader.setText("⚠️ Nhược điểm:");
+                        tvConsHeader.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.error));
+                        tvConsHeader.setTextSize(13f);
+                        tvConsHeader.setPadding(0, (int)(8 * getResources().getDisplayMetrics().density), 0, 0);
+                        cardLayout.addView(tvConsHeader);
+
+                        for (String con : pc.getCons()) {
+                            TextView tvCon = new TextView(requireContext());
+                            tvCon.setText("• " + con);
+                            tvCon.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.text_secondary));
+                            tvCon.setTextSize(13f);
+                            cardLayout.addView(tvCon);
+                        }
+                    }
+                    layoutProsConsContent.addView(cardLayout);
+                }
+            }
+        } else {
+            if (layoutProsCons != null) layoutProsCons.setVisibility(View.GONE);
         }
 
         // Recommendation section
@@ -551,30 +769,47 @@ public class ChatConversationFragment extends Fragment {
             int badgeColor;
             int bgColor;
             String label;
+            int progress;
             if ("safe".equals(level)) {
                 badgeColor = ContextCompat.getColor(requireContext(), R.color.success);
                 bgColor = ContextCompat.getColor(requireContext(), R.color.status_success_bg);
                 label = "🟢 Phù hợp với da của bạn";
+                progress = 95;
             } else if ("warning".equals(level)) {
                 badgeColor = ContextCompat.getColor(requireContext(), R.color.status_pending_text);
                 bgColor = ContextCompat.getColor(requireContext(), R.color.status_pending_bg);
                 label = "🟡 Cần lưu ý";
+                progress = 65;
             } else if ("avoid".equals(level)) {
                 badgeColor = ContextCompat.getColor(requireContext(), R.color.error);
                 bgColor = ContextCompat.getColor(requireContext(), R.color.status_payment_failed_bg);
                 label = "🔴 Không nên kết hợp";
+                progress = 30;
             } else {
                 badgeColor = ContextCompat.getColor(requireContext(), R.color.text_tertiary);
                 bgColor = ContextCompat.getColor(requireContext(), R.color.border_divider);
                 label = ingredient.getCompatibilityLevel();
+                progress = 50;
             }
             if (tvBadge != null) {
                 tvBadge.setText(label);
                 tvBadge.setTextColor(badgeColor);
+                tvBadge.getBackground().setTint(badgeColor & 0x33FFFFFF | (badgeColor & 0x00FFFFFF)); // Approximate 20% alpha background
             }
             if (layoutCompat != null) {
                 layoutCompat.setBackgroundTintList(
                         android.content.res.ColorStateList.valueOf(bgColor));
+            }
+            
+            TextView tvMatchScore = dialogView.findViewById(R.id.tvIngredientMatchScore);
+            android.widget.ProgressBar pbMatchScore = dialogView.findViewById(R.id.pbIngredientMatchScore);
+            if (tvMatchScore != null) {
+                tvMatchScore.setText(progress + "%");
+                tvMatchScore.setTextColor(badgeColor);
+            }
+            if (pbMatchScore != null) {
+                pbMatchScore.setProgress(progress);
+                pbMatchScore.setProgressTintList(android.content.res.ColorStateList.valueOf(badgeColor));
             }
             if (tvReason != null && ingredient.getCompatibilityReason() != null && !ingredient.getCompatibilityReason().isEmpty()) {
                 tvReason.setText(ingredient.getCompatibilityReason());

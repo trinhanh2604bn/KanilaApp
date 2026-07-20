@@ -165,5 +165,16 @@
             android:layout_marginTop="12dp"
             android:text="Xem chi tiết đơn hàng"
             android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvNextAction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:textAppearance="@style/Text.Kanila.Caption"
+            android:textColor="@color/primary"
+            android:textStyle="bold"
+            tools:text="Đã nhận hàng" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

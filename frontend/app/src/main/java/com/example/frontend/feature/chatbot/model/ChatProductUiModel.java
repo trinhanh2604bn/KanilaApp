@@ -17,17 +17,18 @@ public class ChatProductUiModel {
     private String reason;
     private final String suggestedUse;
     private final String action;
+    private int matchScore;
 
     public ChatProductUiModel(String productId, String variantId, String slug, String name, String brandName,
                              String priceText, String compareAtPriceText, String imageUrl, String ratingText,
                              String reviewCountText, String stockStatus, String reason) {
-        this(productId, variantId, slug, name, brandName, null, priceText, null, compareAtPriceText, imageUrl, ratingText, reviewCountText, stockStatus, reason, null, null);
+        this(productId, variantId, slug, name, brandName, null, priceText, null, compareAtPriceText, imageUrl, ratingText, reviewCountText, stockStatus, reason, null, null, 0);
     }
 
     public ChatProductUiModel(String productId, String variantId, String slug, String name, String brandName,
                              String categoryName, String priceText, String finalPriceText, String compareAtPriceText, 
                              String imageUrl, String ratingText, String reviewCountText, String stockStatus, 
-                             String reason, String suggestedUse, String action) {
+                             String reason, String suggestedUse, String action, int matchScore) {
         this.productId = productId;
         this.variantId = variantId;
         this.slug = slug;
@@ -44,6 +45,7 @@ public class ChatProductUiModel {
         this.reason = reason;
         this.suggestedUse = suggestedUse;
         this.action = action;
+        this.matchScore = matchScore;
     }
 
     public String getProductId() {
@@ -112,5 +114,13 @@ public class ChatProductUiModel {
 
     public String getAction() {
         return action;
+    }
+
+    public int getMatchScore() {
+        return matchScore;
+    }
+
+    public void setMatchScore(int matchScore) {
+        this.matchScore = matchScore;
     }
 }

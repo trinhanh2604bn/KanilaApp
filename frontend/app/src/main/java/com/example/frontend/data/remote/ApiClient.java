@@ -22,11 +22,13 @@ public class ApiClient {
             logging.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
 
             TokenManager tokenManager = TokenManager.getInstance(context);
-            AuthInterceptor authInterceptor = new AuthInterceptor(tokenManager);
+            AuthInterceptor authInterceptor = new AuthInterceptor(context, tokenManager);
+            NetworkRetryInterceptor retryInterceptor = new NetworkRetryInterceptor(3);
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(logging)
                     .addInterceptor(authInterceptor)
+                    .addInterceptor(retryInterceptor)
                     .connectTimeout(1200, TimeUnit.SECONDS)
                     .readTimeout(1200, TimeUnit.SECONDS)
                     .writeTimeout(1200, TimeUnit.SECONDS)

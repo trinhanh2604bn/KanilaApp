@@ -60,6 +60,61 @@
             android:textColor="@color/accent_dark"
             android:visibility="gone"
             tools:visibility="visible" />
+            
+        <LinearLayout
+            android:id="@+id/layoutHandoff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_card"
+            android:backgroundTint="@color/status_pending_bg"
+            android:padding="12dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🧑‍💼 Yêu cầu này cần nhân viên hỗ trợ"
+                android:fontFamily="@font/nunito_bold"
+                android:textColor="@color/text_main"
+                android:textSize="13sp" />
+                
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+                
+                <Button
+                    android:id="@+id/btnHandoffCall"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="📞 Gọi hotline"
+                    android:textSize="12sp"
+                    android:backgroundTint="@color/primary"
+                    android:textColor="@color/white"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp" />
+                    
+                <Button
+                    android:id="@+id/btnHandoffZalo"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:text="💬 Chat Zalo"
+                    android:textSize="12sp"
+                    android:backgroundTint="@color/secondary"
+                    android:textColor="@color/primary"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp" />
+            </LinearLayout>
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvPreferenceOptions"
@@ -85,6 +140,20 @@
             android:paddingHorizontal="4dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_chat_product_card"
+            tools:visibility="visible" />
+            
+        <TextView
+            android:id="@+id/tvProfileFeedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_chip_pink"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="6dp"
+            style="@style/Text.Kanila.Caption"
+            android:textColor="@color/accent_dark"
+            android:visibility="gone"
+            tools:text="📊 Hồ sơ da: 50% — Bổ sung thêm để tư vấn chính xác hơn"
             tools:visibility="visible" />
 
         <LinearLayout

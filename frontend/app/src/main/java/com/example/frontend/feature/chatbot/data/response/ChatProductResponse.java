@@ -77,12 +77,16 @@ public class ChatProductResponse {
         @SerializedName("usage")
         private String usage;
 
+        @SerializedName("score")
+        private Double score;
+
         public String getWhyRecommended() { return whyRecommended; }
         public String getStrengths() { return strengths; }
         public String getBestFor() { return bestFor; }
         public String getTip() { return tip; }
         public String getReason() { return reason; }
         public String getUsage() { return usage; }
+        public Double getScore() { return score; }
     }
 
     public String getProductId() {
@@ -192,5 +196,12 @@ public class ChatProductResponse {
 
     public Recommendation getRecommendation() {
         return recommendation;
+    }
+
+    public int getMatchScore() {
+        if (recommendation != null && recommendation.score != null) {
+            return (int) Math.round(recommendation.score * 100);
+        }
+        return 0;
     }
 }

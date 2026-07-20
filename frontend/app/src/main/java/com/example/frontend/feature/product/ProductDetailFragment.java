@@ -58,7 +58,7 @@ public class ProductDetailFragment extends Fragment {
     private ViewPager2 vpGallery;
     private RecyclerView rvThumbnails, rvRecentlyViewed, rvRelatedProducts, rvReviewPreview;
     private ChipGroup cgBadges;
-    private View layoutSkinMatch, layoutReviewSummary, layoutOutOfStock, layoutLoading, layoutError, layoutRecentlyViewed;
+    private View layoutSkinMatch, layoutReviewSummary, layoutRatingSummary, layoutOutOfStock, layoutLoading, layoutError, layoutRecentlyViewed;
     private View btnAddToCart, btnBuyNow;
     private View layoutSectionDesc, layoutSectionIngredients, layoutSectionUsage;
 
@@ -137,6 +137,7 @@ public class ProductDetailFragment extends Fragment {
 
         layoutSkinMatch = view.findViewById(R.id.layoutSkinMatchScore);
         layoutReviewSummary = view.findViewById(R.id.layoutReviewSummary);
+        layoutRatingSummary = view.findViewById(R.id.layoutRatingSummary);
         layoutRecentlyViewed = view.findViewById(R.id.layoutRecentlyViewed);
         layoutOutOfStock = view.findViewById(R.id.layoutOutOfStockNotice);
 
@@ -211,14 +212,12 @@ public class ProductDetailFragment extends Fragment {
             });
         }
 
-        if (layoutReviewSummary != null) {
-            View btnViewAllReviews = layoutReviewSummary.findViewById(R.id.btnViewAllReviews);
-            if (btnViewAllReviews != null) {
-                btnViewAllReviews.setOnClickListener(v -> {
-                    ReviewHubFragment fragment = ReviewHubFragment.newInstance(productId);
-                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), fragment);
-                });
-            }
+        View btnViewAllReviews = view.findViewById(R.id.btnViewAllReviews);
+        if (btnViewAllReviews != null) {
+            btnViewAllReviews.setOnClickListener(v -> {
+                ReviewHubFragment fragment = ReviewHubFragment.newInstance(productId);
+                ui.common.FragmentNavigationHelper.loadFragment(getActivity(), fragment);
+            });
         }
 
         layoutSectionDesc = view.findViewById(R.id.layoutSectionDesc);
@@ -500,10 +499,7 @@ public class ProductDetailFragment extends Fragment {
         if (tvName != null) tvName.setText(product.getName());
         if (tvBrand != null) tvBrand.setText(product.getBrand());
 
-        TextView tvReviewSectionTitle = null;
-        if (layoutReviewSummary != null) {
-            tvReviewSectionTitle = layoutReviewSummary.findViewById(R.id.tvReviewSectionTitle);
-        }
+        TextView tvReviewSectionTitle = getView() != null ? getView().findViewById(R.id.tvReviewSectionTitle) : null;
 
         double averageRating = 0;
         int reviewCount = 0;
@@ -566,6 +562,40 @@ public class ProductDetailFragment extends Fragment {
                     }
                 }
             }
+        }
+
+        if (layoutRatingSummary != null && state.reviewSummary != null) {
+            layoutRatingSummary.setVisibility(View.VISIBLE);
+            
+            TextView tvAvg = layoutRatingSummary.findViewById(R.id.tvAverageRating);
+            if (tvAvg != null) tvAvg.setText(String.format(Locale.US, "%.1f", state.reviewSummary.getAverageRating()));
+            
+            TextView tvCount = layoutRatingSummary.findViewById(R.id.tvReviewCount);
+            if (tvCount != null) tvCount.setText(String.format(Locale.US, "(%d đánh giá)", state.reviewSummary.getReviewCount()));
+            
+            RatingBar rbStars = layoutRatingSummary.findViewById(R.id.tvRatingStars);
+            if (rbStars != null) rbStars.setRating((float) state.reviewSummary.getAverageRating());
+
+            java.util.Map<String, Integer> dist = state.reviewSummary.getRatingDistribution();
+            if (dist != null) {
+                int total = state.reviewSummary.getReviewCount();
+                int[] rows = {1, 2, 3, 4, 5};
+                for (int star : rows) {
+                    int count = dist.getOrDefault(String.valueOf(star), 0);
+                    int percent = total > 0 ? (count * 100 / total) : 0;
+                    
+                    int progressId = getResources().getIdentifier("progressRating" + star, "id", getContext().getPackageName());
+                    int percentId = getResources().getIdentifier("tvRating" + star + "Percent", "id", getContext().getPackageName());
+                    
+                    android.widget.ProgressBar pb = layoutRatingSummary.findViewById(progressId);
+                    TextView tvPct = layoutRatingSummary.findViewById(percentId);
+                    
+                    if (pb != null) pb.setProgress(percent);
+                    if (tvPct != null) tvPct.setText(percent + "%");
+                }
+            }
+        } else if (layoutRatingSummary != null) {
+            layoutRatingSummary.setVisibility(View.GONE);
         }
 
         if (tvDesc != null) {

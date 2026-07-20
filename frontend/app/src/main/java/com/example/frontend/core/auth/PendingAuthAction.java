@@ -7,6 +7,7 @@ public class PendingAuthAction {
         NONE,
         OPEN_ACCOUNT,
         ADD_TO_WISHLIST,
+        ADD_TO_CART,
         REMOVE_FROM_WISHLIST,
         OPEN_WISHLIST,
         START_CHECKOUT,

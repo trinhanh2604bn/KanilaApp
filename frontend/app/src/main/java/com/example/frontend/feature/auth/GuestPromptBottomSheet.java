@@ -65,6 +65,7 @@ public class GuestPromptBottomSheet extends BottomSheetDialogFragment {
                 subtitle = "Đăng nhập để lưu sản phẩm yêu thích và xem lại bất cứ lúc nào.";
                 break;
             case START_CHECKOUT:
+            case ADD_TO_CART:
                 title = "Đăng nhập để mua hàng";
                 subtitle = "Đăng nhập để tiếp tục thanh toán, lưu địa chỉ và theo dõi đơn hàng.";
                 break;

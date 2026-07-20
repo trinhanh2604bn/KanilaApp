@@ -23,6 +23,7 @@ import com.example.frontend.R;
 import com.example.frontend.data.model.review.ReviewCommentDto;
 import com.example.frontend.data.model.review.ReviewDto;
 import com.example.frontend.data.model.review.ReviewMediaDto;
+import com.example.frontend.utils.UrlUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +112,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
         if (review.getCustomer() != null) {
             holder.tvUserName.setText(review.getCustomer().getFullName());
-            String avatarUrl = review.getCustomer().getAvatarUrl();
+            String avatarUrl = UrlUtils.getFullUrl(review.getCustomer().getAvatarUrl());
             if (avatarUrl != null && !avatarUrl.trim().isEmpty()) {
                 Glide.with(holder.ivAvatar.getContext())
                         .load(avatarUrl)
@@ -171,6 +172,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
                         Log.e("ReviewMedia", "Invalid backend mediaUrl. Must be HTTP/HTTPS: " + url);
                         continue;
                     }
+                    // The ReviewMediaAdapter will handle prepending the base URL
                     validMedia.add(media);
                 }
                 mediaAdapter.submitList(validMedia);

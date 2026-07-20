@@ -96,10 +96,14 @@ public class ProductDetailResponse {
         private String aiSummary;
         @SerializedName("reviewMediaPreview")
         private List<ReviewMediaDto> reviewMediaPreview;
+        @SerializedName("ratingDistribution")
+        private java.util.Map<String, Integer> ratingDistribution;
+
         public double getAverageRating() { return averageRating; }
         public int getReviewCount() { return reviewCount; }
         public String getAiSummary() { return aiSummary; }
         public List<ReviewMediaDto> getReviewMediaPreview() { return reviewMediaPreview; }
+        public java.util.Map<String, Integer> getRatingDistribution() { return ratingDistribution; }
     }
 
     public static class SkinMatchDto implements Serializable {

@@ -51,6 +51,9 @@ public class ReviewHubFragment extends Fragment {
         TextView tvTitle = view.findViewById(R.id.tvTopBarTitle);
         if (tvTitle != null) tvTitle.setText("Đánh giá sản phẩm");
 
+        View btnSearch = view.findViewById(R.id.btnTopBarSearch);
+        if (btnSearch != null) btnSearch.setVisibility(View.GONE);
+
         TabLayout tabLayout = view.findViewById(R.id.tabReviewHub);
         ViewPager2 viewPager = view.findViewById(R.id.vpReviewHub);
 

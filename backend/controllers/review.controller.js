@@ -326,11 +326,10 @@ const submitReviewFromOrderItem = async (req, res) => {
     // Handle files from multer
     const files = req.files || [];
     if (files.length > 0) {
-      const baseUrl = `${req.protocol}://${req.get("host")}`;
       const mediaDocs = files.map((file, idx) => ({
         reviewId: created._id,
         mediaType: file.mimetype.startsWith("video/") ? "video" : "image",
-        mediaUrl: `${baseUrl}/uploads/reviews/${file.filename}`,
+        mediaUrl: `/uploads/reviews/${file.filename}`,
         sortOrder: idx,
       }));
       await ReviewMedia.insertMany(mediaDocs);
@@ -467,11 +466,10 @@ const submitReviewDirect = async (req, res) => {
     // Handle files from multer
     const files = req.files || [];
     if (files.length > 0) {
-      const baseUrl = `${req.protocol}://${req.get("host")}`;
       const mediaDocs = files.map((file, idx) => ({
         reviewId: created._id,
         mediaType: file.mimetype.startsWith("video/") ? "video" : "image",
-        mediaUrl: `${baseUrl}/uploads/reviews/${file.filename}`,
+        mediaUrl: `/uploads/reviews/${file.filename}`,
         sortOrder: idx,
       }));
       await ReviewMedia.insertMany(mediaDocs);

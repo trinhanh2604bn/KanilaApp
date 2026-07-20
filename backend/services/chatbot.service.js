@@ -57,8 +57,8 @@ const {
 } = require("./chatbotRecommendation.service");
 const { classifyIntent, resolveRoutingIntent } = require("./chatbotIntent.classifier");
 const { findMakeupProductsPipeline } = require("./makeupRecommendation.service");
-const { buildMakeupProductContextMessage } = require("./chatbot.prompt");
-const { generateMakeupReply, handleVoucherQuery } = require("./gemini.provider");
+const { buildMakeupProductContextMessage, buildMakeupAnalysisPrompt } = require("./chatbot.prompt");
+const { generateMakeupReply, generateMakeupReplyWithAnalysis, handleVoucherQuery } = require("./gemini.provider");
 const { loadConversationContext } = require("./chatbotConversationContext");
 const { buildMakeupBundle } = require("./chatbotMakeupBundle.service");
 
@@ -1079,9 +1079,50 @@ async function handleMakeupRecommendation(intent, message, user, history, follow
 
   let botText;
   try {
-    const promptMsg = buildMakeupProductContextMessage(products, message, filters, customerProfile, shoppingContext.isFollowUp);
-    botText = await generateMakeupReply(promptMsg, history);
+    const promptMsg = buildMakeupAnalysisPrompt(products, message, filters, customerProfile, shoppingContext.isFollowUp);
+    const analysisResult = await generateMakeupReplyWithAnalysis(promptMsg, history);
+    
+    botText = analysisResult.overview;
+    if (analysisResult.followUp) {
+      botText += "\n\n" + analysisResult.followUp;
+    }
+
+    // Merge analysis into product cards
+    if (analysisResult.productAnalysis && products.length > 0) {
+      for (let i = 0; i < products.length; i++) {
+        // Find corresponding analysis (1-indexed in JSON)
+        const pa = analysisResult.productAnalysis.find(a => a.product_index === i + 1);
+        if (pa && products[i].recommendation) {
+          products[i].recommendation.whyRecommended = pa.why_recommended || products[i].recommendation.whyRecommended;
+          products[i].recommendation.strengths = pa.strengths || "";
+          products[i].recommendation.bestFor = pa.best_for || "";
+          products[i].recommendation.tip = pa.tip || "";
+        } else if (pa) {
+          products[i].recommendation = {
+            whyRecommended: pa.why_recommended || "",
+            strengths: pa.strengths || "",
+            bestFor: pa.best_for || "",
+            tip: pa.tip || ""
+          };
+        }
+
+        // IMPORTANT: Update flat-level `reason` field with AI analysis
+        // so clients that only read the flat "reason" get real AI analysis
+        // instead of the scorer's static dataset reason.
+        if (pa) {
+          const aiReasonParts = [];
+          if (pa.why_recommended) aiReasonParts.push(pa.why_recommended);
+          if (pa.strengths) aiReasonParts.push(`💪 ${pa.strengths}`);
+          if (pa.best_for) aiReasonParts.push(`🎯 ${pa.best_for}`);
+          if (pa.tip) aiReasonParts.push(`💡 ${pa.tip}`);
+          if (aiReasonParts.length > 0) {
+            products[i].reason = aiReasonParts.join("\n\n");
+          }
+        }
+      }
+    }
   } catch (err) {
+    console.error("[MakeupHandler] analysis error:", err.message);
     if (products.length > 0) {
       const topProduct = products[0];
       botText = `Mình tìm được ${products.length} sản phẩm phù hợp cho bạn! Sản phẩm nổi bật: ${topProduct.name || topProduct.productName} (${topProduct.brand || topProduct.brandName}) - ${(topProduct.price || 0).toLocaleString("vi-VN")}đ.`;

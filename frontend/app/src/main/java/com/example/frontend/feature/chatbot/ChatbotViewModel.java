@@ -368,6 +368,8 @@ public class ChatbotViewModel extends AndroidViewModel {
     }
 
     private ChatProductUiModel mapToUiModel(ChatProductResponse p) {
+        // Use full AI analysis (with strengths, bestFor, tip) for the reason dialog
+        String reasonText = p.getFullAiAnalysis();
         return new ChatProductUiModel(
                 p.getProductId(),
                 p.getVariantId(),
@@ -382,7 +384,7 @@ public class ChatbotViewModel extends AndroidViewModel {
                 p.getRating() != null ? String.valueOf(p.getRating()) : null,
                 p.getReviewCount() != null ? String.valueOf(p.getReviewCount()) : "0",
                 p.getStockStatus(),
-                p.getReason(),
+                reasonText,
                 p.getSuggestedUse(),
                 p.getAction()
         );

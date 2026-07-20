@@ -20,6 +20,7 @@ const {
   buildProductComparisonMessage,
   buildIngredientMessage,
   buildMakeupProductContextMessage,
+  buildMakeupAnalysisPrompt,
   buildSkinAnalysisPrompt,
 } = require("./chatbot.prompt");
 
@@ -237,6 +238,38 @@ async function generateMakeupReply(contextMessage, history = []) {
 }
 
 /**
+ * Phase 9: Generate a makeup reply with detailed JSON AI analysis for each product.
+ * Returns an object with { overview, followUp, productAnalysis }.
+ */
+async function generateMakeupReplyWithAnalysis(contextMessage, history = []) {
+  try {
+    const rawText = await _geminiChatWithTimeout(contextMessage, history, {
+      responseMimeType: "application/json",
+    });
+    
+    // Attempt to parse JSON safely
+    const match = rawText.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("No JSON object found in Gemini response");
+    
+    const parsed = JSON.parse(match[0]);
+    
+    return {
+      overview: parsed.overview || "Mình đã tìm được một số sản phẩm phù hợp cho bạn.",
+      followUp: parsed.follow_up || "Bạn muốn xem chi tiết sản phẩm nào?",
+      productAnalysis: Array.isArray(parsed.product_analysis) ? parsed.product_analysis : [],
+    };
+  } catch (error) {
+    console.error("[Gemini] generateMakeupReplyWithAnalysis error:", error.message);
+    // Fallback if JSON parsing fails
+    return {
+      overview: "Mình đã tìm thấy một số sản phẩm phù hợp. Bạn xem thử nhé!",
+      followUp: "Bạn cần mình tư vấn thêm về sản phẩm nào không?",
+      productAnalysis: [],
+    };
+  }
+}
+
+/**
  * Generate Skin Analysis for CustomerBeautyProfile
  */
 async function generateSkinAnalysis(profile, products = []) {
@@ -269,5 +302,6 @@ module.exports = {
   generateIngredientReply,
   // Phase 8: Makeup Commerce
   generateMakeupReply,
+  generateMakeupReplyWithAnalysis,
   generateSkinAnalysis,
 };

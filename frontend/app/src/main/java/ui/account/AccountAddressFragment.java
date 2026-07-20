@@ -118,6 +118,7 @@ public class AccountAddressFragment extends Fragment {
         viewModel.getSetDefaultAccountAddressResult().observe(getViewLifecycleOwner(), result -> {
             if (result != null && result.status == NetworkResult.Status.SUCCESS) {
                 viewModel.loadAccountAddresses();
+                viewModel.resetSetDefaultAccountAddressResult();
             }
         });
     }

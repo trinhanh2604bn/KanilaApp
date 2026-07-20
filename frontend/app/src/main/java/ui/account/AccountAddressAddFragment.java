@@ -57,7 +57,7 @@ public class AccountAddressAddFragment extends Fragment {
             args.putString("address_full_name", address.getFullName());
             args.putString("address_phone", address.getPhone());
             args.putString("address_line", address.getAddressLine());
-            args.putBoolean("address_is_default", address.isDefaultShipping());
+            args.putBoolean("address_is_default", address.isDefault());
             fragment.setArguments(args);
         }
         return fragment;
@@ -350,10 +350,12 @@ public class AccountAddressAddFragment extends Fragment {
                 boolean isDefault = switchDefault != null && switchDefault.isChecked();
 
                 Map<String, Object> body = new HashMap<>();
-                body.put("full_name", fullName);
+                body.put("recipient_name", fullName);
                 body.put("phone", phone);
-                body.put("address_line", addressLine);
+                body.put("address_line_1", addressLine);
                 body.put("is_default", isDefault);
+                body.put("is_default_shipping", isDefault);
+                body.put("is_default_billing", isDefault);
 
                 Bundle args = getArguments();
                 if (args != null && args.containsKey("address_id")) {

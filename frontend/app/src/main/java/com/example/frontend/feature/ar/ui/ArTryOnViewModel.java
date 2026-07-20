@@ -38,6 +38,7 @@ public class ArTryOnViewModel extends AndroidViewModel {
 
     private final MutableLiveData<List<ArShade>> shades = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<ArShade> selectedShade = new MutableLiveData<>();
+    private final MutableLiveData<String> arType = new MutableLiveData<>("LIPS");
     private final MutableLiveData<NetworkResult<com.example.frontend.data.model.cart.CartDto>> addToCartResult = new MutableLiveData<>();
 
     private String sessionId;
@@ -58,6 +59,10 @@ public class ArTryOnViewModel extends AndroidViewModel {
         return selectedShade;
     }
 
+    public LiveData<String> getArType() {
+        return arType;
+    }
+
     public LiveData<NetworkResult<com.example.frontend.data.model.cart.CartDto>> getAddToCartResult() {
         return addToCartResult;
     }
@@ -65,72 +70,25 @@ public class ArTryOnViewModel extends AndroidViewModel {
     public void loadArConfig(String productId, String initialVariantId) {
         this.productId = productId;
         
-        // --- HARDCODED FOR AR TRY ON MVP ---
-        List<ArShade> hardcodedShades = new ArrayList<>();
-        
-        ArShade shade1 = new ArShade();
-        shade1.setVariantId("AR-TEST-01");
-        shade1.setVariantName("Màu 1");
-        shade1.setShadeHex("#FF99CC");
-        shade1.setFinishType("MATTE");
-        shade1.setOpacity(0.62f);
-        shade1.setPrice(239000L);
-        shade1.setInStock(true);
-        shade1.setEnabled(true);
-        hardcodedShades.add(shade1);
-        
-        ArShade shade2 = new ArShade();
-        shade2.setVariantId("AR-TEST-02");
-        shade2.setVariantName("Màu 2");
-        shade2.setShadeHex("#FFF0F5");
-        shade2.setFinishType("SATIN");
-        shade2.setOpacity(0.60f);
-        shade2.setPrice(249000L);
-        shade2.setInStock(true);
-        shade2.setEnabled(true);
-        hardcodedShades.add(shade2);
-        
-        ArShade shade3 = new ArShade();
-        shade3.setVariantId("AR-TEST-03");
-        shade3.setVariantName("Màu 3");
-        shade3.setShadeHex("#CD9B9B");
-        shade3.setFinishType("MATTE");
-        shade3.setOpacity(0.58f);
-        shade3.setPrice(259000L);
-        shade3.setInStock(true);
-        shade3.setEnabled(true);
-        hardcodedShades.add(shade3);
-        
-        ArShade shade4 = new ArShade();
-        shade4.setVariantId("AR-TEST-04");
-        shade4.setVariantName("Màu 4");
-        shade4.setShadeHex("#CD5C5C");
-        shade4.setFinishType("TINT");
-        shade4.setOpacity(0.50f);
-        shade4.setPrice(239000L);
-        shade4.setInStock(true);
-        shade4.setEnabled(true);
-        hardcodedShades.add(shade4);
-        
-        ArShade shade5 = new ArShade();
-        shade5.setVariantId("AR-TEST-05");
-        shade5.setVariantName("Màu 5");
-        shade5.setShadeHex("#EE6363");
-        shade5.setFinishType("SATIN");
-        shade5.setOpacity(0.55f);
-        shade5.setPrice(249000L);
-        shade5.setInStock(true);
-        shade5.setEnabled(true);
-        hardcodedShades.add(shade5);
-
-        shades.setValue(hardcodedShades);
-        selectInitialShade(hardcodedShades, initialVariantId);
-        
-        // Still call API to keep any backend tracking/logging, but don't override the hardcoded shades
         apiService.getProductArConfig(productId).enqueue(new Callback<ApiResponse<ArConfigDto>>() {
             @Override
             public void onResponse(Call<ApiResponse<ArConfigDto>> call, Response<ApiResponse<ArConfigDto>> response) {
-                Log.d(TAG, "AR Config API call completed.");
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    ArConfigDto config = response.body().getData();
+                    
+                    if (config.getArType() != null) {
+                        arType.setValue(config.getArType());
+                    }
+                    
+                    List<ArShade> apiShades = config.getVariants();
+                    if (apiShades != null && !apiShades.isEmpty()) {
+                        shades.setValue(apiShades);
+                        selectInitialShade(apiShades, initialVariantId);
+                    }
+                    Log.d(TAG, "AR Config API call completed. Loaded " + (apiShades != null ? apiShades.size() : 0) + " shades.");
+                } else {
+                    Log.w(TAG, "AR Config API call successful but response is empty or invalid.");
+                }
             }
 
             @Override

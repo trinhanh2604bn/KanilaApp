@@ -8,10 +8,18 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class AuthInterceptor implements Interceptor {
-    private final TokenManager tokenManager;
+import android.content.Context;
+import android.content.Intent;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-    public AuthInterceptor(TokenManager tokenManager) {
+public class AuthInterceptor implements Interceptor {
+    public static final String ACTION_SESSION_EXPIRED = "com.example.frontend.ACTION_SESSION_EXPIRED";
+    
+    private final TokenManager tokenManager;
+    private final Context context;
+
+    public AuthInterceptor(Context context, TokenManager tokenManager) {
+        this.context = context.getApplicationContext();
         this.tokenManager = tokenManager;
     }
 
@@ -32,6 +40,14 @@ public class AuthInterceptor implements Interceptor {
             builder.header("X-Guest-Session-Id", guestSessionId);
         }
 
-        return chain.proceed(builder.build());
+        Response response = chain.proceed(builder.build());
+
+        if (response.code() == 401) {
+            tokenManager.clearToken();
+            Intent intent = new Intent(ACTION_SESSION_EXPIRED);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+        }
+
+        return response;
     }
 }

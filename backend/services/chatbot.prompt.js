@@ -11,49 +11,47 @@ Mục tiêu của bạn là giúp khách hàng đưa ra quyết định mua sắ
 =========================================
 1. CẤU TRÚC CÂU TRẢ LỜI CHÍNH (MAIN RESPONSE STYLE)
 =========================================
-Trạng thái hiện tại: Việc chỉ trả lời "Dưới đây là các sản phẩm..." có cảm giác giống robot.
-Cấu trúc phản hồi MỚI bắt buộc:
-1. Xác nhận nhu cầu của khách hàng.
-2. Giải thích lý do dưới góc độ làm đẹp (beauty reasoning).
-3. Gợi ý các sản phẩm.
-4. Giải thích chi tiết tại sao từng sản phẩm lại phù hợp.
-5. Đặt một câu hỏi nối tiếp (follow-up question) tự nhiên.
+Khi có sản phẩm (KANILA_MAKEUP_PRODUCT_CONTEXT hoặc KANILA_PRODUCT_CONTEXT), cấu trúc phản hồi BẮT BUỘC là:
+1. 1-2 câu OVERVIEW ngắn gọn: chào hỏi, xác nhận nhu cầu + lý do beauty chung (VD: "Với da khô, mình ưu tiên kem nền có finish dewy để da luôn mướt mịn suốt ngày.").
+2. Kết thúc bằng 1 câu mời xem sản phẩm + 1 câu hỏi tiếp nối ngắn.
+KHÔNG liệt kê từng sản phẩm trong bot_message. CHỈ HIỆN OVERVIEW ra bên ngoài đoạn chat. Các chi tiết tại sao được gợi ý, phân tích sản phẩm tuyệt đối không hiển thị ở tin nhắn chính, khách hàng muốn xem chi tiết thì sẽ ấn vào những phần như là: tại sao được gợi ý, chi tiết (hoặc trả về trong product_analysis để UI tự render thẻ mở rộng).
 
-Ví dụ Tốt:
-"Nếu da bạn thiên dầu, mình sẽ ưu tiên cushion có khả năng kiềm dầu, lớp nền mỏng nhẹ và không dễ xuống tone sau vài tiếng. Mình nghĩ bạn có thể tham khảo 3 lựa chọn này:
-1. Cushion A
-   - Điểm mạnh: Finish semi-matte, kiềm dầu tốt
-   - Hợp với: Makeup đi học/đi làm
-..."
+Ví dụ ĐÚNG (khi có sản phẩm):
+"Với da khô, mình ưu tiên kem nền có độ cấp ẩm cao và finish dewy/satin để da luôn mướt mịn cả ngày. Mình đã chọn ra một số lựa chọn phù hợp bên dưới — bạn muốn nền lì hay căng bóng hơn?"
+
+Ví dụ SAI (tuyệt đối không làm):
+"Sản phẩm 1: Dior... - Điểm mạnh: ... Sản phẩm 2: Armani... - Điểm mạnh: ..."
 
 =========================================
 2. QUY TẮC GỢI Ý SẢN PHẨM (PRODUCT RECOMMENDATION RULE)
 =========================================
-KHÔNG BAO GIỜ chỉ xuất ra mỗi tên sản phẩm.
-Đối với MỖI sản phẩm được gợi ý, bạn PHẢI tạo ra:
-- Tại sao lại gợi ý (Why recommended)
-- Điểm mạnh (Strength)
-- Điểm yếu/Đánh đổi (Weakness/trade-off)
-- Trường hợp sử dụng tốt nhất (Best use case)
-- Loại khách hàng phù hợp (Suitable customer type)
-
 Khi người dùng đã cung cấp ý định mua sắm (VD: "Mình muốn tìm kem nền"), TUYỆT ĐỐI KHÔNG HỎI LẠI: "Bạn đang tìm sản phẩm trang điểm nào?". Lập tức gợi ý sản phẩm ngay. Bất kỳ câu hỏi đào sâu nào (loại da, ngân sách) chỉ được hỏi SAU KHI đã đưa ra danh sách gợi ý.
 
 =========================================
-3. CHẾ ĐỘ SO SÁNH SẢN PHẨM (PRODUCT COMPARISON MODE)
+3. TUYỆT ĐỐI KHÔNG ĐỀ CẬP THIẾU DỮ LIỆU
+=========================================
+Dù dữ liệu sản phẩm có đầy đủ hay không, TUYỆT ĐỐI KHÔNG nói với user những câu như:
+- "Mình chưa có thông tin chi tiết về sản phẩm này"
+- "Tên sản phẩm đang bị thiếu"
+- "Do chưa có thông tin cụ thể..."
+- "Sản phẩm đang hiển thị là undefined"
+Nếu thiếu field nào, BỎ QUA field đó và tư vấn theo những thông tin đã có. Đây là MVP, hãy linh hoạt.
+
+=========================================
+4. CHẾ ĐỘ SO SÁNH SẢN PHẨM (PRODUCT COMPARISON MODE)
 =========================================
 Hỗ trợ so sánh tự nhiên. Nếu người dùng nói "So sánh cái này với cái kia", "Loại nào hơn?", "Cái nào hợp mình hơn?", "Chọn giúp mình"... 
 QUAN TRỌNG: Nếu khách hàng dùng các từ như "cái này", "hai cái trên", "sản phẩm lúc nãy" -> BẮT BUỘC sử dụng lịch sử trò chuyện. KHÔNG yêu cầu họ phải nói lại tên sản phẩm. So sánh rõ ràng về hiệu quả, tone màu, giá cả và mục đích sử dụng.
 
 =========================================
-4. BỘ NHỚ TRÒ CHUYỆN (CONVERSATION MEMORY)
+5. BỘ NHỚ TRÒ CHUYỆN (CONVERSATION MEMORY)
 =========================================
 Duy trì ngữ cảnh trò chuyện trước đó (sản phẩm, danh mục, loại da, ngân sách, dịp...).
 Giải quyết các đại từ tham chiếu. Ví dụ: Nếu khách hỏi "Cây thứ 2 có lâu trôi không?", bạn phải trả lời về sản phẩm thứ 2.
 TUYỆT ĐỐI KHÔNG hỏi: "Bạn đang nói sản phẩm nào?" nếu trong ngữ cảnh đã có. Khi có KANILA_PREVIOUS_CONTEXT, bạn đang tiếp tục tư vấn từ cuộc trò chuyện trước. KHÔNG hỏi lại thông tin đã biết.
 
 =========================================
-5. TƯ DUY CHUYÊN GIA MAKEUP (MAKEUP EXPERT REASONING)
+6. TƯ DUY CHUYÊN GIA MAKEUP (MAKEUP EXPERT REASONING)
 =========================================
 Khi gợi ý makeup, hãy cân nhắc:
 - Da: Dầu, khô, hỗn hợp, nhạy cảm. (Da dầu -> kiềm dầu, matte; Da khô -> ẩm, glowy; Da mụn -> mỏng nhẹ, concealer; Da nhạy cảm -> gợi ý thử trước).
@@ -62,7 +60,7 @@ Khi gợi ý makeup, hãy cân nhắc:
 - Dịp sử dụng: Đi học, đi làm, hẹn hò, đám cưới, sự kiện.
 
 =========================================
-6. KIẾN THỨC BÊN NGOÀI & TỪ CƠ SỞ DỮ LIỆU
+7. KIẾN THỨC BÊN NGOÀI & TỪ CƠ SỞ DỮ LIỆU
 =========================================
 - CHỈ giới thiệu các sản phẩm có trong ngữ cảnh (KANILA_PRODUCT_CONTEXT / KANILA_MAKEUP_PRODUCT_CONTEXT).
 - KHÔNG TỰ BỊA RA: Sản phẩm Kanila giả, giá giả, tồn kho giả, hoặc thông tin ngoài ngữ cảnh.
@@ -70,29 +68,33 @@ Khi gợi ý makeup, hãy cân nhắc:
 - Nếu sản phẩm KHÔNG có trong Kanila, hãy nói rõ: "Sản phẩm này hiện mình chưa thấy trong danh mục Kanila, nhưng về mặt makeup thì đây là một lựa chọn được nhiều người yêu thích."
 
 =========================================
-7. ĐỘ DÀI CÂU TRẢ LỜI & CÂU HỎI TIẾP NỐI
+8. ĐỘ DÀI CÂU TRẢ LỜI & CÂU HỎI TIẾP NỐI
 =========================================
-- QUAN TRỌNG: Hãy trả lời một cách tự nhiên, ngắn gọn và súc tích. Tập trung vào trọng tâm câu hỏi hoặc nhu cầu của khách hàng. Tuyệt đối không lan man, không giải thích dài dòng.
-- Tránh: Liệt kê quá nhiều sản phẩm một lúc. Chỉ gợi ý 1-2 sản phẩm nổi bật nhất.
-- Lý tưởng: 2-3 câu giải thích + sản phẩm chính + 1 câu hỏi tiếp nối.
+- QUAN TRỌNG: Hãy trả lời NGẮN GỌN. bot_message chỉ nên 2-3 câu overview + 1 câu hỏi tiếp nối. KHÔNG viết phân tích dài.
 - Câu hỏi tiếp nối (Follow-up): Luôn kết thúc bằng 1 câu hỏi ngắn hữu ích (VD: "Bạn thích nền lì hay căng bóng?", "Muốn thêm vào giỏ không?").
 - KHÔNG hỏi lại những thông tin khách đã cung cấp.
 
 =========================================
-8. CÁC TRƯỜNG HỢP ĐẶC BIỆT
+9. CÁC TRƯỜNG HỢP ĐẶC BIỆT
 =========================================
 - Khách nói: "Tư vấn giúp mình sản phẩm phù hợp" -> Hãy đáp: "Mình có thể giúp bạn chọn makeup phù hợp. Cho mình biết thêm một chút nhé: 1. Bạn muốn makeup cho dịp nào? 2. Loại da của bạn? 3. Khoảng ngân sách?"
 - Khách nói: "Sản phẩm nào tốt nhất?" -> Hãy giải thích: "Không có sản phẩm tốt nhất cho tất cả mọi người, mình sẽ chọn theo nhu cầu..."
 
 =========================================
-9. CÁC NGHIỆP VỤ KHÁC (ĐƠN HÀNG, GIỎ HÀNG, HỖ TRỢ, THÀNH PHẦN)
+10. CÁC NGHIỆP VỤ KHÁC (ĐƠN HÀNG, GIỎ HÀNG, HỖ TRỢ, THÀNH PHẦN)
 =========================================
 - Hỗ trợ giỏ hàng (KANILA_CART_CONTEXT): Khuyến khích khách hàng kiểm tra giỏ hàng và hoàn tất thanh toán. Gợi ý các sản phẩm đi kèm nếu phù hợp.
 - Phân tích thành phần (KANILA_INGREDIENT_CONTEXT): Giải thích thành phần dưới góc độ làm đẹp.
 - Không chẩn đoán y tế: Bạn là trợ lý mua sắm, không phải bác sĩ. Nếu khách hàng đề cập kích ứng nặng, khuyên họ ngừng sử dụng và liên hệ bác sĩ hoặc CSKH.
 
 TRẢI NGHIỆM CUỐI CÙNG phải giống như một chuyên gia tư vấn sắc đẹp (Sephora Beauty Advisor), chứ KHÔNG PHẢI là một kết quả tìm kiếm Google.
-Luôn trả lời bằng Tiếng Việt.`;
+Luôn trả lời bằng Tiếng Việt.
+
+=========================================
+11. QUY TẮC ĐẶC BIỆT CHO BẢN MVP (MVP RULES)
+=========================================
+- GỢI Ý COMBO MAKEUP: Khi khách hàng hỏi gợi ý combo (makeup), BẮT BUỘC bạn phải lựa chọn đủ 4 món: 1 kem nền, 1 phấn má, 1 phấn mắt, 1 son, và đảm bảo đáp ứng đúng yêu cầu của khách hàng.
+- HỒ SƠ LÀN DA: Khi khách hàng nhắc đến "dựa vào profile làn da", "kanila beauty" hoặc "hồ sơ làn da", trong câu trả lời (phần overview) BẮT BUỘC phải có câu: "dựa theo hồ sơ làn da của bạn, mình đề xuất..." (có thể fake thông tin/lý do để test tính năng).`;
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -238,6 +240,7 @@ module.exports = {
   buildIngredientMessage,
   // Phase 8: Makeup Commerce
   buildMakeupProductContextMessage,
+  buildMakeupAnalysisPrompt,
   // AI Skin Analysis
   buildSkinAnalysisPrompt,
 };
@@ -319,24 +322,38 @@ function buildMakeupProductContextMessage(products, userMessage, filters = {}, c
     parts.push("KANILA_MAKEUP_PRODUCT_CONTEXT: []");
   } else {
     const productLines = products.map((p, i) => {
+      // Support both naming conventions: product cards use p.name, older objects use p.productName
+      const productName = p.name || p.productName || "";
+      const brandName = p.brand_name || p.brandName || p.brand || "";
+      const categoryName = p.category_name || p.categoryName || "";
+      const rating = p.rating || p.averageRating || null;
+      const reviewCount = p.review_count || p.reviewCount || 0;
+      const stockStatus = p.stock_status || p.stockStatus || "unknown";
+      const compareAtPrice = p.compare_at_price || p.compareAtPrice || null;
+      // whyRecommended and matchedReason from scorer
+      const whyRecommended = p.whyRecommended || p.recommendation?.whyRecommended || "";
+      const matchedReason = p.matchedReason || p.recommendation?.reason || "";
+      const suggestedUse = p.suggestedUse || p.recommendation?.usage || "";
+
       const lines = [
-        `Sản phẩm ${i + 1}: ${p.productName}`,
-        `  Thương hiệu: ${p.brandName || "Không rõ"}`,
-        `  Danh mục: ${p.categoryName || ""}`,
+        `Sản phẩm ${i + 1}: ${productName}`,
+        brandName ? `  Thương hiệu: ${brandName}` : null,
+        categoryName ? `  Danh mục: ${categoryName}` : null,
         `  Giá: ${p.price ? p.price.toLocaleString("vi-VN") + "đ" : "Liên hệ"}`,
-        p.compareAtPrice ? `  Giá gốc: ${p.compareAtPrice.toLocaleString("vi-VN")}đ` : null,
+        compareAtPrice && compareAtPrice > p.price ? `  Giá gốc: ${compareAtPrice.toLocaleString("vi-VN")}đ` : null,
         p.finish_type ? `  Finish: ${p.finish_type}` : null,
         p.shades?.length
-          ? `  Màu sắc: ${p.shades.map((s) => s.name).join(", ")}`
+          ? `  Màu sắc: ${p.shades.map((s) => (typeof s === "string" ? s : s.name)).filter(Boolean).join(", ")}`
           : null,
-        p.rating ? `  Đánh giá: ${p.rating}★ (${p.reviewCount || 0} reviews)` : null,
+        rating ? `  Đánh giá: ${rating}★ (${reviewCount} reviews)` : null,
         `  Tình trạng: ${
-          p.stockStatus === "in_stock" ? "Còn hàng" :
-          p.stockStatus === "low_stock" ? "Sắp hết hàng" :
-          p.stockStatus === "out_of_stock" ? "Hết hàng" : "Chưa xác định"
+          stockStatus === "in_stock" ? "Còn hàng" :
+          stockStatus === "low_stock" ? "Sắp hết hàng" :
+          stockStatus === "out_of_stock" ? "Hết hàng" : "Còn hàng"
         }`,
-        p.matchedReason ? `  Lý do phù hợp: ${p.matchedReason}` : null,
-        p.suggestedUse ? `  Cách dùng gợi ý: ${p.suggestedUse}` : null,
+        whyRecommended ? `  Tại sao phù hợp: ${whyRecommended}` : null,
+        matchedReason ? `  Lý do gợi ý: ${matchedReason}` : null,
+        suggestedUse ? `  Cách dùng gợi ý: ${suggestedUse}` : null,
       ].filter(Boolean);
       return lines.join("\n");
     });
@@ -344,6 +361,41 @@ function buildMakeupProductContextMessage(products, userMessage, filters = {}, c
   }
 
   return `${userMessage}\n\n${parts.join("\n\n")}`;
+}
+
+/**
+ * Build a makeup product context message that strictly requests a JSON response
+ * containing both the overview text and per-product analysis.
+ */
+function buildMakeupAnalysisPrompt(products, userMessage, filters = {}, customerProfile = null, isFollowUp = false) {
+  const baseContext = buildMakeupProductContextMessage(products, userMessage, filters, customerProfile, isFollowUp);
+  
+  const jsonInstruction = `
+=========================================
+YÊU CẦU ĐẦU RA JSON BẮT BUỘC (STRICT JSON OUTPUT)
+=========================================
+Bạn PHẢI trả về duy nhất một object JSON hợp lệ. KHÔNG thêm bất kỳ text nào nằm ngoài object JSON. KHÔNG dùng markdown markdown \`\`\`json.
+Cấu trúc JSON yêu cầu:
+{
+  "overview": "1-2 câu text chào hỏi, xác nhận nhu cầu và lý do chọn chung (CHỈ HIỆN PHẦN NÀY LÀ TIN NHẮN CHÍNH, bên ngoài đoạn chat. VÍ DỤ NẾU NHẮC TỚI PROFILE THÌ TRẢ LỜI Ở ĐÂY: Dựa theo hồ sơ làn da của bạn, mình đề xuất...).",
+  "follow_up": "1 câu hỏi tiếp nối tự nhiên.",
+  "product_analysis": [
+    {
+      "product_index": 1,
+      "why_recommended": "Phân tích RẤT CHI TIẾT (3-4 câu) lý do chuyên sâu tại sao sản phẩm này hoàn hảo cho vấn đề da, tone da, hoặc nhu cầu của người dùng. Thể hiện sự thấu hiểu chuyên gia.",
+      "strengths": "Phân tích CHUYÊN SÂU (3-4 câu) về điểm mạnh nổi bật: thành phần, công nghệ, texture, finish, độ bám. Không viết ngắn gọn.",
+      "best_for": "Mô tả CỤ THỂ (2-3 câu) sản phẩm này sinh ra dành cho đối tượng nào, phong cách makeup nào, và lý tưởng nhất trong hoàn cảnh nào.",
+      "tip": "Chia sẻ 1-2 mẹo trang điểm thực tế nâng cao (pro tip) từ chuyên gia để tối ưu hóa hiệu quả sản phẩm (cách tán, mix màu, lót trước khi dùng...)."
+    }
+    // ... tạo cho TẤT CẢ sản phẩm có trong KANILA_MAKEUP_PRODUCT_CONTEXT
+  ]
+}
+Lưu ý: 
+- product_index phải tương ứng với thứ tự sản phẩm trong KANILA_MAKEUP_PRODUCT_CONTEXT (bắt đầu từ 1).
+- Nếu mảng KANILA_MAKEUP_PRODUCT_CONTEXT rỗng, product_analysis hãy để là mảng rỗng [].
+`;
+
+  return `${baseContext}\n\n${jsonInstruction}`;
 }
 
 
@@ -532,13 +584,14 @@ function buildProductComparisonMessage(userMessage, comparison, customerProfile)
   }
 
   const compLines = [];
+  compLines.push(`(Ghi chú cho AI: Các sản phẩm khách hàng nhắc đến theo số thứ tự (ví dụ: sản phẩm 1, 3,...) ĐÃ ĐƯỢC hệ thống trích xuất đúng và đưa vào danh sách dưới đây. BẠN CHỈ CẦN tập trung phân tích và so sánh các sản phẩm trong danh sách này, KHÔNG giải thích hay thắc mắc về số thứ tự.)`);
   compLines.push(`Sản phẩm so sánh: ${comparison.products.map(p => p.name).join(" vs ")}`);
   
-  if (comparison.differences && comparison.differences.length > 0) {
+  if (comparison.differences && Object.keys(comparison.differences).length > 0) {
     compLines.push("Các điểm khác biệt chính:");
-    comparison.differences.forEach(d => {
-      compLines.push(`- ${d.feature}: ${d.description}`);
-    });
+    for (const [feature, description] of Object.entries(comparison.differences)) {
+      compLines.push(`- ${feature}: ${description}`);
+    }
   }
 
   if (comparison.pros_cons) {
@@ -551,6 +604,17 @@ function buildProductComparisonMessage(userMessage, comparison, customerProfile)
   }
   
   parts.push(`KANILA_COMPARISON_CONTEXT:\n${compLines.join("\n")}`);
+
+  const detailInstruction = `
+=========================================
+YÊU CẦU SO SÁNH CHUYÊN SÂU (DETAILED COMPARISON)
+=========================================
+Hãy viết một bài so sánh RẤT CHI TIẾT và CHUYÊN MÔN CAO. Bạn phải phân tích sâu sự khác biệt về:
+- Cấu trúc/Kết cấu (Texture) và cảm giác trên da.
+- Hiệu ứng hoàn thiện (Finish) và khả năng giữ màu/kiềm dầu.
+- Thành phần nổi bật và tác động đến da.
+Tuyệt đối KHÔNG trả lời chung chung hoặc hời hợt. Cuối cùng, phải chốt lại lời khuyên CỤ THỂ xem mỗi sản phẩm sẽ hoàn hảo nhất cho đối tượng nào (nhất thiết phải dựa vào CUSTOMER_CONTEXT nếu có).`;
+  parts.push(detailInstruction);
 
   return `${userMessage}\n\n${parts.join("\n\n")}`;
 }

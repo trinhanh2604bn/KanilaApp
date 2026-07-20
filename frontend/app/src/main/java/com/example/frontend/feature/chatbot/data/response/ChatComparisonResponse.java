@@ -14,6 +14,19 @@ public class ChatComparisonResponse {
     @SerializedName("recommendation")
     private String recommendation;
 
+    @SerializedName("pros_cons")
+    private Map<String, ProsCons> prosCons;
+
+    public static class ProsCons {
+        @SerializedName("pros")
+        private List<String> pros;
+        @SerializedName("cons")
+        private List<String> cons;
+
+        public List<String> getPros() { return pros; }
+        public List<String> getCons() { return cons; }
+    }
+
     public List<ChatProductResponse> getProducts() {
         return products;
     }
@@ -24,5 +37,9 @@ public class ChatComparisonResponse {
 
     public String getRecommendation() {
         return recommendation;
+    }
+
+    public Map<String, ProsCons> getProsCons() {
+        return prosCons;
     }
 }

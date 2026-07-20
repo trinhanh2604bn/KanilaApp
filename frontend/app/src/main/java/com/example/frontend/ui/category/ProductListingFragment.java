@@ -55,6 +55,9 @@ public class ProductListingFragment extends Fragment {
     public static final String TYPE_CATEGORY = "CATEGORY";
     public static final String TYPE_BRAND = "BRAND";
     public static final String TYPE_COLLECTION = "COLLECTION";
+    public static final String TYPE_SEARCH = "SEARCH";
+
+    private static final String ARG_SEARCH_QUERY = "searchQuery";
 
     private String listingType;
     private String categoryId;
@@ -63,9 +66,11 @@ public class ProductListingFragment extends Fragment {
     private String brandName;
     private String collectionType;
     private String collectionTitle;
+    private String searchQuery;
 
     private ProductFilterParams currentFilterParams = new ProductFilterParams();
     private String currentSelectedCategoryId;
+    private String currentSelectedArType;
     private boolean currentIncludeChildren = true;
 
     private RecyclerView rvCategoryProducts;
@@ -131,6 +136,15 @@ public class ProductListingFragment extends Fragment {
         return fragment;
     }
 
+    public static ProductListingFragment newSearchInstance(String query) {
+        ProductListingFragment fragment = new ProductListingFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_LISTING_TYPE, TYPE_SEARCH);
+        args.putString(ARG_SEARCH_QUERY, query);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,6 +156,7 @@ public class ProductListingFragment extends Fragment {
             brandName = getArguments().getString(ARG_BRAND_NAME);
             collectionType = getArguments().getString(ARG_COLLECTION_TYPE);
             collectionTitle = getArguments().getString(ARG_COLLECTION_TITLE);
+            searchQuery = getArguments().getString(ARG_SEARCH_QUERY);
         }
     }
 
@@ -191,9 +206,11 @@ public class ProductListingFragment extends Fragment {
         if (TYPE_CATEGORY.equals(listingType)) title = categoryName;
         else if (TYPE_BRAND.equals(listingType)) title = brandName;
         else if (TYPE_COLLECTION.equals(listingType)) title = collectionTitle;
+        else if (TYPE_SEARCH.equals(listingType)) title = searchQuery;
 
         final String finalTitle = title;
 
+        if (getView() == null) return;
         View searchBar = getView().findViewById(R.id.layoutCategorySearchBar);
         if (searchBar != null) {
             TextView tvHint = searchBar.findViewById(R.id.tvSearchHint);
@@ -223,6 +240,15 @@ public class ProductListingFragment extends Fragment {
             hsvCategoryFilterChips.setVisibility(View.GONE);
             loadProductsWithCurrentContext();
         } else if (TYPE_COLLECTION.equals(listingType)) {
+            if ("ar_try_on".equals(collectionType)) {
+                hsvCategoryFilterChips.setVisibility(View.VISIBLE);
+                createArTypeChips();
+                loadProductsWithCurrentContext();
+            } else {
+                hsvCategoryFilterChips.setVisibility(View.GONE);
+                loadProductsWithCurrentContext();
+            }
+        } else if (TYPE_SEARCH.equals(listingType)) {
             hsvCategoryFilterChips.setVisibility(View.GONE);
             loadProductsWithCurrentContext();
         } else {
@@ -288,8 +314,15 @@ public class ProductListingFragment extends Fragment {
         } else if (TYPE_COLLECTION.equals(listingType)) {
             if ("ar_try_on".equals(collectionType)) {
                 query.put("hasAr", "true");
+                if (currentSelectedArType != null && !currentSelectedArType.isEmpty()) {
+                    query.put("arType", currentSelectedArType);
+                }
             } else if (collectionType != null && !collectionType.trim().isEmpty()) {
                 query.put("collection", collectionType);
+            }
+        } else if (TYPE_SEARCH.equals(listingType)) {
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                query.put("search", searchQuery.trim());
             }
         }
 
@@ -415,6 +448,40 @@ public class ProductListingFragment extends Fragment {
         }
     }
 
+    private void createArTypeChips() {
+        layoutCategoryFilterChips.removeAllViews();
+
+        TextView allChip = createChipView(getString(R.string.chip_all), true);
+        allChip.setTag("");
+
+        allChip.setOnClickListener(v -> {
+            selectChip(allChip);
+            currentSelectedArType = "";
+            loadProductsWithCurrentContext();
+        });
+
+        layoutCategoryFilterChips.addView(allChip);
+
+        String[][] arTypes = {
+                {"LIPS", "Son môi"},
+                {"CHEEKS", "Phấn má"},
+                {"EYES", "Phấn mắt"}
+        };
+
+        for (String[] type : arTypes) {
+            TextView chip = createChipView(type[1], false);
+            chip.setTag(type[0]);
+
+            chip.setOnClickListener(v -> {
+                selectChip(chip);
+                currentSelectedArType = (String) chip.getTag();
+                loadProductsWithCurrentContext();
+            });
+
+            layoutCategoryFilterChips.addView(chip);
+        }
+    }
+
     private TextView createChipView(String text, boolean isSelected) {
         TextView chip = new TextView(requireContext());
         chip.setText(text);
@@ -468,14 +535,11 @@ public class ProductListingFragment extends Fragment {
             public void onProductClick(Product product) {
                 String productId = product.getId();
                 Log.d(TAG, "Clicked product id = " + productId);
-                if (productId != null && productId.matches("^[a-fA-F0-9]{24}$")) {
+                if (productId != null && !productId.trim().isEmpty()) {
                     ProductDetailFragment fragment = ProductDetailFragment.newInstance(productId);
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_fragment_container, fragment)
-                            .addToBackStack(null)
-                            .commit();
+                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), fragment);
                 } else {
-                    Toast.makeText(getContext(), "Product ID không hợp lệ, không thể mở chi tiết sản phẩm", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Không thể mở chi tiết sản phẩm: ID trống", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -523,15 +587,6 @@ public class ProductListingFragment extends Fragment {
     }
 
     private void setupActions(View root) {
-        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), result -> {
-            if (result == null) return;
-            if (result.status == NetworkResult.Status.SUCCESS) {
-                Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-            } else if (result.status == NetworkResult.Status.ERROR) {
-                Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
-            }
-        });
-
         root.findViewById(R.id.layoutFilterAction).setOnClickListener(v -> {
             FilterBottomSheetDialog dialog = new FilterBottomSheetDialog();
             dialog.setInitialFilterParams(currentFilterParams);

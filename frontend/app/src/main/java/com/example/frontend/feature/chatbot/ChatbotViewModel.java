@@ -251,6 +251,54 @@ public class ChatbotViewModel extends AndroidViewModel {
                     botMessage = getApplication().getString(R.string.chat_no_product_found);
                 }
 
+                // Parse product analysis from botMessage if products exist
+                if (botMessage != null && !botMessage.isEmpty() && !productUiModels.isEmpty()) {
+                    StringBuilder overview = new StringBuilder();
+                    java.util.List<StringBuilder> productReasons = new java.util.ArrayList<>();
+                    int currentProductIndex = -1;
+                    
+                    String[] lines = botMessage.split("\n");
+                    for (String line : lines) {
+                        if (line.trim().matches("^\\d+\\.\\s+.*")) {
+                            currentProductIndex++;
+                            productReasons.add(new StringBuilder());
+                            productReasons.get(currentProductIndex).append(line).append("\n");
+                        } else if (currentProductIndex < 0) {
+                            overview.append(line).append("\n");
+                        } else {
+                            if (currentProductIndex < productReasons.size()) {
+                                productReasons.get(currentProductIndex).append(line).append("\n");
+                            }
+                        }
+                    }
+                    
+                    if (!productReasons.isEmpty()) {
+                        botMessage = overview.toString().trim();
+                        for (int i = 0; i < productReasons.size(); i++) {
+                            if (i < productUiModels.size()) {
+                                String extractedReason = productReasons.get(i).toString().trim();
+                                if (!extractedReason.isEmpty()) {
+                                    productUiModels.get(i).setReason(extractedReason);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                String supportPhone = null;
+                String supportZalo = null;
+                if (data.getSupportContact() != null) {
+                    supportPhone = data.getSupportContact().getPhone();
+                    supportZalo = data.getSupportContact().getZalo();
+                }
+
+                int profileCompletionRate = 0;
+                List<String> profileMissingFields = null;
+                if (data.getProfileStatus() != null) {
+                    profileCompletionRate = data.getProfileStatus().getCompletionRate() != null ? data.getProfileStatus().getCompletionRate() : 0;
+                    profileMissingFields = data.getProfileStatus().getMissingFields();
+                }
+
                 ChatMessageUiModel botMsg = new ChatMessageUiModel(
                         UUID.randomUUID().toString(),
                         botMessage,
@@ -267,7 +315,12 @@ public class ChatbotViewModel extends AndroidViewModel {
                         cartActionUiModel,
                         comparisonUiModel,
                         ingredientUiModel,
-                        upsellUiModels
+                        upsellUiModels,
+                        data.isHandoffRequired(),
+                        supportPhone,
+                        supportZalo,
+                        profileCompletionRate,
+                        profileMissingFields
                 );
                 messageList.add(botMsg);
 
@@ -282,8 +335,32 @@ public class ChatbotViewModel extends AndroidViewModel {
                 updateState(false, null);
             }
         } else if (result.status == NetworkResult.Status.ERROR) {
-            // Add error bubble
             String errorMsg = result.message != null ? result.message : "Mình chưa thể trả lời bạn, hãy thử sau";
+            
+            // Check for contextual error handling
+            if (result.data != null && result.data.getError() != null) {
+                String errorType = result.data.getError().getErrorType();
+                if (errorType != null) {
+                    switch (errorType) {
+                        case "CONTEXT_MISSING":
+                            errorMsg = "Mình cần thêm một chút thông tin để tư vấn chính xác hơn.";
+                            break;
+                        case "OUT_OF_SCOPE":
+                            errorMsg = "Câu hỏi này nằm ngoài phạm vi hỗ trợ của mình. Mình có thể giúp gì về mỹ phẩm không?";
+                            break;
+                        case "CLARIFICATION_NEEDED":
+                            errorMsg = "Ý bạn là sao nhỉ? Mình chưa hiểu rõ lắm.";
+                            break;
+                    }
+                }
+                
+                // Add recovery actions as quick replies
+                if (result.data.getError().getRecoveryActions() != null && !result.data.getError().getRecoveryActions().isEmpty()) {
+                    currentQuickReplies.clear();
+                    currentQuickReplies.addAll(result.data.getError().getRecoveryActions());
+                }
+            }
+            
             android.util.Log.e("CHATBOT_DEBUG", "ViewModel ERROR state: " + errorMsg);
             addErrorBubble(errorMsg);
         } else if (result.status == NetworkResult.Status.NO_INTERNET) {
@@ -334,6 +411,8 @@ public class ChatbotViewModel extends AndroidViewModel {
     }
 
     private ChatProductUiModel mapToUiModel(ChatProductResponse p) {
+        // Use full AI analysis (with strengths, bestFor, tip) for the reason dialog
+        String reasonText = p.getFullAiAnalysis();
         return new ChatProductUiModel(
                 p.getProductId(),
                 p.getVariantId(),
@@ -348,9 +427,10 @@ public class ChatbotViewModel extends AndroidViewModel {
                 p.getRating() != null ? String.valueOf(p.getRating()) : null,
                 p.getReviewCount() != null ? String.valueOf(p.getReviewCount()) : "0",
                 p.getStockStatus(),
-                p.getReason(),
+                reasonText,
                 p.getSuggestedUse(),
-                p.getAction()
+                p.getAction(),
+                p.getMatchScore()
         );
     }
 
@@ -430,10 +510,19 @@ public class ChatbotViewModel extends AndroidViewModel {
                 productUiModels.add(mapToUiModel(p));
             }
         }
+        java.util.Map<String, ComparisonUiModel.ProsConsUi> prosConsUiMap = null;
+        if (c.getProsCons() != null) {
+            prosConsUiMap = new java.util.HashMap<>();
+            for (java.util.Map.Entry<String, ChatComparisonResponse.ProsCons> entry : c.getProsCons().entrySet()) {
+                prosConsUiMap.put(entry.getKey(), new ComparisonUiModel.ProsConsUi(entry.getValue().getPros(), entry.getValue().getCons()));
+            }
+        }
+
         return new ComparisonUiModel(
                 productUiModels,
                 c.getDifferences(),
-                c.getRecommendation()
+                c.getRecommendation(),
+                prosConsUiMap
         );
     }
 

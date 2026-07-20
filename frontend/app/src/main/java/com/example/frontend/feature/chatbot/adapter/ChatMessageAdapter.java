@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -50,27 +51,44 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void onViewCartClick();
     }
 
+    public interface OnComparisonDetailClickListener {
+        void onComparisonDetailClick(ChatMessageUiModel message);
+    }
+
+    public interface OnIngredientDetailClickListener {
+        void onIngredientDetailClick(ChatMessageUiModel message);
+    }
+
     private final List<ChatMessageUiModel> messages = new ArrayList<>();
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private final ChatProductAdapter.OnProductClickListener productClickListener;
     private final ChatProductAdapter.OnAddToCartClickListener addToCartClickListener;
+    private final ChatProductAdapter.OnWhyRecommendClickListener whyRecommendClickListener;
     private final OnOrderClickListener orderClickListener;
     private final OnTicketClickListener ticketClickListener;
     private final OnPreferenceClickListener preferenceClickListener;
     private final OnAddComboClickListener addComboClickListener;
+    private final OnComparisonDetailClickListener comparisonDetailClickListener;
+    private final OnIngredientDetailClickListener ingredientDetailClickListener;
 
     public ChatMessageAdapter(ChatProductAdapter.OnProductClickListener productClickListener,
                              ChatProductAdapter.OnAddToCartClickListener addToCartClickListener,
+                             ChatProductAdapter.OnWhyRecommendClickListener whyRecommendClickListener,
                              OnOrderClickListener orderClickListener,
                              OnTicketClickListener ticketClickListener,
                              OnPreferenceClickListener preferenceClickListener,
-                             OnAddComboClickListener addComboClickListener) {
+                             OnAddComboClickListener addComboClickListener,
+                             OnComparisonDetailClickListener comparisonDetailClickListener,
+                             OnIngredientDetailClickListener ingredientDetailClickListener) {
         this.productClickListener = productClickListener;
         this.addToCartClickListener = addToCartClickListener;
+        this.whyRecommendClickListener = whyRecommendClickListener;
         this.orderClickListener = orderClickListener;
         this.ticketClickListener = ticketClickListener;
         this.preferenceClickListener = preferenceClickListener;
         this.addComboClickListener = addComboClickListener;
+        this.comparisonDetailClickListener = comparisonDetailClickListener;
+        this.ingredientDetailClickListener = ingredientDetailClickListener;
     }
 
     public void setMessages(List<ChatMessageUiModel> newMessages) {
@@ -135,6 +153,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         ChatProductAdapter productAdapter, upsellAdapter;
         QuickReplyAdapter preferenceAdapter;
         View layoutUpsell;
+        View layoutHandoff;
+        View btnHandoffCall, btnHandoffZalo;
+        TextView tvProfileFeedback;
         
         // Order card views
         View layoutOrderCard;
@@ -142,6 +163,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         View rowEstimatedDelivery;
         ViewGroup layoutTimeline;
         View btnViewOrderDetail;
+        TextView tvOrderNextAction;
 
         // Ticket card views
         View layoutTicketCard;
@@ -172,15 +194,21 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             tvPersonalizedBadge = itemView.findViewById(R.id.tvPersonalizedBadge);
             rvProducts = itemView.findViewById(R.id.rvProducts);
             rvPreferenceOptions = itemView.findViewById(R.id.rvPreferenceOptions);
+            layoutHandoff = itemView.findViewById(R.id.layoutHandoff);
+            btnHandoffCall = itemView.findViewById(R.id.btnHandoffCall);
+            btnHandoffZalo = itemView.findViewById(R.id.btnHandoffZalo);
+            tvProfileFeedback = itemView.findViewById(R.id.tvProfileFeedback);
             
             productAdapter = new ChatProductAdapter(productClickListener);
             productAdapter.setOnAddToCartClickListener(addToCartClickListener);
+            productAdapter.setOnWhyRecommendClickListener(whyRecommendClickListener);
             rvProducts.setAdapter(productAdapter);
 
             rvUpsellProducts = itemView.findViewById(R.id.rvUpsellProducts);
             layoutUpsell = itemView.findViewById(R.id.layoutUpsell);
             upsellAdapter = new ChatProductAdapter(productClickListener);
             upsellAdapter.setOnAddToCartClickListener(addToCartClickListener);
+            // Upsell products typically don't have reasons, so no whyRecommend listener
             if (rvUpsellProducts != null) rvUpsellProducts.setAdapter(upsellAdapter);
 
             preferenceAdapter = new QuickReplyAdapter();
@@ -204,6 +232,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 rowEstimatedDelivery = layoutOrderCard.findViewById(R.id.rowEstimatedDelivery);
                 layoutTimeline = layoutOrderCard.findViewById(R.id.layoutTimeline);
                 btnViewOrderDetail = layoutOrderCard.findViewById(R.id.btnViewOrderDetail);
+                tvOrderNextAction = layoutOrderCard.findViewById(R.id.tvNextAction);
             }
 
             // Init Ticket views
@@ -272,8 +301,44 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (message.getProducts() != null && !message.getProducts().isEmpty()) {
                 productAdapter.setProducts(message.getProducts(), message.isCustomerContextUsed());
                 rvProducts.setVisibility(View.VISIBLE);
+                
+                // Profile Feedback
+                if (message.isCustomerContextUsed() && message.getProfileCompletionRate() > 0 && message.getProfileCompletionRate() < 100) {
+                    if (tvProfileFeedback != null) {
+                        tvProfileFeedback.setText("📊 Hồ sơ da: " + message.getProfileCompletionRate() + "% — Bổ sung thêm để tư vấn chính xác hơn");
+                        tvProfileFeedback.setVisibility(View.VISIBLE);
+                        tvProfileFeedback.setOnClickListener(v -> {
+                            // Optionally open profile setup
+                            Toast.makeText(itemView.getContext(), "Mở hồ sơ da", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                } else if (tvProfileFeedback != null) {
+                    tvProfileFeedback.setVisibility(View.GONE);
+                }
             } else {
                 rvProducts.setVisibility(View.GONE);
+                if (tvProfileFeedback != null) tvProfileFeedback.setVisibility(View.GONE);
+            }
+
+            // Handoff
+            if (message.isHandoffRequired() && layoutHandoff != null) {
+                layoutHandoff.setVisibility(View.VISIBLE);
+                if (btnHandoffCall != null) {
+                    btnHandoffCall.setOnClickListener(v -> {
+                        android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_DIAL);
+                        intent.setData(android.net.Uri.parse("tel:19001234")); // Replace with supportPhone if available
+                        itemView.getContext().startActivity(intent);
+                    });
+                }
+                if (btnHandoffZalo != null) {
+                    btnHandoffZalo.setOnClickListener(v -> {
+                        android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_VIEW);
+                        intent.setData(android.net.Uri.parse("https://zalo.me/123456789")); // Replace with supportZalo if available
+                        itemView.getContext().startActivity(intent);
+                    });
+                }
+            } else if (layoutHandoff != null) {
+                layoutHandoff.setVisibility(View.GONE);
             }
 
             // Upsell Products
@@ -322,6 +387,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (message.getComparison() != null && layoutComparisonCard != null) {
                 bindComparisonCard(message.getComparison(), message.isCustomerContextUsed());
                 layoutComparisonCard.setVisibility(View.VISIBLE);
+                // Wire up "see full comparison" button
+                View btnCompDetail = layoutComparisonCard.findViewById(R.id.btnViewComparisonDetail);
+                if (btnCompDetail != null) {
+                    btnCompDetail.setOnClickListener(v -> {
+                        if (comparisonDetailClickListener != null) comparisonDetailClickListener.onComparisonDetailClick(message);
+                    });
+                }
             } else if (layoutComparisonCard != null) {
                 layoutComparisonCard.setVisibility(View.GONE);
             }
@@ -330,6 +402,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (message.getIngredientData() != null && layoutIngredientCard != null) {
                 bindIngredientCard(message.getIngredientData());
                 layoutIngredientCard.setVisibility(View.VISIBLE);
+                // Wire up "see full analysis" button
+                View btnIngDetail = layoutIngredientCard.findViewById(R.id.btnViewIngredientDetail);
+                if (btnIngDetail != null) {
+                    btnIngDetail.setOnClickListener(v -> {
+                        if (ingredientDetailClickListener != null) ingredientDetailClickListener.onIngredientDetailClick(message);
+                    });
+                }
             } else if (layoutIngredientCard != null) {
                 layoutIngredientCard.setVisibility(View.GONE);
             }
@@ -377,6 +456,21 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         private void bindOrderCard(ChatOrderUiModel order) {
             tvOrderCode.setText(order.getOrderCode());
             tvOrderStatus.setText(order.getStatusLabel());
+            
+            // Add status color
+            String statusStr = order.getStatus() != null ? order.getStatus().toLowerCase() : "";
+            int bgColor;
+            if (statusStr.contains("completed") || statusStr.contains("delivered")) {
+                bgColor = ContextCompat.getColor(itemView.getContext(), R.color.success);
+            } else if (statusStr.contains("cancelled") || statusStr.contains("failed")) {
+                bgColor = ContextCompat.getColor(itemView.getContext(), R.color.error);
+            } else if (statusStr.contains("shipping") || statusStr.contains("delivering")) {
+                bgColor = ContextCompat.getColor(itemView.getContext(), R.color.primary);
+            } else {
+                bgColor = ContextCompat.getColor(itemView.getContext(), R.color.status_pending_text);
+            }
+            tvOrderStatus.setTextColor(bgColor);
+            
             tvPaymentStatus.setText(order.getPaymentStatusLabel());
             tvTotalAmount.setText(String.format(Locale.US, "%,dđ", order.getTotalAmount()).replace(",", "."));
             tvOrderDate.setText(order.getCreatedAt());
@@ -427,6 +521,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             btnViewOrderDetail.setOnClickListener(v -> {
                 if (orderClickListener != null) orderClickListener.onOrderClick(order);
             });
+            
+            if (tvOrderNextAction != null) {
+                if (order.getNextAction() != null && !order.getNextAction().isEmpty()) {
+                    tvOrderNextAction.setText("Hành động tiếp theo: " + order.getNextAction());
+                    tvOrderNextAction.setVisibility(View.VISIBLE);
+                } else {
+                    tvOrderNextAction.setVisibility(View.GONE);
+                }
+            }
         }
 
         private void bindTicketCard(ChatTicketUiModel ticket) {
@@ -450,7 +553,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             .inflate(R.layout.item_chat_product_card, layoutComparisonProducts, false);
                     
                     ChatProductAdapter.ProductViewHolder holder = new ChatProductAdapter.ProductViewHolder(productView, productClickListener);
-                    holder.bind(p, customerContextUsed, null);
+                    holder.bind(p, customerContextUsed, null, null);
                     
                     layoutComparisonProducts.addView(productView);
                 }

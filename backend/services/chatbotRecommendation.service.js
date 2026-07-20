@@ -36,7 +36,7 @@ const {
 const COMBO_SLOTS = {
   skincare_basic: ["cleanser", "serum", "moisturizer"],
   skincare_full:  ["cleanser", "toner", "serum", "moisturizer", "sunscreen"],
-  makeup:         ["foundation", "concealer", "blush", "setting_spray"],
+  makeup:         ["foundation", "blush", "eyeshadow", "lipstick"],
 };
 
 /**
@@ -54,7 +54,9 @@ const SLOT_KEYWORDS = {
   mask:          ["mặt nạ", "mask", "sheet mask"],
   foundation:    ["foundation", "kem nền", "nền trang điểm"],
   concealer:     ["concealer", "che khuyết điểm"],
-  blush:         ["blush", "má hồng", "phấn hồng"],
+  blush:         ["blush", "má hồng", "phấn hồng", "má"],
+  eyeshadow:     ["eyeshadow", "phấn mắt", "bảng mắt", "màu mắt"],
+  lipstick:      ["lipstick", "son", "son môi", "son bóng", "son lì"],
   setting_spray: ["setting spray", "xịt khóa", "xịt cố định"],
 };
 

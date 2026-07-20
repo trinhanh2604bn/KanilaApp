@@ -20,35 +20,31 @@ public class ChatMessageUiModel {
     private final ChatCartActionUiModel cartAction;
     private final ComparisonUiModel comparison;
     private final IngredientUiModel ingredientData;
+    private final boolean handoffRequired;
+    private final String supportPhone;
+    private final String supportZalo;
+    private final int profileCompletionRate;
+    private final List<String> profileMissingFields;
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp) {
-        this(id, content, isUser, timestamp, false, new ArrayList<>(), null, null, null, false, null, null, null, null, null, null);
+        this(id, content, isUser, timestamp, false, new ArrayList<>(), null, null, null, false, null, null, null, null, null, null, false, null, null, 0, null);
     }
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping) {
-        this(id, content, isUser, timestamp, isTyping, new ArrayList<>(), null, null, null, false, null, null, null, null, null, null);
+        this(id, content, isUser, timestamp, isTyping, new ArrayList<>(), null, null, null, false, null, null, null, null, null, null, false, null, null, 0, null);
     }
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping, 
                              List<ChatProductUiModel> products, ChatOrderUiModel order, 
-                             ChatTicketUiModel ticket, String replyType) {
-        this(id, content, isUser, timestamp, isTyping, products, order, ticket, replyType, false, null, null, null, null, null, null);
-    }
-
-    public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping, 
-                             List<ChatProductUiModel> products, ChatOrderUiModel order, 
-                             ChatTicketUiModel ticket, String replyType, boolean customerContextUsed,
-                             ChatPreferenceQuestionUiModel preferenceQuestion) {
-        this(id, content, isUser, timestamp, isTyping, products, order, ticket, replyType, customerContextUsed, preferenceQuestion, null, null, null, null, null);
+                              ChatTicketUiModel ticket, String replyType) {
+        this(id, content, isUser, timestamp, isTyping, products, order, ticket, replyType, false, null, null, null, null, null, null, false, null, null, 0, null);
     }
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping, 
                              List<ChatProductUiModel> products, ChatOrderUiModel order, 
                              ChatTicketUiModel ticket, String replyType, boolean customerContextUsed,
-                             ChatPreferenceQuestionUiModel preferenceQuestion,
-                             ChatCartSummaryUiModel cartSummary,
-                             ChatCartActionUiModel cartAction) {
-        this(id, content, isUser, timestamp, isTyping, products, order, ticket, replyType, customerContextUsed, preferenceQuestion, cartSummary, cartAction, null, null, null);
+                              ChatPreferenceQuestionUiModel preferenceQuestion) {
+        this(id, content, isUser, timestamp, isTyping, products, order, ticket, replyType, customerContextUsed, preferenceQuestion, null, null, null, null, null, false, null, null, 0, null);
     }
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping, 
@@ -56,9 +52,8 @@ public class ChatMessageUiModel {
                              ChatTicketUiModel ticket, String replyType, boolean customerContextUsed,
                              ChatPreferenceQuestionUiModel preferenceQuestion,
                              ChatCartSummaryUiModel cartSummary,
-                             ChatCartActionUiModel cartAction,
-                             ComparisonUiModel comparison) {
-        this(id, content, isUser, timestamp, isTyping, products, order, ticket, replyType, customerContextUsed, preferenceQuestion, cartSummary, cartAction, comparison, null, null);
+                              ChatCartActionUiModel cartAction) {
+        this(id, content, isUser, timestamp, isTyping, products, order, ticket, replyType, customerContextUsed, preferenceQuestion, cartSummary, cartAction, null, null, null, false, null, null, 0, null);
     }
 
     public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping, 
@@ -67,9 +62,24 @@ public class ChatMessageUiModel {
                              ChatPreferenceQuestionUiModel preferenceQuestion,
                              ChatCartSummaryUiModel cartSummary,
                              ChatCartActionUiModel cartAction,
-                             ComparisonUiModel comparison,
+                              ComparisonUiModel comparison) {
+        this(id, content, isUser, timestamp, isTyping, products, order, ticket, replyType, customerContextUsed, preferenceQuestion, cartSummary, cartAction, comparison, null, null, false, null, null, 0, null);
+    }
+
+    public ChatMessageUiModel(String id, String content, boolean isUser, long timestamp, boolean isTyping, 
+                             List<ChatProductUiModel> products, ChatOrderUiModel order, 
+                             ChatTicketUiModel ticket, String replyType, boolean customerContextUsed,
+                             ChatPreferenceQuestionUiModel preferenceQuestion,
+                             ChatCartSummaryUiModel cartSummary,
+                             ChatCartActionUiModel cartAction,
+                              ComparisonUiModel comparison,
                              IngredientUiModel ingredientData,
-                             List<ChatProductUiModel> upsellProducts) {
+                             List<ChatProductUiModel> upsellProducts,
+                             boolean handoffRequired,
+                             String supportPhone,
+                             String supportZalo,
+                             int profileCompletionRate,
+                             List<String> profileMissingFields) {
         this.id = id;
         this.content = content;
         this.isUser = isUser;
@@ -86,6 +96,11 @@ public class ChatMessageUiModel {
         this.comparison = comparison;
         this.ingredientData = ingredientData;
         this.upsellProducts = upsellProducts != null ? upsellProducts : new ArrayList<>();
+        this.handoffRequired = handoffRequired;
+        this.supportPhone = supportPhone;
+        this.supportZalo = supportZalo;
+        this.profileCompletionRate = profileCompletionRate;
+        this.profileMissingFields = profileMissingFields != null ? profileMissingFields : new ArrayList<>();
     }
 
     public String getId() {
@@ -150,6 +165,26 @@ public class ChatMessageUiModel {
 
     public IngredientUiModel getIngredientData() {
         return ingredientData;
+    }
+
+    public boolean isHandoffRequired() {
+        return handoffRequired;
+    }
+
+    public String getSupportPhone() {
+        return supportPhone;
+    }
+
+    public String getSupportZalo() {
+        return supportZalo;
+    }
+
+    public int getProfileCompletionRate() {
+        return profileCompletionRate;
+    }
+
+    public List<String> getProfileMissingFields() {
+        return profileMissingFields;
     }
 
     public static ChatMessageUiModel createTypingIndicator() {

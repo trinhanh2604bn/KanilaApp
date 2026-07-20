@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-09T02:56:42.571Z",
+  "generated_at": "2026-07-20T08:50:22.858Z",
   "api_endpoint": "http://localhost:5000/api/chatbot/message",
   "auth_mode": "guest",
-  "dry_run": true,
+  "dry_run": false,
   "summary": {
     "total": 59,
-    "passed": 59,
-    "failed": 0,
-    "score_percent": 100
+    "passed": 58,
+    "failed": 1,
+    "score_percent": 98
   },
   "phase_breakdown": {
     "Phase 1 General AI Assistant": {
@@ -23,8 +23,8 @@
       "fail": 0
     },
     "Phase 3 Customer Support": {
-      "pass": 4,
-      "fail": 0
+      "pass": 3,
+      "fail": 1
     },
     "Phase 4 Personalization": {
       "pass": 5,
@@ -62,8 +62,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 4625,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 524,
+        "message_preview": "Chào bạn! Mình là KANILA BEAUTY ADVISOR AI, rất vui được hỗ trợ bạn. Mình là chuyên gia tư vấn làm đẹp, chuyên gia trang",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_002",
@@ -75,8 +82,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 9923,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 3,
+        "message_len": 335,
+        "message_preview": "Chào bạn! Bắt đầu makeup thì mình nên ưu tiên những sản phẩm cơ bản, dễ dùng mà vẫn giúp bạn tự tin hơn. Mình đã chọn ra",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_003",
@@ -88,8 +102,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 9976,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 10,
+        "message_len": 543,
+        "message_preview": "Chào bạn, các thương hiệu makeup Hàn Quốc luôn có sức hút rất lớn với những sản phẩm trendy và chất lượng, đặc biệt tron",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_004",
@@ -101,8 +122,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 6405,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 599,
+        "message_preview": "Chào bạn, rất vui được trò chuyện với bạn về các xu hướng makeup nhé! Năm 2025 dự kiến sẽ là sự lên ngôi của vẻ đẹp tự n",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_005",
@@ -114,8 +142,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 15646,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 2,
+        "message_len": 570,
+        "message_preview": "Chào bạn, mình hiểu bạn đang thắc mắc về sự khác biệt giữa son tint và son thỏi. Son tint thường có kết cấu lỏng nhẹ, bá",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_006",
@@ -127,8 +162,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 3432,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 2,
+        "message_len": 199,
+        "message_preview": "Chào bạn, để tìm son tint dưới 200k, mình đã chọn ra một vài lựa chọn phù hợp với tiêu chí giá cả và chất son tint mỏng ",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_007",
@@ -140,8 +182,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 15036,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 5,
+        "message_len": 316,
+        "message_preview": "Chào bạn, mình thấy bạn đang tìm cushion cho sinh viên để đi học. Hiện tại, mình chưa có sản phẩm cushion trong danh mục",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_008",
@@ -153,8 +202,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 12398,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 5,
+        "message_len": 258,
+        "message_preview": "Chào bạn! Mình hiểu bạn đang tìm kem nền lâu trôi để lớp makeup bền đẹp suốt cả ngày, đúng không nào? Mình đã chọn lọc n",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_009",
@@ -166,8 +222,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 8918,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 3,
+        "message_len": 342,
+        "message_preview": "Chào bạn, với yêu cầu mascara chống lem mắt, mình đã tìm thấy một vài lựa chọn rất được ưa chuộng và đánh giá cao đấy. C",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_010",
@@ -179,8 +242,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 10598,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 3,
+        "message_len": 311,
+        "message_preview": "Chào bạn! Má hồng tone đào luôn mang lại vẻ tươi tắn và rạng rỡ cho gương mặt. Mình đã tìm thấy một vài lựa chọn má hồng",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_011",
@@ -192,8 +262,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 10454,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 2,
+        "message_len": 251,
+        "message_preview": "Để giữ lớp nền lâu trôi và hạn chế bóng dầu, mình ưu tiên những dòng phấn phủ có khả năng kiềm dầu tốt và finish lì mịn ",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_012",
@@ -205,8 +282,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 4177,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 10,
+        "message_len": 341,
+        "message_preview": "Để có lớp nền thật mịn màng và giúp lớp trang điểm bám lâu suốt cả ngày dài, một loại primer tốt sẽ là chìa khóa đấy. Mì",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_013",
@@ -218,8 +302,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 757,
+      "actual": {
+        "reply_type": "order_tracking",
+        "products_count": 0,
+        "message_len": 131,
+        "message_preview": "Để xem thông tin đơn hàng, bạn cần đăng nhập tài khoản Kanila trước nhé. Nếu bạn có mã đơn hàng, bạn cũng có thể cung cấ",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_014",
@@ -231,8 +322,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 380,
+      "actual": {
+        "reply_type": "order_tracking",
+        "products_count": 0,
+        "message_len": 131,
+        "message_preview": "Để xem thông tin đơn hàng, bạn cần đăng nhập tài khoản Kanila trước nhé. Nếu bạn có mã đơn hàng, bạn cũng có thể cung cấ",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_015",
@@ -244,8 +342,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 331,
+      "actual": {
+        "reply_type": "order_tracking",
+        "products_count": 0,
+        "message_len": 131,
+        "message_preview": "Để xem thông tin đơn hàng, bạn cần đăng nhập tài khoản Kanila trước nhé. Nếu bạn có mã đơn hàng, bạn cũng có thể cung cấ",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_016",
@@ -254,11 +359,20 @@
       "input": "Mình nhận sai sản phẩm, mình đặt son đỏ nhưng nhận được son hồng",
       "expected_intent": "support_ticket",
       "expected_output": "support_ticket",
-      "status": "PASS",
-      "issues": [],
+      "status": "FAIL",
+      "issues": [
+        "Expected support_ticket response but got reply_type=product_recommendation"
+      ],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 3797,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 10,
+        "message_len": 371,
+        "message_preview": "Ôi, mình rất tiếc khi bạn gặp phải tình huống này. Chắc chắn là bạn đang mong chờ thỏi son đỏ đúng không?\n\nĐể mình hỗ tr",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_017",
@@ -270,8 +384,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 317,
+      "actual": {
+        "reply_type": "error",
+        "products_count": 0,
+        "message_len": 141,
+        "message_preview": "Để tạo yêu cầu hỗ trợ, bạn cần đăng nhập tài khoản Kanila. Sau khi đăng nhập, mình sẽ ghi nhận và chuyển yêu cầu đến đội",
+        "context_used": false,
+        "handoff": true
+      }
     },
     {
       "id": "DEMO_018",
@@ -283,8 +404,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 426,
+      "actual": {
+        "reply_type": "error",
+        "products_count": 0,
+        "message_len": 141,
+        "message_preview": "Để tạo yêu cầu hỗ trợ, bạn cần đăng nhập tài khoản Kanila. Sau khi đăng nhập, mình sẽ ghi nhận và chuyển yêu cầu đến đội",
+        "context_used": false,
+        "handoff": true
+      }
     },
     {
       "id": "DEMO_019",
@@ -296,8 +424,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 655,
+      "actual": {
+        "reply_type": "error",
+        "products_count": 0,
+        "message_len": 141,
+        "message_preview": "Để tạo yêu cầu hỗ trợ, bạn cần đăng nhập tài khoản Kanila. Sau khi đăng nhập, mình sẽ ghi nhận và chuyển yêu cầu đến đội",
+        "context_used": false,
+        "handoff": true
+      }
     },
     {
       "id": "DEMO_020",
@@ -309,8 +444,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 6958,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 10,
+        "message_len": 247,
+        "message_preview": "Chào bạn, với làn da dầu, mình sẽ ưu tiên các sản phẩm có khả năng kiềm dầu tốt để lớp makeup luôn bền đẹp suốt cả ngày.",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_021",
@@ -322,8 +464,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 4767,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 5,
+        "message_len": 333,
+        "message_preview": "Chào bạn, mình rất hiểu bạn đang muốn tìm một sản phẩm cushion phù hợp. Tuy nhiên, trong danh mục sản phẩm hiện tại mình",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_022",
@@ -335,8 +484,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 5131,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 10,
+        "message_len": 292,
+        "message_preview": "Ồ, phong cách makeup Hàn Quốc tự nhiên nhẹ nhàng là một lựa chọn tuyệt vời, tập trung vào làn da căng mọng, lớp nền tron",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_023",
@@ -348,8 +504,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 3100,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 10,
+        "message_len": 300,
+        "message_preview": "Chào bạn, mình rất vui được giúp bạn tìm thỏi son ưng ý! Kanila có rất nhiều lựa chọn son với đa dạng chất son và màu sắ",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_024",
@@ -361,8 +524,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 3355,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 10,
+        "message_len": 322,
+        "message_preview": "Chào bạn! Rất vui được giúp bạn khám phá thế giới makeup. Để bắt đầu, mình đã chuẩn bị một vài gợi ý đa dạng, từ những s",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_025",
@@ -374,8 +544,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 7974,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 352,
+        "message_preview": "Chào bạn, để có lớp makeup đi tiệc bền đẹp và tỏa sáng suốt buổi, mình sẽ giúp bạn chọn những sản phẩm nền thật chuẩn. M",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_026",
@@ -387,8 +564,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 8753,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 10,
+        "message_len": 397,
+        "message_preview": "Chào bạn, với ngân sách dưới 1 triệu cho một combo makeup, mình nghĩ các bộ kit mini sẽ là lựa chọn tuyệt vời để bạn có ",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_027",
@@ -400,8 +584,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 1089,
+      "actual": {
+        "reply_type": "error",
+        "products_count": 0,
+        "message_len": 71,
+        "message_preview": "Để thêm sản phẩm vào giỏ, bạn cần đăng nhập tài khoản Kanila trước nhé!",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_028",
@@ -413,8 +604,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 467,
+      "actual": {
+        "reply_type": "text",
+        "products_count": 0,
+        "message_len": 135,
+        "message_preview": "Để xem giỏ hàng, bạn cần đăng nhập tài khoản Kanila nhé. Sau khi đăng nhập, mình có thể hiển thị toàn bộ giỏ hàng và tổn",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_029",
@@ -426,8 +624,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 3388,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 10,
+        "message_len": 346,
+        "message_preview": "Chào bạn, mình rất sẵn lòng giúp bạn xây dựng một routine dưỡng da cơ bản. Hiện tại, các sản phẩm mình đang có đa phần l",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_030",
@@ -439,8 +644,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 4475,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 10,
+        "message_len": 311,
+        "message_preview": "Chào bạn, với làn da dầu mụn mà không muốn bị bóng dầu thì mình sẽ ưu tiên những sản phẩm giúp kiểm soát dầu thừa và man",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_031",
@@ -452,8 +664,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 1474,
+      "actual": {
+        "reply_type": "text",
+        "products_count": 0,
+        "message_len": 56,
+        "message_preview": "Bạn muốn so sánh sản phẩm nào? Hãy gửi tên sản phẩm nhé.",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_032",
@@ -465,8 +684,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 11279,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 5,
+        "message_len": 357,
+        "message_preview": "Chào bạn, mình rất tiếc là hiện tại mình chưa có thông tin cụ thể về cushion A và cushion B để có thể so sánh và đưa ra ",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_033",
@@ -478,8 +704,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 17446,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 5,
+        "message_len": 393,
+        "message_preview": "Với câu hỏi chọn kem nền matte hay dewy, mình nhận thấy bạn đang quan tâm đến hiệu ứng matte. Các loại kem nền matte thư",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_034",
@@ -491,8 +724,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 5157,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 819,
+        "message_preview": "Chào bạn, câu hỏi của bạn rất thú vị đấy! Về cơ bản, son Hàn Quốc và son Việt Nam thường có sự chênh lệch về giá do nhiề",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_035",
@@ -504,8 +744,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 6100,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 830,
+        "message_preview": "Chào bạn, Niacinamide là một thành phần \"ngôi sao\" trong giới làm đẹp đó! Nó mang lại rất nhiều lợi ích tuyệt vời cho là",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_036",
@@ -517,8 +764,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 7136,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 1257,
+        "message_preview": "Chào bạn, về câu hỏi Retinol có dùng chung với BHA được không, câu trả lời là CÓ THỂ, nhưng cần phải rất cẩn trọng và có",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_037",
@@ -530,8 +784,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 3260,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 10,
+        "message_len": 159,
+        "message_preview": "Chào bạn! Để mình có thể xem xét thành phần và tư vấn về các chất có thể gây kích ứng, bạn vui lòng cho mình biết bạn đa",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_038",
@@ -543,8 +804,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 9399,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 5,
+        "message_len": 351,
+        "message_preview": "Hyaluronic Acid (HA) trong kem nền đóng vai trò cấp ẩm, giúp da căng mọng và lớp nền mịn màng hơn, hạn chế tình trạng mố",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_039",
@@ -556,8 +824,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 16431,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 5,
+        "message_len": 464,
+        "message_preview": "Chào bạn, kem nền có SPF là một lớp bảo vệ bổ sung rất tốt, nhưng thường thì sẽ không đủ để thay thế hoàn toàn kem chống",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_MAKEUP_001",
@@ -569,8 +844,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 10393,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 5,
+        "message_len": 235,
+        "message_preview": "Chào bạn! Để tìm được kem nền ưng ý, mình thường xem xét loại da và hiệu ứng mong muốn. Dưới đây là một số gợi ý kem nền",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_MAKEUP_002",
@@ -582,8 +864,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 18957,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 5,
+        "message_len": 291,
+        "message_preview": "Với làn da dầu và mong muốn một lớp nền lâu trôi, mình đã tìm thấy một vài lựa chọn kem nền và phấn phủ rất hiệu quả giú",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_MAKEUP_003",
@@ -595,8 +884,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 5359,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 324,
+        "message_preview": "Chào bạn, để có lớp makeup bền đẹp và hoàn hảo cho đám cưới, mình sẽ ưu tiên những sản phẩm giúp lớp nền lâu trôi, che p",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_MAKEUP_004",
@@ -608,8 +904,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 6056,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 509,
+        "message_preview": "Chào bạn, để chọn được màu son ưng ý cho làn da ngăm, mình thường ưu tiên những tone ấm và trầm, giúp tôn lên vẻ đẹp tự ",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_MAKEUP_005",
@@ -621,8 +924,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 6526,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 10,
+        "message_len": 327,
+        "message_preview": "Chào bạn! Để có lớp trang điểm kiểu Hàn Quốc nhẹ nhàng và tự nhiên, chúng ta sẽ tập trung vào một làn da căng mướt, tươi",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_MAKEUP_006",
@@ -634,8 +944,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 5768,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 3,
+        "message_len": 466,
+        "message_preview": "Chào bạn, với làn da dầu và muốn tìm sản phẩm dưới 500k để đi học, mình ưu tiên các dòng kem nền có khả năng kiềm dầu tố",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_MAKEUP_007",
@@ -647,8 +964,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 15513,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 2,
+        "message_len": 348,
+        "message_preview": "Chào bạn! Mình hiểu bạn đang tìm son tint để makeup đi học nhẹ nhàng. Trong danh mục hiện tại, mình đang có những loại k",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_MAKEUP_008",
@@ -660,8 +984,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 20072,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 5,
+        "message_len": 267,
+        "message_preview": "Chào bạn! Hiện tại mình chưa thấy cushion nào đang có ưu đãi đặc biệt trong danh mục này. Tuy nhiên, mình có một số sản ",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_MAKEUP_009",
@@ -673,8 +1004,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 839,
+      "actual": {
+        "reply_type": "error",
+        "products_count": 0,
+        "message_len": 119,
+        "message_preview": "Xin lỗi, mình không thể xử lý yêu cầu liên quan đến \"voucher_promotion_question\" của bạn lúc này. Vui lòng thử lại sau.",
+        "context_used": false,
+        "handoff": true
+      }
     },
     {
       "id": "DEMO_MAKEUP_010",
@@ -686,8 +1024,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 8550,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 3,
+        "message_len": 363,
+        "message_preview": "Chào bạn! Với người mới bắt đầu, mình sẽ ưu tiên các loại kẻ mắt dạng bút lông (liquid pen eyeliner) vì chúng rất dễ cầm",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_ADVANCED_001",
@@ -699,8 +1044,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 5660,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 340,
+        "message_preview": "Để makeup nhanh gọn chỉ trong 5 phút mà vẫn tươi tắn đến trường, mình gợi ý tập trung vào việc che phủ những khuyết điểm",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_ADVANCED_002",
@@ -712,8 +1064,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 6036,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 346,
+        "message_preview": "Đi tiệc tối và cần lớp makeup bền đẹp đến 8 tiếng thì mình cần ưu tiên những sản phẩm có khả năng bám tốt và giữ nền khô",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_ADVANCED_003",
@@ -725,8 +1084,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 5878,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 295,
+        "message_preview": "Chào bạn, với ngân sách 700k để sắm trọn bộ makeup cơ bản, mình sẽ ưu tiên lựa chọn những sản phẩm thiết yếu, chất lượng",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_ADVANCED_004",
@@ -738,8 +1104,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 4289,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 369,
+        "message_preview": "Đi biển mà vẫn muốn lớp makeup bền đẹp, không trôi thì mình hiểu cảm giác này lắm! Để lớp nền thật lì và kháng nước tốt,",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_ADVANCED_005",
@@ -751,8 +1124,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 2483,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 9,
+        "message_len": 275,
+        "message_preview": "Chào bạn, hiện tại mình chưa thấy sản phẩm cushion nào trong danh mục bán chạy nhất của Kanila. Mình đang có rất nhiều d",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_ADVANCED_006",
@@ -764,8 +1144,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 7467,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 393,
+        "message_preview": "Với làn da nhạy cảm dễ kích ứng, việc chọn lựa sản phẩm trang điểm an toàn và dịu nhẹ là rất quan trọng để tránh gây khó",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_ADVANCED_007",
@@ -777,8 +1164,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 9752,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 6,
+        "message_len": 462,
+        "message_preview": "Chào bạn! Với làn da tông lạnh, những màu son có sắc xanh hoặc tím làm nền sẽ rất tôn da và giúp răng trông trắng sáng h",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_ADVANCED_008",
@@ -790,8 +1184,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 9834,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 3,
+        "message_len": 285,
+        "message_preview": "Chào bạn! Để che đi quầng thâm mắt, mình đã chọn ra một số cây concealer được đánh giá cao về khả năng che phủ và làm sá",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_ADVANCED_009",
@@ -803,8 +1204,15 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 9879,
+      "actual": {
+        "reply_type": "makeup_recommendation",
+        "products_count": 3,
+        "message_len": 290,
+        "message_preview": "Khi chọn má hồng để đi cùng son đỏ, mình thường ưu tiên những tông màu nhẹ nhàng, tự nhiên hoặc có chút ánh đào để không",
+        "context_used": false,
+        "handoff": false
+      }
     },
     {
       "id": "DEMO_ADVANCED_010",
@@ -816,9 +1224,27 @@
       "status": "PASS",
       "issues": [],
       "error": null,
-      "elapsed_ms": null,
-      "actual": null
+      "elapsed_ms": 7555,
+      "actual": {
+        "reply_type": "product_recommendation",
+        "products_count": 10,
+        "message_len": 420,
+        "message_preview": "Chào bạn, với làn da khô và mong muốn lớp makeup luôn ẩm mướt cả ngày, mình ưu tiên những sản phẩm giúp cấp ẩm sâu và ma",
+        "context_used": false,
+        "handoff": false
+      }
     }
   ],
-  "failed_scenarios": []
+  "failed_scenarios": [
+    {
+      "id": "DEMO_016",
+      "input": "Mình nhận sai sản phẩm, mình đặt son đỏ nhưng nhận được son hồng",
+      "expected_output": "support_ticket",
+      "issues": [
+        "Expected support_ticket response but got reply_type=product_recommendation"
+      ],
+      "error": null,
+      "reason": "Expected support_ticket response but got reply_type=product_recommendation"
+    }
+  ]
 }

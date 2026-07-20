@@ -73,7 +73,7 @@ public class SkinAnalysisFragment extends Fragment {
         if (rvRecommendedProducts == null) return;
         
         productAdapter = new RecommendationProductAdapter();
-        rvRecommendedProducts.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(requireContext()));
+        rvRecommendedProducts.setLayoutManager(new androidx.recyclerview.widget.GridLayoutManager(requireContext(), 2));
         rvRecommendedProducts.setAdapter(productAdapter);
         
         productAdapter.setOnProductClickListener(new RecommendationProductAdapter.OnProductClickListener() {
@@ -169,7 +169,13 @@ public class SkinAnalysisFragment extends Fragment {
 
         // Mapping Recommended Products
         if (productAdapter != null && recommendationData.getProducts() != null) {
-            productAdapter.setItems(recommendationData.getProducts());
+            java.util.List<com.example.frontend.data.model.recommendation.RecommendedProduct> products = new java.util.ArrayList<>(recommendationData.getProducts());
+            java.util.Collections.sort(products, (p1, p2) -> {
+                Double s1 = p1.getScore() != null ? p1.getScore() : 0.0;
+                Double s2 = p2.getScore() != null ? p2.getScore() : 0.0;
+                return Double.compare(s2, s1);
+            });
+            productAdapter.setItems(products);
         }
 
         // Mapping Ideal Ingredients

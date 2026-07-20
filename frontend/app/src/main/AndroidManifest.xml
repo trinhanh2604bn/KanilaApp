@@ -64,6 +64,14 @@
         <activity
             android:name=".feature.ar.ui.ArTryOnActivity"
             android:exported="false" />
+        <activity
+            android:name=".feature.arcore.ArCoreTryOnActivity"
+            android:exported="false" />
+
+        <!-- ARCore Requirement -->
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="optional" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

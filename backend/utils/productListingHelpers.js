@@ -290,6 +290,10 @@ if (concerns.length > 0) {
   if (query.hasAr === "true" || query.hasAr === "1") {
     filter.hasAr = true;
   }
+  
+  if (query.arType && String(query.arType).trim() !== "") {
+    filter.ar_type = String(query.arType).trim().toUpperCase();
+  }
 
   if (query.sensitiveOnly === "true" || query.sensitiveOnly === "1") {
   filter.is_sensitive_friendly = true;

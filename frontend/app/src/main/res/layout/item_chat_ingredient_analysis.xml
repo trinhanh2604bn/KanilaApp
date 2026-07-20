@@ -17,6 +17,7 @@
         android:orientation="vertical"
         android:padding="@dimen/spacing_m">
 
+        <!-- Ingredient Name -->
         <TextView
             android:id="@+id/tvIngredientName"
             android:layout_width="wrap_content"
@@ -26,6 +27,7 @@
             android:textColor="@color/accent_dark"
             tools:text="🧪 Retinol" />
 
+        <!-- Compatibility Badge (shown in card overview) -->
         <LinearLayout
             android:id="@+id/layoutCompatibility"
             android:layout_width="wrap_content"
@@ -49,6 +51,7 @@
                 tools:text="🟢 Phù hợp" />
         </LinearLayout>
 
+        <!-- Compatibility Reason (hidden — shown in popup) -->
         <TextView
             android:id="@+id/tvCompatibilityReason"
             android:layout_width="wrap_content"
@@ -57,81 +60,49 @@
             android:textAppearance="@style/Micro"
             android:textColor="@color/text_secondary"
             android:visibility="gone"
-            tools:text="Thành phần này an toàn cho loại da của bạn."
-            tools:visibility="visible" />
+            tools:text="Thành phần này an toàn cho loại da của bạn." />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="12dp"
-            android:background="@color/border_divider" />
-
-        <!-- Benefits -->
-        <TextView
-            android:id="@+id/tvBenefitsLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Công dụng"
-            android:textAppearance="@style/Text.Kanila.Caption"
-            android:textColor="@color/text_tertiary"
-            android:textStyle="bold" />
-
+        <!-- Hidden: Benefits — data bound here but shown in popup -->
         <TextView
             android:id="@+id/tvBenefits"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="@style/Text.Kanila.Caption"
-            android:textColor="@color/text_main"
-            tools:text="• Chống lão hóa\n• Giảm mụn\n• Mờ thâm" />
+            android:visibility="gone"
+            tools:text="Benefits placeholder" />
 
-        <!-- Suitable Skin Types -->
-        <TextView
-            android:id="@+id/tvSkinTypesLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Phù hợp với"
-            android:textAppearance="@style/Text.Kanila.Caption"
-            android:textColor="@color/text_tertiary"
-            android:textStyle="bold" />
-
+        <!-- Hidden: Skin Types — shown in popup -->
         <TextView
             android:id="@+id/tvSkinTypes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="@style/Text.Kanila.Caption"
-            android:textColor="@color/text_main"
-            tools:text="• Da dầu\n• Da hỗn hợp" />
+            android:visibility="gone"
+            tools:text="Skin types placeholder" />
 
-        <!-- Warnings -->
+        <!-- Hidden: Warnings — shown in popup -->
         <LinearLayout
             android:id="@+id/layoutWarnings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Lưu ý"
-                android:textAppearance="@style/Text.Kanila.Caption"
-                android:textColor="@color/error"
-                android:textStyle="bold" />
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/tvWarnings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textAppearance="@style/Text.Kanila.Caption"
-                android:textColor="@color/text_main"
-                tools:text="• Tránh nắng kỹ\n• Không dùng chung với AHA/BHA" />
+                android:visibility="gone"
+                tools:text="Warnings placeholder" />
         </LinearLayout>
+
+        <!-- "See full analysis" button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnViewIngredientDetail"
+            style="@style/Widget.Kanila.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="12dp"
+            android:text="Xem phân tích đầy đủ →"
+            android:textSize="12sp" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

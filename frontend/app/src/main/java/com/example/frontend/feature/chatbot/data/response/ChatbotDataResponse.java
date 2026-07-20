@@ -70,6 +70,38 @@ public class ChatbotDataResponse {
     @SerializedName("support_actions")
     private List<Object> supportActions;
 
+    @SerializedName("support_contact")
+    private SupportContact supportContact;
+
+    public static class SupportContact {
+        @SerializedName("phone")
+        private String phone;
+        @SerializedName("zalo")
+        private String zalo;
+        @SerializedName("email")
+        private String email;
+
+        public String getPhone() { return phone; }
+        public String getZalo() { return zalo; }
+        public String getEmail() { return email; }
+    }
+
+    @SerializedName("profile_status")
+    private ProfileStatus profileStatus;
+
+    public static class ProfileStatus {
+        @SerializedName("completion_rate")
+        private Integer completionRate;
+        @SerializedName("missing_fields")
+        private List<String> missingFields;
+        @SerializedName("confidence")
+        private String confidence;
+
+        public Integer getCompletionRate() { return completionRate; }
+        public List<String> getMissingFields() { return missingFields; }
+        public String getConfidence() { return confidence; }
+    }
+
     public String getSessionId() {
         return sessionId != null ? sessionId : conversationId;
     }
@@ -143,6 +175,14 @@ public class ChatbotDataResponse {
         return supportActions;
     }
 
+    public SupportContact getSupportContact() {
+        return supportContact;
+    }
+
+    public ProfileStatus getProfileStatus() {
+        return profileStatus;
+    }
+
     private List<String> convertQuickReplies(List<Object> rawReplies) {
         if (rawReplies == null) return null;
         List<String> result = new java.util.ArrayList<>();
@@ -214,6 +254,10 @@ public class ChatbotDataResponse {
 
     public void setSupportActions(List<Object> supportActions) {
         this.supportActions = supportActions;
+    }
+
+    public void setSupportContact(SupportContact supportContact) {
+        this.supportContact = supportContact;
     }
 
     public static ChatbotDataResponse createFromFlat(String botMessage, String replyType, List<ChatProductResponse> products, List<String> quickRepliesStrings) {

@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MaquiAR</string>
+    <string name="Rosa">Rosa</string>
+    <string name="Preto">Preto</string>
+    <string name="coral">Coral</string>
+    <string name="peachy">Peachy</string>
+    <string name="choose_contour">Escolha a cor:</string>
+    <string name="choose_eyeshadow">Choose eyeshadow:</string>
+</resources>

@@ -15,7 +15,7 @@
  *
  * Error codes returned:
  *   VERTEX_BAD_REQUEST, VERTEX_AUTHENTICATION_FAILED, VERTEX_PERMISSION_DENIED,
- *   VERTEX_MODEL_NOT_FOUND, VERTEX_TIMEOUT, VERTEX_RATE_LIMITED,
+ *   VERTEX_MODEL_NOT_FOUND, VERTEX_RATE_LIMITED,
  *   VERTEX_UPSTREAM_ERROR, VERTEX_EMPTY_RESPONSE, VERTEX_INVALID_JSON_RESPONSE
  */
 
@@ -23,8 +23,6 @@
 
 const { getVertexClient, getVertexModel } = require("../../config/vertex.config");
 
-// Default timeout: 90 seconds (Gemini 2.5 Flash can be slow on long prompts)
-const DEFAULT_TIMEOUT_MS = 90_000;
 
 // HTTP status codes that are safe to retry once
 const RETRYABLE_STATUS_CODES = new Set([429, 500, 502, 503, 504]);
@@ -77,13 +75,6 @@ function _mapError(err) {
       message: `Vertex AI model not found. Check VERTEX_GEMINI_MODEL in Google Cloud Console.`,
     };
   }
-  if (err.code === "VERTEX_TIMEOUT" || msg.toLowerCase().includes("timed out") || msg.toLowerCase().includes("timeout")) {
-    return {
-      code: "VERTEX_TIMEOUT",
-      httpStatus: 408,
-      message: `Vertex AI request timed out after ${DEFAULT_TIMEOUT_MS}ms.`,
-    };
-  }
   if (status === 429 || msg.includes("429") || msg.toLowerCase().includes("quota") || msg.toLowerCase().includes("rate limit")) {
     return {
       code: "VERTEX_RATE_LIMITED",
@@ -131,7 +122,7 @@ function _wrapError(err) {
 // ─── Core generateContent call ───────────────────────────────────────────────
 
 /**
- * Execute a single generateContent call with timeout.
+ * Execute a single generateContent call.
  * No retry — callers (workers) own retry logic.
  *
  * @param {object} params
@@ -139,7 +130,6 @@ function _wrapError(err) {
  * @param {string} [params.systemInstruction]       — optional system instruction
  * @param {object} [params.generationConfig]        — temperature, topP, maxOutputTokens etc.
  * @param {string} [params.responseMimeType]        — e.g. "application/json"
- * @param {number} [params.timeoutMs]               — override default timeout
  *
  * @returns {Promise<{
  *   text: string,
@@ -153,7 +143,6 @@ async function generateContent({
   systemInstruction,
   generationConfig,
   responseMimeType,
-  timeoutMs = DEFAULT_TIMEOUT_MS,
 }) {
   // ── Input validation ────────────────────────────────────────────────────
   if (typeof prompt !== "string") {
@@ -175,18 +164,8 @@ async function generateContent({
   if (generationConfig) Object.assign(requestConfig, generationConfig);
   if (responseMimeType) requestConfig.responseMimeType = responseMimeType;
 
-  // ── Timeout promise ─────────────────────────────────────────────────────
-  let _timeoutHandle;
-  const timeoutPromise = new Promise((_, reject) => {
-    _timeoutHandle = setTimeout(() => {
-      const err = new Error(`Vertex AI request timed out after ${timeoutMs}ms.`);
-      err.code = "VERTEX_TIMEOUT";
-      reject(err);
-    }, timeoutMs);
-  });
-
-  // ── Request promise ─────────────────────────────────────────────────────
-  const requestPromise = (async () => {
+  // ── Request ──────────────────────────────────────────────────────────────
+  try {
     const requestPayload = {
       model,
       contents: prompt,
@@ -196,12 +175,6 @@ async function generateContent({
     }
 
     const response = await client.models.generateContent(requestPayload);
-    return response;
-  })();
-
-  try {
-    const response = await Promise.race([requestPromise, timeoutPromise]);
-    clearTimeout(_timeoutHandle);
 
     // ── Normalise response ────────────────────────────────────────────────
     const text = response.text || "";
@@ -224,11 +197,8 @@ async function generateContent({
       finishReason,
     };
   } catch (err) {
-    clearTimeout(_timeoutHandle);
-
     if (
       err.code === "VERTEX_EMPTY_RESPONSE" ||
-      err.code === "VERTEX_TIMEOUT" ||
       (err.code && err.code.startsWith("VERTEX_CONFIG_"))
     ) {
       throw err; // already normalised
@@ -275,5 +245,4 @@ module.exports = {
   // Exposed for unit testing
   _mapError,
   _wrapError,
-  DEFAULT_TIMEOUT_MS,
 };

@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -77,7 +76,7 @@ public class SearchRecommendProductAdapter extends RecyclerView.Adapter<SearchRe
         TextView tvProductName;
         TextView tvProductPrice;
         TextView tvProductOriginalPrice;
-        RatingBar tvProductRating;
+        TextView tvProductRating;
         TextView tvProductReviewCount;
         ImageButton btnAddToCart;
         ImageButton btnWishlist;
@@ -126,10 +125,12 @@ public class SearchRecommendProductAdapter extends RecyclerView.Adapter<SearchRe
             }
 
             // Rating
-            if (product.getAverageRatingValue() > 0) {
-                tvProductRating.setRating((float) product.getAverageRatingValue());
+            double ratingVal = product.getAverageRatingValue();
+            if (ratingVal > 0) {
+                tvProductRating.setText(String.format("★ %.1f", ratingVal));
+                tvProductRating.setVisibility(View.VISIBLE);
             } else {
-                tvProductRating.setRating(0);
+                tvProductRating.setVisibility(View.GONE);
             }
             tvProductReviewCount.setText(product.getReviewCount() != null ? "(" + product.getReviewCount() + ")" : "(0)");
 

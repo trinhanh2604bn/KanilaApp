@@ -274,7 +274,19 @@ public class ProductDetailFragment extends Fragment {
 
         View btnWishlist = view.findViewById(R.id.btnWishlist);
         if (btnWishlist != null) {
-            btnWishlist.setOnClickListener(v -> viewModel.toggleWishlist());
+            btnWishlist.setOnClickListener(v -> {
+                if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                    viewModel.toggleWishlist();
+                } else {
+                    com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
+                            "ProductDetail",
+                            0,
+                            null
+                    );
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
+                }
+            });
         }
 
         View btnCart = view.findViewById(R.id.btnCart);
@@ -301,7 +313,7 @@ public class ProductDetailFragment extends Fragment {
             btnArTryOn.setOnClickListener(v -> {
                 ProductDetailUiState state = viewModel.getUiState().getValue();
                 if (state != null && state.product != null && state.product.hasAr()) {
-                    android.content.Intent intent = new android.content.Intent(getContext(), com.example.frontend.feature.ar.ui.ArTryOnActivity.class);
+                    android.content.Intent intent = new android.content.Intent(getContext(), com.example.frontend.feature.arcore.ArCoreTryOnActivity.class);
                     intent.putExtra("product_id", state.product.getId());
                     startActivity(intent);
                 }
@@ -707,6 +719,18 @@ public class ProductDetailFragment extends Fragment {
         View btnArTryOn = getView() != null ? getView().findViewById(R.id.btnArTryOn) : null;
         if (btnArTryOn != null) {
             btnArTryOn.setVisibility(product.hasAr() ? View.VISIBLE : View.GONE);
+            if (product.hasAr() && btnArTryOn instanceof TextView) {
+                String arType = product.getArType() != null ? product.getArType().toUpperCase() : "";
+                String arLabel = "Thử màu AR";
+                if ("LIPS".equals(arType)) {
+                    arLabel = "Thử màu AR (Son môi)";
+                } else if ("CHEEKS".equals(arType)) {
+                    arLabel = "Thử màu AR (Phấn má)";
+                } else if ("EYES".equals(arType)) {
+                    arLabel = "Thử màu AR (Phấn mắt)";
+                }
+                ((TextView) btnArTryOn).setText(arLabel);
+            }
         }
     }
 

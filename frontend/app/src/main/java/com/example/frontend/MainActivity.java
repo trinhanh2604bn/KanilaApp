@@ -17,6 +17,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -89,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
+    private BroadcastReceiver sessionExpiredReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +140,53 @@ public class MainActivity extends AppCompatActivity {
             viewModel.loadHomeData();
             cartViewModel.loadCart();
             checkAuthStatus();
+            handleIntent(getIntent());
         }, 500);
+
+        sessionExpiredReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (com.example.frontend.data.remote.AuthInterceptor.ACTION_SESSION_EXPIRED.equals(intent.getAction())) {
+                    Toast.makeText(MainActivity.this, "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show();
+                    showLoginPrompt();
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(sessionExpiredReceiver, new IntentFilter(com.example.frontend.data.remote.AuthInterceptor.ACTION_SESSION_EXPIRED));
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent != null) {
+            String targetFragment = intent.getStringExtra("TARGET_FRAGMENT");
+            if ("checkout".equals(targetFragment)) {
+                java.util.ArrayList<com.example.frontend.data.model.cart.CartItemDto> items =
+                        (java.util.ArrayList<com.example.frontend.data.model.cart.CartItemDto>) intent.getSerializableExtra("selected_items");
+                if (items != null) {
+                    ui.commerce.CheckoutFragment checkoutFragment = new ui.commerce.CheckoutFragment();
+                    Bundle args = new Bundle();
+                    args.putSerializable("selected_items", items);
+                    checkoutFragment.setArguments(args);
+                    loadFragment(checkoutFragment);
+                }
+            } else if ("search_results".equals(targetFragment)) {
+                String query = intent.getStringExtra("search_query");
+                if (query != null) {
+                    loadFragment(com.example.frontend.ui.category.ProductListingFragment.newSearchInstance(query));
+                }
+            } else if ("product_detail".equals(targetFragment)) {
+                String productId = intent.getStringExtra("product_id");
+                if (productId != null) {
+                    loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(productId));
+                }
+            }
+        }
     }
 
     private void checkAuthStatus() {
@@ -280,7 +332,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (btnNotification != null) {
             btnNotification.setOnClickListener(v -> {
-                loadFragment(new ui.notification.NotificationCenterFragment());
+                if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                    loadFragment(new ui.notification.NotificationCenterFragment());
+                } else {
+                    showLoginPrompt();
+                }
             });
         }
 
@@ -551,18 +607,24 @@ public class MainActivity extends AppCompatActivity {
         shortcutAdapter = new HomeShortcutAdapter();
         shortcutAdapter.setOnShortcutClickListener(item -> {
             String id = item.getId();
+            boolean isLoggedIn = com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn();
+            
             if ("orders".equals(id)) {
-                loadFragment(new ui.order.OrderListFragment());
+                if (isLoggedIn) loadFragment(new ui.order.OrderListFragment());
+                else com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ORDER_LIST, "Home", 0, null));
             } else if ("kanila_beauty".equals(id)) {
-                loadFragment(new ui.account.BeautyProfileOverviewFragment());
+                if (isLoggedIn) loadFragment(new ui.account.BeautyProfileOverviewFragment());
+                else com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.SAVE_BEAUTY_PROFILE, "Home", 0, null));
             } else if ("support".equals(id)) {
                 loadFragment(new ui.support.HelpCenterFragment());
             } else if ("policy".equals(id)) {
                 loadFragment(new ui.support.PolicyFragment());
             } else if ("royalty".equals(id)) {
-                loadFragment(new ui.loyalty.LoyaltyFragment());
+                if (isLoggedIn) loadFragment(new ui.loyalty.LoyaltyFragment());
+                else com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_LOYALTY, "Home", 0, null));
             } else if ("voucher".equals(id)) {
-                loadFragment(new com.example.frontend.feature.voucher.VoucherListFragment());
+                if (isLoggedIn) loadFragment(new com.example.frontend.feature.voucher.VoucherListFragment());
+                else com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_VOUCHER_WALLET, "Home", 0, null));
             } else if ("ar".equals(id)) {
                 loadFragment(com.example.frontend.ui.category.ProductListingFragment.newCollectionInstance("ar_try_on", "Sản phẩm hỗ trợ AR"));
             } else if ("creator".equals(id)) {
@@ -738,6 +800,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         if (autoSlideHandler != null && autoSlideRunnable != null) {
             autoSlideHandler.removeCallbacks(autoSlideRunnable);
+        }
+        if (sessionExpiredReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(sessionExpiredReceiver);
         }
         super.onDestroy();
     }

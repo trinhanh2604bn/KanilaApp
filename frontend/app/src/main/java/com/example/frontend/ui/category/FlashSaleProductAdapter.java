@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -93,9 +92,9 @@ public class FlashSaleProductAdapter extends ListAdapter<Product, FlashSaleProdu
         // Rating
         try {
             float rating = Float.parseFloat(product.getRating());
-            holder.tvProductRating.setRating(rating);
+            holder.tvProductRating.setText(rating > 0 ? String.format("\u2605 %.1f", (double)rating) : ""); holder.tvProductRating.setVisibility(rating > 0 ? android.view.View.VISIBLE : android.view.View.GONE);
         } catch (Exception e) {
-            holder.tvProductRating.setRating(0);
+            // setRating removed (now TextView)
         }
         holder.tvProductReviewCount.setText("(" + product.getReviewCount() + ")");
 
@@ -129,7 +128,7 @@ public class FlashSaleProductAdapter extends ListAdapter<Product, FlashSaleProdu
         ImageView ivProductImage;
         TextView tvProductBrand;
         TextView tvProductName;
-        RatingBar tvProductRating;
+        TextView tvProductRating;
         TextView tvProductReviewCount;
         TextView tvProductPrice;
         TextView tvProductOriginalPrice;

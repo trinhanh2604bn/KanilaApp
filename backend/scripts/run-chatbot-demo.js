@@ -138,11 +138,6 @@ function httpPost(url, body, token = null) {
       });
     });
 
-    req.setTimeout(30000, () => {
-      req.destroy();
-      reject(new Error("Request timed out after 30s"));
-    });
-
     req.on("error", reject);
     req.write(data);
     req.end();

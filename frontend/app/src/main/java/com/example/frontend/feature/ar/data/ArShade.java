@@ -38,6 +38,33 @@ public class ArShade {
     @SerializedName("enabled")
     private Boolean enabled;
 
+    // ── Optional GPU calibration fields (all nullable, backward-compatible) ──
+    // Validate 0-1 on use. Old variants without these fields use profile defaults.
+
+    /** Override GPU coverage (0-1). Null = use finish profile default. */
+    @SerializedName("coverage")
+    private Float coverage;
+
+    /** Override texture retention (0-1). Null = use finish profile default. */
+    @SerializedName("texture_retention")
+    private Float textureRetention;
+
+    /** Override brightness bias (-0.1 to 0.1). Null = use finish profile default. */
+    @SerializedName("brightness_bias")
+    private Float brightnessBias;
+
+    /** Override saturation multiplier (0-1). Null = use finish profile default. */
+    @SerializedName("saturation")
+    private Float saturation;
+
+    /** Override roughness (0-1). Null = use finish profile default. */
+    @SerializedName("roughness")
+    private Float roughness;
+
+    /** Override specular strength (0-1). Null = use finish profile default. */
+    @SerializedName("specular_strength")
+    private Float specularStrength;
+
     public String getVariantId() { return variantId; }
     public void setVariantId(String variantId) { this.variantId = variantId; }
 
@@ -70,6 +97,15 @@ public class ArShade {
 
     public Boolean getEnabled() { return enabled != null ? enabled : true; }
     public void setEnabled(Boolean enabled) { this.enabled = enabled; }
+
+    // ── Optional GPU calibration getters ──────────────────────────────────────
+    /** Returns null if not set by backend (caller should use finish profile default). */
+    public Float getCoverage()         { return coverage; }
+    public Float getTextureRetention() { return textureRetention; }
+    public Float getBrightnessBias()   { return brightnessBias; }
+    public Float getSaturation()       { return saturation; }
+    public Float getRoughness()        { return roughness; }
+    public Float getSpecularStrength() { return specularStrength; }
 
     @Override
     public boolean equals(Object o) {

@@ -50,27 +50,44 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void onViewCartClick();
     }
 
+    public interface OnComparisonDetailClickListener {
+        void onComparisonDetailClick(ChatMessageUiModel message);
+    }
+
+    public interface OnIngredientDetailClickListener {
+        void onIngredientDetailClick(ChatMessageUiModel message);
+    }
+
     private final List<ChatMessageUiModel> messages = new ArrayList<>();
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private final ChatProductAdapter.OnProductClickListener productClickListener;
     private final ChatProductAdapter.OnAddToCartClickListener addToCartClickListener;
+    private final ChatProductAdapter.OnWhyRecommendClickListener whyRecommendClickListener;
     private final OnOrderClickListener orderClickListener;
     private final OnTicketClickListener ticketClickListener;
     private final OnPreferenceClickListener preferenceClickListener;
     private final OnAddComboClickListener addComboClickListener;
+    private final OnComparisonDetailClickListener comparisonDetailClickListener;
+    private final OnIngredientDetailClickListener ingredientDetailClickListener;
 
     public ChatMessageAdapter(ChatProductAdapter.OnProductClickListener productClickListener,
                              ChatProductAdapter.OnAddToCartClickListener addToCartClickListener,
+                             ChatProductAdapter.OnWhyRecommendClickListener whyRecommendClickListener,
                              OnOrderClickListener orderClickListener,
                              OnTicketClickListener ticketClickListener,
                              OnPreferenceClickListener preferenceClickListener,
-                             OnAddComboClickListener addComboClickListener) {
+                             OnAddComboClickListener addComboClickListener,
+                             OnComparisonDetailClickListener comparisonDetailClickListener,
+                             OnIngredientDetailClickListener ingredientDetailClickListener) {
         this.productClickListener = productClickListener;
         this.addToCartClickListener = addToCartClickListener;
+        this.whyRecommendClickListener = whyRecommendClickListener;
         this.orderClickListener = orderClickListener;
         this.ticketClickListener = ticketClickListener;
         this.preferenceClickListener = preferenceClickListener;
         this.addComboClickListener = addComboClickListener;
+        this.comparisonDetailClickListener = comparisonDetailClickListener;
+        this.ingredientDetailClickListener = ingredientDetailClickListener;
     }
 
     public void setMessages(List<ChatMessageUiModel> newMessages) {
@@ -175,12 +192,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             
             productAdapter = new ChatProductAdapter(productClickListener);
             productAdapter.setOnAddToCartClickListener(addToCartClickListener);
+            productAdapter.setOnWhyRecommendClickListener(whyRecommendClickListener);
             rvProducts.setAdapter(productAdapter);
 
             rvUpsellProducts = itemView.findViewById(R.id.rvUpsellProducts);
             layoutUpsell = itemView.findViewById(R.id.layoutUpsell);
             upsellAdapter = new ChatProductAdapter(productClickListener);
             upsellAdapter.setOnAddToCartClickListener(addToCartClickListener);
+            // Upsell products typically don't have reasons, so no whyRecommend listener
             if (rvUpsellProducts != null) rvUpsellProducts.setAdapter(upsellAdapter);
 
             preferenceAdapter = new QuickReplyAdapter();
@@ -322,6 +341,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (message.getComparison() != null && layoutComparisonCard != null) {
                 bindComparisonCard(message.getComparison(), message.isCustomerContextUsed());
                 layoutComparisonCard.setVisibility(View.VISIBLE);
+                // Wire up "see full comparison" button
+                View btnCompDetail = layoutComparisonCard.findViewById(R.id.btnViewComparisonDetail);
+                if (btnCompDetail != null) {
+                    btnCompDetail.setOnClickListener(v -> {
+                        if (comparisonDetailClickListener != null) comparisonDetailClickListener.onComparisonDetailClick(message);
+                    });
+                }
             } else if (layoutComparisonCard != null) {
                 layoutComparisonCard.setVisibility(View.GONE);
             }
@@ -330,6 +356,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (message.getIngredientData() != null && layoutIngredientCard != null) {
                 bindIngredientCard(message.getIngredientData());
                 layoutIngredientCard.setVisibility(View.VISIBLE);
+                // Wire up "see full analysis" button
+                View btnIngDetail = layoutIngredientCard.findViewById(R.id.btnViewIngredientDetail);
+                if (btnIngDetail != null) {
+                    btnIngDetail.setOnClickListener(v -> {
+                        if (ingredientDetailClickListener != null) ingredientDetailClickListener.onIngredientDetailClick(message);
+                    });
+                }
             } else if (layoutIngredientCard != null) {
                 layoutIngredientCard.setVisibility(View.GONE);
             }
@@ -450,7 +483,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             .inflate(R.layout.item_chat_product_card, layoutComparisonProducts, false);
                     
                     ChatProductAdapter.ProductViewHolder holder = new ChatProductAdapter.ProductViewHolder(productView, productClickListener);
-                    holder.bind(p, customerContextUsed, null);
+                    holder.bind(p, customerContextUsed, null, null);
                     
                     layoutComparisonProducts.addView(productView);
                 }

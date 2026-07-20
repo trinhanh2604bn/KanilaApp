@@ -251,6 +251,40 @@ public class ChatbotViewModel extends AndroidViewModel {
                     botMessage = getApplication().getString(R.string.chat_no_product_found);
                 }
 
+                // Parse product analysis from botMessage if products exist
+                if (botMessage != null && !botMessage.isEmpty() && !productUiModels.isEmpty()) {
+                    StringBuilder overview = new StringBuilder();
+                    java.util.List<StringBuilder> productReasons = new java.util.ArrayList<>();
+                    int currentProductIndex = -1;
+                    
+                    String[] lines = botMessage.split("\n");
+                    for (String line : lines) {
+                        if (line.trim().matches("^\\d+\\.\\s+.*")) {
+                            currentProductIndex++;
+                            productReasons.add(new StringBuilder());
+                            productReasons.get(currentProductIndex).append(line).append("\n");
+                        } else if (currentProductIndex < 0) {
+                            overview.append(line).append("\n");
+                        } else {
+                            if (currentProductIndex < productReasons.size()) {
+                                productReasons.get(currentProductIndex).append(line).append("\n");
+                            }
+                        }
+                    }
+                    
+                    if (!productReasons.isEmpty()) {
+                        botMessage = overview.toString().trim();
+                        for (int i = 0; i < productReasons.size(); i++) {
+                            if (i < productUiModels.size()) {
+                                String extractedReason = productReasons.get(i).toString().trim();
+                                if (!extractedReason.isEmpty()) {
+                                    productUiModels.get(i).setReason(extractedReason);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 ChatMessageUiModel botMsg = new ChatMessageUiModel(
                         UUID.randomUUID().toString(),
                         botMessage,

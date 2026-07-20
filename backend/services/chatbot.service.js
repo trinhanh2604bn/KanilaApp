@@ -49,6 +49,7 @@ const { parseProductConstraints } = require("./chatbotProductQuery.parser");
 const { generateCartRecommendation, addProductsToCart, calculateCartSummary } = require("./chatbotCart.tool");
 const { findComplementaryProducts } = require("./chatbotUpsell.tool");
 const { parseCartIntent } = require("./chatbotCart.parser");
+const { handleProductComparison } = require("./chatbotComparison.service");
 // Phase 5 shopping assistant
 const {
   getRecommendationContext,
@@ -1121,11 +1122,7 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
   let classification = { intent: "find_product", needsClarification: false };
   let fallbackIntent = "find_product";
   
-  if (isFollowUp) {
-    classification.intent = resolvedContext.previousIntent;
-    fallbackIntent = resolvedContext.previousIntent;
-    classification.needsClarification = false;
-  } else if (parsedQuickReply && parsedQuickReply.action.type === "PRODUCT_SEARCH") {
+  if (parsedQuickReply && parsedQuickReply.action.type === "PRODUCT_SEARCH") {
     // Bypass re-classification
     classification.intent = parsedQuickReply.action.category || "find_product";
     fallbackIntent = classification.intent;
@@ -1133,6 +1130,17 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
   } else {
     classification = classifyIntent(message.trim());
     fallbackIntent = detectIntent(message);
+
+    if (isFollowUp) {
+      if (classification.intent === "compare_products" || message.toLowerCase().includes("so sánh")) {
+        classification.intent = "compare_products";
+        fallbackIntent = "product_comparison";
+      } else {
+        classification.intent = resolvedContext.previousIntent;
+        fallbackIntent = resolvedContext.previousIntent;
+      }
+      classification.needsClarification = false;
+    }
   }
 
   const intent = resolveRoutingIntent(classification.intent, fallbackIntent);
@@ -1241,6 +1249,7 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
   let needsVariantSelection = false;
   let makeupFilters = null;
   let supportActions = [];
+  let comparison = null;
 
   // Phase 5B: resolve product_ids / cart_items for add_to_cart
   // Android passes product_ids (simple) or cart_items (with variant+qty) when user confirms
@@ -1322,6 +1331,34 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
       quickReplies = r.quickReplies;
       replyType = r.replyType;
       customerContextUsed = r.customerContextUsed;
+
+    } else if (intent === "product_comparison") {
+      let compProductIds = pendingProductIds || [];
+      if (compProductIds.length === 0 && isFollowUp && resolvedContext && resolvedContext.previousProducts) {
+        const indices = [];
+        const regex = /(?:sản phẩm|cái|số|thứ)\s*(\d+)/gi;
+        let match;
+        while ((match = regex.exec(message)) !== null) {
+          const idx = parseInt(match[1], 10) - 1; // 1-based to 0-indexed
+          if (idx >= 0 && idx < resolvedContext.previousProducts.length && !indices.includes(idx)) {
+            indices.push(idx);
+          }
+        }
+        
+        if (indices.length > 0) {
+          compProductIds = indices.map(i => resolvedContext.previousProducts[i].id || resolvedContext.previousProducts[i].product_id || resolvedContext.previousProducts[i]._id);
+        } else {
+          // Default to first 2 products if no specific numbers mentioned
+          compProductIds = resolvedContext.previousProducts.slice(0, 2).map(p => p.id || p.product_id || p._id);
+        }
+      }
+      const r = await handleProductComparison(message.trim(), user, compProductIds, history);
+      botText = r.botText;
+      quickReplies = r.quickReplies;
+      replyType = r.replyType;
+      if (r.comparison) {
+        comparison = r.comparison;
+      }
 
     } else if (intent === "order_tracking") {
       const r = await handleOrderTracking(message.trim(), user, history);
@@ -1410,6 +1447,7 @@ async function handleUserMessage({ sessionId, message, sourceScreen, user, produ
     needs_variant_selection: cartAction?.needs_variant_selection || null,
     filters: makeupFilters,
     support_actions: supportActions,
+    comparison: comparison,
   };
 }
 

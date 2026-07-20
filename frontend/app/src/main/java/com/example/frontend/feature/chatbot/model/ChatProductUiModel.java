@@ -14,7 +14,7 @@ public class ChatProductUiModel {
     private final String ratingText;
     private final String reviewCountText;
     private final String stockStatus;
-    private final String reason;
+    private String reason;
     private final String suggestedUse;
     private final String action;
 
@@ -100,6 +100,10 @@ public class ChatProductUiModel {
 
     public String getReason() {
         return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
     public String getSuggestedUse() {

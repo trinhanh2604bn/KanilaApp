@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="32dp">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_drag_handle"
+        android:backgroundTint="@color/border_divider" />
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="16dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bg_avatar_circle"
+            android:padding="6dp"
+            android:src="@drawable/ic_chat_placeholder"
+            app:tint="@color/accent_dark"
+            android:contentDescription="AI icon" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lý do gợi ý"
+                android:fontFamily="@font/nunito_bold"
+                android:textColor="@color/text_main"
+                android:textSize="17sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phân tích từ Kanila AI"
+                android:fontFamily="@font/nunito_regular"
+                android:textColor="@color/text_tertiary"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_divider"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp" />
+
+    <!-- Product Mini Info -->
+    <LinearLayout
+        android:id="@+id/layoutProductMiniInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/ivReasonProductImage"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:scaleType="centerInside"
+            android:background="@drawable/bg_card"
+            android:contentDescription="Product image"
+            tools:src="@drawable/ic_product" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvReasonProductBrand"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_bold"
+                android:textColor="@color/text_main"
+                android:textSize="11sp"
+                tools:text="Laneige" />
+
+            <TextView
+                android:id="@+id/tvReasonProductName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_regular"
+                android:textColor="@color/text_main"
+                android:textSize="13sp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="Lip Sleeping Mask Berry" />
+
+            <TextView
+                android:id="@+id/tvReasonProductPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/nunito_bold"
+                android:textColor="@color/button"
+                android:textSize="13sp"
+                tools:text="320.000đ" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_divider"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp" />
+
+    <!-- Reason Content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="💡 Phân tích của AI"
+            android:fontFamily="@font/nunito_bold"
+            android:textColor="@color/text_main"
+            android:textSize="14sp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/tvReasonContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_recommendation_highlight"
+            android:padding="14dp"
+            android:fontFamily="@font/nunito_regular"
+            android:textColor="@color/text_main"
+            android:textSize="14sp"
+            android:lineSpacingExtra="4dp"
+            tools:text="Sản phẩm này phù hợp với bạn vì:\n• Phù hợp với da dầu\n• Giá trong ngân sách 300k\n• Màu sắc tự nhiên phù hợp đi học" />
+    </LinearLayout>
+
+</LinearLayout>

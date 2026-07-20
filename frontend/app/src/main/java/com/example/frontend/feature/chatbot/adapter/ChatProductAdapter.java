@@ -22,6 +22,7 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
     private final List<ChatProductUiModel> products = new ArrayList<>();
     private final OnProductClickListener listener;
     private OnAddToCartClickListener addToCartListener;
+    private OnWhyRecommendClickListener whyRecommendListener;
     private boolean customerContextUsed = false;
 
     public interface OnProductClickListener {
@@ -32,12 +33,20 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
         void onAddToCartClick(ChatProductUiModel product);
     }
 
+    public interface OnWhyRecommendClickListener {
+        void onWhyRecommendClick(ChatProductUiModel product);
+    }
+
     public ChatProductAdapter(OnProductClickListener listener) {
         this.listener = listener;
     }
 
     public void setOnAddToCartClickListener(OnAddToCartClickListener addToCartListener) {
         this.addToCartListener = addToCartListener;
+    }
+
+    public void setOnWhyRecommendClickListener(OnWhyRecommendClickListener whyRecommendListener) {
+        this.whyRecommendListener = whyRecommendListener;
     }
 
     public void setProducts(List<ChatProductUiModel> newProducts) {
@@ -62,7 +71,7 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
-        holder.bind(products.get(position), customerContextUsed, addToCartListener);
+        holder.bind(products.get(position), customerContextUsed, addToCartListener, whyRecommendListener);
     }
 
     @Override
@@ -72,10 +81,10 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
 
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProductImage;
-        TextView tvBrandName, tvProductName, tvCategory, tvSalePrice, tvOriginalPrice, tvMatchedReason, tvRecommendationBadge, btnViewDetail, btnAddToCart;
+        TextView tvBrandName, tvProductName, tvCategory, tvSalePrice, tvOriginalPrice, tvMatchedReason, tvRecommendationBadge, btnViewDetail, btnAddToCart, btnWhyRecommend;
         private final OnProductClickListener listener;
 
-        ProductViewHolder(@NonNull View itemView, OnProductClickListener listener) {
+        public ProductViewHolder(@NonNull View itemView, OnProductClickListener listener) {
             super(itemView);
             this.listener = listener;
             ivProductImage = itemView.findViewById(R.id.ivProductImage);
@@ -88,9 +97,10 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
             tvRecommendationBadge = itemView.findViewById(R.id.tvProductBadge);
             btnViewDetail = itemView.findViewById(R.id.btnChatViewDetail);
             btnAddToCart = itemView.findViewById(R.id.btnChatAddToCart);
+            btnWhyRecommend = itemView.findViewById(R.id.btnWhyRecommend);
         }
 
-        void bind(ChatProductUiModel product, boolean customerContextUsed, OnAddToCartClickListener addToCartListener) {
+        public void bind(ChatProductUiModel product, boolean customerContextUsed, OnAddToCartClickListener addToCartListener, OnWhyRecommendClickListener whyRecommendListener) {
             tvBrandName.setText(product.getBrandName());
             tvProductName.setText(product.getName());
             
@@ -114,9 +124,9 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
                 tvOriginalPrice.setVisibility(View.GONE);
             }
 
+            // Hide inline reason — shown via popup instead
             if (tvMatchedReason != null) {
-                tvMatchedReason.setText(product.getReason());
-                tvMatchedReason.setVisibility(View.VISIBLE);
+                tvMatchedReason.setVisibility(View.GONE);
             }
             
             if (tvRecommendationBadge != null) {
@@ -141,9 +151,17 @@ public class ChatProductAdapter extends RecyclerView.Adapter<ChatProductAdapter.
             if (defaultAddToCart != null) {
                 defaultAddToCart.setVisibility(View.GONE);
             }
-            
-            // Hide rating section in chat to keep it compact if needed, 
-            // or keep it if it looks good. Let's keep it for now.
+
+            // "Why recommended?" button — show only when reason exists
+            if (btnWhyRecommend != null) {
+                boolean hasReason = product.getReason() != null && !product.getReason().isEmpty();
+                btnWhyRecommend.setVisibility(hasReason ? View.VISIBLE : View.GONE);
+                if (hasReason) {
+                    btnWhyRecommend.setOnClickListener(v -> {
+                        if (whyRecommendListener != null) whyRecommendListener.onWhyRecommendClick(product);
+                    });
+                }
+            }
 
             Glide.with(ivProductImage.getContext())
                     .load(product.getImageUrl())

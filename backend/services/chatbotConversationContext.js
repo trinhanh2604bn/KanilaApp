@@ -13,6 +13,16 @@ const FOLLOW_UP_KEYWORDS = [
   "tư vấn kỹ",
   "về cái đó",
   "giải thích thêm",
+  "sản phẩm số",
+  "sản phẩm thứ",
+  "sản phẩm 1",
+  "sản phẩm 2",
+  "sản phẩm 3",
+  "sản phẩm 4",
+  "sản phẩm 5",
+  "cái số",
+  "cái thứ",
+  "so sánh",
 ];
 
 /**

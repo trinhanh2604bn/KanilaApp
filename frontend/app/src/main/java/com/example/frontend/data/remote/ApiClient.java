@@ -27,9 +27,9 @@ public class ApiClient {
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(logging)
                     .addInterceptor(authInterceptor)
-                    .connectTimeout(120, TimeUnit.SECONDS)
-                    .readTimeout(120, TimeUnit.SECONDS)
-                    .writeTimeout(120, TimeUnit.SECONDS)
+                    .connectTimeout(1200, TimeUnit.SECONDS)
+                    .readTimeout(1200, TimeUnit.SECONDS)
+                    .writeTimeout(1200, TimeUnit.SECONDS)
                     .build();
 
             retrofit = new Retrofit.Builder()

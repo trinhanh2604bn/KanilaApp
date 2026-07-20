@@ -75,6 +75,26 @@ public class ReelsFeedFragment extends Fragment {
                     getActivity().onBackPressed();
                 }
             }
+
+            @Override
+            public void onCreateReelClick() {
+                com.example.frontend.data.remote.TokenManager tm = com.example.frontend.data.remote.TokenManager.getInstance(requireContext());
+                if (tm.isLoggedIn()) {
+                    if (tm.isKoc()) {
+                        // Nếu đã là KOC, chuyển tới Dashboard (Creator Center)
+                        ui.common.FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.account.KocDashboardFragment());
+                    } else {
+                        // Nếu chưa là KOC, chuyển tới trang đăng ký KOC
+                        ui.common.FragmentNavigationHelper.replaceFragment(requireActivity(), new ui.account.KocRegistrationFragment());
+                    }
+                } else {
+                    // Yêu cầu đăng nhập nếu chưa login
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(),
+                        new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.CREATE_REELS, 
+                            "ReelsFeed", 0, null));
+                }
+            }
         });
 
         binding.viewPagerReels.setAdapter(adapter);

@@ -187,16 +187,6 @@ Kanila được phát triển cho **Android** với hệ thống quản lý dữ
 - Học phần: Phát triển thương mại di động
 - Học kỳ III, năm học 2025–2026
 
-### Nhóm thực hiện
-
-| Thành viên | Mã số sinh viên |
-|---|---|
-| Lê Thúy Thanh Trúc | K234111375 |
-| Nguyễn Vũ Gia Ngân | K234111350 |
-| Trịnh Thị Ngọc Ánh | K234111321 |
-| Nguyễn Hoàng Gia Bảo | K234111323 |
-| Nguyễn Minh Phú | K234111360 |
-
 ---
 
 ## Liên kết dự án

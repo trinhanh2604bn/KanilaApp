@@ -18,6 +18,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        buildConfigField("String", "AR_LIP_RENDERER", "\"CANVAS\"")
     }
 
     buildTypes {
@@ -55,6 +57,29 @@ dependencies {
     implementation(libs.glide)
 
     testImplementation(libs.junit)
+    testImplementation("org.robolectric:robolectric:4.11.1")
+    testImplementation("org.mockito:mockito-core:4.11.0")
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
+    
+    implementation(libs.camerax.core)
+    implementation(libs.camerax.camera2)
+    implementation(libs.camerax.lifecycle)
+    implementation(libs.camerax.view)
+    implementation(libs.mlkit.facemesh)
+    implementation(libs.concurrent.futures)
+    
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+
+    // ARCore & 3D Obj parsing
+    implementation("com.google.ar:core:1.45.0")
+    implementation("de.javagl:obj:0.2.1")
+    
+    // Picasso for ImageSlideshow
+    implementation("com.squareup.picasso:picasso:2.71828")
+    
+    // LocalBroadcastManager
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
 }

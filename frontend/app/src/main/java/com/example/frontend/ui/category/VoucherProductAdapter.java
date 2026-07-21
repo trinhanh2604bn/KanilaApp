@@ -5,7 +5,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -63,9 +62,9 @@ public class VoucherProductAdapter extends RecyclerView.Adapter<VoucherProductAd
         }
 
         try {
-            holder.ratingBar.setRating(Float.parseFloat(product.getRating()));
+            try { float r = Float.parseFloat(product.getRating()); holder.ratingBar.setText(r > 0 ? String.format("\u2605 %.1f", r) : ""); holder.ratingBar.setVisibility(r > 0 ? android.view.View.VISIBLE : android.view.View.GONE); } catch (Exception e) { holder.ratingBar.setVisibility(android.view.View.GONE); }
         } catch (Exception e) {
-            holder.ratingBar.setRating(0);
+            holder.ratingBar.setVisibility(android.view.View.GONE);
         }
         holder.tvReviewCount.setText("(" + product.getReviewCount() + ")");
 
@@ -110,7 +109,7 @@ public class VoucherProductAdapter extends RecyclerView.Adapter<VoucherProductAd
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView ivImage;
         public TextView tvName, tvBrand, tvPrice, tvReviewCount, tvBadge;
-        public RatingBar ratingBar;
+        public TextView ratingBar;
         public View layoutBadge;
         public ImageButton btnAddToCart, btnWishlist;
 

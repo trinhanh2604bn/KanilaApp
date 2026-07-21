@@ -226,13 +226,15 @@ public class CheckoutViewModel extends AndroidViewModel {
         placeOrderResult.setValue(null);
 
         if (USE_MOCK_CHECKOUT) {
-            // If already set by setMockDataFromCart (has items), don't overwrite
+            // If already set by updateCheckoutSession or setMockDataFromCart (has items), don't overwrite
             CheckoutSessionDto current = checkoutSession.getValue() != null ? checkoutSession.getValue().data : null;
             if (current == null || current.getItems() == null || current.getItems().isEmpty()) {
                 android.util.Log.d("CheckoutViewModel", "Preparing default mock session (current is empty)");
-                checkoutSession.postValue(NetworkResult.success(createDefaultMockSession()));
+                checkoutSession.setValue(NetworkResult.success(createDefaultMockSession()));
             } else {
                 android.util.Log.d("CheckoutViewModel", "Skipping prepareCheckout: Session already has " + current.getItems().size() + " items");
+                // Explicitly notify observers to ensure UI updates with the existing data
+                checkoutSession.setValue(checkoutSession.getValue());
             }
             return;
         }
@@ -246,7 +248,7 @@ public class CheckoutViewModel extends AndroidViewModel {
 
     public void updateCheckoutSession(CheckoutSessionDto session) {
         if (session != null) {
-            checkoutSession.postValue(NetworkResult.success(session));
+            checkoutSession.setValue(NetworkResult.success(session));
         }
     }
 

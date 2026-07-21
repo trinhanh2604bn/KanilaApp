@@ -115,19 +115,11 @@ const getMyAddresses = async (req, res) => {
     if (!customer) return res.status(404).json({ success: false, message: "Customer profile not found" });
 
     const addresses = await Address.find({ customer_id: customer._id }).sort({ is_default_shipping: -1, created_at: -1 });
-    const defaultAddress =
-      addresses.find((x) => x.is_default_shipping === true) ||
-      addresses.find((x) => x.is_default_billing === true) ||
-      addresses[0] ||
-      null;
 
     return res.status(200).json({
       success: true,
       message: "Get my addresses successfully",
-      data: {
-        addresses,
-        defaultAddress,
-      },
+      data: addresses,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

@@ -337,6 +337,7 @@ const getProfileHub = async (req, res) => {
           gender: customer.gender || "",
           birthday: customer.date_of_birth || null,
           avatarUrl: customer.avatar_url || "",
+          registrationChannel: account.registration_channel || "email",
         },
         loyalty: {
           tierName: currentTierName,

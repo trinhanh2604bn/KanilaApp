@@ -42,39 +42,23 @@
             </LinearLayout>
         </HorizontalScrollView>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="16dp"
-            android:background="@color/border_divider" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/chat_comparison_differences"
-            android:fontFamily="@font/nunito_bold"
-            android:textColor="@color/text_main"
-            android:textSize="14sp" />
-
+        <!-- Hidden: differences — stored for popup, not shown inline -->
         <LinearLayout
             android:id="@+id/layoutDifferences"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical">
-            <!-- Difference items will be added here -->
-        </LinearLayout>
+            android:orientation="vertical"
+            android:visibility="gone" />
 
+        <!-- Hidden: recommendation — stored for popup, not shown inline -->
         <LinearLayout
             android:id="@+id/layoutRecommendation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:background="@drawable/bg_recommendation_highlight"
             android:padding="12dp"
             android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -94,6 +78,16 @@
                 android:textSize="13sp"
                 tools:text="Dựa trên hồ sơ da của bạn, Serum A phù hợp hơn." />
         </LinearLayout>
+
+        <!-- "See full comparison" button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnViewComparisonDetail"
+            style="@style/Widget.Kanila.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="12dp"
+            android:text="Xem chi tiết so sánh →"
+            android:textSize="12sp" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

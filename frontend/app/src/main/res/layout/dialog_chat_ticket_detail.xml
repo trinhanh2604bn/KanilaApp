@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="32dp">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_drag_handle"
+        android:backgroundTint="@color/border_divider" />
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="16dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bg_avatar_circle"
+            android:padding="6dp"
+            android:src="@drawable/ic_support"
+            app:tint="@color/accent_dark"
+            android:contentDescription="Ticket icon" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🎫 Chi tiết yêu cầu hỗ trợ"
+                android:fontFamily="@font/nunito_bold"
+                android:textColor="@color/text_main"
+                android:textSize="17sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_divider"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/tvTicketCode"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_bold"
+                android:textSize="16sp"
+                android:textColor="@color/text_main"
+                tools:text="#TK98765" />
+            <TextView
+                android:id="@+id/tvTicketStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:background="@drawable/bg_status_chip_default"
+                android:fontFamily="@font/nunito_bold"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                tools:text="Đang xử lý" />
+        </LinearLayout>
+        
+        <TextView
+            android:id="@+id/tvTicketCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/nunito_regular"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            tools:text="Phân loại: Đổi trả" />
+
+        <TextView
+            android:id="@+id/tvTicketPriority"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/nunito_bold"
+            android:textSize="14sp"
+            android:textColor="@color/error"
+            tools:text="Mức độ: Cao" />
+            
+        <TextView
+            android:id="@+id/tvTicketDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/nunito_regular"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            tools:text="Ngày tạo: 20/07/2026" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="@color/background_sub"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="16dp">
+        <TextView
+            android:id="@+id/tvTicketDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito_regular"
+            android:textSize="14sp"
+            android:textColor="@color/text_main"
+            tools:text="Khách hàng yêu cầu hỗ trợ đổi trả sản phẩm do hàng bị móp méo." />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnContactCS"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/white"
+        android:fontFamily="@font/nunito_bold"
+        android:text="Liên hệ CSKH" />
+
+</LinearLayout>

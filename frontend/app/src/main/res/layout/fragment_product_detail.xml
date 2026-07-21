@@ -63,17 +63,12 @@
                 tools:ignore="TouchTargetSizeCheck"
                 app:tint="@color/button" />
 
-            <ImageButton
+            <include
                 android:id="@+id/btnCart"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_circle"
-                android:backgroundTint="#80F0F0F0"
-                android:contentDescription="@string/cart"
-                android:src="@drawable/ic_cart"
-                tools:ignore="TouchTargetSizeCheck"
-                app:tint="@color/button" />
+                layout="@layout/layout_cart_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp" />
 
         </LinearLayout>
 
@@ -116,7 +111,19 @@
                     android:textSize="12sp"
                     tools:text="1/5" />
 
-
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnArTryOn"
+                    style="@style/Widget.Kanila.Button.Pill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:backgroundTint="@color/button"
+                    android:textColor="@color/white"
+                    android:text="Thử màu AR"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
             </FrameLayout>
 
             <!-- Thumbnails -->
@@ -307,9 +314,50 @@
                 android:background="@color/background_sub" />
 
             <!-- Review Summary -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="8dp">
+
+                <TextView
+                    android:id="@+id/tvReviewSectionTitle"
+                    style="@style/Text.Kanila.H3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    app:layout_constraintEnd_toStartOf="@id/btnViewAllReviews"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Đánh giá sản phẩm (12.8K)" />
+
+                <TextView
+                    android:id="@+id/btnViewAllReviews"
+                    style="@style/Text.Kanila.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Xem tất cả"
+                    android:textColor="@color/button"
+                    app:layout_constraintBottom_toBottomOf="@id/tvReviewSectionTitle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvReviewSectionTitle" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <include
+                android:id="@+id/layoutRatingSummary"
+                layout="@layout/rating_summary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
             <include
                 android:id="@+id/layoutReviewSummary"
                 layout="@layout/view_review_summary_compact" />
+
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvProductDetailReviewPreview"

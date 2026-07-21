@@ -16,6 +16,7 @@ public class CheckoutAddressViewModel extends AndroidViewModel {
     private final MutableLiveData<AddressDto> selectedAddress = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<AddressDto>> saveResult = new MutableLiveData<>();
     private final MutableLiveData<NetworkResult<AddressDto>> setDefaultResult = new MutableLiveData<>();
+    private final MutableLiveData<NetworkResult<Object>> deleteResult = new MutableLiveData<>();
 
     public CheckoutAddressViewModel(@NonNull Application application) {
         super(application);
@@ -56,6 +57,18 @@ public class CheckoutAddressViewModel extends AndroidViewModel {
 
     public void setDefaultAddress(String id) {
         repository.setDefaultAddress(id, setDefaultResult);
+    }
+
+    public LiveData<NetworkResult<Object>> getDeleteResult() {
+        return deleteResult;
+    }
+
+    public void deleteAddress(String id) {
+        repository.deleteAddress(id, deleteResult);
+    }
+
+    public void clearDeleteResult() {
+        deleteResult.setValue(null);
     }
 
     public void clearSaveResult() {

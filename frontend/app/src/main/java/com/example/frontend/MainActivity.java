@@ -17,6 +17,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -47,6 +52,7 @@ import com.example.frontend.model.HomeShortcutItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import ui.community.CommunityHomeFragment;
 import ui.account.AccountFragment;
 import ui.account.KocRegistrationFragment;
 import ui.account.KocDashboardFragment;
@@ -60,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 vpHomeBanner;
     private View layoutSearchBar;
-    private ImageButton btnNotification, btnCart, btnWishlist;
+    private ImageButton btnNotification, btnWishlist;
+    private View btnCart;
     private RecyclerView rvHomeShortcuts;
     private RecyclerView rvAllProducts;
     private View layoutHomeStateContainer, viewHomeLoading, viewHomeError;
@@ -87,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final Handler autoSlideHandler = new Handler(Looper.getMainLooper());
     private Runnable autoSlideRunnable;
+    private BroadcastReceiver sessionExpiredReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,8 +138,55 @@ public class MainActivity extends AppCompatActivity {
         // Delay home data loading slightly to ensure UI is ready and prevent ANR
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             viewModel.loadHomeData();
+            cartViewModel.loadCart();
             checkAuthStatus();
+            handleIntent(getIntent());
         }, 500);
+
+        sessionExpiredReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (com.example.frontend.data.remote.AuthInterceptor.ACTION_SESSION_EXPIRED.equals(intent.getAction())) {
+                    Toast.makeText(MainActivity.this, "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show();
+                    showLoginPrompt();
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(sessionExpiredReceiver, new IntentFilter(com.example.frontend.data.remote.AuthInterceptor.ACTION_SESSION_EXPIRED));
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent != null) {
+            String targetFragment = intent.getStringExtra("TARGET_FRAGMENT");
+            if ("checkout".equals(targetFragment)) {
+                java.util.ArrayList<com.example.frontend.data.model.cart.CartItemDto> items =
+                        (java.util.ArrayList<com.example.frontend.data.model.cart.CartItemDto>) intent.getSerializableExtra("selected_items");
+                if (items != null) {
+                    ui.commerce.CheckoutFragment checkoutFragment = new ui.commerce.CheckoutFragment();
+                    Bundle args = new Bundle();
+                    args.putSerializable("selected_items", items);
+                    checkoutFragment.setArguments(args);
+                    loadFragment(checkoutFragment);
+                }
+            } else if ("search_results".equals(targetFragment)) {
+                String query = intent.getStringExtra("search_query");
+                if (query != null) {
+                    loadFragment(com.example.frontend.ui.category.ProductListingFragment.newSearchInstance(query));
+                }
+            } else if ("product_detail".equals(targetFragment)) {
+                String productId = intent.getStringExtra("product_id");
+                if (productId != null) {
+                    loadFragment(com.example.frontend.feature.product.ProductDetailFragment.newInstance(productId));
+                }
+            }
+        }
     }
 
     private void checkAuthStatus() {
@@ -146,7 +201,9 @@ public class MainActivity extends AppCompatActivity {
                         public void onResponse(retrofit2.Call<com.example.frontend.data.remote.ApiResponse<Object>> call, retrofit2.Response<com.example.frontend.data.remote.ApiResponse<Object>> response) {
                             if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
                                 tm.clearToken();
-                                Toast.makeText(MainActivity.this, "Phien dang nhap het han", Toast.LENGTH_SHORT).show();
+                                // Refresh cart to update badge count if session expired
+                                cartViewModel.loadCart();
+                                Toast.makeText(MainActivity.this, "Phiên đăng nhập hết hạn", Toast.LENGTH_SHORT).show();
                             }
                         }
 
@@ -174,6 +231,11 @@ public class MainActivity extends AppCompatActivity {
         int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
         boolean hasFragments = backStackCount > 0;
 
+        View homeHeader = findViewById(R.id.layoutHomeSearchHeader);
+        if (homeHeader != null) {
+            homeHeader.setVisibility(hasFragments ? View.GONE : View.VISIBLE);
+        }
+
         if (layoutHomeScroll != null) {
             layoutHomeScroll.setVisibility(hasFragments ? View.GONE : View.VISIBLE);
         }
@@ -182,15 +244,30 @@ public class MainActivity extends AppCompatActivity {
         }
 
         View bottomNav = findViewById(R.id.layoutBottomNavigation);
-        if (bottomNav != null) {
+        if (bottomNav != null || ivChatbot != null) {
             if (!hasFragments) {
-                bottomNav.setVisibility(View.VISIBLE);
+                if (bottomNav != null) bottomNav.setVisibility(View.VISIBLE);
+                if (ivChatbot != null) ivChatbot.setVisibility(View.VISIBLE);
             } else {
                 Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
-                if (currentFragment instanceof com.example.frontend.feature.product.ProductDetailFragment) {
-                    bottomNav.setVisibility(View.GONE);
-                } else {
-                    bottomNav.setVisibility(View.VISIBLE);
+                
+                boolean isCheckoutFlow = currentFragment instanceof ui.commerce.CartFragment ||
+                        currentFragment instanceof ui.commerce.CheckoutFragment ||
+                        currentFragment instanceof ui.commerce.OrderSuccessFragment ||
+                        currentFragment instanceof ui.commerce.CheckoutAddressFragment ||
+                        currentFragment instanceof ui.commerce.CheckoutAddressAddFragment ||
+                        currentFragment instanceof ui.commerce.CheckoutShippingFragment ||
+                        currentFragment instanceof ui.commerce.PaymentMethodFragment;
+
+                boolean isProductDetail = currentFragment instanceof com.example.frontend.feature.product.ProductDetailFragment;
+
+                if (bottomNav != null) {
+                    // Hide bottom nav in both Checkout flow and Product Detail
+                    bottomNav.setVisibility((isCheckoutFlow || isProductDetail) ? View.GONE : View.VISIBLE);
+                }
+                if (ivChatbot != null) {
+                    // Hide chatbot ONLY in Checkout flow, keep visible in Product Detail
+                    ivChatbot.setVisibility(isCheckoutFlow ? View.GONE : View.VISIBLE);
                 }
             }
         }
@@ -244,11 +321,22 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        if (btnCart != null) btnCart.setOnClickListener(v -> navigateToCart());
+        if (btnCart != null) {
+            View cartIcon = btnCart.findViewById(R.id.btnCartIcon);
+            if (cartIcon != null) {
+                cartIcon.setOnClickListener(v -> navigateToCart());
+            } else {
+                btnCart.setOnClickListener(v -> navigateToCart());
+            }
+        }
 
         if (btnNotification != null) {
             btnNotification.setOnClickListener(v -> {
-                loadFragment(new ui.notification.NotificationCenterFragment());
+                if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                    loadFragment(new ui.notification.NotificationCenterFragment());
+                } else {
+                    showLoginPrompt();
+                }
             });
         }
 
@@ -395,12 +483,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        cartViewModel.getTotalCartQuantity().observe(this, quantity -> {
+            // Already handled by CartBadgeHelper in ui/common, but if we have local logic:
+            android.util.Log.d("MainActivity", "Cart quantity updated: " + quantity);
+        });
+
+        ui.common.CartBadgeHelper.bindBadge(this, btnCart, cartViewModel);
+
         cartViewModel.getCartResult().observe(this, result -> {
             if (result == null) return;
-            if (result.status == NetworkResult.Status.SUCCESS) {
-                Toast.makeText(MainActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-            } else if (result.status == NetworkResult.Status.ERROR) {
-                Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+            if (result.status == NetworkResult.Status.ERROR) {
+                Toast.makeText(MainActivity.this, result.message != null ? result.message : "Lỗi đồng bộ giỏ hàng", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -493,9 +586,17 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        if (layoutKanilaChallengeCard != null) layoutKanilaChallengeCard.setOnClickListener(v -> Toast.makeText(this, "Kanila Challenge", Toast.LENGTH_SHORT).show());
+        if (layoutKanilaChallengeCard != null) {
+            layoutKanilaChallengeCard.setOnClickListener(v -> {
+                loadFragment(CommunityHomeFragment.newInstance(1));
+            });
+        }
 
-        if (btnJoinChallenge != null) btnJoinChallenge.setOnClickListener(v -> Toast.makeText(this, "Tham gia challenge", Toast.LENGTH_SHORT).show());
+        if (btnJoinChallenge != null) {
+            btnJoinChallenge.setOnClickListener(v -> {
+                loadFragment(CommunityHomeFragment.newInstance(1));
+            });
+        }
 
         if (tvChallengeProgress != null) tvChallengeProgress.setText(getString(R.string.home_social_challenge_progress_format, "8", "14"));
         if (tvChallengeParticipants != null) tvChallengeParticipants.setText(getString(R.string.home_social_challenge_participants_format, "12.6K"));
@@ -506,22 +607,31 @@ public class MainActivity extends AppCompatActivity {
         shortcutAdapter = new HomeShortcutAdapter();
         shortcutAdapter.setOnShortcutClickListener(item -> {
             String id = item.getId();
+            boolean isLoggedIn = com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn();
+            
             if ("orders".equals(id)) {
-                loadFragment(new ui.order.OrderListFragment());
+                if (isLoggedIn) loadFragment(new ui.order.OrderListFragment());
+                else com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_ORDER_LIST, "Home", 0, null));
             } else if ("kanila_beauty".equals(id)) {
-                loadFragment(new ui.account.BeautyProfileOverviewFragment());
+                if (isLoggedIn) loadFragment(new ui.account.BeautyProfileOverviewFragment());
+                else com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.SAVE_BEAUTY_PROFILE, "Home", 0, null));
             } else if ("support".equals(id)) {
                 loadFragment(new ui.support.HelpCenterFragment());
             } else if ("policy".equals(id)) {
                 loadFragment(new ui.support.PolicyFragment());
             } else if ("royalty".equals(id)) {
-                loadFragment(new ui.loyalty.LoyaltyFragment());
+                if (isLoggedIn) loadFragment(new ui.loyalty.LoyaltyFragment());
+                else com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_LOYALTY, "Home", 0, null));
             } else if ("voucher".equals(id)) {
-                loadFragment(new com.example.frontend.feature.voucher.VoucherListFragment());
+                if (isLoggedIn) loadFragment(new com.example.frontend.feature.voucher.VoucherListFragment());
+                else com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(this, new com.example.frontend.core.auth.PendingAuthAction(com.example.frontend.core.auth.PendingAuthAction.ActionType.OPEN_VOUCHER_WALLET, "Home", 0, null));
+            } else if ("ar".equals(id)) {
+                loadFragment(com.example.frontend.ui.category.ProductListingFragment.newCollectionInstance("ar_try_on", "Sản phẩm hỗ trợ AR"));
             } else if ("creator".equals(id)) {
-                if (com.example.frontend.data.remote.TokenManager.getInstance(this).isLoggedIn()) {
+                com.example.frontend.data.remote.TokenManager tm = com.example.frontend.data.remote.TokenManager.getInstance(this);
+                if (tm.isLoggedIn()) {
                     // Kiểm tra trạng thái KOC đã lưu trong SharedPreferences
-                    if (com.example.frontend.data.remote.TokenManager.getInstance(this).isKoc()) {
+                    if (tm.isKoc()) {
                         loadFragment(new KocDashboardFragment());
                     } else {
                         loadFragment(new KocRegistrationFragment());
@@ -690,6 +800,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         if (autoSlideHandler != null && autoSlideRunnable != null) {
             autoSlideHandler.removeCallbacks(autoSlideRunnable);
+        }
+        if (sessionExpiredReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(sessionExpiredReceiver);
         }
         super.onDestroy();
     }

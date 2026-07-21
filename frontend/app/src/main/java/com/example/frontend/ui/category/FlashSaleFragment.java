@@ -17,11 +17,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.frontend.R;
-import com.example.frontend.data.model.cart.AddToCartRequest;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.data.repository.ProductRepository;
 import com.example.frontend.feature.cart.CartViewModel;
 import com.example.frontend.feature.product.ProductDetailFragment;
+import com.example.frontend.feature.product.QuickAddHelper;
 import com.example.frontend.model.Product;
 
 import androidx.core.content.ContextCompat;
@@ -224,22 +224,8 @@ public class FlashSaleFragment extends Fragment {
     private void handleBuyNow(Product product) {
         if (product == null || product.getId() == null) return;
 
-        AddToCartRequest request = new AddToCartRequest(product.getId(), null, 1);
-        cartViewModel.addToCart(request);
-
-        cartViewModel.getCartResult().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<NetworkResult<com.example.frontend.data.model.cart.CartDto>>() {
-            @Override
-            public void onChanged(NetworkResult<com.example.frontend.data.model.cart.CartDto> result) {
-                if (result == null) return;
-                if (result.status == NetworkResult.Status.SUCCESS) {
-                    Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                } else if (result.status == NetworkResult.Status.ERROR) {
-                    Toast.makeText(requireContext(), result.message != null ? result.message : "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
-                    cartViewModel.getCartResult().removeObserver(this);
-                }
-            }
-        });
+        QuickAddHelper.quickBuyNow(
+                requireContext(), getChildFragmentManager(), getViewLifecycleOwner(), product, cartViewModel);
     }
 
     private void setupSessionClicks() {
@@ -388,14 +374,14 @@ public class FlashSaleFragment extends Fragment {
     private long getCountdownDurationForSession(String sessionKey) {
         switch (sessionKey) {
             case "MIDNIGHT":
-                return 2 * 60 * 60 * 1000L; // 02:00:00
+                return 2 * 60 * 60 * 1000L + 37 * 60 * 1000L + 52 * 1000L; // 02:37:52
             case "TWO":
-                return 4 * 60 * 60 * 1000L; // 04:00:00
+                return 5 * 60 * 60 * 1000L + 50 * 60 * 1000L + 42 * 1000L; // 05:50:42
             case "NINE":
-                return 6 * 60 * 60 * 1000L; // 06:00:00
+                return 14 * 60 * 60 * 1000L + 47 * 60 * 1000L + 13 * 1000L; // 14:47:13
             case "NOW":
             default:
-                return 31 * 60 * 1000L + 26 * 1000L; // 00:31:26
+                return 45 * 60 * 1000L + 52 * 1000L; // 00:45:52
         }
     }
 

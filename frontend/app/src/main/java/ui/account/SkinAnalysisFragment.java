@@ -34,7 +34,7 @@ public class SkinAnalysisFragment extends Fragment {
     private RecommendationViewModel viewModel;
     private TextView tvScore, tvScoreStatus, tvAiVerdict, tvAiStats;
     private ProgressBar progressScore;
-    private View cardHealthScore;
+    private View cardHealthScore, cardAiVerdict;
     private RecyclerView rvRecommendedProducts;
     private RecommendationProductAdapter productAdapter;
     private View skinAnalysisRoot;
@@ -64,6 +64,7 @@ public class SkinAnalysisFragment extends Fragment {
         progressScore = view.findViewById(R.id.progressScore);
         rvRecommendedProducts = view.findViewById(R.id.rvRecommendedProducts);
         cardHealthScore = view.findViewById(R.id.cardHealthScore);
+        cardAiVerdict = view.findViewById(R.id.cardAiVerdict);
         
         setupProductRecyclerView();
     }
@@ -72,7 +73,7 @@ public class SkinAnalysisFragment extends Fragment {
         if (rvRecommendedProducts == null) return;
         
         productAdapter = new RecommendationProductAdapter();
-        rvRecommendedProducts.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(requireContext()));
+        rvRecommendedProducts.setLayoutManager(new androidx.recyclerview.widget.GridLayoutManager(requireContext(), 2));
         rvRecommendedProducts.setAdapter(productAdapter);
         
         productAdapter.setOnProductClickListener(new RecommendationProductAdapter.OnProductClickListener() {
@@ -130,6 +131,7 @@ public class SkinAnalysisFragment extends Fragment {
         }
 
         if (cardHealthScore != null) cardHealthScore.setVisibility(View.VISIBLE);
+        if (cardAiVerdict != null) cardAiVerdict.setVisibility(View.VISIBLE);
         int healthScore = analysis.getHealthScore() != null ? analysis.getHealthScore() : 0;
 
         if (tvScore != null) tvScore.setText(String.valueOf(healthScore));
@@ -167,7 +169,13 @@ public class SkinAnalysisFragment extends Fragment {
 
         // Mapping Recommended Products
         if (productAdapter != null && recommendationData.getProducts() != null) {
-            productAdapter.setItems(recommendationData.getProducts());
+            java.util.List<com.example.frontend.data.model.recommendation.RecommendedProduct> products = new java.util.ArrayList<>(recommendationData.getProducts());
+            java.util.Collections.sort(products, (p1, p2) -> {
+                Double s1 = p1.getScore() != null ? p1.getScore() : 0.0;
+                Double s2 = p2.getScore() != null ? p2.getScore() : 0.0;
+                return Double.compare(s2, s1);
+            });
+            productAdapter.setItems(products);
         }
 
         // Mapping Ideal Ingredients

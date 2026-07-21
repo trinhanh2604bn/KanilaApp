@@ -2,8 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="160dp"
-    android:layout_height="wrap_content"
+    android:layout_width="120dp"
+    android:layout_height="120dp"
+    android:layout_marginEnd="@dimen/spacing_m"
     android:background="@drawable/bg_community_card"
     android:clickable="true"
     android:focusable="true"
@@ -12,7 +13,7 @@
     <ImageView
         android:id="@+id/ivDiscoveryImage"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:contentDescription="@null"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,5 +21,24 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:src="@drawable/bg_circle" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#40000000" />
+
+    <TextView
+        android:id="@+id/tvDiscoveryTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:fontFamily="@font/nunito_bold"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Son môi" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

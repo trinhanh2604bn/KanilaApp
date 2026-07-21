@@ -51,7 +51,6 @@ public class ReviewListFragment extends Fragment {
     private RecyclerView rvReviews;
     private View layoutEmpty;
     private View scrollFilters;
-    private TextView tvMyReviewsTitle;
     private String currentFilter = "all";
 
     public static ReviewListFragment newInstance(String productId) {
@@ -90,11 +89,11 @@ public class ReviewListFragment extends Fragment {
     }
 
     private void initViews(View view) {
+        setupTopBar(view);
         cgReviewFilters = view.findViewById(R.id.cgReviewFilters);
         rvReviews = view.findViewById(R.id.rvReviews);
         layoutEmpty = view.findViewById(R.id.layoutEmpty);
         scrollFilters = view.findViewById(R.id.scrollFilters);
-        tvMyReviewsTitle = view.findViewById(R.id.tvMyReviewsTitle);
 
         rvReviews.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
 
@@ -111,8 +110,35 @@ public class ReviewListFragment extends Fragment {
         }
     }
 
+    private void setupTopBar(View view) {
+        View topBar = view.findViewById(R.id.layoutTopBar);
+        if (topBar == null) return;
+
+        // If inside ReviewHubFragment, hide the redundant header entirely
+        if (getParentFragment() instanceof ReviewHubFragment) {
+            topBar.setVisibility(View.GONE);
+            return;
+        }
+
+        TextView tvTitle = topBar.findViewById(R.id.tvTopBarTitle);
+        if (tvTitle != null) {
+            tvTitle.setText(productId != null ? "Đánh giá sản phẩm" : "Đánh giá của tôi");
+        }
+
+        View btnBack = topBar.findViewById(R.id.btnTopBarBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> {
+                if (getActivity() != null) getActivity().getOnBackPressedDispatcher().onBackPressed();
+            });
+        }
+
+        View btnSearch = topBar.findViewById(R.id.btnTopBarSearch);
+        if (btnSearch != null) {
+            btnSearch.setVisibility(View.GONE);
+        }
+    }
+
     private void setupProductReviews(View view) {
-        if (tvMyReviewsTitle != null) tvMyReviewsTitle.setVisibility(View.GONE);
         if (scrollFilters != null) scrollFilters.setVisibility(View.VISIBLE);
 
         reviewAdapter = new ReviewAdapter();
@@ -137,7 +163,6 @@ public class ReviewListFragment extends Fragment {
     }
 
     private void setupMyReviews(View view) {
-        if (tvMyReviewsTitle != null) tvMyReviewsTitle.setVisibility(View.VISIBLE);
         if (scrollFilters != null) scrollFilters.setVisibility(View.GONE);
 
         myReviewAdapter = new MyReviewAdapter(review -> 

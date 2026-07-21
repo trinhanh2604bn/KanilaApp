@@ -20,6 +20,7 @@ import com.example.frontend.data.model.product.SkinMatchDto;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import ui.account.BeautyProfileActivity;
 
 import java.util.List;
 import java.util.Locale;
@@ -84,11 +85,22 @@ public class SkinMatchDetailBottomSheet extends BottomSheetDialogFragment {
         String levelName = "Phù hợp";
         int colorRes = R.color.button;
         String explanation = null;
+        boolean isEstimated = false;
 
         if (data != null) {
-            scoreValue = data.getScore() != null ? data.getScore() : (data.getEstimatedScore() != null ? data.getEstimatedScore() : 0);
+            // Determine the display score: prefer actual score, fall back to estimated_score
+            Integer actualScore = data.getScore();
+            Integer estimatedScore = data.getEstimatedScore();
+            isEstimated = data.isEstimated() || (actualScore == null || actualScore == 0) && estimatedScore != null && estimatedScore > 0;
+
+            if (isEstimated && estimatedScore != null && estimatedScore > 0) {
+                scoreValue = estimatedScore;
+            } else {
+                scoreValue = actualScore != null ? actualScore : 0;
+            }
+
             explanation = data.getMatchExplanation();
-            
+
             // Handle Status Description based on Integration Guide
             if (data.getStatus() != null) {
                 switch (data.getStatus()) {
@@ -96,14 +108,22 @@ public class SkinMatchDetailBottomSheet extends BottomSheetDialogFragment {
                         tvStatusDesc.setText("Cần tạo hồ sơ làm đẹp để xem kết quả phân tích.");
                         break;
                     case PROFILE_INCOMPLETE:
-                        tvStatusDesc.setText("Hồ sơ chưa hoàn thiện. Cập nhật ngay để kết quả chính xác hơn.");
+                        if (isEstimated) {
+                            tvStatusDesc.setText("Kết quả ước tính. Hoàn thiện hồ sơ để độ chính xác cao hơn.");
+                        } else {
+                            tvStatusDesc.setText("Hồ sơ chưa hoàn thiện. Cập nhật ngay để kết quả chính xác hơn.");
+                        }
                         break;
                     case INSUFFICIENT_PRODUCT_DATA:
                         tvStatusDesc.setText("Chưa đủ dữ liệu sản phẩm để phân tích chi tiết.");
                         break;
                     default:
                         int indicators = data.getConfidenceScore() != null ? data.getConfidenceScore() : 24;
-                        tvStatusDesc.setText(String.format(Locale.US, "Dựa trên phân tích %d chỉ số da của bạn.", indicators));
+                        if (isEstimated) {
+                            tvStatusDesc.setText(String.format(Locale.US, "Kết quả ước tính dựa trên %d chỉ số da (độ tin cậy %d%%).", indicators, indicators));
+                        } else {
+                            tvStatusDesc.setText(String.format(Locale.US, "Dựa trên phân tích %d chỉ số da của bạn.", indicators));
+                        }
                         break;
                 }
             }
@@ -123,8 +143,10 @@ public class SkinMatchDetailBottomSheet extends BottomSheetDialogFragment {
                         colorRes = R.color.status_pending_text;
                         break;
                     case CAUTION:
-                        levelName = "Cần lưu ý";
-                        colorRes = R.color.error;
+                        // CAUTION with hard conflicts: use red; CAUTION without conflicts: use amber
+                        boolean hasHardConflicts = data.getHardConflicts() != null && !data.getHardConflicts().isEmpty();
+                        levelName = hasHardConflicts ? "Cần lưu ý" : "Thận trọng";
+                        colorRes = hasHardConflicts ? R.color.error : R.color.status_pending_text;
                         break;
                     case INSUFFICIENT_DATA:
                         levelName = "Chưa đủ dữ liệu";
@@ -141,7 +163,7 @@ public class SkinMatchDetailBottomSheet extends BottomSheetDialogFragment {
             else colorRes = R.color.error;
         }
 
-        android.util.Log.d("SkinMatchSheet", "Match Explanation: " + explanation);
+        android.util.Log.d("SkinMatchSheet", "Match Explanation: " + explanation + ", estimated: " + isEstimated + ", score: " + scoreValue);
 
         // Bind Match Explanation
         if (tvMatchExplanation != null) {
@@ -153,7 +175,16 @@ public class SkinMatchDetailBottomSheet extends BottomSheetDialogFragment {
             }
         }
 
-        tvScore.setText(String.format(Locale.US, "%d%%", scoreValue));
+        // Show score: "?" for PROFILE_REQUIRED, "≈XX%" for estimated, "XX%" otherwise
+        if (data != null && data.getStatus() == com.example.frontend.data.model.product.SkinMatchDto.Status.PROFILE_REQUIRED) {
+            tvScore.setText("?");
+        } else if (isEstimated && scoreValue > 0) {
+            tvScore.setText(String.format(Locale.US, "≈%d%%", scoreValue));
+        } else if (scoreValue > 0) {
+            tvScore.setText(String.format(Locale.US, "%d%%", scoreValue));
+        } else {
+            tvScore.setText("?");
+        }
         tvLevel.setText(levelName);
         tvLevel.setTextColor(ContextCompat.getColor(requireContext(), colorRes));
         viewScoreCircle.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), colorRes)));
@@ -246,7 +277,7 @@ public class SkinMatchDetailBottomSheet extends BottomSheetDialogFragment {
 
         view.findViewById(R.id.btnUpdateProfile).setOnClickListener(v -> {
             // Updated to use appropriate activity for skin profile update
-            startActivity(new Intent(requireContext(), ui.account.BeautyProfileActivity.class));
+            startActivity(new Intent(requireContext(), BeautyProfileActivity.class));
             dismiss();
         });
     }
@@ -285,7 +316,7 @@ public class SkinMatchDetailBottomSheet extends BottomSheetDialogFragment {
 
         // Navigate to Kanila Beauty profile when clicking on a reason
         itemView.setOnClickListener(v -> {
-            startActivity(new Intent(requireContext(), ui.account.BeautyProfileActivity.class));
+            startActivity(new Intent(requireContext(), BeautyProfileActivity.class));
             dismiss();
         });
 

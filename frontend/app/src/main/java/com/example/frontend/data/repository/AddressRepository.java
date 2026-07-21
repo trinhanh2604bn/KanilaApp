@@ -129,4 +129,28 @@ public class AddressRepository {
             }
         });
     }
+
+    public void deleteAddress(String id, MutableLiveData<NetworkResult<Object>> result) {
+        result.setValue(NetworkResult.loading());
+        apiService.deleteAddress(id).enqueue(new Callback<ApiResponse<Object>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Object>> call, Response<ApiResponse<Object>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<Object> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        result.setValue(NetworkResult.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(NetworkResult.error(apiResponse.getMessage()));
+                    }
+                } else {
+                    result.setValue(NetworkResult.error("Failed to delete address"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Object>> call, Throwable t) {
+                result.setValue(NetworkResult.error(t.getMessage()));
+            }
+        });
+    }
 }

@@ -157,7 +157,7 @@ public class AccountSettingsFragment extends Fragment {
         // 1. Clear token locally
         TokenManager.getInstance(requireContext()).clearToken();
 
-        // 2. Reset ViewModels state to avoid "Success" message from previous session
+        // 2. Reset ViewModels state
         com.example.frontend.feature.auth.AuthViewModel authViewModel = 
                 new androidx.lifecycle.ViewModelProvider(requireActivity()).get(com.example.frontend.feature.auth.AuthViewModel.class);
         authViewModel.resetStates();
@@ -165,6 +165,11 @@ public class AccountSettingsFragment extends Fragment {
         com.example.frontend.feature.recommendation.RecommendationViewModel recommendationViewModel =
                 new androidx.lifecycle.ViewModelProvider(requireActivity()).get(com.example.frontend.feature.recommendation.RecommendationViewModel.class);
         recommendationViewModel.clearData();
+
+        // Refresh cart to update badge count immediately after logout
+        com.example.frontend.feature.cart.CartViewModel cartViewModel =
+                new androidx.lifecycle.ViewModelProvider(requireActivity()).get(com.example.frontend.feature.cart.CartViewModel.class);
+        cartViewModel.loadCart();
 
         com.example.frontend.core.auth.AuthRequiredManager.getInstance().clearPendingAction();
         

@@ -71,7 +71,7 @@ async function findProductsForComparison(message, productIds = []) {
 function compareProducts(products, customerProfile) {
   const comparison = {
     products: [],
-    differences: [],
+    differences: {},
     pros_cons: {},
     recommendation: "" // Will be explained by Gemini, but we can set structure here
   };
@@ -101,23 +101,14 @@ function compareProducts(products, customerProfile) {
     const diff = Math.abs(p1.price - p2.price);
     if (diff > 0) {
       const cheaper = p1.price < p2.price ? p1.productName : p2.productName;
-      comparison.differences.push({
-        feature: "price",
-        description: `Sản phẩm ${cheaper} rẻ hơn ${diff.toLocaleString('vi-VN')}đ`
-      });
+      comparison.differences["price"] = `Sản phẩm ${cheaper} rẻ hơn ${diff.toLocaleString('vi-VN')}đ`;
     } else {
-      comparison.differences.push({
-        feature: "price",
-        description: `Hai sản phẩm có cùng mức giá (${p1.price.toLocaleString('vi-VN')}đ)`
-      });
+      comparison.differences["price"] = `Hai sản phẩm có cùng mức giá (${p1.price.toLocaleString('vi-VN')}đ)`;
     }
     
     // Category difference
     if (p1.categoryId?._id?.toString() !== p2.categoryId?._id?.toString()) {
-      comparison.differences.push({
-        feature: "category",
-        description: `Chúng phục vụ mục đích khác nhau: ${p1.productName} là ${p1.categoryId?.categoryName}, còn ${p2.productName} là ${p2.categoryId?.categoryName}.`
-      });
+      comparison.differences["category"] = `Chúng phục vụ mục đích khác nhau: ${p1.productName} là ${p1.categoryId?.categoryName}, còn ${p2.productName} là ${p2.categoryId?.categoryName}.`;
     }
     
     // Skin match
@@ -135,7 +126,7 @@ function compareProducts(products, customerProfile) {
       } else {
         desc = `Cả hai không đặc biệt dành cho da ${customerProfile.skin_type}.`;
       }
-      comparison.differences.push({ feature: "skin_match", description: desc });
+      comparison.differences["skin_match"] = desc;
     }
     
     // Pros & Cons
@@ -189,7 +180,12 @@ async function handleProductComparison(message, user, productIds, history) {
   const comparison = compareProducts(products, customerProfile);
   
   // Need to call gemini provider
-  const botReply = await generateProductComparisonReply(message, comparison, customerProfile, history);
+  let botReply;
+  try {
+    botReply = await generateProductComparisonReply(message, comparison, customerProfile, history);
+  } catch (e) {
+    botReply = `Mình đã phân tích ${comparison.products.length} sản phẩm. Bạn có thể xem chi tiết sự khác biệt và ưu nhược điểm của từng loại dưới đây.`;
+  }
   
   return {
     botText: botReply,

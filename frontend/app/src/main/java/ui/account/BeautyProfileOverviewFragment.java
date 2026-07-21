@@ -462,7 +462,7 @@ public class BeautyProfileOverviewFragment extends Fragment {
         
         View btnAnalyzeSkin = view.findViewById(R.id.btnAnalyzeSkin);
         if (btnAnalyzeSkin != null) {
-            btnAnalyzeSkin.setOnClickListener(v -> navigateToFragment(new RecommendationLookFragment()));
+            btnAnalyzeSkin.setOnClickListener(v -> navigateToFragment(new SkinAnalysisFragment()));
         }
 
         View btnSavedRoutines = view.findViewById(R.id.btnSavedRoutines);
@@ -472,7 +472,7 @@ public class BeautyProfileOverviewFragment extends Fragment {
 
         View btnViewAllRec = view.findViewById(R.id.btnViewAllRec);
         if (btnViewAllRec != null) {
-            btnViewAllRec.setOnClickListener(v -> navigateToFragment(new RecommendationLookFragment()));
+            btnViewAllRec.setOnClickListener(v -> navigateToFragment(new SkinAnalysisFragment()));
         }
     }
 

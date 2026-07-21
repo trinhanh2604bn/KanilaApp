@@ -1,0 +1,91 @@
+{
+  "mappings": {
+    "dynamic": false,
+    "fields": {
+      "product_name": {
+        "type": "string",
+        "analyzer": "lucene.standard",
+        "multi": {
+          "autocomplete": {
+            "type": "autocomplete",
+            "analyzer": "lucene.standard",
+            "tokenization": "nGram",
+            "minGrams": 2,
+            "maxGrams": 15,
+            "foldDiacritics": true
+          }
+        }
+      },
+      "brand_name": {
+        "type": "string",
+        "analyzer": "lucene.standard",
+        "multi": {
+          "autocomplete": {
+            "type": "autocomplete",
+            "analyzer": "lucene.standard",
+            "tokenization": "nGram",
+            "minGrams": 2,
+            "maxGrams": 15,
+            "foldDiacritics": true
+          }
+        }
+      },
+      "category_names": {
+        "type": "string",
+        "analyzer": "lucene.standard"
+      },
+      "ingredient_text": {
+        "type": "string",
+        "analyzer": "lucene.standard"
+      },
+      "product_code": {
+        "type": "token"
+      },
+      "variant_skus": {
+        "type": "token"
+      },
+      "barcodes": {
+        "type": "token"
+      },
+      "brand_id": {
+        "type": "objectId"
+      },
+      "category_ids": {
+        "type": "objectId"
+      },
+      "price": {
+        "type": "number"
+      },
+      "average_rating": {
+        "type": "number"
+      },
+      "in_stock": {
+        "type": "boolean"
+      },
+      "is_active": {
+        "type": "boolean"
+      },
+      "product_status": {
+        "type": "string"
+      },
+      "ar_supported": {
+        "type": "boolean"
+      },
+      "sensitive_friendly": {
+        "type": "boolean"
+      },
+      "skin_types": {
+        "type": "string"
+      },
+      "skin_concerns": {
+        "type": "string"
+      },
+      "texture": {
+        "type": "string"
+      },
+      "finish": {
+        "type": "string"
+      }
+    }
+  }
+}

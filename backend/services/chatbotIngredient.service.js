@@ -119,7 +119,18 @@ async function handleIngredientAnalysis(message, user, history) {
     skin_compatibility: compatibilityContext
   };
 
-  const botReply = await generateIngredientReply(message, contextObj, history);
+  let botReply;
+  try {
+    botReply = await generateIngredientReply(message, contextObj, history);
+  } catch (e) {
+    if (ingData) {
+      botReply = `${ingData.name} là một thành phần tốt. ${compatibilityContext ? compatibilityContext.reason : ''} ${productContext ? (productContext.has_ingredient ? `Sản phẩm ${productContext.name} có chứa thành phần này.` : `Sản phẩm ${productContext.name} không chứa thành phần này.`) : ''}`;
+    } else if (productContext) {
+      botReply = `Sản phẩm ${productContext.name} có các thành phần chính: ${productContext.ingredients.join(', ')}.`;
+    } else {
+      botReply = "Đây là thông tin về thành phần bạn quan tâm.";
+    }
+  }
 
   return {
     botText: botReply,
@@ -154,7 +165,12 @@ async function handleIngredientCompatibility(message, user, history) {
     }
   };
 
-  const botReply = await generateIngredientReply(message, contextObj, history);
+  let botReply;
+  try {
+    botReply = await generateIngredientReply(message, contextObj, history);
+  } catch (e) {
+    botReply = `Mức độ kết hợp giữa ${contextObj.compatibility_check.ingredient1} và ${contextObj.compatibility_check.ingredient2} là ${contextObj.compatibility_check.level}. Lý do: ${contextObj.compatibility_check.reason}`;
+  }
 
   return {
     botText: botReply,

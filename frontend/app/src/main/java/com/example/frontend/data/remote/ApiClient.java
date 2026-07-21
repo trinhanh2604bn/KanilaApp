@@ -10,8 +10,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
     // Emulator: http://10.0.2.2:5000/
-     //Physical Device: http://192.168.171.141:5000/ (e.g., http://192.168.1.5:5000/)
-    private static final String BASE_URL = "http://10.0.2.2:5000/";
+     //Physical Device: http://192.168.171.141:5000/ (e.g., http://192.168.1.5:5000/) (GIA NGAN HELUS) http://192.168.171.111:5000 (ANH: http://10.160.98.213:5000/)
+    //192.168.171.109 (phú)
+    public static final String BASE_URL = "http://10.190.206.213:5000/";
+    // Important: must end with / for Retrofit
+    // Physical Device: http://10.160.98.213:5000/ (e.g., http://192.168.1.5:5000/) (GIA NGAN HELUS) http://10.160.98.85:5000/ (ANH: http://10.160.98.213:5000/)
+//    TT: 192.168.110.214  ;   192.168.171.212
+
 
     private static Retrofit retrofit;
 
@@ -22,14 +27,16 @@ public class ApiClient {
             logging.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
 
             TokenManager tokenManager = TokenManager.getInstance(context);
-            AuthInterceptor authInterceptor = new AuthInterceptor(tokenManager);
+            AuthInterceptor authInterceptor = new AuthInterceptor(context, tokenManager);
+            NetworkRetryInterceptor retryInterceptor = new NetworkRetryInterceptor(3);
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(logging)
                     .addInterceptor(authInterceptor)
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .addInterceptor(retryInterceptor)
+                    .connectTimeout(1200, TimeUnit.SECONDS)
+                    .readTimeout(1200, TimeUnit.SECONDS)
+                    .writeTimeout(1200, TimeUnit.SECONDS)
                     .build();
 
             retrofit = new Retrofit.Builder()

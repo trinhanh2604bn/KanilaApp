@@ -68,7 +68,7 @@ public class ChatbotRepository {
                         if (errorMessage == null || errorMessage.isEmpty()) {
                             errorMessage = "Mình chưa thể trả lời bạn, hãy thử sau";
                         }
-                        result.setValue(NetworkResult.error(errorMessage));
+                        result.setValue(NetworkResult.error(errorMessage, chatbotResponse));
                     }
                 } else {
                     // This is for non-2xx HTTP responses or null body

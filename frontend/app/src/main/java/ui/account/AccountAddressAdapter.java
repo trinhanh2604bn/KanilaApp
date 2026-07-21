@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.frontend.R;
 import com.example.frontend.data.model.address.AddressDto;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AccountAddressAdapter extends RecyclerView.Adapter<AccountAddressAdapter.ViewHolder> {
@@ -20,14 +21,39 @@ public class AccountAddressAdapter extends RecyclerView.Adapter<AccountAddressAd
     public interface OnAddressActionListener {
         void onSetDefault(AddressDto address);
         void onEdit(AddressDto address);
+        default void onAddressSelected(AddressDto address) {}
     }
+
+    private boolean selectionMode = false;
+    private String selectedAddressId;
 
     public AccountAddressAdapter(OnAddressActionListener listener) {
         this.listener = listener;
     }
 
+    public void setSelectionMode(boolean selectionMode) {
+        this.selectionMode = selectionMode;
+        notifyDataSetChanged();
+    }
+
+    public void setSelectedAddressId(String id) {
+        this.selectedAddressId = id;
+        notifyDataSetChanged();
+    }
+
     public void setAddresses(List<AddressDto> addresses) {
-        this.addressList = addresses != null ? addresses : new ArrayList<>();
+        if (addresses != null) {
+            this.addressList = new ArrayList<>(addresses);
+            // Sắp xếp: Địa chỉ mặc định lên đầu
+            Collections.sort(this.addressList, (a, b) -> {
+                boolean defA = a.isDefault();
+                boolean defB = b.isDefault();
+                if (defA == defB) return 0;
+                return defA ? -1 : 1;
+            });
+        } else {
+            this.addressList = new ArrayList<>();
+        }
         notifyDataSetChanged();
     }
 
@@ -43,14 +69,18 @@ public class AccountAddressAdapter extends RecyclerView.Adapter<AccountAddressAd
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         AddressDto address = addressList.get(position);
 
-        holder.tvName.setText(address.getFullName() != null ? address.getFullName() : "");
-        holder.tvPhone.setText(address.getPhone() != null ? address.getPhone() : "");
-        holder.tvDetail.setText(address.getAddressLine() != null ? address.getAddressLine() : "");
+        holder.tvName.setText(address.getRecipientName() != null && !address.getRecipientName().isEmpty() 
+                ? address.getRecipientName() : "Người nhận chưa có tên");
+        holder.tvPhone.setText(address.getPhone() != null && !address.getPhone().isEmpty() 
+                ? address.getPhone() : "Chưa có số điện thoại");
+        holder.tvDetail.setText(address.getFullAddress() != null && !address.getFullAddress().isEmpty() 
+                ? address.getFullAddress() : "Chưa có địa chỉ chi tiết");
 
-        boolean isDefault = address.isDefaultShipping();
+        boolean isDefault = address.isDefault();
+        boolean isSelected = (selectionMode && address.getId() != null && address.getId().equals(selectedAddressId)) || (!selectionMode && isDefault);
 
-        // 1. Nền hồng cho địa chỉ mặc định (Sử dụng state_selected của bg_address_card)
-        holder.layoutItem.setSelected(isDefault);
+        // 1. Highlight card
+        holder.layoutItem.setSelected(isSelected);
 
         // 2. Badge mặc định
         if (isDefault) {
@@ -60,10 +90,18 @@ public class AccountAddressAdapter extends RecyclerView.Adapter<AccountAddressAd
             holder.layoutDefaultTag.setVisibility(View.GONE);
         }
 
-        // 3. Ẩn Radio Button (theo yêu cầu quản lý Account)
-        holder.ivRadio.setVisibility(View.GONE);
+        // 3. Radio Button visibility
+        holder.ivRadio.setVisibility(selectionMode ? View.VISIBLE : View.GONE);
+        holder.ivRadio.setSelected(isSelected);
 
-        // 4. Nút "Thiết lập mặc định" (giống Checkout)
+        // 4. Click handling for selection
+        holder.layoutItem.setOnClickListener(v -> {
+            if (selectionMode && listener != null) {
+                listener.onAddressSelected(address);
+            }
+        });
+
+        // 5. Nút "Thiết lập mặc định" (giống Checkout)
         if (holder.tvSetDefault != null) {
             holder.tvSetDefault.setVisibility(isDefault ? View.GONE : View.VISIBLE);
             holder.tvSetDefault.setOnClickListener(v -> {
@@ -75,6 +113,11 @@ public class AccountAddressAdapter extends RecyclerView.Adapter<AccountAddressAd
         holder.btnEdit.setOnClickListener(v -> {
             if (listener != null) listener.onEdit(address);
         });
+
+        // 6. Ẩn nút "Lưu vào sổ địa chỉ" (vì đây đã là sổ địa chỉ rồi)
+        if (holder.tvSaveToAccount != null) {
+            holder.tvSaveToAccount.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -83,7 +126,7 @@ public class AccountAddressAdapter extends RecyclerView.Adapter<AccountAddressAd
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvPhone, tvDetail, tvDefaultText, tvSetDefault;
+        TextView tvName, tvPhone, tvDetail, tvDefaultText, tvSetDefault, tvSaveToAccount;
         View layoutDefaultTag, layoutItem;
         ImageView ivRadio, btnEdit;
 
@@ -96,6 +139,7 @@ public class AccountAddressAdapter extends RecyclerView.Adapter<AccountAddressAd
             layoutDefaultTag = itemView.findViewById(R.id.layoutAddressDefaultTag);
             tvDefaultText = itemView.findViewById(R.id.tvAddressDefaultText);
             tvSetDefault = itemView.findViewById(R.id.tvSetDefault);
+            tvSaveToAccount = itemView.findViewById(R.id.tvSaveToAccount);
             ivRadio = itemView.findViewById(R.id.ivAddressRadio);
             btnEdit = itemView.findViewById(R.id.btnAddressEdit);
         }

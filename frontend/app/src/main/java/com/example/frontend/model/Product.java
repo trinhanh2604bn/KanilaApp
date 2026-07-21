@@ -82,6 +82,11 @@ public class Product {
     @SerializedName("hasAr")
     private boolean hasAr;
 
+    @SerializedName(value = "arType", alternate = {"ar_type"})
+    private String arType;
+
+    private double score;
+
     private boolean isFavorite;
 
     private int imageResource;
@@ -179,6 +184,14 @@ public class Product {
     public boolean hasAr() { return hasAr; }
 
     public void setHasAr(boolean hasAr) { this.hasAr = hasAr; }
+
+    public String getArType() { return arType; }
+    
+    public void setArType(String arType) { this.arType = arType; }
+
+    public double getScore() { return score; }
+
+    public void setScore(double score) { this.score = score; }
     
     public String getBadgeText() { 
         if (badgeText != null && !badgeText.isEmpty()) return badgeText;

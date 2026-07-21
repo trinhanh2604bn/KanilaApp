@@ -1,29 +1,30 @@
 package com.example.frontend.feature.search;
 
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.frontend.R;
 import com.example.frontend.model.Product;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.bumptech.glide.Glide;
+import java.util.Locale;
 
 public class SearchRecommendProductAdapter extends RecyclerView.Adapter<SearchRecommendProductAdapter.ViewHolder> {
 
-    private List<Product> productList = new ArrayList<>();
-    private OnProductClickListener listener;
-    private OnWishlistClickListener wishlistListener;
+    private final List<Product> productList = new ArrayList<>();
+    private OnProductClickListener clickListener;
+    private OnWishlistClickListener wishlistClickListener;
 
     public interface OnProductClickListener {
         void onProductClick(Product product);
@@ -35,89 +36,33 @@ public class SearchRecommendProductAdapter extends RecyclerView.Adapter<SearchRe
     }
 
     public void setOnProductClickListener(OnProductClickListener listener) {
-        this.listener = listener;
+        this.clickListener = listener;
     }
 
     public void setOnWishlistClickListener(OnWishlistClickListener listener) {
-        this.wishlistListener = listener;
+        this.wishlistClickListener = listener;
     }
 
-    public void setItems(List<Product> items) {
-        this.productList = items;
+    public void setItems(List<Product> newItems) {
+        productList.clear();
+        if (newItems != null) {
+            productList.addAll(newItems);
+        }
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product_card, parent, false);
-        // Ensure item fills the grid column
-        ViewGroup.LayoutParams params = view.getLayoutParams();
-        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        view.setLayoutParams(params);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_product_card, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Product product = productList.get(position);
-        holder.tvProductName.setText(product.getName());
-        holder.tvProductBrand.setText(product.getBrand());
-        holder.tvProductPrice.setText(product.getPrice());
-        
-        if (holder.tvProductReviewCount != null) {
-            holder.tvProductReviewCount.setText("(" + product.getReviewCount() + ")");
-        }
-        
-        if (holder.tvProductRating != null) {
-            try {
-                holder.tvProductRating.setRating(Float.parseFloat(product.getRating()));
-            } catch (Exception e) {
-                holder.tvProductRating.setRating(0);
-            }
-        }
-
-        if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
-            Glide.with(holder.ivProductImage.getContext())
-                    .load(product.getImageUrl())
-                    .placeholder(R.drawable.ic_product)
-                    .error(R.drawable.ic_product)
-                    .into(holder.ivProductImage);
-        } else {
-            holder.ivProductImage.setImageResource(product.getImageResource() != 0 ? product.getImageResource() : R.drawable.ic_product);
-        }
-
-        if (holder.layoutProductStatusBadge != null) {
-            if (product.getBadgeText() != null && !product.getBadgeText().isEmpty()) {
-                holder.tvProductBadge.setText(product.getBadgeText());
-                holder.layoutProductStatusBadge.setVisibility(View.VISIBLE);
-            } else {
-                holder.layoutProductStatusBadge.setVisibility(View.GONE);
-            }
-        }
-
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) listener.onProductClick(product);
-        });
-        
-        if (holder.btnWishlist != null) {
-            holder.btnWishlist.setSelected(product.isFavorite());
-            holder.btnWishlist.setOnClickListener(v -> {
-                if (wishlistListener != null) {
-                    wishlistListener.onWishlistClick(product, position);
-                } else {
-                    boolean newState = !product.isFavorite();
-                    product.setFavorite(newState);
-                    v.setSelected(newState);
-                }
-            });
-        }
-        
-        if (holder.btnAddToCart != null) {
-            holder.btnAddToCart.setOnClickListener(v -> {
-                if (listener != null) listener.onAddToCartClick(product);
-            });
-        }
+        holder.bind(product, clickListener, wishlistClickListener, position);
     }
 
     @Override
@@ -127,23 +72,93 @@ public class SearchRecommendProductAdapter extends RecyclerView.Adapter<SearchRe
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProductImage;
-        TextView tvProductName, tvProductBrand, tvProductPrice, tvProductReviewCount, tvProductBadge;
-        RatingBar tvProductRating;
+        TextView tvProductBrand;
+        TextView tvProductName;
+        TextView tvProductPrice;
+        TextView tvProductOriginalPrice;
+        TextView tvProductRating;
+        TextView tvProductReviewCount;
+        ImageButton btnAddToCart;
+        ImageButton btnWishlist;
         View layoutProductStatusBadge;
-        ImageButton btnWishlist, btnAddToCart;
+        TextView tvProductBadge;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivProductImage = itemView.findViewById(R.id.ivProductImage);
-            tvProductName = itemView.findViewById(R.id.tvProductName);
             tvProductBrand = itemView.findViewById(R.id.tvProductBrand);
+            tvProductName = itemView.findViewById(R.id.tvProductName);
             tvProductPrice = itemView.findViewById(R.id.tvProductPrice);
-            tvProductReviewCount = itemView.findViewById(R.id.tvProductReviewCount);
-            tvProductBadge = itemView.findViewById(R.id.tvProductBadge);
+            tvProductOriginalPrice = itemView.findViewById(R.id.tvProductOriginalPrice);
             tvProductRating = itemView.findViewById(R.id.tvProductRating);
-            layoutProductStatusBadge = itemView.findViewById(R.id.layoutProductStatusBadge);
-            btnWishlist = itemView.findViewById(R.id.btnWishlist);
+            tvProductReviewCount = itemView.findViewById(R.id.tvProductReviewCount);
             btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
+            btnWishlist = itemView.findViewById(R.id.btnWishlist);
+            layoutProductStatusBadge = itemView.findViewById(R.id.layoutProductStatusBadge);
+            tvProductBadge = itemView.findViewById(R.id.tvProductBadge);
+        }
+
+        void bind(Product product, OnProductClickListener listener, OnWishlistClickListener wishlistListener, int position) {
+            if (product.getBrand() != null && !product.getBrand().isEmpty()) {
+                tvProductBrand.setText(product.getBrand());
+            } else {
+                tvProductBrand.setText("");
+            }
+            
+            tvProductName.setText(product.getName() != null ? product.getName() : "");
+
+            // Format price
+            NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+            tvProductPrice.setText(format.format(product.getPriceValue()));
+
+            // Original price / sale
+            if (product.getCompareAtPrice() != null && product.getCompareAtPrice() > product.getPriceValue()) {
+                tvProductOriginalPrice.setVisibility(View.VISIBLE);
+                tvProductOriginalPrice.setText(format.format(product.getCompareAtPrice()));
+                tvProductOriginalPrice.setPaintFlags(tvProductOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                
+                layoutProductStatusBadge.setVisibility(View.VISIBLE);
+                tvProductBadge.setText("SALE");
+            } else {
+                tvProductOriginalPrice.setVisibility(View.GONE);
+                layoutProductStatusBadge.setVisibility(View.GONE);
+            }
+
+            // Rating
+            double ratingVal = product.getAverageRatingValue();
+            if (ratingVal > 0) {
+                tvProductRating.setText(String.format("★ %.1f", ratingVal));
+                tvProductRating.setVisibility(View.VISIBLE);
+            } else {
+                tvProductRating.setVisibility(View.GONE);
+            }
+            tvProductReviewCount.setText(product.getReviewCount() != null ? "(" + product.getReviewCount() + ")" : "(0)");
+
+            // Image
+            if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
+                Glide.with(itemView.getContext())
+                        .load(product.getImageUrl())
+                        .placeholder(R.drawable.ic_product)
+                        .into(ivProductImage);
+            } else {
+                ivProductImage.setImageResource(R.drawable.ic_product);
+            }
+
+            // Wishlist state
+            btnWishlist.setSelected(product.isFavorite());
+
+            // Click listeners
+            itemView.setOnClickListener(v -> {
+                if (listener != null) listener.onProductClick(product);
+            });
+
+            btnAddToCart.setOnClickListener(v -> {
+                if (listener != null) listener.onAddToCartClick(product);
+            });
+
+            btnWishlist.setOnClickListener(v -> {
+                if (wishlistListener != null) wishlistListener.onWishlistClick(product, position);
+            });
         }
     }
 }

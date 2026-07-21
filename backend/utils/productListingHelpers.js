@@ -30,12 +30,14 @@ const PRODUCT_LISTING_FIELDS = [
   "coverage_type",
   "sales_count",
   "is_best_seller",
+  "hasAr",
 ].join(" ");
 
 /**
  * Lighter card/grid payload — omits extended facet fields the catalog derives from facet tables.
  * Opt-in: `GET /api/products?page=…&fields=card` (default remains full projection).
  */
+
 const PRODUCT_LISTING_FIELDS_CARD = [
   "productName",
   "productCode",
@@ -53,6 +55,7 @@ const PRODUCT_LISTING_FIELDS_CARD = [
   "productStatus",
   "shades",
   "skin_types_supported",
+  "hasAr",
 ].join(" ");
 
 const MAX_PAGE_SIZE = 100;
@@ -197,18 +200,9 @@ function buildMongoFilterFromQuery(query, opts = {}) {
 
   const searchRaw = query.search ?? query.q;
   if (searchRaw != null && String(searchRaw).trim()) {
-    const t = String(searchRaw).trim().slice(0, 120);
-    if (t.length > 0) {
-      const escaped = t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const rx = new RegExp(escaped, "i");
-      const codeNorm = t.replace(/\s+/g, "").toUpperCase();
-      const looksLikeProductCode = /^[A-Z0-9][A-Z0-9_-]*$/.test(codeNorm) && codeNorm.length <= 40;
-      if (looksLikeProductCode) {
-        filter.$or = [{ productCode: codeNorm }, { productName: rx }, { slug: rx }, { productCode: rx }];
-      } else {
-        filter.$or = [{ productName: rx }, { slug: rx }, { productCode: rx }];
-      }
-    }
+    // Search is now handled by SearchService.
+    // If a request reaches here with a search term (e.g. from a legacy route not fully migrated),
+    // we ignore it here because the controller should delegate to SearchService instead.
   }
 
   const brandParam = query.brandId;
@@ -291,6 +285,14 @@ if (concerns.length > 0) {
     if (shadeHexes.length > 0) {
       filter["shades.hex"] = { $in: shadeHexes };
     }
+  }
+
+  if (query.hasAr === "true" || query.hasAr === "1") {
+    filter.hasAr = true;
+  }
+  
+  if (query.arType && String(query.arType).trim() !== "") {
+    filter.ar_type = String(query.arType).trim().toUpperCase();
   }
 
   if (query.sensitiveOnly === "true" || query.sensitiveOnly === "1") {

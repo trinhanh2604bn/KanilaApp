@@ -155,32 +155,6 @@
                     tools:listitem="@layout/item_product_card" />
             </LinearLayout>
 
-            <!-- Quick Discovery -->
-            <LinearLayout
-                android:id="@+id/sectionQuickDiscovery"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_xl"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/spacing_m"
-                    android:fontFamily="@font/nunito_bold"
-                    android:text="@string/search_quick_discovery_title"
-                    android:textColor="@color/text_main"
-                    android:textSize="16sp" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvQuickDiscovery"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:orientation="horizontal"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/item_search_quick_discovery" />
-            </LinearLayout>
 
             <!-- Suggested Products (Keep but could be hidden or repurposed) -->
             <LinearLayout

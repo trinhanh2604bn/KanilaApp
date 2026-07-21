@@ -9,7 +9,6 @@ const connectDB = async () => {
 
     const conn = await mongoose.connect(mongoUri, {
       dbName: process.env.MONGO_DB_NAME || "kanila",
-      connectTimeoutMS: 10000, // 10 seconds timeout
     });
     console.log(`Connected to MongoDB: ${mongoose.connection.name}`);
     console.log(`Host: ${mongoose.connection.host}`);

@@ -22,11 +22,13 @@ import com.example.frontend.data.model.product.ProductDetailResponse;
 import com.example.frontend.data.remote.NetworkResult;
 import com.example.frontend.model.Product;
 import com.example.frontend.feature.product.adapter.ProductImageAdapter;
+import com.example.frontend.feature.cart.CartViewModel;
 import com.example.frontend.feature.product.adapter.ThumbnailAdapter;
 import com.example.frontend.feature.product.adapter.RecentlyViewedAdapter;
 import com.example.frontend.feature.home.HomeProductAdapter;
 import com.example.frontend.feature.product.adapter.ReviewMediaAdapter;
 import com.example.frontend.data.model.review.ReviewMediaDto;
+import com.example.frontend.data.model.review.ReviewDto;
 import com.example.frontend.data.model.cart.CartItemDto;
 import com.example.frontend.data.model.checkout.CheckoutSessionDto;
 import com.google.android.material.chip.Chip;
@@ -38,6 +40,7 @@ import android.text.style.ImageSpan;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import android.util.Log;
@@ -48,13 +51,14 @@ public class ProductDetailFragment extends Fragment {
 
     private ProductDetailViewModel viewModel;
     private ReviewViewModel reviewActionViewModel;
+    private CartViewModel cartViewModel;
     private String productId;
 
     private TextView tvName, tvBrand, tvPrice, tvComparePrice, tvGalleryCounter, tvRating, tvReviewCount, tvSoldCount, tvDesc, tvSelectedVariantName;
     private ViewPager2 vpGallery;
     private RecyclerView rvThumbnails, rvRecentlyViewed, rvRelatedProducts, rvReviewPreview;
     private ChipGroup cgBadges;
-    private View layoutSkinMatch, layoutReviewSummary, layoutOutOfStock, layoutLoading, layoutError, layoutRecentlyViewed;
+    private View layoutSkinMatch, layoutReviewSummary, layoutRatingSummary, layoutOutOfStock, layoutLoading, layoutError, layoutRecentlyViewed;
     private View btnAddToCart, btnBuyNow;
     private View layoutSectionDesc, layoutSectionIngredients, layoutSectionUsage;
 
@@ -93,6 +97,7 @@ public class ProductDetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ProductDetailViewModel.class);
         reviewActionViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
 
         initViews(view);
         setupAdapters(view);
@@ -132,6 +137,7 @@ public class ProductDetailFragment extends Fragment {
 
         layoutSkinMatch = view.findViewById(R.id.layoutSkinMatchScore);
         layoutReviewSummary = view.findViewById(R.id.layoutReviewSummary);
+        layoutRatingSummary = view.findViewById(R.id.layoutRatingSummary);
         layoutRecentlyViewed = view.findViewById(R.id.layoutRecentlyViewed);
         layoutOutOfStock = view.findViewById(R.id.layoutOutOfStockNotice);
 
@@ -206,14 +212,12 @@ public class ProductDetailFragment extends Fragment {
             });
         }
 
-        if (layoutReviewSummary != null) {
-            View btnViewAllReviews = layoutReviewSummary.findViewById(R.id.btnViewAllReviews);
-            if (btnViewAllReviews != null) {
-                btnViewAllReviews.setOnClickListener(v -> {
-                    ReviewHubFragment fragment = ReviewHubFragment.newInstance(productId);
-                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), fragment);
-                });
-            }
+        View btnViewAllReviews = view.findViewById(R.id.btnViewAllReviews);
+        if (btnViewAllReviews != null) {
+            btnViewAllReviews.setOnClickListener(v -> {
+                ReviewHubFragment fragment = ReviewHubFragment.newInstance(productId);
+                ui.common.FragmentNavigationHelper.loadFragment(getActivity(), fragment);
+            });
         }
 
         layoutSectionDesc = view.findViewById(R.id.layoutSectionDesc);
@@ -270,13 +274,49 @@ public class ProductDetailFragment extends Fragment {
 
         View btnWishlist = view.findViewById(R.id.btnWishlist);
         if (btnWishlist != null) {
-            btnWishlist.setOnClickListener(v -> viewModel.toggleWishlist());
+            btnWishlist.setOnClickListener(v -> {
+                if (com.example.frontend.data.remote.TokenManager.getInstance(requireContext()).isLoggedIn()) {
+                    viewModel.toggleWishlist();
+                } else {
+                    com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.ADD_TO_WISHLIST,
+                            "ProductDetail",
+                            0,
+                            null
+                    );
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
+                }
+            });
         }
 
         View btnCart = view.findViewById(R.id.btnCart);
         if (btnCart != null) {
-            btnCart.setOnClickListener(v -> {
-                ui.common.FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CartFragment());
+            View icon = btnCart.findViewById(R.id.btnCartIcon);
+            // Style icon for detail page (circular grey background)
+            if (icon != null) {
+                icon.setBackgroundResource(R.drawable.bg_circle);
+                icon.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#80F0F0F0")));
+                icon.setOnClickListener(v -> {
+                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CartFragment());
+                });
+            } else {
+                btnCart.setOnClickListener(v -> {
+                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), new ui.commerce.CartFragment());
+                });
+            }
+
+            ui.common.CartBadgeHelper.bindBadge(getViewLifecycleOwner(), btnCart, cartViewModel);
+        }
+
+        View btnArTryOn = view.findViewById(R.id.btnArTryOn);
+        if (btnArTryOn != null) {
+            btnArTryOn.setOnClickListener(v -> {
+                ProductDetailUiState state = viewModel.getUiState().getValue();
+                if (state != null && state.product != null && state.product.hasAr()) {
+                    android.content.Intent intent = new android.content.Intent(getContext(), com.example.frontend.feature.arcore.ArCoreTryOnActivity.class);
+                    intent.putExtra("product_id", state.product.getId());
+                    startActivity(intent);
+                }
             });
         }
     }
@@ -410,6 +450,10 @@ public class ProductDetailFragment extends Fragment {
             switch (result.status) {
                 case SUCCESS:
                     Toast.makeText(getContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    // Sync badge count by reloading cart in shared ViewModel
+                    if (cartViewModel != null) {
+                        cartViewModel.loadCart();
+                    }
                     break;
                 case ERROR:
                     Toast.makeText(getContext(), result.message, Toast.LENGTH_SHORT).show();
@@ -467,10 +511,7 @@ public class ProductDetailFragment extends Fragment {
         if (tvName != null) tvName.setText(product.getName());
         if (tvBrand != null) tvBrand.setText(product.getBrand());
 
-        TextView tvReviewSectionTitle = null;
-        if (layoutReviewSummary != null) {
-            tvReviewSectionTitle = layoutReviewSummary.findViewById(R.id.tvReviewSectionTitle);
-        }
+        TextView tvReviewSectionTitle = getView() != null ? getView().findViewById(R.id.tvReviewSectionTitle) : null;
 
         double averageRating = 0;
         int reviewCount = 0;
@@ -535,6 +576,40 @@ public class ProductDetailFragment extends Fragment {
             }
         }
 
+        if (layoutRatingSummary != null && state.reviewSummary != null) {
+            layoutRatingSummary.setVisibility(View.VISIBLE);
+            
+            TextView tvAvg = layoutRatingSummary.findViewById(R.id.tvAverageRating);
+            if (tvAvg != null) tvAvg.setText(String.format(Locale.US, "%.1f", state.reviewSummary.getAverageRating()));
+            
+            TextView tvCount = layoutRatingSummary.findViewById(R.id.tvReviewCount);
+            if (tvCount != null) tvCount.setText(String.format(Locale.US, "(%d đánh giá)", state.reviewSummary.getReviewCount()));
+            
+            RatingBar rbStars = layoutRatingSummary.findViewById(R.id.tvRatingStars);
+            if (rbStars != null) rbStars.setRating((float) state.reviewSummary.getAverageRating());
+
+            java.util.Map<String, Integer> dist = state.reviewSummary.getRatingDistribution();
+            if (dist != null) {
+                int total = state.reviewSummary.getReviewCount();
+                int[] rows = {1, 2, 3, 4, 5};
+                for (int star : rows) {
+                    int count = dist.getOrDefault(String.valueOf(star), 0);
+                    int percent = total > 0 ? (count * 100 / total) : 0;
+                    
+                    int progressId = getResources().getIdentifier("progressRating" + star, "id", getContext().getPackageName());
+                    int percentId = getResources().getIdentifier("tvRating" + star + "Percent", "id", getContext().getPackageName());
+                    
+                    android.widget.ProgressBar pb = layoutRatingSummary.findViewById(progressId);
+                    TextView tvPct = layoutRatingSummary.findViewById(percentId);
+                    
+                    if (pb != null) pb.setProgress(percent);
+                    if (tvPct != null) tvPct.setText(percent + "%");
+                }
+            }
+        } else if (layoutRatingSummary != null) {
+            layoutRatingSummary.setVisibility(View.GONE);
+        }
+
         if (tvDesc != null) {
             tvDesc.setText(product.getShortDescription() != null ? product.getShortDescription() : product.getSubcategory());
         }
@@ -558,7 +633,14 @@ public class ProductDetailFragment extends Fragment {
         if (reviewPreviewAdapter != null) {
             if (state.reviewPreviewList != null && !state.reviewPreviewList.isEmpty()) {
                 rvReviewPreview.setVisibility(View.VISIBLE);
-                reviewPreviewAdapter.submitList(state.reviewPreviewList);
+                
+                // Chỉ hiển thị tối đa 2 đánh giá (ngẫu nhiên)
+                List<ReviewDto> previewList = new ArrayList<>(state.reviewPreviewList);
+                if (previewList.size() > 2) {
+                    Collections.shuffle(previewList);
+                    previewList = previewList.subList(0, 2);
+                }
+                reviewPreviewAdapter.submitList(previewList);
             } else {
                 rvReviewPreview.setVisibility(View.GONE);
             }
@@ -599,12 +681,22 @@ public class ProductDetailFragment extends Fragment {
         if (state.detailedSkinMatch != null && layoutSkinMatch != null) {
             bindSkinMatchData(state.detailedSkinMatch);
         } else if (state.skinMatch != null && layoutSkinMatch != null) {
-            // Fallback to legacy data
-            layoutSkinMatch.setVisibility(View.VISIBLE);
-            TextView tvScore = layoutSkinMatch.findViewById(R.id.tvSkinMatchScore);
-            if (tvScore != null) tvScore.setText(String.format(Locale.US, "%d%%", state.skinMatch.getScore()));
+            String fallbackStatus = state.skinMatch.getStatus();
+            if ("INSUFFICIENT_PRODUCT_DATA".equals(fallbackStatus) || "TEMPORARILY_UNAVAILABLE".equals(fallbackStatus)) {
+                layoutSkinMatch.setVisibility(View.GONE);
+            } else {
+                // Fallback to legacy data
+                layoutSkinMatch.setVisibility(View.VISIBLE);
+                TextView tvScore = layoutSkinMatch.findViewById(R.id.tvSkinMatchScore);
+            int fallbackScore = state.skinMatch.getScore();
+            if (state.skinMatch.getEstimatedScore() != null && state.skinMatch.getEstimatedScore() > 0 && fallbackScore == 0) {
+                if (tvScore != null) tvScore.setText(String.format(Locale.US, "≈%d%%", state.skinMatch.getEstimatedScore()));
+            } else {
+                if (tvScore != null) tvScore.setText(String.format(Locale.US, "%d%%", fallbackScore));
+            }
             TextView tvSubtitle = layoutSkinMatch.findViewById(R.id.tvSkinMatchSubtitle);
             if (tvSubtitle != null) tvSubtitle.setText("Phù hợp với làn da của bạn");
+        }
         } else if (layoutSkinMatch != null) {
             layoutSkinMatch.setVisibility(View.GONE);
         }
@@ -623,6 +715,23 @@ public class ProductDetailFragment extends Fragment {
 
         View btnWishlist = getView() != null ? getView().findViewById(R.id.btnWishlist) : null;
         if (btnWishlist != null) btnWishlist.setSelected(state.isWishlisted);
+
+        View btnArTryOn = getView() != null ? getView().findViewById(R.id.btnArTryOn) : null;
+        if (btnArTryOn != null) {
+            btnArTryOn.setVisibility(product.hasAr() ? View.VISIBLE : View.GONE);
+            if (product.hasAr() && btnArTryOn instanceof TextView) {
+                String arType = product.getArType() != null ? product.getArType().toUpperCase() : "";
+                String arLabel = "Thử màu AR";
+                if ("LIPS".equals(arType)) {
+                    arLabel = "Thử màu AR (Son môi)";
+                } else if ("CHEEKS".equals(arType)) {
+                    arLabel = "Thử màu AR (Phấn má)";
+                } else if ("EYES".equals(arType)) {
+                    arLabel = "Thử màu AR (Phấn mắt)";
+                }
+                ((TextView) btnArTryOn).setText(arLabel);
+            }
+        }
     }
 
     private void bindSkinMatchData(com.example.frontend.data.model.product.SkinMatchDto data) {
@@ -637,7 +746,15 @@ public class ProductDetailFragment extends Fragment {
         switch (data.getStatus()) {
             case READY:
                 layoutSkinMatch.setVisibility(View.VISIBLE);
-                if (tvScore != null) tvScore.setText(String.format(Locale.US, "%d%%", data.getScore()));
+
+                // If confidence is low, backend returns score=0 but estimated_score has the value.
+                // Show "≈XX%" to indicate the score is an estimate, not a guaranteed match.
+                if ((data.getScore() == null || data.getScore() == 0) && data.getEstimatedScore() != null && data.getEstimatedScore() > 0) {
+                    if (tvScore != null) tvScore.setText(String.format(Locale.US, "≈%d%%", data.getEstimatedScore()));
+                } else {
+                    if (tvScore != null) tvScore.setText(String.format(Locale.US, "%d%%", data.getScore() != null ? data.getScore() : 0));
+                }
+
                 if (tvSubtitle != null) {
                     if (data.getMatchExplanation() != null && !data.getMatchExplanation().isEmpty()) {
                         tvSubtitle.setText(data.getMatchExplanation());
@@ -654,7 +771,7 @@ public class ProductDetailFragment extends Fragment {
                     }
                 }
 
-                // Color mapping
+                // Color mapping based on match level
                 int colorRes = R.color.button;
                 if (data.getMatchLevel() != null) {
                     switch (data.getMatchLevel()) {
@@ -666,7 +783,11 @@ public class ProductDetailFragment extends Fragment {
                             colorRes = R.color.status_pending_text;
                             break;
                         case CAUTION:
-                            colorRes = R.color.error;
+                            // CAUTION = hard conflict present; use warning amber, not full error red
+                            colorRes = R.color.status_pending_text;
+                            break;
+                        default:
+                            colorRes = R.color.button;
                             break;
                     }
                 }
@@ -688,12 +809,43 @@ public class ProductDetailFragment extends Fragment {
 
             case PROFILE_INCOMPLETE:
                 layoutSkinMatch.setVisibility(View.VISIBLE);
-                if (tvScore != null) tvScore.setText(data.getScore() != null ? String.format(Locale.US, "%d%%", data.getScore()) : "?");
+                // Show estimated score if available, otherwise "?"
+                if (data.getEstimatedScore() != null && data.getEstimatedScore() > 0) {
+                    if (tvScore != null) tvScore.setText(String.format(Locale.US, "≈%d%%", data.getEstimatedScore()));
+                } else if (data.getScore() != null && data.getScore() > 0) {
+                    if (tvScore != null) tvScore.setText(String.format(Locale.US, "%d%%", data.getScore()));
+                } else {
+                    if (tvScore != null) tvScore.setText("?");
+                }
                 if (tvSubtitle != null) {
                     if (data.getMatchExplanation() != null && !data.getMatchExplanation().isEmpty()) {
                         tvSubtitle.setText(data.getMatchExplanation());
                     } else {
-                        tvSubtitle.setText("Cập nhật thêm thông tin da của bạn");
+                        tvSubtitle.setText("Cập nhật thêm thông tin da để kết quả chính xác hơn");
+                    }
+                }
+                // Use muted color for estimated/incomplete state
+                if (tvScore != null) tvScore.setTextColor(ContextCompat.getColor(getContext(), R.color.status_pending_text));
+                if (layoutScoreCircle != null) layoutScoreCircle.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.status_pending_text)));
+                break;
+
+            case CAUTION:
+                // Product-level caution (e.g. hard conflict with profile) — show with warning style
+                layoutSkinMatch.setVisibility(View.VISIBLE);
+                if (tvScore != null) {
+                    if (data.getScore() != null && data.getScore() > 0) {
+                        tvScore.setText(String.format(Locale.US, "%d%%", data.getScore()));
+                    } else {
+                        tvScore.setText("!");
+                    }
+                    tvScore.setTextColor(ContextCompat.getColor(getContext(), R.color.error));
+                }
+                if (layoutScoreCircle != null) layoutScoreCircle.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.error)));
+                if (tvSubtitle != null) {
+                    if (data.getMatchExplanation() != null && !data.getMatchExplanation().isEmpty()) {
+                        tvSubtitle.setText(data.getMatchExplanation());
+                    } else {
+                        tvSubtitle.setText("Cần lưu ý: sản phẩm có thể không phù hợp");
                     }
                 }
                 break;
@@ -757,33 +909,49 @@ public class ProductDetailFragment extends Fragment {
         bottomSheet.setListener((variant, selectedMode, selectedQuantity) -> {
             String variantId = variant != null ? variant.getId() : null;
             if (selectedMode == VariantSelectorBottomSheet.ActionMode.BUY_NOW) {
-                // Mock "Buy Now" by constructing CartItemDto locally and navigating to Checkout
                 Product product = state.product;
-                if (product != null) {
-                    CartItemDto cartItem = CartItemDto.createMock(
-                        "buy_now_" + System.currentTimeMillis(),
-                        product.getName(),
-                        variant != null ? variant.getVariantName() : "Mặc định",
-                        variant != null && variant.getPrice() != null ? variant.getPrice() : product.getPriceValue(),
-                        selectedQuantity,
-                        true,
-                        variant != null && variant.getImageUrl() != null && !variant.getImageUrl().isEmpty() ?
-                            variant.getImageUrl() : (state.mediaList != null && !state.mediaList.isEmpty() ? state.mediaList.get(0).getUrl() : "")
+                if (product == null) return;
+
+                // Prepare CartItemDto for checkout
+                CartItemDto cartItem = CartItemDto.createMock(
+                    "buy_now_" + System.currentTimeMillis(),
+                    product.getName(),
+                    variant != null ? variant.getVariantName() : "Mặc định",
+                    variant != null && variant.getPrice() != null ? variant.getPrice() : product.getPriceValue(),
+                    selectedQuantity,
+                    true,
+                    variant != null && variant.getImageUrl() != null && !variant.getImageUrl().isEmpty() ?
+                        variant.getImageUrl() : (state.mediaList != null && !state.mediaList.isEmpty() ? state.mediaList.get(0).getUrl() : "")
+                );
+                cartItem.setProductId(productId);
+                cartItem.setVariantId(variantId);
+                cartItem.setBrandNameSnapshot(product.getBrand());
+
+                ArrayList<CartItemDto> selectedItems = new ArrayList<>();
+                selectedItems.add(cartItem);
+
+                // Kiểm tra đăng nhập khi nhấn Mua ngay
+                if (!com.example.frontend.data.remote.TokenManager.getInstance(getContext()).isLoggedIn()) {
+                    Bundle extras = new Bundle();
+                    extras.putSerializable("selected_items", selectedItems);
+
+                    com.example.frontend.core.auth.PendingAuthAction action = new com.example.frontend.core.auth.PendingAuthAction(
+                            com.example.frontend.core.auth.PendingAuthAction.ActionType.START_CHECKOUT,
+                            "ProductDetail",
+                            0,
+                            extras
                     );
-                    cartItem.setProductId(productId);
-                    cartItem.setVariantId(variantId);
-                    cartItem.setBrandNameSnapshot(product.getBrand());
-
-                    ArrayList<CartItemDto> selectedItems = new ArrayList<>();
-                    selectedItems.add(cartItem);
-
-                    ui.commerce.CheckoutFragment checkoutFragment = new ui.commerce.CheckoutFragment();
-                    Bundle args = new Bundle();
-                    args.putSerializable("selected_items", selectedItems);
-                    checkoutFragment.setArguments(args);
-
-                    ui.common.FragmentNavigationHelper.loadFragment(getActivity(), checkoutFragment);
+                    com.example.frontend.core.auth.AuthNavigationHelper.showAuthPrompt(requireActivity(), action);
+                    return;
                 }
+
+                // Mock "Buy Now" by navigating to Checkout (Logged in)
+                ui.commerce.CheckoutFragment checkoutFragment = new ui.commerce.CheckoutFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("selected_items", selectedItems);
+                checkoutFragment.setArguments(args);
+
+                ui.common.FragmentNavigationHelper.loadFragment(getActivity(), checkoutFragment);
             } else {
                 viewModel.addToCart(productId, variantId, selectedQuantity);
             }

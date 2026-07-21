@@ -45,6 +45,13 @@ public class AccountAddressFragment extends Fragment {
         viewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
 
         initViews(view);
+
+        // Cập nhật tiêu đề trang
+        android.widget.TextView tvTitle = view.findViewById(R.id.tvToolbarTitle);
+        if (tvTitle != null) {
+            tvTitle.setText("Địa chỉ của tôi");
+        }
+
         observeViewModel();
         viewModel.loadAccountAddresses();
     }
@@ -111,6 +118,7 @@ public class AccountAddressFragment extends Fragment {
         viewModel.getSetDefaultAccountAddressResult().observe(getViewLifecycleOwner(), result -> {
             if (result != null && result.status == NetworkResult.Status.SUCCESS) {
                 viewModel.loadAccountAddresses();
+                viewModel.resetSetDefaultAccountAddressResult();
             }
         });
     }

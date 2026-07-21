@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="64dp"
+    android:layout_height="64dp"
+    android:layout_marginEnd="8dp">
+
+    <!-- Selected Ring -->
+    <View
+        android:id="@+id/selectedRing"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_circle_selected_ring"
+        android:visibility="gone" />
+
+    <!-- Color Swatch -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/colorSwatchContainer"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@android:color/transparent">
+
+        <View
+            android:id="@+id/colorSwatch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+            
+        <View
+            android:id="@+id/outOfStockOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#80FFFFFF"
+            android:visibility="gone" />
+
+    </androidx.cardview.widget.CardView>
+
+</FrameLayout>

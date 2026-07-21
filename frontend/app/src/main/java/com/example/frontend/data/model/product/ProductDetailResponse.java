@@ -96,15 +96,23 @@ public class ProductDetailResponse {
         private String aiSummary;
         @SerializedName("reviewMediaPreview")
         private List<ReviewMediaDto> reviewMediaPreview;
+        @SerializedName("ratingDistribution")
+        private java.util.Map<String, Integer> ratingDistribution;
+
         public double getAverageRating() { return averageRating; }
         public int getReviewCount() { return reviewCount; }
         public String getAiSummary() { return aiSummary; }
         public List<ReviewMediaDto> getReviewMediaPreview() { return reviewMediaPreview; }
+        public java.util.Map<String, Integer> getRatingDistribution() { return ratingDistribution; }
     }
 
     public static class SkinMatchDto implements Serializable {
+        @SerializedName("status")
+        private String status;
         @SerializedName("score")
         private int score;
+        @SerializedName("estimated_score")
+        private Integer estimatedScore;
         @SerializedName("level")
         private String level;
         @SerializedName(value = "match_explanation", alternate = {"explanation", "matchExplanation"})
@@ -120,7 +128,9 @@ public class ProductDetailResponse {
         @SerializedName("confidence_score")
         private Integer confidenceScore;
 
+        public String getStatus() { return status; }
         public int getScore() { return score; }
+        public Integer getEstimatedScore() { return estimatedScore; }
         public String getLevel() { return level; }
         public String getMatchExplanation() { return matchExplanation; }
         public List<String> getProfileChips() { return profileChips; }

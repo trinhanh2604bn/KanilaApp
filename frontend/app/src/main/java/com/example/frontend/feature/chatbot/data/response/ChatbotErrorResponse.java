@@ -9,11 +9,25 @@ public class ChatbotErrorResponse {
     @SerializedName("details")
     private String details;
 
+    @SerializedName("error_type")
+    private String errorType;
+
+    @SerializedName("recovery_actions")
+    private java.util.List<String> recoveryActions;
+
     public String getCode() {
         return code;
     }
 
     public String getDetails() {
         return details;
+    }
+
+    public String getErrorType() {
+        return errorType;
+    }
+
+    public java.util.List<String> getRecoveryActions() {
+        return recoveryActions;
     }
 }

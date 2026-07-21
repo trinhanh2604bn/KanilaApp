@@ -14,13 +14,13 @@ public class AddressDto implements Serializable {
     @SerializedName("address_label")
     private String addressLabel;
 
-    @SerializedName("recipient_name")
+    @SerializedName(value = "recipient_name", alternate = {"full_name"})
     private String recipientName;
 
     @SerializedName("phone")
     private String phone;
 
-    @SerializedName("address_line_1")
+    @SerializedName(value = "address_line_1", alternate = {"address_line"})
     private String addressLine1;
 
     @SerializedName("address_line_2")
@@ -46,6 +46,9 @@ public class AddressDto implements Serializable {
 
     @SerializedName("address_note")
     private String addressNote;
+
+    @SerializedName("is_default")
+    private boolean isDefault;
 
     @SerializedName("is_default_shipping")
     private boolean defaultShipping;
@@ -103,6 +106,9 @@ public class AddressDto implements Serializable {
 
     public String getAddressNote() { return addressNote; }
     public void setAddressNote(String addressNote) { this.addressNote = addressNote; }
+
+    public boolean isDefault() { return isDefault; }
+    public void setDefault(boolean isDefault) { this.isDefault = isDefault; }
 
     public boolean isDefaultShipping() { return defaultShipping; }
     public void setDefaultShipping(boolean defaultShipping) { this.defaultShipping = defaultShipping; }

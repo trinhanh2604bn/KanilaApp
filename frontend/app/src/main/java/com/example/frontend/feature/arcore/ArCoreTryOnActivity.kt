@@ -55,7 +55,6 @@ class ArCoreTryOnActivity : AppCompatActivity(), AugmentedFaceListener {
         findViewById<android.view.View>(R.id.btnBack).setOnClickListener {
             finish()
         }
-        
         viewModel = ViewModelProvider(this).get(ArTryOnViewModel::class.java)
 
         // Setup RecyclerView

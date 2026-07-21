@@ -200,9 +200,7 @@ function buildMongoFilterFromQuery(query, opts = {}) {
 
   const searchRaw = query.search ?? query.q;
   if (searchRaw != null && String(searchRaw).trim()) {
-    // Search is now handled by SearchService.
-    // If a request reaches here with a search term (e.g. from a legacy route not fully migrated),
-    // we ignore it here because the controller should delegate to SearchService instead.
+    filter.productName = { $regex: String(searchRaw).trim(), $options: "i" };
   }
 
   const brandParam = query.brandId;

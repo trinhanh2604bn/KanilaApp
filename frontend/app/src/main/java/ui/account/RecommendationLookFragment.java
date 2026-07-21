@@ -143,7 +143,7 @@ public class RecommendationLookFragment extends Fragment {
         String step1Desc = "Làm mờ lỗ chân lông";
         if (skinType.contains("dầu")) step1Desc = "Kiềm dầu & mịn da";
         else if (skinType.contains("khô")) step1Desc = "Cấp ẩm căng mọng";
-        setupMakeupStepClick(view, R.id.stepMakeup1, "1", step1Title, step1Desc, R.drawable.img_foudation, "FACE");
+        setupMakeupStepClick(view, R.id.stepMakeup1, "1", step1Title, step1Desc, R.drawable.cl_product, "FACE");
 
         // Step 2: Base
         String step2Title = "Kem nền";
@@ -156,7 +156,7 @@ public class RecommendationLookFragment extends Fragment {
         } else if (style.contains("sắc sảo")) {
             step2Desc = "Che phủ hoàn hảo";
         }
-        setupMakeupStepClick(view, R.id.stepMakeup2, "2", step2Title, step2Desc, R.drawable.cl_product, step2Cat);
+        setupMakeupStepClick(view, R.id.stepMakeup2, "2", step2Title, step2Desc, R.drawable.img_foudation, step2Cat);
 
         // Step 3: Finish
         String step3Title = "Phấn phủ";

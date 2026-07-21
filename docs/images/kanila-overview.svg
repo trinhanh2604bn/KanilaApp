@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Kanila App Overview</title>
+  <desc id="desc">Beauty commerce app combining core commerce, beauty intelligence, social commerce and AI AR support.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff8fb"/>
+      <stop offset="0.55" stop-color="#ffe9f0"/>
+      <stop offset="1" stop-color="#ffd6de"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e83e72"/>
+      <stop offset="1" stop-color="#ff7fa5"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#6b1e2e" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1425" cy="80" r="230" fill="#ffffff" opacity="0.45"/>
+  <circle cx="130" cy="820" r="260" fill="#ffffff" opacity="0.35"/>
+
+  <g transform="translate(90,78)">
+    <text x="0" y="0" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" letter-spacing="8" fill="#e83e72">KANILA APP</text>
+    <text x="0" y="90" font-family="Arial, Helvetica, sans-serif" font-size="66" font-weight="800" fill="#372b2b">Beauty Commerce</text>
+    <text x="0" y="158" font-family="Arial, Helvetica, sans-serif" font-size="66" font-weight="800" fill="#6b1e2e">cá nhân hóa toàn diện</text>
+    <text x="0" y="218" font-family="Arial, Helvetica, sans-serif" font-size="27" fill="#5f5155">Mua sắm mỹ phẩm, tư vấn thông minh và cộng đồng tương tác</text>
+    <text x="0" y="255" font-family="Arial, Helvetica, sans-serif" font-size="27" fill="#5f5155">trong một hành trình mobile-first liền mạch.</text>
+  </g>
+
+  <g transform="translate(90,395)" filter="url(#shadow)">
+    <g>
+      <rect x="0" y="0" width="335" height="250" rx="28" fill="#ffffff"/>
+      <circle cx="62" cy="62" r="34" fill="#ffe1ea"/>
+      <text x="62" y="72" text-anchor="middle" font-family="Arial" font-size="30" font-weight="800" fill="#e83e72">01</text>
+      <text x="32" y="130" font-family="Arial" font-size="28" font-weight="700" fill="#6b1e2e">Core Commerce</text>
+      <text x="32" y="174" font-family="Arial" font-size="20" fill="#5f5155">Tìm kiếm, danh mục, giỏ hàng,</text>
+      <text x="32" y="205" font-family="Arial" font-size="20" fill="#5f5155">checkout, voucher và đơn hàng.</text>
+    </g>
+    <g transform="translate(365,0)">
+      <rect x="0" y="0" width="335" height="250" rx="28" fill="#ffffff"/>
+      <circle cx="62" cy="62" r="34" fill="#ffe1ea"/>
+      <text x="62" y="72" text-anchor="middle" font-family="Arial" font-size="30" font-weight="800" fill="#e83e72">02</text>
+      <text x="32" y="130" font-family="Arial" font-size="28" font-weight="700" fill="#6b1e2e">Beauty Intelligence</text>
+      <text x="32" y="174" font-family="Arial" font-size="20" fill="#5f5155">Beauty Profile, Skin Match,</text>
+      <text x="32" y="205" font-family="Arial" font-size="20" fill="#5f5155">gợi ý và AI tổng hợp review.</text>
+    </g>
+    <g transform="translate(730,0)">
+      <rect x="0" y="0" width="335" height="250" rx="28" fill="#ffffff"/>
+      <circle cx="62" cy="62" r="34" fill="#ffe1ea"/>
+      <text x="62" y="72" text-anchor="middle" font-family="Arial" font-size="30" font-weight="800" fill="#e83e72">03</text>
+      <text x="32" y="130" font-family="Arial" font-size="28" font-weight="700" fill="#6b1e2e">Social Commerce</text>
+      <text x="32" y="174" font-family="Arial" font-size="20" fill="#5f5155">Community, Reels, Challenge,</text>
+      <text x="32" y="205" font-family="Arial" font-size="20" fill="#5f5155">KOC và review nhận thưởng.</text>
+    </g>
+    <g transform="translate(1095,0)">
+      <rect x="0" y="0" width="335" height="250" rx="28" fill="#ffffff"/>
+      <circle cx="62" cy="62" r="34" fill="#ffe1ea"/>
+      <text x="62" y="72" text-anchor="middle" font-family="Arial" font-size="30" font-weight="800" fill="#e83e72">04</text>
+      <text x="32" y="130" font-family="Arial" font-size="28" font-weight="700" fill="#6b1e2e">AI / AR &amp; Support</text>
+      <text x="32" y="174" font-family="Arial" font-size="20" fill="#5f5155">Trợ lý 24/7, thử AR, tìm kiếm</text>
+      <text x="32" y="205" font-family="Arial" font-size="20" fill="#5f5155">thông minh và ticket hậu mãi.</text>
+    </g>
+  </g>
+
+  <g transform="translate(90,720)">
+    <rect x="0" y="0" width="1430" height="94" rx="47" fill="url(#accent)"/>
+    <text x="715" y="38" text-anchor="middle" font-family="Arial" font-size="20" font-weight="700" fill="#ffffff" letter-spacing="2">VÒNG LẶP GIÁ TRỊ</text>
+    <text x="715" y="70" text-anchor="middle" font-family="Arial" font-size="24" font-weight="600" fill="#ffffff">Khám phá  →  Tư vấn / Thử  →  Mua hàng  →  Theo dõi  →  Chia sẻ  →  Nhận thưởng  →  Mua lại</text>
+  </g>
+  <text x="800" y="865" text-anchor="middle" font-family="Arial" font-size="20" fill="#6b1e2e">Android Java/XML  •  Node.js / Express  •  MongoDB Atlas  •  Vertex AI / Gemini</text>
+</svg>
